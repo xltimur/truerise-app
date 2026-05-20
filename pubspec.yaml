@@ -1,0 +1,106 @@
+name: rectify
+description: "A new Flutter project."
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+# In Windows, build-name is used as the major, minor, and patch parts
+# of the product and file versions while build-number is used as the build suffix.
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.0
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.8
+  flutter_riverpod: ^3.3.1
+  riverpod_annotation: ^4.0.2
+  go_router: ^17.2.3
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.12.0
+  drift: ^2.33.0
+  drift_flutter: ^0.3.0
+  sqlite3_flutter_libs: ^0.6.0+eol
+  path_provider: ^2.1.5
+  dio: ^5.9.2
+  pretty_dio_logger: ^1.4.0
+  flutter_secure_storage: ^10.2.0
+  shared_preferences: ^2.5.5
+  google_fonts: ^8.1.0
+  lucide_icons_flutter: ^3.1.14+1
+  flutter_svg: ^2.3.0
+  intl: ^0.20.2
+  uuid: ^4.5.3
+  meta: ^1.18.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  riverpod_generator: ^4.0.4-dev.1
+  build_runner: ^2.15.0
+  freezed: ^3.2.6-dev.1
+  json_serializable: ^6.14.0
+  drift_dev: ^2.33.0
+  very_good_analysis: ^10.2.0
+  mocktail: ^1.0.5
+
+# objective_c 9.4.0 (published 2026-05-20) introduced a build-hook
+# regression that forces `-arch arm64e` for arm64 iOS targets, which
+# produces a device-platform (IOS) slice that the iOS Simulator
+# cannot load. The runtime crash is
+# `Couldn't resolve native function 'DOBJC_initializeApi' in
+# 'package:objective_c/objective_c.dylib'`. Pin to 9.3.0 (the last
+# known-good release) until the upstream fix lands. Transitive only
+# (path_provider_foundation 2.6.0). Track:
+# https://github.com/dart-lang/native (objective_c label).
+dependency_overrides:
+  objective_c: 9.3.0
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+  uses-material-design: true
+
+  # Bundled product fonts (`docs/design-system.md` §3.1). Stored
+  # locally so the first-launch UX does not depend on a network round
+  # trip and so `flutter test` / golden suites stay hermetic.
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600
+    - family: SourceSerif4
+      fonts:
+        - asset: assets/fonts/SourceSerif4-Regular.ttf
+    - family: JetBrainsMono
+      fonts:
+        - asset: assets/fonts/JetBrainsMono-Medium.ttf
+          weight: 500

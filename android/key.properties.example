@@ -1,0 +1,44 @@
+# TrueRise / Rectify — Android signing template
+# ---------------------------------------------------------------------------
+# This file is a TEMPLATE. It is committed to Git. Copy it to
+# `android/key.properties` (which is git-ignored) and fill it with the
+# values for your local upload keystore:
+#
+#   cp android/key.properties.example android/key.properties
+#
+# The real `android/key.properties` and the `.jks` / `.keystore` file it
+# points to MUST NEVER be committed. They contain credentials that can sign
+# releases under this app's identity. They are excluded by `android/.gitignore`.
+#
+# Generating a debug-only upload keystore (do NOT use this for Play Store
+# uploads — Google Play App Signing requires its own enrollment flow):
+#
+#   keytool -genkey -v \
+#     -keystore ~/.android/truerise-upload.jks \
+#     -alias upload \
+#     -keyalg RSA -keysize 2048 -validity 10000
+#
+# The release keystore for Play Store uploads is held by the release owner
+# in a password manager / secret store, NOT in the repo. See
+# https://flutter.dev/to/reference-keystore for the canonical Flutter
+# signing flow.
+#
+# Wiring this into `android/app/build.gradle.kts` is a Phase-9 / store-cut
+# task (see docs/qa-phase8-report.md §6 follow-ups). Today the release build
+# is signed with the debug keys; this template exists so the second
+# developer can drop in their own keystore without leaking the real one.
+# ---------------------------------------------------------------------------
+
+# Password of the keystore file.
+storePassword=CHANGE_ME
+
+# Password of the key alias inside the keystore.
+keyPassword=CHANGE_ME
+
+# Alias of the signing key inside the keystore.
+keyAlias=upload
+
+# Path to the .jks/.keystore file. Absolute paths or paths relative to the
+# `android/` directory are both accepted by the Flutter Gradle plugin.
+# Keep the keystore OUTSIDE the repo (e.g. ~/.android/truerise-upload.jks).
+storeFile=/absolute/path/to/your/truerise-upload.jks

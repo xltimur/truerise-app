@@ -1,0 +1,3098 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Rectify — Mobile Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&display=swap" rel="stylesheet">
+<style>
+  /* =====================================================================
+     RECTIFY · DESIGN TOKENS
+     Mirrors docs/design-system.md
+     ===================================================================== */
+  :root {
+    /* Background */
+    --bg-canvas: #F1ECE1;
+    --bg-page:   #EAE4D6;          /* showcase page background, slightly cooler */
+    --bg-app:    #FBF8F2;
+    --bg-surface:#FFFFFF;
+    --bg-sunken: #F4EFE5;
+    --bg-inv:    #1B2735;
+
+    /* Ink */
+    --ink-strong:#16181D;
+    --ink-body:  #2E3138;
+    --ink-muted: #5C5A54;
+    --ink-soft:  #85827A;
+    --ink-faint: #B1AC9F;
+    --ink-line:  #E4DFD2;
+    --ink-line-soft:#EFEAE0;
+
+    /* Accent · Rectify Clay */
+    --clay:      #B66A3F;
+    --clay-hover:#A55B33;
+    --clay-deep: #7A4124;
+    --clay-tint: #F2E3D3;
+    --clay-line: #E0BFA1;
+
+    /* Deep · Observatory Navy */
+    --midnight:      #1B2735;
+    --midnight-soft: #2A3A4A;
+    --midnight-tint: #E3E7EB;
+    --on-midnight:   #FBF8F2;
+
+    /* Confidence scale */
+    --conf-strong:#5C7355;
+    --conf-moderate:#B07F44;
+    --conf-weak:  #8E867B;
+    --conf-none:  #808892;
+
+    /* Status */
+    --danger:#8E3D2F;
+    --success:#5C7355;
+    --warning:#B07F44;
+
+    /* Type */
+    --f-sans:  'Inter', system-ui, -apple-system, sans-serif;
+    --f-serif: 'Source Serif 4', 'Source Serif Pro', Georgia, serif;
+    --f-mono:  'JetBrains Mono', 'SF Mono', Menlo, monospace;
+
+    /* Shadow */
+    --elev-1: 0 1px 2px rgba(22,24,29,.04), 0 2px 10px rgba(22,24,29,.06);
+    --elev-phone: 0 24px 56px rgba(22,24,29,.18), 0 6px 14px rgba(22,24,29,.10);
+  }
+
+  *,*::before,*::after { box-sizing: border-box; }
+  html,body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--f-sans);
+    color: var(--ink-strong);
+    background: var(--bg-page);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    line-height: 1.5;
+  }
+
+  /* =====================================================================
+     PAGE FRAME
+     ===================================================================== */
+  .doc {
+    max-width: 1680px;
+    margin: 0 auto;
+    padding: 80px 56px 120px;
+  }
+
+  .doc-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 40px;
+    align-items: end;
+    padding-bottom: 32px;
+    border-bottom: 1px solid rgba(22,24,29,.12);
+    margin-bottom: 80px;
+  }
+  .brandmark {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .brandmark .glyph {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--midnight);
+    color: var(--on-midnight);
+    display: grid; place-items: center;
+  }
+  .brandmark .glyph svg { width: 22px; height: 22px; }
+  .brandmark .name {
+    font-family: var(--f-serif);
+    font-size: 32px;
+    letter-spacing: -.02em;
+    line-height: 1;
+  }
+  .brandmark .name em { font-style: italic; color: var(--clay-deep); }
+  .doc-eyebrow {
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .doc-title {
+    font-family: var(--f-serif);
+    font-size: 44px;
+    line-height: 1.05;
+    letter-spacing: -.02em;
+    margin: 0 0 14px;
+    color: var(--ink-strong);
+    max-width: 720px;
+  }
+  .doc-lede {
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--ink-muted);
+    max-width: 620px;
+    margin: 0;
+  }
+  .doc-meta {
+    text-align: right;
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .doc-meta strong { color: var(--ink-body); font-weight: 600; }
+
+  /* Token preview strip */
+  .tokens {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    padding: 32px 32px 36px;
+    background: var(--bg-canvas);
+    border-radius: 18px;
+    margin-bottom: 96px;
+    border: 1px solid rgba(22,24,29,.06);
+  }
+  .tokens h3 {
+    margin: 0 0 18px;
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+  .swatches { display: flex; gap: 8px; flex-wrap: wrap; }
+  .sw {
+    width: 96px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(22,24,29,.06);
+    background: var(--bg-surface);
+  }
+  .sw .chip { height: 60px; }
+  .sw .meta {
+    padding: 8px 10px;
+    font-size: 11px;
+    line-height: 1.3;
+  }
+  .sw .meta strong { display: block; color: var(--ink-strong); font-weight: 600; }
+  .sw .meta code {
+    color: var(--ink-soft);
+    font-family: var(--f-mono);
+    font-size: 10.5px;
+  }
+  .type-spec {
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .type-row {
+    display: flex; align-items: baseline; gap: 16px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(22,24,29,.06);
+  }
+  .type-row:last-child { border: 0; }
+  .type-row .label {
+    width: 110px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+  .type-row .sample { flex: 1; color: var(--ink-strong); }
+  .type-row .spec {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    color: var(--ink-soft);
+  }
+  .t-display { font-family: var(--f-serif); font-size: 28px; line-height: 1.1; }
+  .t-title { font-size: 18px; font-weight: 600; letter-spacing: -.005em; }
+  .t-body { font-size: 15px; line-height: 1.5; }
+  .t-mono { font-family: var(--f-mono); font-size: 22px; font-weight: 500; }
+
+  /* Section heading */
+  .section {
+    margin: 96px 0 32px;
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 32px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid rgba(22,24,29,.12);
+  }
+  .section h2 {
+    margin: 0;
+    font-family: var(--f-serif);
+    font-size: 28px;
+    letter-spacing: -.015em;
+    line-height: 1.1;
+    color: var(--ink-strong);
+  }
+  .section .section-num {
+    font-family: var(--f-mono);
+    font-size: 12px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    margin-bottom: 6px;
+  }
+  .section p {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 14px;
+    max-width: 380px;
+    text-align: right;
+    line-height: 1.5;
+  }
+
+  /* =====================================================================
+     PHONE FRAME GRID
+     ===================================================================== */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 80px 56px;
+    justify-items: center;
+    margin-bottom: 24px;
+  }
+  .phone {
+    width: 380px;
+    display: flex;
+    flex-direction: column;
+  }
+  .phone-bezel {
+    width: 380px;
+    background: #15181E;
+    border-radius: 50px;
+    padding: 10px;
+    box-shadow: var(--elev-phone);
+    position: relative;
+  }
+  .phone-screen {
+    position: relative;
+    width: 360px;
+    height: 760px;
+    background: var(--bg-app);
+    border-radius: 42px;
+    overflow: hidden;
+  }
+  .island {
+    position: absolute;
+    top: 10px; left: 50%;
+    transform: translateX(-50%);
+    width: 108px;
+    height: 30px;
+    background: #15181E;
+    border-radius: 18px;
+    z-index: 50;
+  }
+  .home-bar {
+    position: absolute;
+    bottom: 8px; left: 50%;
+    transform: translateX(-50%);
+    width: 134px; height: 5px;
+    border-radius: 3px;
+    background: rgba(22,24,29,.28);
+    z-index: 50;
+  }
+  .statusbar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 28px;
+    padding-top: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-strong);
+    z-index: 30;
+    pointer-events: none;
+  }
+  .statusbar.on-dark { color: var(--on-midnight); }
+  .statusbar .right { display: inline-flex; align-items: center; gap: 6px; }
+  .statusbar .right svg { width: 16px; height: 12px; }
+  .statusbar .right .bat {
+    width: 24px; height: 11px;
+    border: 1px solid currentColor;
+    border-radius: 3px;
+    position: relative;
+    display: inline-block;
+  }
+  .statusbar .right .bat::after {
+    content: '';
+    position: absolute;
+    right: -3px; top: 3px;
+    width: 2px; height: 5px;
+    background: currentColor;
+    border-radius: 0 1px 1px 0;
+  }
+  .statusbar .right .bat .lvl {
+    position: absolute; inset: 1.5px;
+    background: currentColor;
+    width: 70%;
+    border-radius: 1px;
+  }
+
+  /* App content area */
+  .app {
+    position: absolute;
+    top: 50px; left: 0; right: 0; bottom: 0;
+    overflow: hidden;
+    color: var(--ink-body);
+  }
+  .app.on-dark { background: var(--midnight); color: var(--on-midnight); }
+  .scroll {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+  .scroll.with-tab { bottom: 84px; }
+  .scroll.with-button { bottom: 110px; }
+
+  /* Top bar (nav) */
+  .topbar {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 4px;
+    color: var(--ink-strong);
+  }
+  .topbar .iconbtn {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: grid; place-items: center;
+    cursor: default;
+  }
+  .topbar .iconbtn svg { width: 22px; height: 22px; }
+  .topbar .title {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -.005em;
+    flex: 1;
+  }
+  .topbar .right { display: flex; gap: 4px; }
+
+  /* Page padding */
+  .pad { padding: 8px 24px 24px; }
+  .pad-tight { padding: 0 24px 16px; }
+
+  /* Eyebrow / labels */
+  .eyebrow {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+  .eyebrow.clay { color: var(--clay-deep); }
+  .label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-muted);
+    margin-bottom: 8px;
+    display: block;
+  }
+  .helper {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin-top: 8px;
+    line-height: 1.45;
+  }
+
+  /* Stepper */
+  .stepper {
+    margin: 4px 0 24px;
+  }
+  .stepper .meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .stepper .meta .eyebrow { letter-spacing: .14em; }
+  .stepper .meta .of {
+    font-size: 11px;
+    color: var(--ink-soft);
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  .stepper .track {
+    height: 4px;
+    background: var(--bg-sunken);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .stepper .fill {
+    height: 100%;
+    background: var(--clay);
+    border-radius: 2px;
+  }
+
+  /* Headings */
+  h1.screen-title {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -.015em;
+    line-height: 1.15;
+    color: var(--ink-strong);
+    margin: 0 0 8px;
+  }
+  h2.section-title {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -.005em;
+    color: var(--ink-strong);
+    margin: 0 0 12px;
+  }
+  .screen-sub {
+    font-size: 14.5px;
+    color: var(--ink-muted);
+    line-height: 1.5;
+    margin: 0 0 24px;
+  }
+
+  /* Inputs */
+  .input {
+    background: var(--bg-surface);
+    border: 1px solid var(--ink-line);
+    border-radius: 10px;
+    padding: 0 14px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    color: var(--ink-strong);
+    font-weight: 400;
+  }
+  .input.focused {
+    border-color: var(--clay-line);
+    box-shadow: 0 0 0 3px var(--clay-tint);
+  }
+  .input.disabled { color: var(--ink-faint); background: var(--bg-sunken); }
+  .input .icon { color: var(--ink-soft); display: inline-flex; }
+  .input .icon svg { width: 18px; height: 18px; }
+  .input .placeholder { color: var(--ink-faint); }
+  .input .grow { flex: 1; }
+  .input .right svg { width: 18px; height: 18px; color: var(--ink-soft); }
+  .input .clear {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--ink-line);
+    color: var(--ink-muted);
+    display: grid; place-items: center;
+    font-size: 12px;
+    line-height: 1;
+  }
+
+  /* City dropdown */
+  .dropdown {
+    margin-top: 6px;
+    background: var(--bg-surface);
+    border: 1px solid var(--ink-line);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--elev-1);
+  }
+  .dropdown .row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--ink-line-soft);
+  }
+  .dropdown .row:last-child { border-bottom: 0; }
+  .dropdown .row.active { background: var(--clay-tint); }
+  .dropdown .row .flag {
+    width: 22px; height: 16px;
+    border-radius: 3px;
+    background: var(--ink-line);
+    flex-shrink: 0;
+    overflow: hidden;
+    display: grid; place-items: center;
+    font-size: 11px;
+  }
+  .dropdown .row .city {
+    font-size: 14.5px;
+    color: var(--ink-strong);
+    line-height: 1.2;
+  }
+  .dropdown .row .region {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 2px;
+  }
+
+  /* Buttons */
+  .btn {
+    height: 52px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -.005em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    cursor: default;
+    padding: 0 18px;
+  }
+  .btn svg { width: 18px; height: 18px; }
+  .btn.primary {
+    background: var(--clay);
+    color: var(--bg-app);
+  }
+  .btn.secondary {
+    background: var(--bg-surface);
+    border: 1px solid var(--ink-line);
+    color: var(--ink-strong);
+  }
+  .btn.ghost {
+    background: transparent;
+    color: var(--clay-deep);
+  }
+  .btn.destructive {
+    background: var(--bg-surface);
+    border: 1px solid rgba(142,61,47,.4);
+    color: var(--danger);
+  }
+  .btn.disabled {
+    background: var(--clay);
+    opacity: .45;
+    color: var(--bg-app);
+  }
+  .btn-row { display: flex; flex-direction: column; gap: 12px; }
+
+  /* Bottom action area */
+  .bottom-action {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    padding: 16px 24px 26px;
+    background: linear-gradient(to top, var(--bg-app) 70%, rgba(251,248,242,0));
+    z-index: 10;
+  }
+  .bottom-action.solid { background: var(--bg-app); border-top: 1px solid var(--ink-line-soft); }
+
+  /* Cards */
+  .card {
+    background: var(--bg-surface);
+    border: 1px solid var(--ink-line);
+    border-radius: 14px;
+    padding: 18px 20px;
+  }
+  .card + .card { margin-top: 12px; }
+
+  /* Event card */
+  .event {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: var(--bg-surface);
+    border: 1px solid var(--ink-line);
+    border-radius: 14px;
+    padding: 16px 18px;
+  }
+  .event + .event { margin-top: 10px; }
+  .event .ev-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: var(--bg-sunken);
+    color: var(--ink-body);
+    display: grid; place-items: center;
+    flex-shrink: 0;
+  }
+  .event .ev-icon svg { width: 19px; height: 19px; }
+  .event .ev-body { flex: 1; min-width: 0; }
+  .event .ev-cat {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--ink-strong);
+    line-height: 1.2;
+  }
+  .event .ev-date {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin-top: 3px;
+  }
+  .event .ev-desc {
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin-top: 6px;
+    line-height: 1.45;
+  }
+  .event .ev-del {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ink-soft);
+    display: grid; place-items: center;
+    flex-shrink: 0;
+    margin-top: -2px;
+    margin-right: -6px;
+  }
+  .event .ev-del svg { width: 16px; height: 16px; }
+
+  /* Radio rows */
+  .radio-group { display: flex; flex-direction: column; gap: 8px; }
+  .radio {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--bg-surface);
+    border: 1px solid var(--ink-line);
+    border-radius: 12px;
+    padding: 16px 18px;
+    font-size: 15px;
+    color: var(--ink-strong);
+  }
+  .radio.selected {
+    border-color: var(--clay-line);
+    background: var(--clay-tint);
+  }
+  .radio .ring {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink-line);
+    display: grid; place-items: center;
+    flex-shrink: 0;
+    background: var(--bg-surface);
+  }
+  .radio.selected .ring { border-color: var(--clay); }
+  .radio.selected .ring::after {
+    content: '';
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    background: var(--clay);
+  }
+  .radio .text { flex: 1; }
+  .radio .sub {
+    display: block;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin-top: 3px;
+  }
+
+  /* Chip / pill */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 26px;
+    padding: 0 11px;
+    border-radius: 6px;
+    font-size: 10.5px;
+    letter-spacing: .12em;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--ink-strong);
+    background: var(--bg-sunken);
+  }
+  .pill.demo {
+    background: var(--midnight);
+    color: var(--on-midnight);
+  }
+  .pill.demo .dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--clay);
+    margin-right: 2px;
+  }
+  .pill.danger { background: rgba(142,61,47,.1); color: var(--danger); }
+  .pill.success { background: rgba(92,115,85,.12); color: var(--conf-strong); }
+
+  /* Hero result card */
+  .hero-result {
+    background: var(--midnight);
+    color: var(--on-midnight);
+    border-radius: 28px;
+    padding: 32px 28px 30px;
+    position: relative;
+    box-shadow: 0 0 0 1px rgba(255,255,255,.04) inset;
+  }
+  .hero-result .demo-anchor {
+    position: absolute;
+    top: 22px; right: 22px;
+  }
+  .hero-result .eyebrow-dark {
+    font-size: 10.5px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--clay-tint);
+    font-weight: 600;
+  }
+  .hero-result .time {
+    font-family: var(--f-mono);
+    font-size: 58px;
+    font-weight: 500;
+    letter-spacing: -.025em;
+    line-height: 1;
+    margin: 22px 0 14px;
+    color: var(--on-midnight);
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .hero-result .time .ampm {
+    font-family: var(--f-serif);
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--midnight-tint);
+    letter-spacing: .04em;
+  }
+  .hero-result .sign {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--midnight-tint);
+    font-size: 16px;
+    font-weight: 500;
+  }
+  .hero-result .sign .glyph {
+    width: 22px; height: 22px;
+    display: grid; place-items: center;
+    color: var(--clay-tint);
+  }
+
+  /* Confidence bar */
+  .confidence {
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .confidence .label {
+    font-size: 12.5px;
+    margin: 0;
+    color: var(--ink-soft);
+    width: 76px;
+    letter-spacing: 0;
+    font-weight: 500;
+  }
+  .confidence .track {
+    flex: 1;
+    height: 8px;
+    background: var(--bg-sunken);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .confidence .fill {
+    height: 100%;
+    border-radius: 4px;
+  }
+  .confidence .fill.high { background: var(--conf-strong); }
+  .confidence .fill.mid { background: var(--conf-moderate); }
+  .confidence .fill.low { background: var(--conf-weak); }
+  .confidence .pct {
+    font-family: var(--f-mono);
+    font-feature-settings: 'tnum';
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink-strong);
+    width: 38px;
+    text-align: right;
+  }
+
+  /* Candidate row */
+  .candidate {
+    background: var(--bg-surface);
+    border: 1px solid var(--ink-line);
+    border-radius: 14px;
+    padding: 14px 18px;
+  }
+  .candidate + .candidate { margin-top: 10px; }
+  .candidate .top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .candidate .time {
+    font-family: var(--f-mono);
+    font-feature-settings: 'tnum';
+    font-size: 19px;
+    font-weight: 500;
+    color: var(--ink-strong);
+    letter-spacing: -.01em;
+  }
+  .candidate .time .ampm {
+    font-family: var(--f-serif);
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin-left: 4px;
+  }
+  .candidate .sign {
+    font-size: 13px;
+    color: var(--ink-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .candidate .sign .glyph { color: var(--clay-deep); }
+  .candidate .conf {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .candidate .conf .track {
+    flex: 1; height: 6px; background: var(--bg-sunken); border-radius: 3px; overflow: hidden;
+  }
+  .candidate .conf .fill { height: 100%; border-radius: 3px; }
+  .candidate .conf .pct {
+    font-family: var(--f-mono);
+    font-feature-settings: 'tnum';
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    width: 32px;
+    text-align: right;
+  }
+
+  /* Evidence card */
+  .evidence {
+    background: var(--bg-surface);
+    border: 1px solid var(--ink-line);
+    border-radius: 14px;
+    padding: 16px 18px;
+  }
+  .evidence + .evidence { margin-top: 10px; }
+  .evidence .top {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .evidence .ev-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: var(--bg-sunken);
+    color: var(--ink-body);
+    display: grid; place-items: center;
+    flex-shrink: 0;
+  }
+  .evidence .ev-icon svg { width: 19px; height: 19px; }
+  .evidence .ev-cat {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--ink-strong);
+  }
+  .evidence .ev-date {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin-top: 2px;
+  }
+  .evidence .strength-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+  }
+  .evidence .dots {
+    display: inline-flex;
+    gap: 4px;
+  }
+  .evidence .dots .d {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: transparent;
+    border: 1.5px solid currentColor;
+  }
+  .evidence .dots .d.on { background: currentColor; }
+  .evidence .strong-label {
+    font-size: 10.5px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .evidence.strong { color: var(--conf-strong); }
+  .evidence.moderate { color: var(--conf-moderate); }
+  .evidence.weak { color: var(--conf-weak); }
+  .evidence.none { color: var(--conf-none); background: var(--bg-sunken); }
+  .evidence .strength-row .strong-label,
+  .evidence .strength-row .dots { color: inherit; }
+  .evidence .ev-cat, .evidence .ev-date { color: var(--ink-strong); }
+  .evidence.none .ev-cat, .evidence.none .ev-date { color: var(--ink-muted); }
+  .evidence .explain {
+    margin: 14px 0 0 0;
+    padding: 14px 0 0;
+    border-top: 1px solid var(--ink-line-soft);
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--ink-body);
+  }
+  .evidence .explain em { color: var(--clay-deep); font-style: italic; }
+  .evidence .chevron {
+    margin-left: 8px;
+    color: var(--ink-soft);
+  }
+
+  /* History card */
+  .history-item {
+    background: var(--bg-surface);
+    border: 1px solid var(--ink-line);
+    border-radius: 14px;
+    padding: 16px 18px;
+  }
+  .history-item + .history-item { margin-top: 10px; }
+  .history-item .top {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .history-item .label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-strong);
+    margin: 0;
+  }
+  .history-item .date {
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  .history-item .row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .history-item .time {
+    font-family: var(--f-mono);
+    font-feature-settings: 'tnum';
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink-strong);
+    letter-spacing: -.01em;
+  }
+  .history-item .time .ampm {
+    font-family: var(--f-serif);
+    font-size: 14px;
+    color: var(--ink-muted);
+    margin-left: 4px;
+  }
+  .history-item .sign {
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin-top: 4px;
+  }
+  .history-item .pct {
+    font-family: var(--f-mono);
+    font-size: 13px;
+    color: var(--ink-muted);
+    font-feature-settings: 'tnum';
+  }
+  .history-item .conf-bar {
+    margin-top: 12px;
+    height: 4px;
+    background: var(--bg-sunken);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .history-item .conf-bar .fill { height: 100%; border-radius: 2px; }
+
+  /* Tab bar */
+  .tabbar {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 84px;
+    background: var(--bg-app);
+    border-top: 1px solid var(--ink-line-soft);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 8px 12px 24px;
+    z-index: 20;
+  }
+  .tabbar .tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: var(--ink-muted);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: .04em;
+  }
+  .tabbar .tab svg { width: 22px; height: 22px; }
+  .tabbar .tab.active { color: var(--clay); }
+  .tabbar .tab .uppercase {
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-weight: 600;
+  }
+
+  /* Bottom sheet (overlay) */
+  .sheet-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(22,24,29,.32);
+    z-index: 25;
+  }
+  .sheet {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: var(--bg-surface);
+    border-radius: 22px 22px 0 0;
+    padding: 14px 24px 32px;
+    box-shadow: 0 -2px 6px rgba(22,24,29,.04), 0 -10px 28px rgba(22,24,29,.10);
+    z-index: 30;
+  }
+  .sheet .handle {
+    width: 36px; height: 4px;
+    background: var(--ink-line);
+    border-radius: 2px;
+    margin: 0 auto 18px;
+  }
+  .sheet h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ink-strong);
+    margin: 0 0 14px;
+  }
+  .sheet .row {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--ink-line-soft);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 15px;
+    color: var(--ink-strong);
+  }
+  .sheet .row:last-of-type { border-bottom: 0; }
+  .sheet .row .ic {
+    width: 28px; height: 28px;
+    display: grid; place-items: center;
+    color: var(--ink-muted);
+  }
+  .sheet .row .ic svg { width: 19px; height: 19px; }
+  .sheet .row.selected { color: var(--clay-deep); }
+  .sheet .row .check {
+    margin-left: auto;
+    color: var(--clay);
+  }
+  .sheet .row .check svg { width: 18px; height: 18px; }
+
+  /* Loading screen */
+  .loading-stage {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 32px;
+    text-align: center;
+    gap: 28px;
+  }
+  .breath-ring {
+    width: 92px; height: 92px;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink-line);
+    border-top-color: var(--clay);
+    position: relative;
+  }
+  .breath-ring::before {
+    content: '';
+    position: absolute;
+    inset: 14px;
+    border-radius: 50%;
+    background: var(--clay);
+    opacity: .14;
+  }
+  .breath-ring::after {
+    content: '';
+    position: absolute;
+    inset: 22px;
+    border-radius: 50%;
+    background: var(--clay);
+    opacity: .28;
+  }
+  .loading-stage h2 {
+    font-family: var(--f-serif);
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--ink-strong);
+    letter-spacing: -.01em;
+    margin: 0;
+    line-height: 1.25;
+  }
+  .loading-stage .step {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 14px;
+    padding: 14px 0;
+    border-top: 1px solid var(--ink-line-soft);
+    border-bottom: 1px solid var(--ink-line-soft);
+    width: 100%;
+  }
+  .loading-stage .step strong { color: var(--ink-strong); font-weight: 600; }
+  .loading-stage .step .meta {
+    display: block;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    margin-top: 2px;
+    letter-spacing: .04em;
+  }
+  .loading-stage .est {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 12.5px;
+  }
+
+  /* Toggle (switch) */
+  .switch {
+    width: 50px; height: 30px;
+    border-radius: 999px;
+    background: var(--ink-line);
+    position: relative;
+    flex-shrink: 0;
+  }
+  .switch::after {
+    content: '';
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--bg-surface);
+    box-shadow: 0 1px 2px rgba(22,24,29,.18);
+    transition: left .2s;
+  }
+  .switch.on { background: var(--clay); }
+  .switch.on::after { left: 23px; }
+
+  /* Setting row */
+  .setting-row {
+    display: flex; align-items: center;
+    padding: 14px 20px;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--ink-line-soft);
+    gap: 14px;
+  }
+  .setting-row:first-child { border-radius: 14px 14px 0 0; }
+  .setting-row:last-child { border-bottom: 0; border-radius: 0 0 14px 14px; }
+  .setting-row:only-child { border-radius: 14px; border-bottom: 0; }
+  .setting-row .grow { flex: 1; min-width: 0; }
+  .setting-row .name { font-size: 14.5px; color: var(--ink-strong); font-weight: 500; }
+  .setting-row .sub { font-size: 12.5px; color: var(--ink-soft); margin-top: 3px; line-height: 1.4; }
+  .setting-row .val { font-size: 14px; color: var(--ink-muted); }
+  .setting-row .chev { color: var(--ink-soft); }
+  .setting-group {
+    background: var(--bg-surface);
+    border: 1px solid var(--ink-line);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .setting-section-head {
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 600;
+    padding: 0 4px 10px;
+  }
+
+  /* Pagination dots */
+  .pagedots {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+  .pagedots .d {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--ink-line);
+  }
+  .pagedots .d.on { background: var(--clay); }
+
+  /* Onboarding hero */
+  .onboard {
+    padding: 32px 28px 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .onboard .skip {
+    position: absolute;
+    top: 12px; right: 16px;
+    color: var(--ink-muted);
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+  .onboard .illo {
+    width: 84px; height: 84px;
+    border-radius: 22px;
+    background: var(--clay-tint);
+    color: var(--clay-deep);
+    display: grid; place-items: center;
+    margin-bottom: 38px;
+  }
+  .onboard .illo svg { width: 40px; height: 40px; }
+  .onboard h1 {
+    font-family: var(--f-serif);
+    font-size: 30px;
+    line-height: 1.12;
+    font-weight: 400;
+    letter-spacing: -.018em;
+    color: var(--ink-strong);
+    margin: 0 0 18px;
+  }
+  .onboard h1 em { font-style: italic; color: var(--clay-deep); }
+  .onboard p {
+    margin: 0 0 14px;
+    font-size: 16px;
+    color: var(--ink-body);
+    line-height: 1.5;
+  }
+  .onboard .steps {
+    margin: 4px 0 0;
+    display: flex; flex-direction: column;
+    gap: 18px;
+  }
+  .onboard .steps .step {
+    display: flex; gap: 16px;
+  }
+  .onboard .steps .num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--clay-tint);
+    color: var(--clay-deep);
+    display: grid; place-items: center;
+    font-family: var(--f-serif);
+    font-size: 14px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+  .onboard .steps .desc {
+    flex: 1;
+    color: var(--ink-body);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .onboard .steps .desc strong {
+    color: var(--ink-strong);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 2px;
+  }
+  .onboard-foot {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    padding: 0 24px 26px;
+  }
+  .onboard-foot .pagedots { margin-bottom: 22px; }
+
+  /* Note callout */
+  .callout {
+    background: var(--clay-tint);
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: var(--clay-deep);
+    font-size: 13.5px;
+    line-height: 1.5;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .callout svg {
+    width: 18px; height: 18px;
+    color: var(--clay);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .callout strong { color: var(--clay-deep); font-weight: 600; }
+
+  .callout.neutral {
+    background: var(--bg-sunken);
+    color: var(--ink-body);
+  }
+  .callout.neutral svg { color: var(--ink-muted); }
+  .callout.neutral strong { color: var(--ink-strong); }
+
+  .callout.warning {
+    background: rgba(176,127,68,.10);
+    color: #6E4D29;
+  }
+  .callout.warning svg { color: var(--conf-moderate); }
+
+  /* Empty state */
+  .empty {
+    padding: 60px 32px 0;
+    text-align: center;
+  }
+  .empty .glyph {
+    width: 64px; height: 64px;
+    margin: 0 auto 24px;
+    border-radius: 50%;
+    background: var(--bg-sunken);
+    color: var(--ink-soft);
+    display: grid; place-items: center;
+  }
+  .empty .glyph svg { width: 26px; height: 26px; }
+  .empty h2 {
+    font-family: var(--f-serif);
+    font-size: 22px;
+    color: var(--ink-strong);
+    margin: 0 0 8px;
+    font-weight: 400;
+    letter-spacing: -.01em;
+  }
+  .empty p {
+    color: var(--ink-muted);
+    font-size: 15px;
+    line-height: 1.5;
+    margin: 0 auto 28px;
+    max-width: 260px;
+  }
+
+  /* Error stage */
+  .error-stage {
+    padding: 100px 32px 0;
+    text-align: center;
+  }
+  .error-stage .glyph {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    margin: 0 auto 26px;
+    background: rgba(176,127,68,.14);
+    color: var(--conf-moderate);
+    display: grid; place-items: center;
+  }
+  .error-stage .glyph svg { width: 24px; height: 24px; }
+  .error-stage h2 {
+    font-family: var(--f-serif);
+    font-size: 24px;
+    color: var(--ink-strong);
+    margin: 0 0 12px;
+    font-weight: 400;
+    letter-spacing: -.01em;
+  }
+  .error-stage p {
+    color: var(--ink-muted);
+    font-size: 15px;
+    line-height: 1.55;
+    margin: 0 auto 18px;
+    max-width: 280px;
+  }
+  .error-stage .reassure {
+    background: var(--bg-sunken);
+    color: var(--ink-muted);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 auto 32px;
+  }
+  .error-stage .reassure svg {
+    width: 16px; height: 16px;
+    color: var(--conf-strong);
+  }
+
+  /* Summary header on evidence */
+  .summary {
+    background: var(--bg-surface);
+    border: 1px solid var(--ink-line);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+  }
+  .summary .figure {
+    font-family: var(--f-serif);
+    font-size: 22px;
+    color: var(--ink-strong);
+    line-height: 1.2;
+    margin: 0 0 6px;
+    letter-spacing: -.01em;
+  }
+  .summary .figure strong { color: var(--clay-deep); font-weight: 500; }
+  .summary p {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  /* Confirmation review rows */
+  .review {
+    background: var(--bg-surface);
+    border: 1px solid var(--ink-line);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .review .row {
+    display: flex; align-items: flex-start;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--ink-line-soft);
+    gap: 14px;
+  }
+  .review .row:last-child { border-bottom: 0; }
+  .review .row .ic {
+    width: 32px; height: 32px;
+    border-radius: 9px;
+    background: var(--bg-sunken);
+    color: var(--ink-muted);
+    display: grid; place-items: center;
+    flex-shrink: 0;
+  }
+  .review .row .ic svg { width: 17px; height: 17px; }
+  .review .row .body { flex: 1; }
+  .review .row .k {
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--ink-soft);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .review .row .v {
+    font-size: 14.5px;
+    color: var(--ink-strong);
+    font-weight: 500;
+  }
+  .review .row .v .second {
+    font-weight: 400;
+    color: var(--ink-muted);
+    margin-left: 8px;
+    font-size: 13.5px;
+  }
+  .review .row .edit {
+    color: var(--clay-deep);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  /* Caption below phones */
+  .phone-caption {
+    margin-top: 28px;
+    padding: 0 8px;
+  }
+  .phone-caption .num {
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    letter-spacing: .08em;
+  }
+  .phone-caption .name {
+    font-size: 15.5px;
+    color: var(--ink-strong);
+    font-weight: 600;
+    margin-top: 4px;
+    letter-spacing: -.005em;
+  }
+  .phone-caption .desc {
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin-top: 4px;
+    line-height: 1.45;
+  }
+
+  /* Footer */
+  .doc-footer {
+    margin-top: 96px;
+    padding-top: 32px;
+    border-top: 1px solid rgba(22,24,29,.12);
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.55;
+    display: flex;
+    justify-content: space-between;
+    gap: 32px;
+  }
+  .doc-footer p { margin: 0; max-width: 540px; }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .doc { padding: 40px 24px 80px; }
+    .doc-header { grid-template-columns: 1fr; }
+    .doc-meta { text-align: left; }
+    .doc-title { font-size: 32px; }
+    .tokens { grid-template-columns: 1fr; gap: 32px; padding: 24px; }
+    .grid { gap: 56px 32px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="doc">
+
+  <!-- ====================================================================
+       HEADER
+       ==================================================================== -->
+  <header class="doc-header">
+    <div>
+      <div class="brandmark">
+        <span class="glyph">
+          <!-- brand mark: clock quadrant -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M12 7v5l3 2"/>
+          </svg>
+        </span>
+        <span class="name">Rectify<em>.</em></span>
+      </div>
+      <div style="height: 32px;"></div>
+      <div class="doc-eyebrow">Mobile Prototype · v0.1 · 2026-05-20</div>
+      <h1 class="doc-title">A probable birth time, with evidence.</h1>
+      <p class="doc-lede">Eighteen mobile screens documenting the MVP of Rectify — onboarding, calculation flow, result moment, evidence breakdown, history, settings, and edge states. Designed against the brief and design system in <code style="font-family:var(--f-mono);font-size:13px;background:rgba(22,24,29,.05);padding:1px 6px;border-radius:4px;">/docs</code>.</p>
+    </div>
+    <div class="doc-meta">
+      <div><strong>Platform</strong></div>
+      <div>iOS 17 + Android 14<br>Flutter, MVP scope</div>
+      <div style="height:14px;"></div>
+      <div><strong>Aspect</strong></div>
+      <div>iPhone 15 frame, 360 × 760pt screen</div>
+      <div style="height:14px;"></div>
+      <div><strong>Light mode only.</strong><br>Dark mode is V1.5.</div>
+    </div>
+  </header>
+
+  <!-- ====================================================================
+       TOKENS PREVIEW
+       ==================================================================== -->
+  <div class="tokens">
+    <div>
+      <h3>Color tokens · in use</h3>
+      <div class="swatches">
+        <div class="sw"><div class="chip" style="background:#FBF8F2;border-bottom:1px solid var(--ink-line)"></div><div class="meta"><strong>bg.app</strong><code>#FBF8F2</code></div></div>
+        <div class="sw"><div class="chip" style="background:#FFFFFF;border-bottom:1px solid var(--ink-line)"></div><div class="meta"><strong>bg.surface</strong><code>#FFFFFF</code></div></div>
+        <div class="sw"><div class="chip" style="background:#16181D"></div><div class="meta"><strong>ink.strong</strong><code>#16181D</code></div></div>
+        <div class="sw"><div class="chip" style="background:#B66A3F"></div><div class="meta"><strong>clay</strong><code>#B66A3F</code></div></div>
+        <div class="sw"><div class="chip" style="background:#1B2735"></div><div class="meta"><strong>midnight</strong><code>#1B2735</code></div></div>
+        <div class="sw"><div class="chip" style="background:#5C7355"></div><div class="meta"><strong>conf.strong</strong><code>#5C7355</code></div></div>
+        <div class="sw"><div class="chip" style="background:#B07F44"></div><div class="meta"><strong>conf.moderate</strong><code>#B07F44</code></div></div>
+        <div class="sw"><div class="chip" style="background:#F2E3D3;border:1px solid var(--ink-line)"></div><div class="meta"><strong>clay.tint</strong><code>#F2E3D3</code></div></div>
+      </div>
+    </div>
+    <div>
+      <h3>Type · in use</h3>
+      <div class="type-spec">
+        <div class="type-row">
+          <span class="label">Display</span>
+          <span class="sample t-display">A probable birth time.</span>
+          <span class="spec">Source Serif 4 · 28/34</span>
+        </div>
+        <div class="type-row">
+          <span class="label">Title</span>
+          <span class="sample t-title">Past calculations</span>
+          <span class="spec">Inter 600 · 18/24</span>
+        </div>
+        <div class="type-row">
+          <span class="label">Body</span>
+          <span class="sample t-body">Your inputs have been saved.</span>
+          <span class="spec">Inter 400 · 15/22</span>
+        </div>
+        <div class="type-row">
+          <span class="label">Mono</span>
+          <span class="sample t-mono">7:14 AM</span>
+          <span class="spec">JetBrains Mono · 56/60</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       SECTION 1 · DISCOVERY & ONBOARDING
+       ==================================================================== -->
+  <div class="section">
+    <div>
+      <div class="section-num">Section 01</div>
+      <h2>Discovery &amp; Onboarding</h2>
+    </div>
+    <p>First-launch only. Three slides establish what the product does in plain English, then offer demo or real-calculation entry.</p>
+  </div>
+
+  <div class="grid">
+
+    <!-- 01 · Onboarding Slide 1 -->
+    <article class="phone">
+      <div class="phone-bezel">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="statusbar"><span>9:41</span><span class="right">
+            <svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="6" width="3" height="6" rx="1"/><rect x="5" y="3" width="3" height="9" rx="1"/><rect x="10" y="0" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".4"/></svg>
+            <svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5a10 10 0 0114 0M3.5 7.5a6 6 0 019 0M6 10a3 3 0 014 0"/></svg>
+            <span class="bat"><span class="lvl"></span></span>
+          </span></div>
+
+          <div class="app">
+            <div class="onboard">
+              <a class="skip">Skip</a>
+              <div class="illo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="9"/>
+                  <path d="M12 7v5l3 2"/>
+                  <path d="M2 12h1M21 12h1M12 2v1M12 21v1"/>
+                </svg>
+              </div>
+              <h1>Your birth chart depends on your exact <em>birth time</em>.</h1>
+              <p>Most people only know an approximate time — or nothing at all.</p>
+              <p>Rectify narrows it down using events from your own life.</p>
+            </div>
+            <div class="onboard-foot">
+              <div class="pagedots"><span class="d on"></span><span class="d"></span><span class="d"></span></div>
+              <div class="btn primary">Next</div>
+            </div>
+          </div>
+          <div class="home-bar"></div>
+        </div>
+      </div>
+      <div class="phone-caption">
+        <div class="num">01</div>
+        <div class="name">Onboarding · The problem</div>
+        <div class="desc">Establish the problem in one editorial line, no jargon, no astrology framing.</div>
+      </div>
+    </article>
+
+    <!-- 02 · Onboarding Slide 2 -->
+    <article class="phone">
+      <div class="phone-bezel">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="statusbar"><span>9:41</span><span class="right">
+            <svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="6" width="3" height="6" rx="1"/><rect x="5" y="3" width="3" height="9" rx="1"/><rect x="10" y="0" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".4"/></svg>
+            <svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5a10 10 0 0114 0M3.5 7.5a6 6 0 019 0M6 10a3 3 0 014 0"/></svg>
+            <span class="bat"><span class="lvl"></span></span>
+          </span></div>
+
+          <div class="app">
+            <div class="onboard">
+              <a class="skip">Skip</a>
+              <div class="illo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 6h13M3 12h13M3 18h13"/>
+                  <circle cx="20" cy="6" r="1.5"/>
+                  <circle cx="20" cy="12" r="1.5"/>
+                  <circle cx="20" cy="18" r="1.5"/>
+                </svg>
+              </div>
+              <h1>How <em>Rectify</em> works.</h1>
+              <div class="steps">
+                <div class="step">
+                  <div class="num">1</div>
+                  <div class="desc"><strong>Enter what you remember</strong>your birth date and approximate time</div>
+                </div>
+                <div class="step">
+                  <div class="num">2</div>
+                  <div class="desc"><strong>Add events from your life</strong>marriage, career changes, moves, more</div>
+                </div>
+                <div class="step">
+                  <div class="num">3</div>
+                  <div class="desc"><strong>See your probable birth time</strong>with confidence and per-event evidence</div>
+                </div>
+              </div>
+              <div style="margin-top:30px;font-size:13.5px;color:var(--ink-soft);line-height:1.5;">The more events you add, the more accurate the result.</div>
+            </div>
+            <div class="onboard-foot">
+              <div class="pagedots"><span class="d"></span><span class="d on"></span><span class="d"></span></div>
+              <div class="btn primary">Next</div>
+            </div>
+          </div>
+          <div class="home-bar"></div>
+        </div>
+      </div>
+      <div class="phone-caption">
+        <div class="num">02</div>
+        <div class="name">Onboarding · How it works</div>
+        <div class="desc">Three numbered steps. Sets expectations honestly — "more events = better."</div>
+      </div>
+    </article>
+
+    <!-- 03 · Onboarding Slide 3 -->
+    <article class="phone">
+      <div class="phone-bezel">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="statusbar"><span>9:41</span><span class="right">
+            <svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="6" width="3" height="6" rx="1"/><rect x="5" y="3" width="3" height="9" rx="1"/><rect x="10" y="0" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".4"/></svg>
+            <svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5a10 10 0 0114 0M3.5 7.5a6 6 0 019 0M6 10a3 3 0 014 0"/></svg>
+            <span class="bat"><span class="lvl"></span></span>
+          </span></div>
+
+          <div class="app">
+            <div class="onboard">
+              <div class="illo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12l4 4L19 6"/>
+                </svg>
+              </div>
+              <h1>Ready to find your <em>birth time</em>?</h1>
+              <p>Try the demo first to see what a result looks like — no account, no data needed. Or jump in with your own.</p>
+            </div>
+            <div class="onboard-foot">
+              <div class="pagedots"><span class="d"></span><span class="d"></span><span class="d on"></span></div>
+              <div class="btn-row">
+                <div class="btn primary">Try demo first</div>
+                <div class="btn secondary">Start real calculation</div>
+              </div>
+              <div style="text-align:center;color:var(--ink-soft);font-size:12px;margin-top:18px;line-height:1.5;">A demo uses sample data so you can preview the experience.</div>
+            </div>
+          </div>
+          <div class="home-bar"></div>
+        </div>
+      </div>
+      <div class="phone-caption">
+        <div class="num">03</div>
+        <div class="name">Onboarding · Choose how to begin</div>
+        <div class="desc">Demo is the primary CTA — conversion research says preview-before-commit wins.</div>
+      </div>
+    </article>
+
+  </div>
+
+  <!-- ====================================================================
+       SECTION 2 · HOME & HISTORY
+       ==================================================================== -->
+  <div class="section">
+    <div>
+      <div class="section-num">Section 02</div>
+      <h2>Home &amp; History</h2>
+    </div>
+    <p>The home screen is the history list. Empty state for first-launch, populated for returning users.</p>
+  </div>
+
+  <div class="grid">
+
+    <!-- 04 · Home Empty -->
+    <article class="phone">
+      <div class="phone-bezel">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="statusbar"><span>9:41</span><span class="right">
+            <svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="6" width="3" height="6" rx="1"/><rect x="5" y="3" width="3" height="9" rx="1"/><rect x="10" y="0" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".4"/></svg>
+            <svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5a10 10 0 0114 0M3.5 7.5a6 6 0 019 0M6 10a3 3 0 014 0"/></svg>
+            <span class="bat"><span class="lvl"></span></span>
+          </span></div>
+
+          <div class="app">
+            <div class="topbar">
+              <div style="flex:1;padding-left:8px;">
+                <div style="font-family:var(--f-serif);font-size:22px;letter-spacing:-.015em;color:var(--ink-strong);">Rectify</div>
+              </div>
+              <div class="right">
+                <div class="iconbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.4 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.4 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.4l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.4-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.4-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.4h0a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5h0a1.7 1.7 0 001.8-.4l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.4 1.8v0a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></div>
+              </div>
+            </div>
+
+            <div class="empty">
+              <div class="glyph">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="9"/>
+                  <path d="M12 7v5l3 2"/>
+                </svg>
+              </div>
+              <h2>No calculations yet.</h2>
+              <p>Run your first calculation to see a probable birth time and its evidence here.</p>
+              <div style="padding: 0 24px;">
+                <div class="btn primary">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                  New calculation
+                </div>
+              </div>
+              <div style="padding: 24px 24px 0;">
+                <div class="btn ghost">Try demo first</div>
+              </div>
+            </div>
+
+            <div class="tabbar">
+              <div class="tab active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                <span class="uppercase">History</span>
+              </div>
+              <div class="tab">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                <span class="uppercase">New</span>
+              </div>
+              <div class="tab">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.4 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.4 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.4l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.4-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.4-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.4h0a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5h0a1.7 1.7 0 001.8-.4l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.4 1.8v0a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>
+                <span class="uppercase">Settings</span>
+              </div>
+            </div>
+          </div>
+          <div class="home-bar"></div>
+        </div>
+      </div>
+      <div class="phone-caption">
+        <div class="num">04</div>
+        <div class="name">History · Empty state</div>
+        <div class="desc">Quiet glyph, one line, one primary CTA. Tertiary demo ghost button below.</div>
+      </div>
+    </article>
+
+    <!-- 05 · Home Populated -->
+    <article class="phone">
+      <div class="phone-bezel">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="statusbar"><span>9:41</span><span class="right">
+            <svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="6" width="3" height="6" rx="1"/><rect x="5" y="3" width="3" height="9" rx="1"/><rect x="10" y="0" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".4"/></svg>
+            <svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5a10 10 0 0114 0M3.5 7.5a6 6 0 019 0M6 10a3 3 0 014 0"/></svg>
+            <span class="bat"><span class="lvl"></span></span>
+          </span></div>
+
+          <div class="app">
+            <div class="topbar">
+              <div style="flex:1;padding-left:8px;">
+                <div style="font-family:var(--f-serif);font-size:22px;letter-spacing:-.015em;color:var(--ink-strong);">Rectify</div>
+              </div>
+              <div class="right">
+                <div class="iconbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.4 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.4 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.4l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.4-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.4-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.4h0a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5h0a1.7 1.7 0 001.8-.4l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.4 1.8v0a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></div>
+              </div>
+            </div>
+
+            <div class="pad" style="padding-top:6px;">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;">
+                <h1 class="screen-title" style="font-size:20px;">Past calculations</h1>
+                <span style="font-size:12.5px;color:var(--ink-soft);">3 saved</span>
+              </div>
+
+              <div class="history-item">
+                <div class="top">
+                  <p class="label">My birth time</p>
+                  <span class="date">May 19, 2026</span>
+                </div>
+                <div class="row">
+                  <div>
+                    <span class="time">7:14<span class="ampm">AM</span></span>
+                    <div class="sign">Gemini Rising</div>
+                  </div>
+                  <span class="pct">78%</span>
+                </div>
+                <div class="conf-bar"><div class="fill" style="width:78%;background:var(--conf-strong);"></div></div>
+              </div>
+
+              <div class="history-item">
+                <div class="top">
+                  <p class="label">My mother — first attempt</p>
+                  <span class="date">May 17, 2026</span>
+                </div>
+                <div class="row">
+                  <div>
+                    <span class="time">2:48<span class="ampm">PM</span></span>
+                    <div class="sign">Sagittarius Rising</div>
+                  </div>
+                  <span class="pct">62%</span>
+                </div>
+                <div class="conf-bar"><div class="fill" style="width:62%;background:var(--conf-moderate);"></div></div>
+              </div>
+
+              <div class="history-item" style="position:relative;">
+                <div style="position:absolute;top:14px;right:16px;"><span class="pill demo"><span class="dot"></span>Demo</span></div>
+                <div class="top">
+                  <p class="label" style="color:var(--ink-muted);">Sample result</p>
+                  <span class="date">May 12, 2026</span>
+                </div>
+                <div class="row">
+                  <div>
+                    <span class="time" style="color:var(--ink-body);">7:14<span class="ampm">AM</span></span>
+                    <div class="sign">Gemini Rising · sample data</div>
+                  </div>
+                  <span class="pct">78%</span>
+                </div>
+                <div class="conf-bar"><div class="fill" style="width:78%;background:var(--ink-soft);"></div></div>
+              </div>
+
+              <div style="text-align:center;margin-top:24px;color:var(--ink-soft);font-size:12px;display:flex;align-items:center;justify-content:center;gap:6px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14 6l-6 6 6 6"/></svg>
+                Swipe left on a card to delete
+              </div>
+            </div>
+
+            <div class="tabbar">
+              <div class="tab active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                <span class="uppercase">History</span>
+              </div>
+              <div class="tab">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                <span class="uppercase">New</span>
+              </div>
+              <div class="tab">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.4 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.4 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.4l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.4-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.4-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.4h0a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5h0a1.7 1.7 0 001.8-.4l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.4 1.8v0a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>
+                <span class="uppercase">Settings</span>
+              </div>
+            </div>
+          </div>
+          <div class="home-bar"></div>
+        </div>
+      </div>
+      <div class="phone-caption">
+        <div class="num">05</div>
+        <div class="name">History · Populated</div>
+        <div class="desc">Scannable list. Each card carries time, sign, confidence; demo runs are clearly badged.</div>
+      </div>
+    </article>
+
+  </div>
+
+  <!-- ====================================================================
+       SECTION 3 · CALCULATION INPUTS
+       ==================================================================== -->
+  <div class="section">
+    <div>
+      <div class="section-num">Section 03</div>
+      <h2>Calculation Inputs</h2>
+    </div>
+    <p>A 3-step stepper. Birth details, time window, life events. Native pickers; live geocoding on city.</p>
+  </div>
+
+  <div class="grid">
+
+    <!-- 06 · Birth Data Input -->
+    <article class="phone">
+      <div class="phone-bezel">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="statusbar"><span>9:41</span><span class="right">
+            <svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="6" width="3" height="6" rx="1"/><rect x="5" y="3" width="3" height="9" rx="1"/><rect x="10" y="0" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".4"/></svg>
+            <svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5a10 10 0 0114 0M3.5 7.5a6 6 0 019 0M6 10a3 3 0 014 0"/></svg>
+            <span class="bat"><span class="lvl"></span></span>
+          </span></div>
+
+          <div class="app">
+            <div class="topbar">
+              <div class="iconbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></div>
+              <div class="title">New calculation</div>
+            </div>
+
+            <div class="pad">
+              <div class="stepper">
+                <div class="meta">
+                  <span class="eyebrow clay">Step 1 of 3</span>
+                  <span class="of">Birth details</span>
+                </div>
+                <div class="track"><div class="fill" style="width:33%"></div></div>
+              </div>
+
+              <h1 class="screen-title">Birth details</h1>
+              <p class="screen-sub">Start with what you know. We'll verify the city as you type.</p>
+
+              <span class="label">Date of birth</span>
+              <div class="input">
+                <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></span>
+                <span class="grow">March 15, 1990</span>
+                <span class="right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span>
+              </div>
+
+              <div style="height: 18px;"></div>
+
+              <span class="label">City of birth</span>
+              <div class="input focused">
+                <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>
+                <span class="grow">Kyiv, Ukraine</span>
+                <span class="clear">×</span>
+              </div>
+              <div class="helper">Coordinates resolved · 50.45°N, 30.52°E</div>
+
+              <div style="height: 18px;"></div>
+
+              <span class="label">Label <span style="color:var(--ink-faint);font-weight:400;">— optional</span></span>
+              <div class="input">
+                <span class="grow placeholder">e.g. "My birth time"</span>
+              </div>
+              <div class="helper">Used to identify this calculation in History.</div>
+            </div>
+
+            <div class="bottom-action solid">
+              <div class="btn primary">
+                Continue
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="home-bar"></div>
+        </div>
+      </div>
+      <div class="phone-caption">
+        <div class="num">06</div>
+        <div class="name">Birth details</div>
+        <div class="desc">Three fields, ample breathing room. Focused input has the warm clay focus ring.</div>
+      </div>
+    </article>
+
+    <!-- 07 · City search with dropdown -->
+    <article class="phone">
+      <div class="phone-bezel">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="statusbar"><span>9:41</span><span class="right">
+            <svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="6" width="3" height="6" rx="1"/><rect x="5" y="3" width="3" height="9" rx="1"/><rect x="10" y="0" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".4"/></svg>
+            <svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5a10 10 0 0114 0M3.5 7.5a6 6 0 019 0M6 10a3 3 0 014 0"/></svg>
+            <span class="bat"><span class="lvl"></span></span>
+          </span></div>
+
+          <div class="app">
+            <div class="topbar">
+              <div class="iconbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></div>
+              <div class="title">New calculation</div>
+            </div>
+
+            <div class="pad">
+              <div class="stepper">
+                <div class="meta">
+                  <span class="eyebrow clay">Step 1 of 3</span>
+                  <span class="of">Birth details</span>
+                </div>
+                <div class="track"><div class="fill" style="width:33%"></div></div>
+              </div>
+
+              <h1 class="screen-title">Birth details</h1>
+              <p class="screen-sub">Start with what you know. We'll verify the city as you type.</p>
+
+              <span class="label">Date of birth</span>
+              <div class="input">
+                <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></span>
+                <span class="grow">March 15, 1990</span>
+                <span class="right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span>
+              </div>
+
+              <div style="height: 18px;"></div>
+
+              <span class="label">City of birth</span>
+              <div class="input focused">
+                <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>
+                <span class="grow" style="color:var(--ink-strong);">Kyi<span style="border-left:1.5px solid var(--clay);margin-left:2px;animation:none;">&nbsp;</span></span>
+              </div>
+
+              <div class="dropdown">
+                <div class="row active">
+                  <span class="flag" style="background:linear-gradient(to bottom, #005BBB 50%, #FFD500 50%);"></span>
+                  <div>
+                    <div class="city">Kyiv</div>
+                    <div class="region">Ukraine · Kyiv City</div>
+                  </div>
+                </div>
+                <div class="row">
+                  <span class="flag" style="background:linear-gradient(to bottom, #CE1126 33%, #FFFFFF 33%, #FFFFFF 66%, #007A3D 66%);"></span>
+                  <div>
+                    <div class="city">Qamishlī</div>
+                    <div class="region">Syria · al-Hasakah</div>
+                  </div>
+                </div>
+                <div class="row">
+                  <span class="flag" style="background:linear-gradient(to bottom, #005BBB 50%, #FFD500 50%);"></span>
+                  <div>
+                    <div class="city">Kyiv Oblast</div>
+                    <div class="region">Ukraine · Region</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="helper">Tap to select. We use the city's coordinates for the calculation.</div>
+            </div>
+
+          </div>
+          <div class="home-bar"></div>
+        </div>
+      </div>
+      <div class="phone-caption">
+        <div class="num">07</div>
+        <div class="name">Birth details · City search</div>
+        <div class="desc">Live geocoding autocomplete. Selected row highlighted with clay tint.</div>
+      </div>
+    </article>
+
+    <!-- 08 · Time Window Setup -->
+    <article class="phone">
+      <div class="phone-bezel">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="statusbar"><span>9:41</span><span class="right">
+            <svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="6" width="3" height="6" rx="1"/><rect x="5" y="3" width="3" height="9" rx="1"/><rect x="10" y="0" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".4"/></svg>
+            <svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5a10 10 0 0114 0M3.5 7.5a6 6 0 019 0M6 10a3 3 0 014 0"/></svg>
+            <span class="bat"><span class="lvl"></span></span>
+          </span></div>
+
+          <div class="app">
+            <div class="topbar">
+              <div class="iconbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></div>
+              <div class="title">New calculation</div>
+            </div>
+
+            <div class="pad">
+              <div class="stepper">
+                <div class="meta">
+                  <span class="eyebrow clay">Step 2 of 3</span>
+                  <span class="of">Time window</span>
+                </div>
+                <div class="track"><div class="fill" style="width:66%"></div></div>
+              </div>
+
+              <h1 class="screen-title">Do you know your approximate birth time?</h1>
+              <p class="screen-sub">A smaller window means a more precise result.</p>
+
+              <div class="radio-group" style="margin-bottom:18px;">
+                <div class="radio selected">
+                  <span class="ring"></span>
+                  <div class="text">I have an approximate time<span class="sub">e.g. "around 7 in the morning"</span></div>
+                </div>
+                <div class="radio">
+                  <span class="ring"></span>
+                  <div class="text">I have no idea<span class="sub">We'll search the full 24-hour range</span></div>
+                </div>
+              </div>
+
+              <span class="label">Approximate time</span>
+              <div class="input">
+                <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+                <span class="grow"><span style="font-family:var(--f-mono);font-size:15px;">7:00</span><span style="margin-left:6px;color:var(--ink-muted);">AM</span></span>
+                <span class="right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span>
+              </div>
+
+              <div style="height: 14px;"></div>
+
+              <span class="label">Search window</span>
+              <div class="input">
+                <span class="grow">± 2 hours</span>
+                <span class="right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span>
+              </div>
+
+              <div style="margin-top:18px;" class="callout neutral">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M12 11v5"/></svg>
+                <div>We'll search between <strong>5:00 AM</strong> and <strong>9:00 AM</strong>. A wider window finds more candidates but lowers precision.</div>
+              </div>
+            </div>
+
+            <div class="bottom-action solid">
+              <div class="btn primary">
+                Continue
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="home-bar"></div>
+        </div>
+      </div>
+      <div class="phone-caption">
+        <div class="num">08</div>
+        <div class="name">Time window</div>
+        <div class="desc">Radio choice + dynamic helper showing the calculated search range in plain English.</div>
+      </div>
+    </article>
+
+  </div>
+
+  <!-- ====================================================================
+       SECTION 4 · LIFE EVENTS
+       ==================================================================== -->
+  <div class="section">
+    <div>
+      <div class="section-num">Section 04</div>
+      <h2>Life Events</h2>
+    </div>
+    <p>The hardest screen in the product. Categorized entry, no free text. Soft warning under 5 events; hard floor of 3 for demo.</p>
+  </div>
+
+  <div class="grid">
+
+    <!-- 09 · Life Events Empty -->
+    <article class="phone">
+      <div class="phone-bezel">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="statusbar"><span>9:41</span><span class="right">
+            <svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="6" width="3" height="6" rx="1"/><rect x="5" y="3" width="3" height="9" rx="1"/><rect x="10" y="0" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".4"/></svg>
+            <svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5a10 10 0 0114 0M3.5 7.5a6 6 0 019 0M6 10a3 3 0 014 0"/></svg>
+            <span class="bat"><span class="lvl"></span></span>
+          </span></div>
+
+          <div class="app">
+            <div class="topbar">
+              <div class="iconbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></div>
+              <div class="title">New calculation</div>
+            </div>
+
+            <div class="pad">
+              <div class="stepper">
+                <div class="meta">
+                  <span class="eyebrow clay">Step 3 of 3</span>
+                  <span class="of">Life events</span>
+                </div>
+                <div class="track"><div class="fill" style="width:100%"></div></div>
+              </div>
+
+              <h1 class="screen-title">Life events</h1>
+              <p class="screen-sub">Add memorable events from your life. We use them to triangulate your birth time.</p>
+
+              <div class="callout">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M12 11v5"/></svg>
+                <div>Add at least <strong>3 events for a demo</strong>. We recommend <strong>5 or more</strong> for a real calculation — the more, the better.</div>
+              </div>
+
+              <div style="height: 80px;"></div>
+
+              <div style="text-align:center;color:var(--ink-soft);">
+                <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="5" width="18" height="16" rx="2"/>
+                  <path d="M8 3v4M16 3v4M3 10h18"/>
+                  <path d="M9 14h6M9 18h4" opacity=".5"/>
+                </svg>
+                <div style="font-size:14px;margin-top:14px;line-height:1.45;max-width:240px;margin-left:auto;margin-right:auto;">No events added yet. Try marriage, career changes, moves, or family milestones.</div>
+              </div>
+
+            </div>
+
+            <div class="bottom-action solid">
+              <div class="btn primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                Add first event
+              </div>
+            </div>
+          </div>
+          <div class="home-bar"></div>
+        </div>
+      </div>
+      <div class="phone-caption">
+        <div class="num">09</div>
+        <div class="name">Life events · Empty</div>
+        <div class="desc">Calm callout sets the expectation. Quiet glyph + 1 line of copy + 1 CTA.</div>
+      </div>
+    </article>
+
+    <!-- 10 · Life Events With Events -->
+    <article class="phone">
+      <div class="phone-bezel">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="statusbar"><span>9:41</span><span class="right">
+            <svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="6" width="3" height="6" rx="1"/><rect x="5" y="3" width="3" height="9" rx="1"/><rect x="10" y="0" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".4"/></svg>
+            <svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5a10 10 0 0114 0M3.5 7.5a6 6 0 019 0M6 10a3 3 0 014 0"/></svg>
+            <span class="bat"><span class="lvl"></span></span>
+          </span></div>
+
+          <div class="app">
+            <div class="topbar">
+              <div class="iconbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></div>
+              <div class="title">New calculation</div>
+            </div>
+
+            <div class="pad" style="padding-bottom:140px;">
+              <div class="stepper">
+                <div class="meta">
+                  <span class="eyebrow clay">Step 3 of 3</span>
+                  <span class="of">5 events added</span>
+                </div>
+                <div class="track"><div class="fill" style="width:100%"></div></div>
+              </div>
+
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;">
+                <h1 class="screen-title" style="margin:0;font-size:20px;">Life events</h1>
+                <span style="font-size:12.5px;color:var(--ink-soft);">5 of 20</span>
+              </div>
+
+              <div class="event">
+                <div class="ev-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.5-7-11a4 4 0 017-2.6A4 4 0 0119 10c0 6.5-7 11-7 11z"/></svg>
+                </div>
+                <div class="ev-body">
+                  <div class="ev-cat">Marriage</div>
+                  <div class="ev-date">June 2018</div>
+                  <div class="ev-desc">"Married in a small civil ceremony"</div>
+                </div>
+                <div class="ev-del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></div>
+              </div>
+
+              <div class="event">
+                <div class="ev-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V4h6v3"/></svg>
+                </div>
+                <div class="ev-body">
+                  <div class="ev-cat">Career change</div>
+                  <div class="ev-date">September 2015</div>
+                </div>
+                <div class="ev-del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></div>
+              </div>
+
+              <div class="event">
+                <div class="ev-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8v10a1 1 0 01-1 1h-5v-7h-6v7H4a1 1 0 01-1-1V11z"/></svg>
+                </div>
+                <div class="ev-body">
+                  <div class="ev-cat">Relocation</div>
+                  <div class="ev-date">March 2012</div>
+                  <div class="ev-desc">"Moved from Lviv to Kyiv for work"</div>
+                </div>
+                <div class="ev-del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></div>
+              </div>
+
+              <div class="event">
+                <div class="ev-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12c0-2 1-4 3-4s3 2 3 4-1 4-3 4-3-2-3-4z"/><path d="M3 21v-2a4 4 0 014-4h10a4 4 0 014 4v2"/></svg>
+                </div>
+                <div class="ev-body">
+                  <div class="ev-cat">Birth of child</div>
+                  <div class="ev-date">November 2020</div>
+                </div>
+                <div class="ev-del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></div>
+              </div>
+
+              <div class="event">
+                <div class="ev-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/></svg>
+                </div>
+                <div class="ev-body">
+                  <div class="ev-cat">Education</div>
+                  <div class="ev-date">June 2008</div>
+                  <div class="ev-desc">"Graduated from KNU"</div>
+                </div>
+                <div class="ev-del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></div>
+              </div>
+
+              <div style="margin-top:12px;">
+                <div class="btn secondary">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                  Add another event
+                </div>
+              </div>
+            </div>
+
+            <div class="bottom-action solid">
+              <div class="btn primary">
+                Review &amp; calculate
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="home-bar"></div>
+        </div>
+      </div>
+      <div class="phone-caption">
+        <div class="num">10</div>
+        <div class="name">Life events · 5 added</div>
+        <div class="desc">Cards with category icon, date, optional description. One-tap delete in the corner.</div>
+      </div>
+    </article>
+
+    <!-- 11 · Add Event Bottom Sheet -->
+    <article class="phone">
+      <div class="phone-bezel">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="statusbar"><span>9:41</span><span class="right">
+            <svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="6" width="3" height="6" rx="1"/><rect x="5" y="3" width="3" height="9" rx="1"/><rect x="10" y="0" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".4"/></svg>
+            <svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5a10 10 0 0114 0M3.5 7.5a6 6 0 019 0M6 10a3 3 0 014 0"/></svg>
+            <span class="bat"><span class="lvl"></span></span>
+          </span></div>
+
+          <div class="app">
+            <div class="topbar">
+              <div class="iconbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></div>
+              <div class="title">New calculation</div>
+            </div>
+
+            <div class="pad" style="opacity:.18;">
+              <div class="stepper">
+                <div class="meta">
+                  <span class="eyebrow clay">Step 3 of 3</span>
+                </div>
+                <div class="track"><div class="fill" style="width:100%"></div></div>
+              </div>
+              <h1 class="screen-title">Life events</h1>
+              <p class="screen-sub">Add memorable events from your life.</p>
+              <div class="event">
+                <div class="ev-icon"></div>
+                <div class="ev-body">
+                  <div class="ev-cat">Marriage</div>
+                  <div class="ev-date">June 2018</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="sheet-backdrop"></div>
+            <div class="sheet">
+              <div class="handle"></div>
+              <h3>Add a life event</h3>
+
+              <span class="label">Category</span>
+              <div class="input" style="background:var(--clay-tint);border-color:var(--clay-line);">
+                <span class="ev-icon" style="width:28px;height:28px;background:var(--bg-surface);border-radius:8px;display:grid;place-items:center;color:var(--clay-deep);">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.5-7-11a4 4 0 017-2.6A4 4 0 0119 10c0 6.5-7 11-7 11z"/></svg>
+                </span>
+                <span class="grow" style="color:var(--clay-deep);font-weight:500;">Marriage / Partnership</span>
+                <span class="right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+              </div>
+
+              <div style="height: 16px;"></div>
+
+              <span class="label">When</span>
+              <div style="display:flex;gap:10px;">
+                <div class="input" style="flex:1;">
+                  <span class="grow">June</span>
+                  <span class="right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+                </div>
+                <div class="input" style="flex:1;">
+                  <span class="grow" style="font-family:var(--f-mono);font-size:15px;">2018</span>
+                  <span class="right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+                </div>
+              </div>
+              <div class="helper">Month is optional. We just need the year at minimum.</div>
+
+              <div style="height: 16px;"></div>
+
+              <span class="label">Note <span style="color:var(--ink-faint);font-weight:400;">— optional</span></span>
+              <div class="input" style="height:auto;padding:12px 14px;align-items:flex-start;">
+                <span class="grow" style="font-size:14.5px;">Married in a small civil ceremony</span>
+              </div>
+              <div class="helper" style="display:flex;justify-content:space-between;"><span>What you remember helps later.</span><span style="font-family:var(--f-mono);font-size:11.5px;">34&nbsp;/&nbsp;200</span></div>
+
+              <div style="height: 22px;"></div>
+
+              <div class="btn primary">Add event</div>
+            </div>
+          </div>
+          <div class="home-bar"></div>
+        </div>
+      </div>
+      <div class="phone-caption">
+        <div class="num">11</div>
+        <div class="name">Add event · Bottom sheet</div>
+        <div class="desc">Category picker, month/year split (year required), 200-char optional note with counter.</div>
+      </div>
+    </article>
+
+    <!-- 12 · Category Picker (sheet) -->
+    <article class="phone">
+      <div class="phone-bezel">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="statusbar"><span>9:41</span><span class="right">
+            <svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="6" width="3" height="6" rx="1"/><rect x="5" y="3" width="3" height="9" rx="1"/><rect x="10" y="0" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".4"/></svg>
+            <svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5a10 10 0 0114 0M3.5 7.5a6 6 0 019 0M6 10a3 3 0 014 0"/></svg>
+            <span class="bat"><span class="lvl"></span></span>
+          </span></div>
+
+          <div class="app">
+            <div class="topbar" style="opacity:.18;">
+              <div class="iconbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></div>
+              <div class="title">New calculation</div>
+            </div>
+
+            <div class="sheet-backdrop"></div>
+            <div class="sheet" style="padding-bottom:18px;">
+              <div class="handle"></div>
+              <h3>Choose a category</h3>
+
+              <div class="row selected">
+                <span class="ic" style="color:var(--clay-deep);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.5-7-11a4 4 0 017-2.6A4 4 0 0119 10c0 6.5-7 11-7 11z"/></svg></span>
+                <span class="grow">Marriage / Partnership</span>
+                <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4L19 6"/></svg></span>
+              </div>
+              <div class="row">
+                <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.5-7-11a4 4 0 017-2.6A4 4 0 0119 10c0 6.5-7 11-7 11zM8 8l8 8M16 8L8 16" opacity=".55"/></svg></span>
+                <span class="grow">Divorce / Separation</span>
+              </div>
+              <div class="row">
+                <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V4h6v3"/></svg></span>
+                <span class="grow">Career change</span>
+              </div>
+              <div class="row">
+                <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8M21 14V7h-7"/></svg></span>
+                <span class="grow">Job loss</span>
+              </div>
+              <div class="row">
+                <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8v10a1 1 0 01-1 1h-5v-7h-6v7H4a1 1 0 01-1-1V11z"/></svg></span>
+                <span class="grow">Relocation (major)</span>
+              </div>
+              <div class="row">
+                <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12c0-2 1-4 3-4s3 2 3 4-1 4-3 4-3-2-3-4z"/><path d="M3 21v-2a4 4 0 014-4h10a4 4 0 014 4v2"/></svg></span>
+                <span class="grow">Birth of child</span>
+              </div>
+              <div class="row">
+                <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V2M5 6l7-4 7 4M5 6v8a7 7 0 0014 0V6"/></svg></span>
+                <span class="grow">Death of family member</span>
+              </div>
+              <div class="row">
+                <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v12M6 12h12"/></svg></span>
+                <span class="grow">Major illness or surgery</span>
+              </div>
+              <div class="row">
+                <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17v.01"/></svg></span>
+                <span class="grow">Accident or injury</span>
+              </div>
+              <div class="row">
+                <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/></svg></span>
+                <span class="grow">Education milestone</span>
+              </div>
+              <div class="row">
+                <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 10h5a2 2 0 010 4H9"/></svg></span>
+                <span class="grow">Financial turning point</span>
+              </div>
+              <div class="row">
+                <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg></span>
+                <span class="grow">Other</span>
+              </div>
+            </div>
+          </div>
+          <div class="home-bar"></div>
+        </div>
+      </div>
+      <div class="phone-caption">
+        <div class="num">12</div>
+        <div class="name">Add event · Category picker</div>
+        <div class="desc">Twelve categories, each with a Lucide-style icon. Selected row carries the clay check.</div>
+      </div>
+    </article>
+
+  </div>
+
+  <!-- ====================================================================
+       SECTION 5 · CONFIRMATION & CALCULATION
+       ==================================================================== -->
+  <div class="section">
+    <div>
+      <div class="section-num">Section 05</div>
+      <h2>Confirmation &amp; Calculation</h2>
+    </div>
+    <p>One last quiet review before kicking off. Then a calm, breath-paced loader — same rhythm whether real or demo.</p>
+  </div>
+
+  <div class="grid">
+
+    <!-- 13 · Confirmation Screen -->
+    <article class="phone">
+      <div class="phone-bezel">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="statusbar"><span>9:41</span><span class="right">
+            <svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="6" width="3" height="6" rx="1"/><rect x="5" y="3" width="3" height="9" rx="1"/><rect x="10" y="0" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".4"/></svg>
+            <svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5a10 10 0 0114 0M3.5 7.5a6 6 0 019 0M6 10a3 3 0 014 0"/></svg>
+            <span class="bat"><span class="lvl"></span></span>
+          </span></div>
+
+          <div class="app">
+            <div class="topbar">
+              <div class="iconbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></div>
+              <div class="title">Review</div>
+            </div>
+
+            <div class="pad" style="padding-bottom:130px;">
+              <span class="eyebrow" style="display:inline-block;margin-bottom:8px;">Final check</span>
+              <h1 class="screen-title" style="font-family:var(--f-serif);font-weight:400;font-size:26px;letter-spacing:-.015em;">Ready to calculate.</h1>
+              <p class="screen-sub">We'll use these inputs to triangulate your most probable birth time.</p>
+
+              <div class="review">
+                <div class="row">
+                  <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></span>
+                  <div class="body">
+                    <div class="k">Born on</div>
+                    <div class="v">March 15, 1990</div>
+                  </div>
+                  <span class="edit">Edit</span>
+                </div>
+                <div class="row">
+                  <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 13-9 13s-9-7-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+                  <div class="body">
+                    <div class="k">In</div>
+                    <div class="v">Kyiv, Ukraine <span class="second">50.45°N · 30.52°E</span></div>
+                  </div>
+                  <span class="edit">Edit</span>
+                </div>
+                <div class="row">
+                  <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+                  <div class="body">
+                    <div class="k">Time window</div>
+                    <div class="v">5:00 AM – 9:00 AM <span class="second">± 2 hours from 7:00 AM</span></div>
+                  </div>
+                  <span class="edit">Edit</span>
+                </div>
+                <div class="row">
+                  <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6M9 16h6M9 8h6"/><rect x="4" y="4" width="16" height="16" rx="2"/></svg></span>
+                  <div class="body">
+                    <div class="k">Life events</div>
+                    <div class="v">5 events <span class="second">Marriage · Career · Move · Child · Education</span></div>
+                  </div>
+                  <span class="edit">Edit</span>
+                </div>
+              </div>
+
+              <div style="height:18px;"></div>
+
+              <div class="callout neutral">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+                <div>Your data stays on this device. The calculation request includes only the inputs above — never your name or account.</div>
+              </div>
+            </div>
+
+            <div class="bottom-action solid">
+              <div class="btn primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4L19 6"/></svg>
+                Calculate my birth time
+              </div>
+            </div>
+          </div>
+          <div class="home-bar"></div>
+        </div>
+      </div>
+      <div class="phone-caption">
+        <div class="num">13</div>
+        <div class="name">Review &amp; confirm</div>
+        <div class="desc">Final review before the API call. Each row is editable; privacy is the last reassurance.</div>
+      </div>
+    </article>
+
+    <!-- 14 · Loading Real -->
+    <article class="phone">
+      <div class="phone-bezel">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="statusbar"><span>9:41</span><span class="right">
+            <svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="6" width="3" height="6" rx="1"/><rect x="5" y="3" width="3" height="9" rx="1"/><rect x="10" y="0" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".4"/></svg>
+            <svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5a10 10 0 0114 0M3.5 7.5a6 6 0 019 0M6 10a3 3 0 014 0"/></svg>
+            <span class="bat"><span class="lvl"></span></span>
+          </span></div>
+
+          <div class="app">
+            <div class="loading-stage">
+              <div class="breath-ring"></div>
+              <h2>Calculating your<br>probable birth time…</h2>
+              <div class="step">
+                <span class="meta">Step 2 of 4</span>
+                <strong>Matching life events</strong>
+                <span class="meta">against planetary positions over your window</span>
+              </div>
+              <p class="est">This usually takes under 10 seconds.</p>
+              <div class="btn ghost" style="width:auto;height:auto;padding:8px 14px;">Cancel</div>
+            </div>
+          </div>
+          <div class="home-bar"></div>
+        </div>
+      </div>
+      <div class="phone-caption">
+        <div class="num">14</div>
+        <div class="name">Calculating (real)</div>
+        <div class="desc">Breath-paced ring. Rotating step copy. Cancel as quiet ghost link — never a panic button.</div>
+      </div>
+    </article>
+
+    <!-- 15 · Loading Demo -->
+    <article class="phone">
+      <div class="phone-bezel">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="statusbar"><span>9:41</span><span class="right">
+            <svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="6" width="3" height="6" rx="1"/><rect x="5" y="3" width="3" height="9" rx="1"/><rect x="10" y="0" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".4"/></svg>
+            <svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5a10 10 0 0114 0M3.5 7.5a6 6 0 019 0M6 10a3 3 0 014 0"/></svg>
+            <span class="bat"><span class="lvl"></span></span>
+          </span></div>
+
+          <div class="app">
+            <div style="position:absolute;top:14px;left:0;right:0;display:flex;justify-content:center;">
+              <span class="pill demo"><span class="dot"></span>Demo</span>
+            </div>
+            <div class="loading-stage" style="padding-top:30px;">
+              <div class="breath-ring"></div>
+              <h2>Running a sample<br>calculation…</h2>
+              <div class="step">
+                <span class="meta">Demo mode</span>
+                <strong>Using a pre-built sample dataset</strong>
+                <span class="meta">No data is sent to any server</span>
+              </div>
+              <p class="est">A real calculation uses your own data.</p>
+              <div class="btn ghost" style="width:auto;height:auto;padding:8px 14px;">Cancel</div>
+            </div>
+          </div>
+          <div class="home-bar"></div>
+        </div>
+      </div>
+      <div class="phone-caption">
+        <div class="num">15</div>
+        <div class="name">Calculating (demo)</div>
+        <div class="desc">Same rhythm. The DEMO pill is the only visual change — design intent: same trust, no surprises.</div>
+      </div>
+    </article>
+
+  </div>
+
+  <!-- ====================================================================
+       SECTION 6 · RESULT & EVIDENCE
+       ==================================================================== -->
+  <div class="section">
+    <div>
+      <div class="section-num">Section 06</div>
+      <h2>Result &amp; Evidence</h2>
+    </div>
+    <p>The hero moment. A single legible time, a confidence number, two secondary candidates — then the evidence behind it.</p>
+  </div>
+
+  <div class="grid">
+
+    <!-- 16 · Result Screen -->
+    <article class="phone">
+      <div class="phone-bezel">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="statusbar"><span>9:41</span><span class="right">
+            <svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="6" width="3" height="6" rx="1"/><rect x="5" y="3" width="3" height="9" rx="1"/><rect x="10" y="0" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".4"/></svg>
+            <svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5a10 10 0 0114 0M3.5 7.5a6 6 0 019 0M6 10a3 3 0 014 0"/></svg>
+            <span class="bat"><span class="lvl"></span></span>
+          </span></div>
+
+          <div class="app">
+            <div class="topbar">
+              <div class="iconbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></div>
+              <div class="title">Result</div>
+              <div class="right">
+                <div class="iconbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></div>
+              </div>
+            </div>
+
+            <div class="pad" style="padding-bottom:30px;">
+              <div class="hero-result">
+                <div class="eyebrow-dark">Your most probable birth time</div>
+                <div class="time">7:14 <span class="ampm">AM</span></div>
+                <div class="sign">
+                  Gemini Rising
+                  <span class="glyph">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6v12M17 6v12M5 6h4M5 18h4M15 6h4M15 18h4"/></svg>
+                  </span>
+                </div>
+              </div>
+
+              <div class="confidence">
+                <span class="label">Confidence</span>
+                <div class="track"><div class="fill high" style="width:78%"></div></div>
+                <span class="pct">78%</span>
+              </div>
+
+              <div style="margin-top:32px;display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;">
+                <h2 class="section-title" style="margin:0;">Other candidates</h2>
+                <span style="font-size:12px;color:var(--ink-soft);">Lower confidence</span>
+              </div>
+
+              <div class="candidate">
+                <div class="top">
+                  <span class="time">7:42<span class="ampm">AM</span></span>
+                  <span class="sign">
+                    <span class="glyph"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 8c2 0 4 2 4 4s-2 4-4 4M9 12h10M19 12c0 2-2 4-4 4"/></svg></span>
+                    Cancer Rising
+                  </span>
+                </div>
+                <div class="conf">
+                  <div class="track"><div class="fill" style="width:61%;background:var(--conf-moderate);"></div></div>
+                  <span class="pct">61%</span>
+                </div>
+              </div>
+
+              <div class="candidate">
+                <div class="top">
+                  <span class="time">8:03<span class="ampm">AM</span></span>
+                  <span class="sign">
+                    <span class="glyph"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 8c2 0 4 2 4 4s-2 4-4 4M9 12h10M19 12c0 2-2 4-4 4"/></svg></span>
+                    Cancer Rising
+                  </span>
+                </div>
+                <div class="conf">
+                  <div class="track"><div class="fill" style="width:44%;background:var(--conf-weak);"></div></div>
+                  <span class="pct">44%</span>
+                </div>
+              </div>
+
+              <div style="height: 24px;"></div>
+
+              <div class="btn-row">
+                <div class="btn primary">
+                  See how we got this
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
+                </div>
+                <div class="btn secondary">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+                  Save to history
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="home-bar"></div>
+        </div>
+      </div>
+      <div class="phone-caption">
+        <div class="num">16</div>
+        <div class="name">Result</div>
+        <div class="desc">The one moment the product slows down. Serif + mono numerals on a deep midnight card.</div>
+      </div>
+    </article>
+
+    <!-- 17 · Evidence Breakdown -->
+    <article class="phone">
+      <div class="phone-bezel">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="statusbar"><span>9:41</span><span class="right">
+            <svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="6" width="3" height="6" rx="1"/><rect x="5" y="3" width="3" height="9" rx="1"/><rect x="10" y="0" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".4"/></svg>
+            <svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5a10 10 0 0114 0M3.5 7.5a6 6 0 019 0M6 10a3 3 0 014 0"/></svg>
+            <span class="bat"><span class="lvl"></span></span>
+          </span></div>
+
+          <div class="app">
+            <div class="topbar">
+              <div class="iconbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></div>
+              <div class="title">Evidence</div>
+            </div>
+
+            <div class="pad" style="padding-bottom:30px;">
+              <div class="summary">
+                <p class="figure">Why <strong>7:14 AM</strong>?</p>
+                <p>4 of 5 events strongly supported this time. Below: what each event matched and how strongly.</p>
+              </div>
+
+              <div class="evidence strong">
+                <div class="top">
+                  <div class="ev-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.5-7-11a4 4 0 017-2.6A4 4 0 0119 10c0 6.5-7 11-7 11z"/></svg></div>
+                  <div style="flex:1;">
+                    <div class="ev-cat">Marriage</div>
+                    <div class="ev-date">June 2018</div>
+                  </div>
+                  <div class="strength-row">
+                    <span class="dots"><span class="d on"></span><span class="d on"></span><span class="d on"></span><span class="d"></span></span>
+                    <span class="strong-label">Strong</span>
+                  </div>
+                </div>
+                <p class="explain"><em>Venus</em> crossed the cusp of your 7th house in June 2018 — a classic transit timing for marriage in Western astrology, and the strongest single match for this candidate time.</p>
+              </div>
+
+              <div class="evidence moderate">
+                <div class="top">
+                  <div class="ev-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V4h6v3"/></svg></div>
+                  <div style="flex:1;">
+                    <div class="ev-cat">Career change</div>
+                    <div class="ev-date">September 2015</div>
+                  </div>
+                  <div class="strength-row">
+                    <span class="dots"><span class="d on"></span><span class="d on"></span><span class="d"></span><span class="d"></span></span>
+                    <span class="strong-label">Moderate</span>
+                  </div>
+                </div>
+                <p class="explain">A <em>Saturn</em> transit over your 10th house in 2015 aligns with significant career shifts. Match is moderate because the transit window is wide.</p>
+              </div>
+
+              <div class="evidence strong">
+                <div class="top">
+                  <div class="ev-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8v10a1 1 0 01-1 1h-5v-7h-6v7H4a1 1 0 01-1-1V11z"/></svg></div>
+                  <div style="flex:1;">
+                    <div class="ev-cat">Relocation</div>
+                    <div class="ev-date">March 2012</div>
+                  </div>
+                  <div class="strength-row">
+                    <span class="dots"><span class="d on"></span><span class="d on"></span><span class="d on"></span><span class="d"></span></span>
+                    <span class="strong-label">Strong</span>
+                  </div>
+                </div>
+                <p class="explain" style="display:flex;justify-content:space-between;align-items:center;">
+                  Tap to read the full explanation.
+                  <span class="chevron"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span>
+                </p>
+              </div>
+
+              <div class="evidence weak">
+                <div class="top">
+                  <div class="ev-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12c0-2 1-4 3-4s3 2 3 4-1 4-3 4-3-2-3-4z"/><path d="M3 21v-2a4 4 0 014-4h10a4 4 0 014 4v2"/></svg></div>
+                  <div style="flex:1;">
+                    <div class="ev-cat">Birth of child</div>
+                    <div class="ev-date">November 2020</div>
+                  </div>
+                  <div class="strength-row">
+                    <span class="dots"><span class="d on"></span><span class="d"></span><span class="d"></span><span class="d"></span></span>
+                    <span class="strong-label">Weak</span>
+                  </div>
+                </div>
+                <p class="explain" style="display:flex;justify-content:space-between;align-items:center;">
+                  Tap to read the full explanation.
+                  <span class="chevron"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span>
+                </p>
+              </div>
+
+              <div class="evidence none">
+                <div class="top">
+                  <div class="ev-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/></svg></div>
+                  <div style="flex:1;">
+                    <div class="ev-cat">Education</div>
+                    <div class="ev-date">June 2008</div>
+                  </div>
+                  <div class="strength-row">
+                    <span class="dots"><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span></span>
+                    <span class="strong-label">No match</span>
+                  </div>
+                </div>
+                <p class="explain" style="color:var(--ink-muted);">This event didn't strengthen any candidate time. That's normal — some events are too brief or general to leave a clear astrological signature.</p>
+              </div>
+            </div>
+          </div>
+          <div class="home-bar"></div>
+        </div>
+      </div>
+      <div class="phone-caption">
+        <div class="num">17</div>
+        <div class="name">Evidence breakdown</div>
+        <div class="desc">The trust screen. Match strength as 4-dot + label + paragraph. "No match" events are shown, not hidden.</div>
+      </div>
+    </article>
+
+  </div>
+
+  <!-- ====================================================================
+       SECTION 7 · SETTINGS & EDGE STATES
+       ==================================================================== -->
+  <div class="section">
+    <div>
+      <div class="section-num">Section 07</div>
+      <h2>Settings &amp; Edge States</h2>
+    </div>
+    <p>Settings is plumbing — quiet, scannable, no surprises. Errors must be calm and recoverable.</p>
+  </div>
+
+  <div class="grid">
+
+    <!-- 18 · Settings -->
+    <article class="phone">
+      <div class="phone-bezel">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="statusbar"><span>9:41</span><span class="right">
+            <svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="6" width="3" height="6" rx="1"/><rect x="5" y="3" width="3" height="9" rx="1"/><rect x="10" y="0" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".4"/></svg>
+            <svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5a10 10 0 0114 0M3.5 7.5a6 6 0 019 0M6 10a3 3 0 014 0"/></svg>
+            <span class="bat"><span class="lvl"></span></span>
+          </span></div>
+
+          <div class="app">
+            <div class="topbar">
+              <div class="iconbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></div>
+              <div class="title">Settings</div>
+            </div>
+
+            <div class="pad" style="padding-bottom:30px;">
+              <div class="setting-section-head">Preferences</div>
+              <div class="setting-group">
+                <div class="setting-row">
+                  <div class="grow">
+                    <div class="name">Demo mode</div>
+                    <div class="sub">Run calculations against sample data, no internet required.</div>
+                  </div>
+                  <div class="switch"></div>
+                </div>
+                <div class="setting-row">
+                  <div class="grow">
+                    <div class="name">Time format</div>
+                    <div class="sub">7:14 AM vs. 07:14</div>
+                  </div>
+                  <div class="val">12-hour</div>
+                  <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span>
+                </div>
+              </div>
+
+              <div class="setting-section-head">Pro / Developer</div>
+              <div class="setting-group">
+                <div class="setting-row">
+                  <div class="grow">
+                    <div class="name">API key</div>
+                    <div class="sub">Optional. Only for users with their own astrology-api.io key. Leave blank for the standard proxied path.</div>
+                  </div>
+                  <div class="val">Not set</div>
+                  <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span>
+                </div>
+              </div>
+
+              <div class="setting-section-head">Data</div>
+              <div class="setting-group">
+                <div class="setting-row">
+                  <div class="grow">
+                    <div class="name">Privacy policy</div>
+                    <div class="sub">How we handle your birth data and life events.</div>
+                  </div>
+                  <span class="chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span>
+                </div>
+                <div class="setting-row">
+                  <div class="grow">
+                    <div class="name" style="color:var(--danger);">Delete all data</div>
+                    <div class="sub">Removes all calculations and events from this device. Cannot be undone.</div>
+                  </div>
+                  <span class="chev" style="color:var(--danger);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span>
+                </div>
+              </div>
+
+              <div style="text-align:center;color:var(--ink-soft);font-size:12px;padding:18px 0;">
+                <div style="font-family:var(--f-serif);font-size:14px;color:var(--ink-muted);margin-bottom:4px;">Rectify</div>
+                <div>Version 0.1.0 — MVP build</div>
+              </div>
+            </div>
+          </div>
+          <div class="home-bar"></div>
+        </div>
+      </div>
+      <div class="phone-caption">
+        <div class="num">18</div>
+        <div class="name">Settings</div>
+        <div class="desc">Grouped list, plain language. API key is buried as the "Pro / Developer" override — not a feature.</div>
+      </div>
+    </article>
+
+    <!-- 19 · Error state -->
+    <article class="phone">
+      <div class="phone-bezel">
+        <div class="phone-screen">
+          <div class="island"></div>
+          <div class="statusbar"><span>9:41</span><span class="right">
+            <svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="6" width="3" height="6" rx="1"/><rect x="5" y="3" width="3" height="9" rx="1"/><rect x="10" y="0" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".4"/></svg>
+            <svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5a10 10 0 0114 0M3.5 7.5a6 6 0 019 0M6 10a3 3 0 014 0"/></svg>
+            <span class="bat"><span class="lvl"></span></span>
+          </span></div>
+
+          <div class="app">
+            <div class="topbar">
+              <div class="iconbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></div>
+              <div class="title">Calculation</div>
+            </div>
+
+            <div class="error-stage">
+              <div class="glyph">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+              </div>
+              <h2>The calculation is taking longer than usual.</h2>
+              <p>The request timed out after 30 seconds. This can happen on a slow network — your inputs are still here, ready to retry.</p>
+
+              <div class="reassure">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4L19 6"/></svg>
+                Your inputs have been saved as a draft.
+              </div>
+
+              <div style="padding:0 32px;">
+                <div class="btn-row">
+                  <div class="btn primary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+                    Try again
+                  </div>
+                  <div class="btn secondary">Save and retry later</div>
+                </div>
+              </div>
+
+              <div style="margin-top:32px;color:var(--ink-soft);font-size:12px;">
+                Error code <code style="font-family:var(--f-mono);color:var(--ink-muted);">TIMEOUT_30S</code>
+              </div>
+            </div>
+          </div>
+          <div class="home-bar"></div>
+        </div>
+      </div>
+      <div class="phone-caption">
+        <div class="num">19</div>
+        <div class="name">Error · Timeout</div>
+        <div class="desc">No "Oops". Calm sentence, one reassurance, two ways forward. Error code is small and last.</div>
+      </div>
+    </article>
+
+  </div>
+
+  <!-- ====================================================================
+       FOOTER
+       ==================================================================== -->
+  <footer class="doc-footer">
+    <p>This HTML is a static visual prototype, not a built app. It exists to show the visual language and screen rhythm of the Rectify MVP before Flutter implementation begins. All copy, dates, and confidence values are realistic but illustrative.</p>
+    <p style="text-align:right;">
+      <strong style="color:var(--ink-body);">/docs/design-brief.md</strong><br>
+      <strong style="color:var(--ink-body);">/docs/design-system.md</strong><br>
+      <strong style="color:var(--ink-body);">/docs/ascii-wireframes.md</strong>
+    </p>
+  </footer>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,29 @@
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+  errors:
+    invalid_annotation_target: ignore
+    # `SemanticsNode.hasFlag(SemanticsFlag.X)` was deprecated in
+    # 3.32-0.0.pre in favour of `flagsCollection.<field>`. The new
+    # API exposes tri-state fields (e.g. `flagsCollection.isEnabled`
+    # returns `Tristate`, not `bool`), so the migration in widget
+    # tests is non-trivial. Suppress the info-level deprecation
+    # here until Flutter ships a bool-flavoured accessor or until
+    # we migrate every assertion file by file.
+    deprecated_member_use: ignore
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "**/*.gr.dart"
+    - "lib/generated/**"
+    - "build/**"
+
+linter:
+  rules:
+    public_member_api_docs: false
+    one_member_abstracts: false
+    sort_pub_dependencies: false
