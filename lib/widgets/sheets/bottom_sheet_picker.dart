@@ -75,46 +75,70 @@ class BottomSheetPicker<T> extends StatelessWidget {
           ),
           child: SafeArea(
             top: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s6,
-                AppSpacing.s4,
-                AppSpacing.s6,
-                AppSpacing.s7,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.sizeOf(context).height * 0.75,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  if (showDragHandle)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: AppSpacing.s2),
-                      child: Center(
-                        child: Container(
-                          width: 36,
-                          height: 4,
-                          decoration: BoxDecoration(
-                            color: AppColors.inkLine,
-                            borderRadius: BorderRadius.circular(2),
+                  // Pinned header: drag handle + title
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.s6,
+                      AppSpacing.s4,
+                      AppSpacing.s6,
+                      AppSpacing.s2,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        if (showDragHandle)
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: AppSpacing.s2,
+                            ),
+                            child: Center(
+                              child: Container(
+                                width: 36,
+                                height: 4,
+                                decoration: BoxDecoration(
+                                  color: AppColors.inkLine,
+                                  borderRadius: BorderRadius.circular(2),
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
+                        Text(title, style: AppTypography.titleMd),
+                      ],
+                    ),
+                  ),
+                  // Scrollable options — shrinks for short lists,
+                  // scrolls within the remaining space for long ones.
+                  Flexible(
+                    child: ListView.separated(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.s6,
+                        0,
+                        AppSpacing.s6,
+                        AppSpacing.s7,
                       ),
-                    ),
-                  Text(title, style: AppTypography.titleMd),
-                  const SizedBox(height: AppSpacing.s2),
-                  for (var i = 0; i < options.length; i++) ...<Widget>[
-                    _Row<T>(
-                      option: options[i],
-                      selected: options[i].value == value,
-                      onTap: () => onSelected(options[i].value),
-                    ),
-                    if (i < options.length - 1)
-                      const Divider(
+                      shrinkWrap: true,
+                      itemCount: options.length,
+                      separatorBuilder: (_, _) => const Divider(
                         height: 1,
                         thickness: 1,
                         color: AppColors.inkLineSoft,
                       ),
-                  ],
+                      itemBuilder: (_, i) => _Row<T>(
+                        option: options[i],
+                        selected: options[i].value == value,
+                        onTap: () => onSelected(options[i].value),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

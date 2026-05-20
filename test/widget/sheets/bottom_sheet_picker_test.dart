@@ -7,6 +7,23 @@ import 'package:rectify/widgets/sheets/bottom_sheet_picker.dart';
 
 import '../../helpers/widget_test_harness.dart';
 
+// 14 month options used by the overflow / scroll tests.
+const _monthOptions = <BottomSheetOption<String>>[
+  BottomSheetOption(value: 'none', label: 'No month'),
+  BottomSheetOption(value: '1', label: 'January'),
+  BottomSheetOption(value: '2', label: 'February'),
+  BottomSheetOption(value: '3', label: 'March'),
+  BottomSheetOption(value: '4', label: 'April'),
+  BottomSheetOption(value: '5', label: 'May'),
+  BottomSheetOption(value: '6', label: 'June'),
+  BottomSheetOption(value: '7', label: 'July'),
+  BottomSheetOption(value: '8', label: 'August'),
+  BottomSheetOption(value: '9', label: 'September'),
+  BottomSheetOption(value: '10', label: 'October'),
+  BottomSheetOption(value: '11', label: 'November'),
+  BottomSheetOption(value: '12', label: 'December'),
+];
+
 void main() {
   group('BottomSheetPicker (embedded)', () {
     testWidgets('renders title and option list with current selection', (
@@ -61,6 +78,88 @@ void main() {
       final unselectedSemantics = tester.getSemantics(find.text('Narrow'));
       expect(unselectedSemantics.hasFlag(SemanticsFlag.isSelected), isFalse);
     });
+
+    testWidgets(
+      'long list (13 items) inside a small viewport does not overflow',
+      (tester) async {
+        // Simulate a constrained bottom-sheet height on a small iPhone.
+        await pumpRectifyWidget(
+          tester,
+          SizedBox(
+            width: 375,
+            height: 400,
+            child: BottomSheetPicker<String>(
+              title: 'Month',
+              options: _monthOptions,
+              value: 'none',
+              onSelected: (_) {},
+            ),
+          ),
+          size: const Size(375, 667),
+        );
+
+        // A render overflow would have thrown a FlutterError by now.
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets(
+      'long list bottom items are accessible via scroll',
+      (tester) async {
+        await pumpRectifyWidget(
+          tester,
+          SizedBox(
+            width: 375,
+            height: 400,
+            child: BottomSheetPicker<String>(
+              title: 'Month',
+              options: _monthOptions,
+              value: 'none',
+              onSelected: (_) {},
+            ),
+          ),
+          size: const Size(375, 667),
+        );
+
+        // 'December' is the last item and is off-screen at initial render.
+        await tester.scrollUntilVisible(
+          find.text('December'),
+          56,
+          scrollable: find.byType(Scrollable).last,
+        );
+
+        expect(find.text('December'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'selected item in long list shows checkmark',
+      (tester) async {
+        await pumpRectifyWidget(
+          tester,
+          SizedBox(
+            width: 375,
+            height: 400,
+            child: BottomSheetPicker<String>(
+              title: 'Month',
+              options: _monthOptions,
+              value: '12', // December
+              onSelected: (_) {},
+            ),
+          ),
+          size: const Size(375, 667),
+        );
+
+        // Scroll to the selected item.
+        await tester.scrollUntilVisible(
+          find.byIcon(AppIcons.check),
+          56,
+          scrollable: find.byType(Scrollable).last,
+        );
+
+        expect(find.byIcon(AppIcons.check), findsOneWidget);
+      },
+    );
   });
 
   group('BottomSheetPicker.show', () {
