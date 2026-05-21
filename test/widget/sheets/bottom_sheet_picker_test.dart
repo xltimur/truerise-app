@@ -160,6 +160,47 @@ void main() {
         expect(find.byIcon(AppIcons.check), findsOneWidget);
       },
     );
+
+    testWidgets(
+      'a year-length list (126 items) does not overflow on an '
+      'iPhone 17 viewport',
+      (tester) async {
+        // Mirrors the Add-event year picker (2025 → 1900) — the list
+        // that produced the ~6800 px RenderFlex overflow before the
+        // options were moved into a scrollable Flexible(ListView).
+        final years = <BottomSheetOption<int>>[
+          for (var year = 2025; year >= 1900; year--)
+            BottomSheetOption<int>(value: year, label: '$year'),
+        ];
+        await pumpRectifyWidget(
+          tester,
+          SizedBox(
+            width: 402,
+            height: 420,
+            child: BottomSheetPicker<int>(
+              title: 'Year',
+              options: years,
+              value: 1990,
+              onSelected: (_) {},
+            ),
+          ),
+          size: const Size(402, 874),
+        );
+
+        // A render overflow would have thrown a FlutterError by now.
+        expect(tester.takeException(), isNull);
+
+        // The list scrolls: dragging past the top de-renders 2025 and
+        // brings earlier years into view — still with no overflow.
+        await tester.drag(
+          find.byType(Scrollable).last,
+          const Offset(0, -2000),
+        );
+        await tester.pump();
+        expect(tester.takeException(), isNull);
+        expect(find.text('2025'), findsNothing);
+      },
+    );
   });
 
   group('BottomSheetPicker.show', () {

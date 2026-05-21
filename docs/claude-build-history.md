@@ -2707,3 +2707,521 @@ New entries should be added below this line, newest last.
   9. **Real provider schema** — open from Phase 6.
   10. **Editable life-event description on the
       events screen** — open from Phase 4.
+
+---
+
+## Stage: Live API Integration — astrology-api.io v3
+
+**Date:** 2026-05-20  
+**Branch:** main (uncommitted — per task instructions)
+
+### What was done
+
+Connected the app to the real astrology-api.io v3 rectification endpoint
+(`POST /api/v3/rectification/search`) for provider-direct mode (user-owned
+API key stored in flutter_secure_storage).
+
+### Changed files
+
+| File | Change |
+|---|---|
+| `lib/providers/core_providers.dart` | Added `providerBaseUrl` + `providerPath` to `RectifyBuildConfig`; `dioProvider` and `rectificationApiProvider` now switch base URL and path based on auth mode |
+| `lib/data/api/dto/rectification_request_dto.dart` | Replaced proxy-era DTOs with v3 schema: `RectificationSearchRequestDto`, `SubjectDto`, `BirthDataV3Dto`, `TimeSearchDto`, `EventV3Dto` |
+| `lib/data/api/dto/rectification_response_dto.dart` | Replaced with v3 schema: `RectificationSearchResponseDto`, `CandidateV3Dto`, `EvidenceV3Dto`, `SummaryV3Dto` |
+| `lib/data/api/mappers.dart` | Full rewrite for v3 DTOs; event date format logic (YYYY-MM-DD / YYYY-MM / YYYY); category mapping table; approximate vs unknown time_search |
+| `lib/data/api/rectification_api.dart` | Updated to use new DTO types; default path now `/api/v3/rectification/search` |
+| `lib/core/failures.dart` | Added `MissingApiKeyFailure` |
+| `lib/features/error_flow/error_routing.dart` | Added `MissingApiKeyFailure` → `unauthorized` screen mapping |
+| `lib/data/repos/rectification_repository.dart` | Added `apiKeyIsConfigured` param; early `MissingApiKeyFailure` return when no key + non-demo mode |
+| `lib/providers/repo_providers.dart` | Wires `proApiKeyProvider` → `apiKeyIsConfigured` in repo |
+| `.env.example` | Added `RECTIFY_PROVIDER_BASE_URL` + `RECTIFY_PROVIDER_PATH` |
+| `README.md` | Added live mode instructions section; updated `--dart-define` table |
+| `docs/api-integration.md` | **New** — full endpoint reference, auth, payload, response, category mapping, local verification |
+| `test/data/api/mappers_test.dart` | Rewritten for v3 DTOs; 15 tests |
+| `test/data/api/rectification_api_test.dart` | Rewritten for v3 shapes; default path now v3 |
+| `test/data/repos/rectification_repository_test.dart` | Added no-key guard tests; updated to v3 response shape |
+
+### Verification
+
+- `dart run build_runner build` — succeeded (241 outputs written)
+- `flutter analyze` — No issues found
+- `flutter test test/data/api test/data/repos test/features/calculation_flow test/widget/features/settings` — **62/62 passed**
+- `flutter test` (full suite) — **194/194 passed**
+- Secret audit: no real API keys in diff; `secret-key-xyz` in test is a fixture string; `.env` gitignored + absent
+
+### Known limitations / follow-up
+
+- Event category mapping table (`_providerCategoryMap` in `mappers.dart`) uses tags that match common API conventions. **Must be verified** against the full live OpenAPI spec at https://api.astrology-api.io/rapidoc before production release (the full spec was not machine-readable at the time of this stage).
+- Response DTO field names (`birth_time`, `event_id`, `match_strength`, `calculation_id`) are inferred from the spec description. A curl dry-run with a real key should confirm the exact field names.
+- No git commit / push was made per task instructions.
+
+---
+
+## Stage: Live API Integration QA/Fix — astrology-api.io v3 schema alignment
+
+**Date:** 2026-05-20
+**Branch:** main (uncommitted — per task instructions)
+
+### Why this stage exists
+
+The prior "Live API Integration" entry flagged two follow-ups: verifying
+the event-category enum and confirming response field names. Both
+items resolved in this stage by reading the actual OpenAPI spec
+(`https://api.astrology-api.io/api/v3/openapi.json`) — the previous
+WebFetch summarizer had returned "no rectification endpoints found", so
+the spec was assumed unavailable; reading the raw 2.1 MB JSON revealed
+both endpoints (`/api/v3/rectification/search` and
+`/api/v3/rectification/glossary/event-categories`) with full schemas.
+
+The discovered shape diverges from the previously inferred DTOs in
+ways that would have caused **every real-mode submission to fail with
+`MalformedResponseFailure`**, plus a silent bug where the approximate
+time anchor was always 00:00 instead of the user's input.
+
+### What was fixed
+
+**Request** (`lib/data/api/dto/rectification_request_dto.dart`,
+`lib/data/api/mappers.dart`):
+
+- `subject.birth_data.hour` / `minute` now carry the user's
+  approximate time. The provider uses these as the center of
+  `time_search.delta_minutes`; sending 00:00 silently re-anchored the
+  search to midnight.
+- Removed `EventV3Dto.id` — the provider's `EventInput` schema has no
+  `id` field. Events are correlated to scores via array position
+  (`event_scores[].event_index`), and the mapper restores the domain
+  `LifeEvent.id` from that index.
+- Approximate `step_minutes` stays at 2 (provider default is 4); kept
+  the existing finer-grain resolution.
+
+**Response** (`lib/data/api/dto/rectification_response_dto.dart`,
+`lib/data/api/mappers.dart`):
+
+- `CandidateV3Dto` rewritten to match `CandidateResult`: `time` (was
+  `birth_time`), `aggregate_score` + `normalized_score` (was a
+  pre-normalized `confidence`), `grade` (WindowGrade), `event_scores`
+  (was a top-level `evidence` list), `events_strongly_correlated`,
+  `excluded` / `excluded_reason` / `error`, `anchor_grade`, and `chart`
+  carried as a raw `Map<String, dynamic>?` for lazy ascendant
+  extraction.
+- New `EventScoreDto` (per-event scoring inside each candidate).
+- `SummaryV3Dto` rewritten to `SearchSummary`: nested
+  `ConfidenceAssessmentDto`, `peak_time`, `techniques_used`,
+  `step_minutes`, etc. No `calculation_id` / `method` — those fields
+  don't exist in v3.
+- New optional top-level `computed_at`.
+- `RectificationSearchResponseDto.evidence` removed (per-candidate now).
+- Optional fields use `@Default(...)` so a partial / additive provider
+  change doesn't take the whole response down with a
+  `MalformedResponseFailure`.
+
+**Mapper** (`lib/data/api/mappers.dart`):
+
+- `responseToResult` now accepts `requestEvents` (passed from the
+  repository) to translate `event_scores[].event_index` back into the
+  user's `LifeEvent.id`.
+- Domain confidence (0..1) ← `candidate.normalized_score / 100`.
+- Domain ascendant ← `chart.planetary_positions[name="Ascendant"].sign`,
+  fallback `chart.house_cusps[house=1].sign`; sign abbreviations
+  ("Gem", "Lib") expanded to full words ("Gemini", "Libra").
+- Domain evidence built from the rank-1 (non-excluded, non-errored)
+  candidate's `event_scores`.
+- `MatchStrength` bucketed from `total_score` against the candidate's
+  local maximum (≥0.7 strong, ≥0.4 moderate, >0 weak, 0 none) — the
+  provider's theoretical-max-per-category is not surfaced in the
+  response, so the local-max heuristic stands in.
+- `method` set to `summary.techniques_used.join('+')`;
+  `apiCalculationId` permanently null (no source field in v3).
+
+**Repository** (`lib/data/repos/rectification_repository.dart`):
+
+- Passes `request.events` to `responseToResult` so the mapper can map
+  `event_index` → `LifeEvent.id`.
+
+**Docs** (`docs/api-integration.md`):
+
+- Rewritten to reflect the actual v3 schemas (request / response /
+  category mapping). Cleared the "must be verified" caveat from the
+  previous stage.
+
+**Tests**:
+
+- `test/data/api/mappers_test.dart` — rewritten for the new shapes
+  (anchor time, no `id`, normalized_score, ascendant extraction,
+  bucket boundaries, event_index → id mapping, excluded candidate
+  skipped for evidence).
+- `test/data/api/rectification_api_test.dart` — updated fixture
+  response JSON to real v3 shape; updated assertions
+  (`summary.confidence.level` instead of `summary.calculationId`).
+- `test/data/repos/rectification_repository_test.dart` — canned
+  response updated to the new shape (event_scores instead of
+  top-level evidence; chart with ascendant body).
+
+### Demo / no-key paths
+
+- Demo path untouched. `LiveRectificationRepository.submit(isDemo=true)`
+  short-circuits before any DTO conversion; no schema dependency.
+- `MissingApiKeyFailure` still returned before any HTTP call when the
+  user hasn't entered a key — routes to the existing
+  `ErrorScreenKind.unauthorized` screen (Settings deep-link), not a
+  generic network error.
+
+### Verification
+
+- `dart run build_runner build` — succeeded (100 outputs written;
+  freezed + json_serializable regenerated cleanly).
+- `flutter analyze` — **No issues found**.
+- `flutter test test/data/api test/data/repos` — **57/57 passed**.
+- `flutter test` (full suite) — **206/206 passed** (previous stage
+  reported 194; the delta is the 12 new mapper/response tests).
+- Secret audit: `git diff` scanned for `api[_-]?key.*[:=]`, `bearer\s+[A-Za-z0-9]`,
+  `secret\s*[:=]`, `sk-[A-Za-z0-9]`, `token\s*[:=]` — only legitimate code
+  identifiers (`apiKeyIsConfigured`, `MissingApiKeyFailure`, the test
+  fixture strings `pro-user-supplied-secret` and `secret-key-xyz`) and
+  documentation references. No real keys in tracked files. `.env`
+  remains untracked.
+
+### Known limitations / follow-up
+
+- `MatchStrength` bucketing uses the candidate's local max as the
+  reference because the provider's theoretical-max-per-category isn't
+  in the response. The provider does surface
+  `events_strongly_correlated` (count of events at ≥70% of the
+  category-specific max) which could replace this heuristic in a
+  later pass.
+- Six provider categories (`career_promotion`, `surgery`,
+  `relationship_start`, `relationship_end`, `financial_loss`,
+  `spiritual`) aren't represented in the domain `EventCategory` enum.
+  Adding them is a domain change (Drift migration of stored events),
+  out of scope for this QA fix.
+- No git commit / push was made per task instructions.
+
+## Stage: Demo APK with bundled .env API key — 2026-05-20
+
+Owner requested a self-contained review build: APK that boots with a
+working live ASTRO_API_KEY without the reviewer having to paste it into
+the in-app Settings sheet. Old security boundary (key only in
+`flutter_secure_storage`, never on disk) is relaxed for this demo build
+only — Settings entry still wins when present.
+
+### Files added / changed
+
+- `pubspec.yaml` — added `flutter_dotenv: ^5.2.1`; declared `.env`
+  under `flutter.assets:` so it ships inside the APK.
+- `lib/main.dart` — calls `await dotenv.load()` inside a try/catch
+  before `runApp`. Missing `.env` is tolerated (tests, stripped builds
+  still run).
+- `lib/providers/core_providers.dart` — new `envApiKeyProvider`
+  exposes `dotenv.env['ASTRO_API_KEY']`. `proApiKeyProvider` now
+  returns secure-storage key when non-empty, otherwise falls back to
+  the env value. Proxy mode unchanged when both are absent.
+- `lib/data/api/rectification_api.dart` — added `_unwrapEnvelope` so
+  `HttpRectificationApi.rectify` peels the `{success, data, metadata}`
+  wrapper returned by the live v3 endpoint before handing the inner
+  body to the DTO parser. Bare-shape bodies (used by existing fake
+  adapter tests) pass through unchanged.
+- `test/data/api/rectification_api_test.dart` — added one test that
+  feeds the enveloped wire shape through `HttpRectificationApi` and
+  asserts the DTO parses cleanly and `rawJson` keeps the envelope.
+- `docs/api-integration.md` — response payload section updated to
+  show the actual wire envelope (`success` / `data` / `metadata`).
+- `.gitignore` — replaced blanket `.env` / `.env.*` ignore with
+  variant-only patterns (`.env.local`, `.env.dev`, `.env.staging`,
+  `.env.prod`, `.env.*.local`) so the base `.env` is tracked.
+- `.env.example` — rewritten preamble: documents that `.env` IS
+  bundled, lists override hierarchy, calls out the binary-recovery
+  caveat. Added `ASTRO_API_KEY=` slot.
+- `README.md` — Live mode section now describes both override
+  sources; environment configuration section updated to mention
+  `flutter_dotenv`; GitHub-setup secret-tracking check no longer
+  flags `.env`.
+- `.env` (NEW, tracked) — holds the real ASTRO_API_KEY for the
+  demo build. Not echoed in chat / commits.
+- `release/truerise-app-demo.apk` (NEW, tracked) — built artifact.
+
+### Live smoke test (1 paid request)
+
+- `GET /api/v3/rectification/glossary/event-categories` — HTTP 200,
+  0.55s, 0 credits — auth verified.
+- `POST /api/v3/rectification/search` with synthetic non-personal
+  payload (London, 1990-01-01 12:00, single `education` event 2015,
+  ±30min delta) — HTTP 200, 1.6s, ~90KB body, 15 credits used.
+- Response fed through `RectificationSearchResponseDto.fromJson` +
+  `responseToResult` mapper via a throwaway `tool/live_smoke_check.dart`
+  (deleted after) — 10 candidates parsed, top time 11:50, ascendant
+  Aries, evidence item correctly linked back to the domain event id.
+  Caught the envelope mismatch — the bug fix is the
+  `_unwrapEnvelope` helper above.
+
+### Verification
+
+- `flutter pub get` — clean (one new package added: `flutter_dotenv`).
+- `flutter analyze` — **No issues found**.
+- `flutter test` (full suite) — **208/208 passed** (was 207; +1 for
+  the new envelope test).
+- `flutter build apk --release` — built
+  `build/app/outputs/flutter-apk/app-release.apk` (62.9 MB) signed
+  with debug keys, copied to `release/truerise-app-demo.apk`.
+- `git status` — `.env`, `release/`, and `docs/api-integration.md`
+  show as untracked (`??`) — git sees them and they are NOT ignored.
+  No `git add` / `git commit` / `git push` was run.
+
+### Security notes
+
+- The bundled `.env` ships inside the APK as an asset; the key is
+  recoverable from the binary. Owner is aware — this is a review /
+  demo build. Production rollout should rip ASTRO_API_KEY out of
+  `.env` and go through the proxy.
+- `test/security/no_payment_or_secret_strings_test.dart` still passes
+  because the key only ever reaches the app via `dotenv.env[…]` at
+  runtime — there is no literal key string in `lib/`.
+
+### Open items
+
+- KGP deprecation warning during `assembleRelease` (shared_preferences_android
+  still applies the Kotlin Gradle Plugin in the old way). Not a build
+  blocker but will need a plugin upgrade ahead of a future Flutter SDK.
+- 18 transitively-available newer package versions held back by
+  constraints (objective_c is overridden intentionally; the rest are
+  routine outdated reports). Not addressed in this stage.
+
+## Stage: Final QA / repo audit before delivery — 2026-05-20
+
+Read-only verification pass before the owner commits and pushes the
+demo build to GitHub. No new feature work, no live API calls (the
+previous stage already burned 15 credits on the smoke POST). Goal: make
+sure the working tree is exactly what should go to the customer.
+
+### What was verified
+
+- **`.env`** — exists at repo root, 411 bytes, mode `-rw-------`,
+  contains `ASTRO_API_KEY=ask_46a2085e…`. `git check-ignore -v .env`
+  exits 1 → file is **not** ignored and will be picked up by `git add`.
+- **`release/truerise-app-demo.apk`** — exists, 62 943 327 bytes
+  (~62.9 MB), `git check-ignore -v` exits 1 → tracked. SHA-1
+  `99ad6c5a7317dcd4e64d6ab32af91bc177754e03` matches
+  `build/app/outputs/flutter-apk/app-release.apk` exactly, so the
+  artifact is the current release build (no skip of `flutter build apk
+  --release` needed).
+- **`.gitignore`** — `.idea/`, `*.iml`, `.DS_Store`, `/build/`,
+  `.dart_tool/`, `.flutter-plugins-dependencies`, `app.*.symbols`,
+  `app.*.map.json`, `/coverage/`, `/android/app/{debug,profile,release}`,
+  `android/local.properties`, `android/gradlew*`, gradle wrapper jar,
+  `ios/Flutter/Generated.xcconfig`, `ios/Flutter/ephemeral/`,
+  `ios/Runner/GeneratedPluginRegistrant.*`, `rectify.iml` — all
+  ignored (confirmed via `git status --porcelain --ignored`). `.env`
+  and `release/` deliberately tracked per the inline comment.
+- **No stray tooling** — no `tool/`, no `scripts/`, no
+  `.tmp-smoke*`, no `live_smoke_check.dart`, no `*.log`, no
+  half-written tmp file under `lib/` or `test/`. The smoke script
+  from the previous stage was already deleted.
+- **No internal coordinator leaks** — `superpowers`, `compound-v`,
+  `brainstorming`, `partition-reviewer`, `parallel-dispatcher`,
+  `code-archaeologist`, `domain-expert`, `doc-validator`,
+  `spec-reviewer`, `sidekick` appear only in
+  `docs/claude-build-history.md` (historical log entries, already
+  baked into the previous commit). No mention in `README.md`,
+  `lib/`, `test/`, `docs/api-integration.md`, or any other shipped
+  doc.
+- **No `TODO` / `FIXME` / `HACK` / `XXX`** anywhere under `lib/`.
+
+### Verification commands
+
+- `flutter analyze` — **No issues found! (ran in 2.1s)**.
+- `flutter test` — **208/208 passed** (`+208: All tests passed!`).
+- `flutter build apk --release` — **not re-run**. The release APK
+  on disk is byte-identical to the previous stage's build (SHA-1
+  match), so a rebuild would only churn timestamps. The owner can
+  re-run it manually if they want a fresh build stamp.
+- `git status` after this stage shows the same untracked set as
+  before (`.env`, `release/`, `docs/api-integration.md`), plus the
+  two doc files this stage edited (`README.md`,
+  `docs/claude-build-history.md`).
+
+### Fixes applied this stage
+
+- **`README.md`** (line 124): the inline comment in the
+  `cp .env.example .env` snippet still said `# .env is git-ignored`,
+  contradicting both the explicit policy a few sections later
+  ("the base `.env` IS committed for the demo / review APK build")
+  and the `.gitignore` comment block. Replaced with
+  `# base `.env` is tracked (demo/review build); `.env.local` etc.
+  are ignored`. README-only change; analyze + tests already passed
+  and are unaffected.
+
+### Open items (carried forward, not addressed here)
+
+- `docs/superpowers/plans/` is an empty directory left over from the
+  earlier tooling session. Git does not track empty dirs, so it will
+  not enter the commit; harmless but the owner can `rmdir
+  docs/superpowers/plans docs/superpowers` locally if desired.
+- KGP deprecation warning and the 18 outdated transitive packages
+  from the previous stage are unchanged — still tracked there, still
+  non-blocking.
+- `README.md` does not have a dedicated section pointing reviewers
+  at `release/truerise-app-demo.apk`. The APK is mentioned in the
+  Live-mode block ("a reviewer install the APK") but not by name /
+  relative path. Cosmetic gap; not a delivery blocker.
+
+### Git operations
+
+- **None.** No `git add`, no `git commit`, no `git push` was run.
+  All commit decisions stay with the owner.
+
+## Stage: Bugfix — live endpoint routing + picker overflow — 2026-05-21
+
+Two bugs were reported from a local run on the iPhone 17 Simulator:
+three `RenderFlex overflowed` exceptions (317 / 374 / 6872 px) and a
+live API request hitting `POST /v1/rectification` with
+`DioExceptionType.connectionError`. No new features; bug fixes only.
+
+### Bug 1 — live request routed to the proxy placeholder
+
+- **Symptom.** `[rectify] → POST /v1/rectification` →
+  `connectionError`. `/v1/rectification` on `proxy.invalid.example`
+  (the deliberately-unroutable proxy default) is the proxy-mode
+  endpoint, not the live provider endpoint.
+- **Root cause.** `proApiKeyProvider` is a `FutureProvider` (it awaits
+  the `flutter_secure_storage` read). `dioProvider` and
+  `rectificationApiProvider` resolved the key with
+  `maybeWhen(data: …, orElse: …)`, collapsing the `loading` state to
+  "no key → proxy mode". The bundled `.env` key was therefore invisible
+  during the async window and the data layer pinned itself to
+  `proxyBaseUrl` + `proxyPath`.
+- **Fix.** New `activeApiKeyProvider` (`lib/providers/core_providers.dart`)
+  resolves the key **synchronously**: it returns the resolved
+  `proApiKeyProvider` value, or — while that future is still in flight —
+  falls back to the synchronously-available `envApiKeyProvider`
+  (`.env` is loaded by `dotenv.load()` before `runApp`). `dioProvider`,
+  `rectificationApiProvider`, and `rectificationRepositoryProvider`
+  now read `activeApiKeyProvider`, so a bundled key puts the app in
+  provider-direct mode (`https://api.astrology-api.io` +
+  `/api/v3/rectification/search`) from the first build. A
+  Settings-entered key still takes precedence and
+  `ref.invalidate(proApiKeyProvider)` still propagates.
+- **`.env` verification.** `.env` is bundled as a Flutter asset
+  (`pubspec.yaml` → `flutter.assets`), `main.dart` calls
+  `dotenv.load()`, and `envApiKeyProvider` reads `ASTRO_API_KEY`. With
+  a key present the live path is used — the demo path is gated solely
+  by `request.isDemo`, unaffected by this change.
+
+### Bug 2 — RenderFlex overflows (bottom-sheet picker)
+
+- All three overflows (317 / 374 / 6872 px) were the category (12),
+  month (13), and year (~127) `BottomSheetPicker` lists rendering every
+  option in a non-scrolling `Column`. **Already fixed** by the
+  committed `dce738f` ("make bottom sheet pickers scrollable") —
+  options now live in a `Flexible(ListView.separated)` capped at 75 %
+  of screen height. Verified: the calc-flow / result / error screens
+  and `add_event_sheet` all scroll or fit; no further layout change
+  was needed.
+
+### Files changed
+
+- `lib/providers/core_providers.dart` — added `activeApiKeyProvider`;
+  `dioProvider` + `rectificationApiProvider` consume it.
+- `lib/providers/repo_providers.dart` — `rectificationRepositoryProvider`
+  derives `apiKeyIsConfigured` from `activeApiKeyProvider`.
+- `test/providers/api_endpoint_routing_test.dart` — new; 6 tests
+  proving the live endpoint is used (incl. the loading-window race),
+  auth-mode precedence, and the no-key proxy fallback.
+- `test/widget/sheets/bottom_sheet_picker_test.dart` — added a
+  126-item year-list no-overflow regression test at an iPhone 17
+  (402 × 874) viewport.
+
+### Verification
+
+- `flutter analyze` — **No issues found!**
+- `flutter test` — **215/215 passed** (208 prior + 7 new). No live
+  POST was made — credits untouched.
+
+### Risks / open items
+
+- The secure-storage-only path (a Settings key with no `.env` key)
+  still has a sub-second async window before `proApiKeyProvider`
+  resolves; harmless in practice (the key is read at startup, long
+  before any submission) and self-corrects on resolution. Fully
+  eliminating it would require resolving the secure key at bootstrap.
+- Live provider-direct submission was not exercised end-to-end (would
+  cost 15 credits); covered indirectly by the routing unit tests and
+  the existing `HttpRectificationApi` suite.
+
+### Git operations
+
+- **None.** No `git add`, `git commit`, or `git push` was run.
+
+## Stage: Bugfix — rectification badResponse (candidate cap) — 2026-05-21
+
+Follow-up to the live-endpoint-routing fix: with requests now reaching
+`POST /api/v3/rectification/search`, an iPhone 17 Simulator run
+returned `DioExceptionType.badResponse` twice. The debug log hid the
+HTTP status code, so the cause was not visible from the log alone.
+
+### Root cause
+
+`_buildTimeSearch` in `lib/data/api/mappers.dart` hard-coded
+`step_minutes: 2`. For the "unknown" / 24h window (`00:00`–`23:59`) a
+2-minute grid resolves to ~719 candidate times; astrology-api.io v3
+caps a rectification search at **500 candidates**. The provider
+rejected the request — and (a provider quirk) returned it as **HTTP
+500** with `{"success":false,"error":{"code":"INTERNAL_ERROR",`
+`"message":"Range produces 719 candidates, exceeds maximum 500…"}}`,
+even though the OpenAPI spec documents this as `400`. `mapDioException`
+mapped the 5xx to `ServerFailure` → the generic "Provider trouble"
+screen with a futile "Try again". Approximate mode stayed under the cap
+(≤360 candidates), so only the unknown-time path failed.
+
+### Fixes
+
+- `lib/data/api/mappers.dart` — `step_minutes` 2 → 4
+  (`kRectificationStepMinutes`, the provider's documented default). The
+  24h window now resolves to ~360 candidates and the widest approximate
+  window (±360) to ~180 — both well under 500.
+- `lib/data/api/api_client.dart`:
+  - `LoggingInterceptor.onError` now logs the HTTP status code and a
+    sanitized, length-capped provider error message on `badResponse`
+    (it previously printed only `✗ badResponse`, hiding the status).
+    Request bodies, headers, and the `Authorization` value are still
+    never logged; anything resembling a key/bearer token is redacted.
+  - `mapDioException` now maps **422** (FastAPI request validation) to
+    `BadRequestFailure` — it previously fell through to `UnknownFailure`
+    → the server screen.
+  - `_extractProviderMessage` (was `_extractMessage`) now understands
+    the v3 `{error:{message}}` envelope and FastAPI `detail`
+    string/list shapes, so a rejected payload surfaces the provider's
+    own explanation on the bad-request "Review my draft" screen.
+- `docs/api-integration.md` — `step_minutes` examples updated to 4;
+  added the 500-candidate cap and the 500-vs-400 quirk to "Known
+  limits".
+
+### Authentication
+
+Verified against the live OpenAPI spec: the endpoint's security scheme
+is `BearerAuth` (`Authorization: Bearer <key>`). The diagnostic POST
+passed auth — it reached business logic, not 401/403 — so the existing
+`AuthInterceptor` Bearer header is correct. No auth change.
+
+### Files changed
+
+- `lib/data/api/mappers.dart`
+- `lib/data/api/api_client.dart`
+- `docs/api-integration.md`
+- `test/data/api/mappers_test.dart` — `step_minutes` expectations
+  2 → 4; new candidate-count-under-500 invariant test.
+- `test/data/api/rectification_api_test.dart` — new 422 → `BadRequest`
+  test and a v3 `{success,error}` envelope message-extraction test.
+- `test/data/api/api_client_logging_test.dart` — new error-logging
+  group: status + sanitized message on `badResponse`, key redaction.
+
+### Verification
+
+- `flutter analyze` — **No issues found!**
+- `flutter test` — **220/220 passed** (215 prior + 5 new).
+- One live diagnostic `POST /api/v3/rectification/search` was made to
+  confirm the root cause. It was rejected before computation
+  (`credits_used: 0` in the response) — **no credits were spent**.
+
+### Git operations
+
+- **None.** No `git add`, `git commit`, or `git push` was run.
+

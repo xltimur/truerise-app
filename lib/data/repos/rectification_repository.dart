@@ -23,7 +23,10 @@ abstract class RectificationRepository {
 ///   - **Demo path:** sleeps for [demoDelay] (3s in production, zero
 ///     in tests) and returns `buildDemoResult(request)` — no HTTP
 ///     client constructed, per §9.5 / §10.4.
-///   - **Real path:** maps to a request DTO, calls
+///   - **Real path (no key):** returns [MissingApiKeyFailure] immediately,
+///     so the UI can route the user to Settings instead of showing a
+///     misleading connectivity error.
+///   - **Real path (key present):** maps to a request DTO, calls
 ///     `RectificationApi.rectify`, maps the response back, persists
 ///     the aggregate via `HistoryRepository.save`, and returns the
 ///     domain result.
@@ -31,12 +34,21 @@ class LiveRectificationRepository implements RectificationRepository {
   LiveRectificationRepository({
     required this.api,
     required this.history,
+    this.apiKeyIsConfigured = false,
     this.now = DateTime.now,
     this.demoDelay = const Duration(seconds: 3),
   });
 
   final RectificationApi api;
   final HistoryRepository history;
+
+  /// Whether the user has entered a provider API key in Settings.
+  ///
+  /// Injected from proApiKeyProvider via rectificationRepositoryProvider.
+  /// When false and `request.isDemo == false`, submit returns
+  /// MissingApiKeyFailure before making any network call.
+  final bool apiKeyIsConfigured;
+
   final DateTime Function() now;
   final Duration demoDelay;
 
@@ -53,6 +65,10 @@ class LiveRectificationRepository implements RectificationRepository {
       return Result.ok(result);
     }
 
+    if (!apiKeyIsConfigured) {
+      return const Result.err(MissingApiKeyFailure());
+    }
+
     final dto = requestToDto(request);
     final apiResult = await api.rectify(dto);
     switch (apiResult) {
@@ -62,6 +78,7 @@ class LiveRectificationRepository implements RectificationRepository {
           dto: response.dto,
           completedAt: now(),
           rawResponseJson: response.rawJson,
+          requestEvents: request.events,
         );
         final saved = await history.save(request, result);
         if (saved.isErr) {

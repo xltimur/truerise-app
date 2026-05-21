@@ -96,6 +96,10 @@ void main() {
         RoutePaths.errorUnauthorized,
       );
       expect(
+        errorScreenForFailure(const MissingApiKeyFailure()).path,
+        RoutePaths.errorMissingApiKey,
+      );
+      expect(
         errorScreenForFailure(const ServerFailure(503)).path,
         RoutePaths.errorServer,
       );
@@ -135,6 +139,11 @@ void main() {
         label: 'unauthorized',
         failure: const UnauthorizedFailure(),
         expectedPath: RoutePaths.errorUnauthorized,
+      ),
+      (
+        label: 'missing api key',
+        failure: const MissingApiKeyFailure(),
+        expectedPath: RoutePaths.errorMissingApiKey,
       ),
       (
         label: 'server 500',

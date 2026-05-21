@@ -53,6 +53,7 @@ dependencies:
   intl: ^0.20.2
   uuid: ^4.5.3
   meta: ^1.18.0
+  flutter_dotenv: ^5.2.1
 
 dev_dependencies:
   flutter_test:
@@ -85,6 +86,13 @@ dependency_overrides:
 # The following section is specific to Flutter packages.
 flutter:
   uses-material-design: true
+
+  # Demo-build .env bundled as an asset so the app boots with a live
+  # API key without manual Settings entry. Per docs/api-integration.md
+  # the in-app Settings → API Key override always wins over the .env
+  # fallback when present in `flutter_secure_storage`.
+  assets:
+    - .env
 
   # Bundled product fonts (`docs/design-system.md` §3.1). Stored
   # locally so the first-launch UX does not depend on a network round

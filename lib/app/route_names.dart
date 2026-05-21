@@ -37,6 +37,7 @@ abstract final class RouteNames {
   static const String errorNoInternet = 'error_no_internet';
   static const String errorBadRequest = 'error_bad_request';
   static const String errorUnauthorized = 'error_unauthorized';
+  static const String errorMissingApiKey = 'error_missing_api_key';
   static const String errorServer = 'error_server';
   static const String errorMalformed = 'error_malformed';
 }
@@ -77,6 +78,7 @@ abstract final class RoutePaths {
   static const String errorNoInternet = '/error/no-internet';
   static const String errorBadRequest = '/error/bad-request';
   static const String errorUnauthorized = '/error/unauthorized';
+  static const String errorMissingApiKey = '/error/missing-api-key';
   static const String errorServer = '/error/server';
   static const String errorMalformed = '/error/malformed';
 }

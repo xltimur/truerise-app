@@ -57,10 +57,18 @@ class CalculationErrorScreen extends ConsumerWidget {
       icon: AppIcons.errorUnauthorized,
       title: 'Authorization required',
       description:
-          "The provider didn't accept the credentials this build is "
-          'using. Switch to demo mode, or reconfigure your API key in '
-          'Settings once that screen ships.',
-      primaryLabel: 'Back to history',
+          "The provider didn't accept the API key on this device. "
+          'Open Settings to enter a new key, or switch on Demo mode.',
+      primaryLabel: 'Open Settings',
+    ),
+    ErrorScreenKind.missingApiKey: _ErrorCopy(
+      icon: AppIcons.errorUnauthorized,
+      title: 'API key required',
+      description:
+          'Live mode needs your astrology-api.io API key. Open Settings '
+          'to add it, or switch on Demo mode to try the app with sample '
+          'data.',
+      primaryLabel: 'Open Settings',
     ),
     ErrorScreenKind.server: _ErrorCopy(
       icon: AppIcons.errorServer,
@@ -96,12 +104,13 @@ class CalculationErrorScreen extends ConsumerWidget {
       primaryAction: PrimaryButton(
         label: copy.primaryLabel,
         onPressed: () {
-          if (kind == ErrorScreenKind.unauthorized) {
-            // No retry path for an unauthorized build — drop the draft
-            // and return the user home so they don't get stuck in a
-            // loop bouncing into the same 401.
+          if (kind == ErrorScreenKind.unauthorized ||
+              kind == ErrorScreenKind.missingApiKey) {
+            // Drop the draft and route into Settings so the user can
+            // add or replace their API key — retrying the same 401 (or
+            // submitting again with no key) would just bounce back here.
             controller.reset();
-            context.go(RoutePaths.home);
+            context.go(RoutePaths.settings);
             return;
           }
           if (kind == ErrorScreenKind.badRequest) {

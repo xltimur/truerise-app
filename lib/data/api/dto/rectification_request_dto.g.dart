@@ -6,74 +6,90 @@ part of 'rectification_request_dto.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_BirthPlaceDto _$BirthPlaceDtoFromJson(Map<String, dynamic> json) =>
-    _BirthPlaceDto(
-      city: json['city'] as String,
-      latitude: (json['latitude'] as num).toDouble(),
-      longitude: (json['longitude'] as num).toDouble(),
+_BirthDataV3Dto _$BirthDataV3DtoFromJson(Map<String, dynamic> json) =>
+    _BirthDataV3Dto(
+      year: (json['year'] as num).toInt(),
+      month: (json['month'] as num).toInt(),
+      day: (json['day'] as num).toInt(),
+      hour: (json['hour'] as num).toInt(),
+      minute: (json['minute'] as num).toInt(),
+      second: (json['second'] as num?)?.toInt() ?? 0,
+      city: json['city'] as String?,
+      countryCode: json['country_code'] as String?,
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
     );
 
-Map<String, dynamic> _$BirthPlaceDtoToJson(_BirthPlaceDto instance) =>
+Map<String, dynamic> _$BirthDataV3DtoToJson(_BirthDataV3Dto instance) =>
     <String, dynamic>{
+      'year': instance.year,
+      'month': instance.month,
+      'day': instance.day,
+      'hour': instance.hour,
+      'minute': instance.minute,
+      'second': instance.second,
       'city': instance.city,
+      'country_code': instance.countryCode,
       'latitude': instance.latitude,
       'longitude': instance.longitude,
     };
 
-_TimeWindowDto _$TimeWindowDtoFromJson(Map<String, dynamic> json) =>
-    _TimeWindowDto(
-      mode: json['mode'] as String,
-      approximateTime: json['approximateTime'] as String?,
-      windowMinutes: (json['windowMinutes'] as num?)?.toInt(),
+_SubjectDto _$SubjectDtoFromJson(Map<String, dynamic> json) => _SubjectDto(
+  birthData: BirthDataV3Dto.fromJson(
+    json['birth_data'] as Map<String, dynamic>,
+  ),
+);
+
+Map<String, dynamic> _$SubjectDtoToJson(_SubjectDto instance) =>
+    <String, dynamic>{'birth_data': instance.birthData.toJson()};
+
+_TimeSearchDto _$TimeSearchDtoFromJson(Map<String, dynamic> json) =>
+    _TimeSearchDto(
+      deltaMinutes: (json['delta_minutes'] as num?)?.toInt(),
+      stepMinutes: (json['step_minutes'] as num?)?.toInt(),
+      start: json['start'] as String?,
+      end: json['end'] as String?,
     );
 
-Map<String, dynamic> _$TimeWindowDtoToJson(_TimeWindowDto instance) =>
+Map<String, dynamic> _$TimeSearchDtoToJson(_TimeSearchDto instance) =>
     <String, dynamic>{
-      'mode': instance.mode,
-      'approximateTime': instance.approximateTime,
-      'windowMinutes': instance.windowMinutes,
+      'delta_minutes': instance.deltaMinutes,
+      'step_minutes': instance.stepMinutes,
+      'start': instance.start,
+      'end': instance.end,
     };
 
-_LifeEventDto _$LifeEventDtoFromJson(Map<String, dynamic> json) =>
-    _LifeEventDto(
-      id: json['id'] as String,
-      category: json['category'] as String,
-      year: (json['year'] as num).toInt(),
-      month: (json['month'] as num?)?.toInt(),
-      description: json['description'] as String?,
-    );
+_EventV3Dto _$EventV3DtoFromJson(Map<String, dynamic> json) => _EventV3Dto(
+  category: json['category'] as String,
+  date: json['date'] as String,
+  datePrecision: json['date_precision'] as String?,
+  description: json['description'] as String?,
+);
 
-Map<String, dynamic> _$LifeEventDtoToJson(_LifeEventDto instance) =>
+Map<String, dynamic> _$EventV3DtoToJson(_EventV3Dto instance) =>
     <String, dynamic>{
-      'id': instance.id,
       'category': instance.category,
-      'year': instance.year,
-      'month': instance.month,
+      'date': instance.date,
+      'date_precision': instance.datePrecision,
       'description': instance.description,
     };
 
-_RectificationRequestDto _$RectificationRequestDtoFromJson(
+_RectificationSearchRequestDto _$RectificationSearchRequestDtoFromJson(
   Map<String, dynamic> json,
-) => _RectificationRequestDto(
-  requestId: json['requestId'] as String,
-  birthDate: json['birthDate'] as String,
-  birthPlace: BirthPlaceDto.fromJson(
-    json['birthPlace'] as Map<String, dynamic>,
+) => _RectificationSearchRequestDto(
+  subject: SubjectDto.fromJson(json['subject'] as Map<String, dynamic>),
+  timeSearch: TimeSearchDto.fromJson(
+    json['time_search'] as Map<String, dynamic>,
   ),
-  timeWindow: TimeWindowDto.fromJson(
-    json['timeWindow'] as Map<String, dynamic>,
-  ),
-  lifeEvents: (json['lifeEvents'] as List<dynamic>)
-      .map((e) => LifeEventDto.fromJson(e as Map<String, dynamic>))
+  events: (json['events'] as List<dynamic>)
+      .map((e) => EventV3Dto.fromJson(e as Map<String, dynamic>))
       .toList(),
 );
 
-Map<String, dynamic> _$RectificationRequestDtoToJson(
-  _RectificationRequestDto instance,
+Map<String, dynamic> _$RectificationSearchRequestDtoToJson(
+  _RectificationSearchRequestDto instance,
 ) => <String, dynamic>{
-  'requestId': instance.requestId,
-  'birthDate': instance.birthDate,
-  'birthPlace': instance.birthPlace,
-  'timeWindow': instance.timeWindow,
-  'lifeEvents': instance.lifeEvents,
+  'subject': instance.subject.toJson(),
+  'time_search': instance.timeSearch.toJson(),
+  'events': instance.events.map((e) => e.toJson()).toList(),
 };

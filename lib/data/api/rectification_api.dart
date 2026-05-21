@@ -6,8 +6,10 @@ import 'package:meta/meta.dart';
 import 'package:rectify/core/failures.dart';
 import 'package:rectify/core/result.dart';
 import 'package:rectify/data/api/api_client.dart' show mapDioException;
-import 'package:rectify/data/api/dto/rectification_request_dto.dart';
-import 'package:rectify/data/api/dto/rectification_response_dto.dart';
+import 'package:rectify/data/api/dto/rectification_request_dto.dart'
+    show RectificationSearchRequestDto;
+import 'package:rectify/data/api/dto/rectification_response_dto.dart'
+    show RectificationSearchResponseDto;
 
 /// Combined return value from the rectification API: the parsed DTO
 /// alongside the verbatim response body so the repository can persist
@@ -17,7 +19,7 @@ import 'package:rectify/data/api/dto/rectification_response_dto.dart';
 class RectificationApiResponse {
   const RectificationApiResponse({required this.dto, required this.rawJson});
 
-  final RectificationResponseDto dto;
+  final RectificationSearchResponseDto dto;
   final String rawJson;
 }
 
@@ -29,25 +31,25 @@ class RectificationApiResponse {
 /// the data layer.
 abstract class RectificationApi {
   Future<Result<RectificationApiResponse, AppFailure>> rectify(
-    RectificationRequestDto request,
+    RectificationSearchRequestDto request,
   );
 }
 
 /// Default HTTP implementation: POSTs to [path] on the configured
-/// base URL and decodes the body into [RectificationResponseDto].
+/// base URL and decodes the body into [RectificationSearchResponseDto].
 ///
 /// Captures the raw JSON body unchanged so the repository can pass it
 /// to the mapper as `rawResponseJson` without re-encoding (re-encoding
 /// would lose provider-specific extras useful for support).
 class HttpRectificationApi implements RectificationApi {
-  HttpRectificationApi(this._dio, {this.path = '/v1/rectification'});
+  HttpRectificationApi(this._dio, {this.path = '/api/v3/rectification/search'});
 
   final Dio _dio;
   final String path;
 
   @override
   Future<Result<RectificationApiResponse, AppFailure>> rectify(
-    RectificationRequestDto request,
+    RectificationSearchRequestDto request,
   ) async {
     try {
       // Force a string body so we can keep the exact wire bytes for
@@ -66,7 +68,8 @@ class HttpRectificationApi implements RectificationApi {
         if (decoded is! Map<String, dynamic>) {
           return const Err(MalformedResponseFailure());
         }
-        final dto = RectificationResponseDto.fromJson(decoded);
+        final body = _unwrapEnvelope(decoded);
+        final dto = RectificationSearchResponseDto.fromJson(body);
         return Result.ok(
           RectificationApiResponse(dto: dto, rawJson: raw),
         );
@@ -85,4 +88,16 @@ class HttpRectificationApi implements RectificationApi {
       return Result.err(UnknownFailure(cause));
     }
   }
+}
+
+/// astrology-api.io v3 wraps every successful response in
+/// `{ "success": true, "data": { ... }, "metadata": {...} }`. The
+/// `RectificationSearchResponseDto` models the inner business shape,
+/// so peel the envelope here when present and leave bare-shape bodies
+/// (used by older tests and the fake adapter) alone.
+Map<String, dynamic> _unwrapEnvelope(Map<String, dynamic> body) {
+  if (body['success'] == true && body['data'] is Map<String, dynamic>) {
+    return body['data'] as Map<String, dynamic>;
+  }
+  return body;
 }

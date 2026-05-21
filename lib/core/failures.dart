@@ -120,6 +120,21 @@ final class StorageFailure extends AppFailure {
   String toString() => 'StorageFailure($cause)';
 }
 
+/// Real-mode submission attempted without a provider API key configured.
+///
+/// Returned by LiveRectificationRepository before any network call is made,
+/// so the error screen can direct the user to Settings rather than showing a
+/// misleading connectivity error.
+final class MissingApiKeyFailure extends AppFailure {
+  const MissingApiKeyFailure();
+  @override
+  bool operator ==(Object other) => other is MissingApiKeyFailure;
+  @override
+  int get hashCode => (MissingApiKeyFailure).hashCode;
+  @override
+  String toString() => 'MissingApiKeyFailure';
+}
+
 /// Anything we can't classify; the only place where raw [Object] leaks.
 final class UnknownFailure extends AppFailure {
   const UnknownFailure(this.cause);

@@ -90,4 +90,83 @@ void main() {
       },
     );
   });
+
+  group('LoggingInterceptor error logging', () {
+    test(
+      'badResponse logs the HTTP status and the sanitized provider message',
+      () async {
+        final captured = <String>[];
+        final adapter = FakeHttpAdapter()
+          ..enqueueJson(
+            '{"success":false,"error":{"code":"INTERNAL_ERROR",'
+            '"message":"Range produces 719 candidates, '
+            'exceeds maximum 500."}}',
+            statusCode: 500,
+          );
+
+        final dio = Dio(BaseOptions(baseUrl: 'https://test.invalid'))
+          ..httpClientAdapter = adapter
+          ..interceptors.add(LoggingInterceptor(sink: captured.add));
+
+        try {
+          await dio.post<String>(
+            '/api/v3/rectification/search',
+            options: Options(responseType: ResponseType.plain),
+          );
+        } on DioException {
+          // Expected — the 500 surfaces as a badResponse.
+        }
+
+        expect(
+          captured.any((line) => line.contains('500')),
+          isTrue,
+          reason: 'the HTTP status code must be logged',
+        );
+        expect(
+          captured.any((line) => line.contains('exceeds maximum 500')),
+          isTrue,
+          reason: 'the provider error message must be surfaced',
+        );
+      },
+    );
+
+    test(
+      'badResponse log redacts an API key in the provider message',
+      () async {
+        final captured = <String>[];
+        final adapter = FakeHttpAdapter()
+          ..enqueueJson(
+            '{"error":{"message":'
+            '"Key ask_0123456789abcdef0123 was rejected"}}',
+            statusCode: 401,
+          );
+
+        final dio = Dio(BaseOptions(baseUrl: 'https://test.invalid'))
+          ..httpClientAdapter = adapter
+          ..interceptors.add(LoggingInterceptor(sink: captured.add));
+
+        try {
+          await dio.post<String>(
+            '/api/v3/rectification/search',
+            options: Options(responseType: ResponseType.plain),
+          );
+        } on DioException {
+          // Expected.
+        }
+
+        for (final line in captured) {
+          expect(
+            line.contains('ask_0123456789abcdef0123'),
+            isFalse,
+            reason: 'the API key must be redacted from "$line"',
+          );
+        }
+        expect(
+          captured.any((line) => line.contains('«redacted»')),
+          isTrue,
+          reason: 'a redaction marker should be present',
+        );
+      },
+    );
+  });
 }

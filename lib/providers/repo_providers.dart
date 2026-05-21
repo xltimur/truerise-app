@@ -13,12 +13,20 @@ final historyRepositoryProvider = Provider<HistoryRepository>((ref) {
 
 /// Live rectification repository — short-circuits demo, delegates
 /// real submissions to `RectificationApi`.
-final rectificationRepositoryProvider = Provider<RectificationRepository>(
-  (ref) => LiveRectificationRepository(
+///
+/// Passes apiKeyIsConfigured from [activeApiKeyProvider] so the
+/// repository can return MissingApiKeyFailure before making any network
+/// call when no key (bundled `.env` or Settings-entered) is available.
+final rectificationRepositoryProvider =
+    Provider<RectificationRepository>((ref) {
+  final key = ref.watch(activeApiKeyProvider);
+  final hasKey = key != null && key.isNotEmpty;
+  return LiveRectificationRepository(
     api: ref.watch(rectificationApiProvider),
     history: ref.watch(historyRepositoryProvider),
-  ),
-);
+    apiKeyIsConfigured: hasKey,
+  );
+});
 
 /// Combined settings repository (prefs + secure store + db wipe).
 final settingsRepositoryProvider = Provider<SettingsRepository>(

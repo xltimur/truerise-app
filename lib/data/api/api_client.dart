@@ -85,10 +85,16 @@ class AuthInterceptor extends Interceptor {
   }
 }
 
-/// Debug logger. Per §9.2 / §9.5 this interceptor **never** writes
-/// request bodies, response bodies, headers, query params, or the
-/// `Authorization` value. It emits one line per request: method,
-/// URI path (no query), and the response status + latency.
+/// Debug logger. This interceptor **never** writes request bodies,
+/// request headers, query params, the `Authorization` value, or a
+/// successful response body. It emits one line per request (method +
+/// path, no query) and one per response (status + latency).
+///
+/// On an HTTP *error* response it adds a second line carrying the
+/// provider's own error message, so a debug run shows *why* a call
+/// failed instead of a bare `badResponse`. That message is read only
+/// from known error-message fields (never the echoed birth/event
+/// payload), secret-redacted, and length-capped.
 ///
 /// Exposed (not private) so tests can install it against a fake Dio
 /// adapter and assert the redaction guarantee directly.
@@ -136,10 +142,18 @@ class LoggingInterceptor extends Interceptor {
     final latency = start == null
         ? '?'
         : '${DateTime.now().millisecondsSinceEpoch - start}ms';
+    final status = err.response?.statusCode;
     sink(
-      '[rectify] ✗ ${err.type} ${_safePath(err.requestOptions.uri)} '
-      '($latency)',
+      '[rectify] ✗ ${err.type}${status == null ? '' : ' $status'} '
+      '${_safePath(err.requestOptions.uri)} ($latency)',
     );
+    // On an HTTP error response, surface the provider's own (sanitized)
+    // explanation so a debug run shows the cause — e.g. a 4xx
+    // validation message — rather than a bare `badResponse`.
+    if (err.type == DioExceptionType.badResponse) {
+      final detail = _sanitizedErrorDetail(err.response?.data);
+      if (detail != null) sink('[rectify]   ↳ $detail');
+    }
     handler.next(err);
   }
 }
@@ -191,9 +205,13 @@ AppFailure mapDioException(DioException error) {
       return UnknownFailure(inner ?? error);
     case DioExceptionType.badResponse:
       final status = error.response?.statusCode ?? 0;
-      if (status == 400) {
+      // 400 (documented) and 422 (FastAPI request validation) both mean
+      // the provider rejected the *payload*: surface its explanation
+      // and route the user to review their draft, not a generic
+      // "try again" server screen.
+      if (status == 400 || status == 422) {
         final message =
-            _extractMessage(error.response?.data) ??
+            _extractProviderMessage(error.response?.data) ??
             'The provider rejected the request.';
         return BadRequestFailure(message);
       }
@@ -205,26 +223,90 @@ AppFailure mapDioException(DioException error) {
   }
 }
 
-String? _extractMessage(Object? body) {
-  if (body is Map<String, dynamic>) {
-    final raw = body['message'] ?? body['error'];
-    if (raw is String) return raw;
-    return null;
-  }
+/// Decode [body] to a JSON map when possible.
+///
+/// Accepts an already-decoded `Map` or a raw JSON `String` — the
+/// rectification client keeps the response body as a plain string
+/// (`HttpRectificationApi`) so error bodies arrive here unparsed.
+Map<String, dynamic>? _asJsonMap(Object? body) {
+  if (body is Map<String, dynamic>) return body;
   if (body is String && body.isNotEmpty) {
-    // The provider can serve `Content-Type: application/json` while
-    // Dio has been asked to keep the response as a string (see
-    // [HttpRectificationApi] preserving `rawResponseJson`). Try a
-    // best-effort decode so the 400 body's message is surfaced.
     try {
       final decoded = jsonDecode(body);
-      if (decoded is Map<String, dynamic>) return _extractMessage(decoded);
+      if (decoded is Map<String, dynamic>) return decoded;
     } on FormatException {
-      // Fall through.
+      // Not JSON — nothing to extract.
     }
   }
   return null;
 }
+
+/// Pull a human-readable error message out of a provider error body.
+///
+/// Handles the shapes astrology-api.io v3 actually returns:
+///   - the v3 envelope `{ "error": { "code": ..., "message": ... } }`
+///   - a flat `{ "message": ... }` or `{ "error": "..." }`
+///   - FastAPI request-validation `{ "detail": "..." }` or
+///     `{ "detail": [ { "loc": [...], "msg": ... } ] }`
+///
+/// Returns null when no message field is present. Only known
+/// message/field-location keys are read — the birth/event payload is
+/// never echoed out of here.
+String? _extractProviderMessage(Object? body) {
+  final json = _asJsonMap(body);
+  if (json == null) return null;
+
+  final error = json['error'];
+  if (error is Map) {
+    final message = error['message'];
+    if (message is String && message.trim().isNotEmpty) return message.trim();
+  }
+  if (error is String && error.trim().isNotEmpty) return error.trim();
+
+  final message = json['message'];
+  if (message is String && message.trim().isNotEmpty) return message.trim();
+
+  final detail = json['detail'];
+  if (detail is String && detail.trim().isNotEmpty) return detail.trim();
+  if (detail is List) {
+    final parts = <String>[];
+    for (final item in detail) {
+      if (item is! Map) continue;
+      final msg = item['msg'];
+      if (msg is! String || msg.trim().isEmpty) continue;
+      final loc = item['loc'];
+      final field = loc is List
+          ? loc.where((e) => e is String || e is int).join('.')
+          : '';
+      parts.add(field.isEmpty ? msg.trim() : '$field: ${msg.trim()}');
+    }
+    if (parts.isNotEmpty) return parts.join('; ');
+  }
+  return null;
+}
+
+/// Build a short, secret-free one-liner from a provider error body for
+/// the debug log. Reads only the provider's message field, redacts
+/// anything resembling an API key / bearer token, and caps the length.
+String? _sanitizedErrorDetail(Object? body) {
+  final message = _extractProviderMessage(body);
+  if (message == null) return null;
+  var text = _redactSecrets(message).replaceAll(RegExp(r'\s+'), ' ').trim();
+  if (text.isEmpty) return null;
+  const maxLength = 200;
+  if (text.length > maxLength) text = '${text.substring(0, maxLength)}…';
+  return text;
+}
+
+/// Mask substrings that look like an astrology-api.io key (`ask_…`) or
+/// a bearer token, so a copy-pasted provider message can never leak a
+/// credential into the debug log.
+String _redactSecrets(String input) => input
+    .replaceAll(RegExp('ask_[A-Za-z0-9]{8,}'), 'ask_«redacted»')
+    .replaceAll(
+      RegExp(r'[Bb]earer\s+[A-Za-z0-9._\-]+'),
+      'Bearer «redacted»',
+    );
 
 /// Convenience: wrap an [AppFailure] in `Result.err`.
 Result<T, AppFailure> errResult<T>(AppFailure failure) =>

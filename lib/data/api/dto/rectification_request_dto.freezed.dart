@@ -13,42 +13,42 @@ part of 'rectification_request_dto.dart';
 T _$identity<T>(T value) => value;
 
 /// @nodoc
-mixin _$BirthPlaceDto {
+mixin _$BirthDataV3Dto {
 
- String get city; double get latitude; double get longitude;
-/// Create a copy of BirthPlaceDto
+ int get year; int get month; int get day; int get hour; int get minute; int get second; String? get city;@JsonKey(name: 'country_code') String? get countryCode; double? get latitude; double? get longitude;
+/// Create a copy of BirthDataV3Dto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$BirthPlaceDtoCopyWith<BirthPlaceDto> get copyWith => _$BirthPlaceDtoCopyWithImpl<BirthPlaceDto>(this as BirthPlaceDto, _$identity);
+$BirthDataV3DtoCopyWith<BirthDataV3Dto> get copyWith => _$BirthDataV3DtoCopyWithImpl<BirthDataV3Dto>(this as BirthDataV3Dto, _$identity);
 
-  /// Serializes this BirthPlaceDto to a JSON map.
+  /// Serializes this BirthDataV3Dto to a JSON map.
   Map<String, dynamic> toJson();
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is BirthPlaceDto&&(identical(other.city, city) || other.city == city)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BirthDataV3Dto&&(identical(other.year, year) || other.year == year)&&(identical(other.month, month) || other.month == month)&&(identical(other.day, day) || other.day == day)&&(identical(other.hour, hour) || other.hour == hour)&&(identical(other.minute, minute) || other.minute == minute)&&(identical(other.second, second) || other.second == second)&&(identical(other.city, city) || other.city == city)&&(identical(other.countryCode, countryCode) || other.countryCode == countryCode)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,city,latitude,longitude);
+int get hashCode => Object.hash(runtimeType,year,month,day,hour,minute,second,city,countryCode,latitude,longitude);
 
 @override
 String toString() {
-  return 'BirthPlaceDto(city: $city, latitude: $latitude, longitude: $longitude)';
+  return 'BirthDataV3Dto(year: $year, month: $month, day: $day, hour: $hour, minute: $minute, second: $second, city: $city, countryCode: $countryCode, latitude: $latitude, longitude: $longitude)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $BirthPlaceDtoCopyWith<$Res>  {
-  factory $BirthPlaceDtoCopyWith(BirthPlaceDto value, $Res Function(BirthPlaceDto) _then) = _$BirthPlaceDtoCopyWithImpl;
+abstract mixin class $BirthDataV3DtoCopyWith<$Res>  {
+  factory $BirthDataV3DtoCopyWith(BirthDataV3Dto value, $Res Function(BirthDataV3Dto) _then) = _$BirthDataV3DtoCopyWithImpl;
 @useResult
 $Res call({
- String city, double latitude, double longitude
+ int year, int month, int day, int hour, int minute, int second, String? city,@JsonKey(name: 'country_code') String? countryCode, double? latitude, double? longitude
 });
 
 
@@ -56,29 +56,36 @@ $Res call({
 
 }
 /// @nodoc
-class _$BirthPlaceDtoCopyWithImpl<$Res>
-    implements $BirthPlaceDtoCopyWith<$Res> {
-  _$BirthPlaceDtoCopyWithImpl(this._self, this._then);
+class _$BirthDataV3DtoCopyWithImpl<$Res>
+    implements $BirthDataV3DtoCopyWith<$Res> {
+  _$BirthDataV3DtoCopyWithImpl(this._self, this._then);
 
-  final BirthPlaceDto _self;
-  final $Res Function(BirthPlaceDto) _then;
+  final BirthDataV3Dto _self;
+  final $Res Function(BirthDataV3Dto) _then;
 
-/// Create a copy of BirthPlaceDto
+/// Create a copy of BirthDataV3Dto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? city = null,Object? latitude = null,Object? longitude = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? year = null,Object? month = null,Object? day = null,Object? hour = null,Object? minute = null,Object? second = null,Object? city = freezed,Object? countryCode = freezed,Object? latitude = freezed,Object? longitude = freezed,}) {
   return _then(_self.copyWith(
-city: null == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
-as String,latitude: null == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
-as double,longitude: null == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
-as double,
+year: null == year ? _self.year : year // ignore: cast_nullable_to_non_nullable
+as int,month: null == month ? _self.month : month // ignore: cast_nullable_to_non_nullable
+as int,day: null == day ? _self.day : day // ignore: cast_nullable_to_non_nullable
+as int,hour: null == hour ? _self.hour : hour // ignore: cast_nullable_to_non_nullable
+as int,minute: null == minute ? _self.minute : minute // ignore: cast_nullable_to_non_nullable
+as int,second: null == second ? _self.second : second // ignore: cast_nullable_to_non_nullable
+as int,city: freezed == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
+as String?,countryCode: freezed == countryCode ? _self.countryCode : countryCode // ignore: cast_nullable_to_non_nullable
+as String?,latitude: freezed == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
+as double?,longitude: freezed == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
+as double?,
   ));
 }
 
 }
 
 
-/// Adds pattern-matching-related methods to [BirthPlaceDto].
-extension BirthPlaceDtoPatterns on BirthPlaceDto {
+/// Adds pattern-matching-related methods to [BirthDataV3Dto].
+extension BirthDataV3DtoPatterns on BirthDataV3Dto {
 /// A variant of `map` that fallback to returning `orElse`.
 ///
 /// It is equivalent to doing:
@@ -91,10 +98,10 @@ extension BirthPlaceDtoPatterns on BirthPlaceDto {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _BirthPlaceDto value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _BirthDataV3Dto value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _BirthPlaceDto() when $default != null:
+case _BirthDataV3Dto() when $default != null:
 return $default(_that);case _:
   return orElse();
 
@@ -113,10 +120,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _BirthPlaceDto value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _BirthDataV3Dto value)  $default,){
 final _that = this;
 switch (_that) {
-case _BirthPlaceDto():
+case _BirthDataV3Dto():
 return $default(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -134,10 +141,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _BirthPlaceDto value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _BirthDataV3Dto value)?  $default,){
 final _that = this;
 switch (_that) {
-case _BirthPlaceDto() when $default != null:
+case _BirthDataV3Dto() when $default != null:
 return $default(_that);case _:
   return null;
 
@@ -155,10 +162,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String city,  double latitude,  double longitude)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int year,  int month,  int day,  int hour,  int minute,  int second,  String? city, @JsonKey(name: 'country_code')  String? countryCode,  double? latitude,  double? longitude)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _BirthPlaceDto() when $default != null:
-return $default(_that.city,_that.latitude,_that.longitude);case _:
+case _BirthDataV3Dto() when $default != null:
+return $default(_that.year,_that.month,_that.day,_that.hour,_that.minute,_that.second,_that.city,_that.countryCode,_that.latitude,_that.longitude);case _:
   return orElse();
 
 }
@@ -176,10 +183,10 @@ return $default(_that.city,_that.latitude,_that.longitude);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String city,  double latitude,  double longitude)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int year,  int month,  int day,  int hour,  int minute,  int second,  String? city, @JsonKey(name: 'country_code')  String? countryCode,  double? latitude,  double? longitude)  $default,) {final _that = this;
 switch (_that) {
-case _BirthPlaceDto():
-return $default(_that.city,_that.latitude,_that.longitude);case _:
+case _BirthDataV3Dto():
+return $default(_that.year,_that.month,_that.day,_that.hour,_that.minute,_that.second,_that.city,_that.countryCode,_that.latitude,_that.longitude);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +203,10 @@ return $default(_that.city,_that.latitude,_that.longitude);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String city,  double latitude,  double longitude)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int year,  int month,  int day,  int hour,  int minute,  int second,  String? city, @JsonKey(name: 'country_code')  String? countryCode,  double? latitude,  double? longitude)?  $default,) {final _that = this;
 switch (_that) {
-case _BirthPlaceDto() when $default != null:
-return $default(_that.city,_that.latitude,_that.longitude);case _:
+case _BirthDataV3Dto() when $default != null:
+return $default(_that.year,_that.month,_that.day,_that.hour,_that.minute,_that.second,_that.city,_that.countryCode,_that.latitude,_that.longitude);case _:
   return null;
 
 }
@@ -210,48 +217,55 @@ return $default(_that.city,_that.latitude,_that.longitude);case _:
 /// @nodoc
 @JsonSerializable()
 
-class _BirthPlaceDto implements BirthPlaceDto {
-  const _BirthPlaceDto({required this.city, required this.latitude, required this.longitude});
-  factory _BirthPlaceDto.fromJson(Map<String, dynamic> json) => _$BirthPlaceDtoFromJson(json);
+class _BirthDataV3Dto implements BirthDataV3Dto {
+  const _BirthDataV3Dto({required this.year, required this.month, required this.day, required this.hour, required this.minute, this.second = 0, this.city, @JsonKey(name: 'country_code') this.countryCode, this.latitude, this.longitude});
+  factory _BirthDataV3Dto.fromJson(Map<String, dynamic> json) => _$BirthDataV3DtoFromJson(json);
 
-@override final  String city;
-@override final  double latitude;
-@override final  double longitude;
+@override final  int year;
+@override final  int month;
+@override final  int day;
+@override final  int hour;
+@override final  int minute;
+@override@JsonKey() final  int second;
+@override final  String? city;
+@override@JsonKey(name: 'country_code') final  String? countryCode;
+@override final  double? latitude;
+@override final  double? longitude;
 
-/// Create a copy of BirthPlaceDto
+/// Create a copy of BirthDataV3Dto
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$BirthPlaceDtoCopyWith<_BirthPlaceDto> get copyWith => __$BirthPlaceDtoCopyWithImpl<_BirthPlaceDto>(this, _$identity);
+_$BirthDataV3DtoCopyWith<_BirthDataV3Dto> get copyWith => __$BirthDataV3DtoCopyWithImpl<_BirthDataV3Dto>(this, _$identity);
 
 @override
 Map<String, dynamic> toJson() {
-  return _$BirthPlaceDtoToJson(this, );
+  return _$BirthDataV3DtoToJson(this, );
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BirthPlaceDto&&(identical(other.city, city) || other.city == city)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BirthDataV3Dto&&(identical(other.year, year) || other.year == year)&&(identical(other.month, month) || other.month == month)&&(identical(other.day, day) || other.day == day)&&(identical(other.hour, hour) || other.hour == hour)&&(identical(other.minute, minute) || other.minute == minute)&&(identical(other.second, second) || other.second == second)&&(identical(other.city, city) || other.city == city)&&(identical(other.countryCode, countryCode) || other.countryCode == countryCode)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,city,latitude,longitude);
+int get hashCode => Object.hash(runtimeType,year,month,day,hour,minute,second,city,countryCode,latitude,longitude);
 
 @override
 String toString() {
-  return 'BirthPlaceDto(city: $city, latitude: $latitude, longitude: $longitude)';
+  return 'BirthDataV3Dto(year: $year, month: $month, day: $day, hour: $hour, minute: $minute, second: $second, city: $city, countryCode: $countryCode, latitude: $latitude, longitude: $longitude)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$BirthPlaceDtoCopyWith<$Res> implements $BirthPlaceDtoCopyWith<$Res> {
-  factory _$BirthPlaceDtoCopyWith(_BirthPlaceDto value, $Res Function(_BirthPlaceDto) _then) = __$BirthPlaceDtoCopyWithImpl;
+abstract mixin class _$BirthDataV3DtoCopyWith<$Res> implements $BirthDataV3DtoCopyWith<$Res> {
+  factory _$BirthDataV3DtoCopyWith(_BirthDataV3Dto value, $Res Function(_BirthDataV3Dto) _then) = __$BirthDataV3DtoCopyWithImpl;
 @override @useResult
 $Res call({
- String city, double latitude, double longitude
+ int year, int month, int day, int hour, int minute, int second, String? city,@JsonKey(name: 'country_code') String? countryCode, double? latitude, double? longitude
 });
 
 
@@ -259,21 +273,28 @@ $Res call({
 
 }
 /// @nodoc
-class __$BirthPlaceDtoCopyWithImpl<$Res>
-    implements _$BirthPlaceDtoCopyWith<$Res> {
-  __$BirthPlaceDtoCopyWithImpl(this._self, this._then);
+class __$BirthDataV3DtoCopyWithImpl<$Res>
+    implements _$BirthDataV3DtoCopyWith<$Res> {
+  __$BirthDataV3DtoCopyWithImpl(this._self, this._then);
 
-  final _BirthPlaceDto _self;
-  final $Res Function(_BirthPlaceDto) _then;
+  final _BirthDataV3Dto _self;
+  final $Res Function(_BirthDataV3Dto) _then;
 
-/// Create a copy of BirthPlaceDto
+/// Create a copy of BirthDataV3Dto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? city = null,Object? latitude = null,Object? longitude = null,}) {
-  return _then(_BirthPlaceDto(
-city: null == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
-as String,latitude: null == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
-as double,longitude: null == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
-as double,
+@override @pragma('vm:prefer-inline') $Res call({Object? year = null,Object? month = null,Object? day = null,Object? hour = null,Object? minute = null,Object? second = null,Object? city = freezed,Object? countryCode = freezed,Object? latitude = freezed,Object? longitude = freezed,}) {
+  return _then(_BirthDataV3Dto(
+year: null == year ? _self.year : year // ignore: cast_nullable_to_non_nullable
+as int,month: null == month ? _self.month : month // ignore: cast_nullable_to_non_nullable
+as int,day: null == day ? _self.day : day // ignore: cast_nullable_to_non_nullable
+as int,hour: null == hour ? _self.hour : hour // ignore: cast_nullable_to_non_nullable
+as int,minute: null == minute ? _self.minute : minute // ignore: cast_nullable_to_non_nullable
+as int,second: null == second ? _self.second : second // ignore: cast_nullable_to_non_nullable
+as int,city: freezed == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
+as String?,countryCode: freezed == countryCode ? _self.countryCode : countryCode // ignore: cast_nullable_to_non_nullable
+as String?,latitude: freezed == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
+as double?,longitude: freezed == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
+as double?,
   ));
 }
 
@@ -282,72 +303,79 @@ as double,
 
 
 /// @nodoc
-mixin _$TimeWindowDto {
+mixin _$SubjectDto {
 
- String get mode; String? get approximateTime; int? get windowMinutes;
-/// Create a copy of TimeWindowDto
+@JsonKey(name: 'birth_data') BirthDataV3Dto get birthData;
+/// Create a copy of SubjectDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$TimeWindowDtoCopyWith<TimeWindowDto> get copyWith => _$TimeWindowDtoCopyWithImpl<TimeWindowDto>(this as TimeWindowDto, _$identity);
+$SubjectDtoCopyWith<SubjectDto> get copyWith => _$SubjectDtoCopyWithImpl<SubjectDto>(this as SubjectDto, _$identity);
 
-  /// Serializes this TimeWindowDto to a JSON map.
+  /// Serializes this SubjectDto to a JSON map.
   Map<String, dynamic> toJson();
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TimeWindowDto&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.approximateTime, approximateTime) || other.approximateTime == approximateTime)&&(identical(other.windowMinutes, windowMinutes) || other.windowMinutes == windowMinutes));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SubjectDto&&(identical(other.birthData, birthData) || other.birthData == birthData));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,mode,approximateTime,windowMinutes);
+int get hashCode => Object.hash(runtimeType,birthData);
 
 @override
 String toString() {
-  return 'TimeWindowDto(mode: $mode, approximateTime: $approximateTime, windowMinutes: $windowMinutes)';
+  return 'SubjectDto(birthData: $birthData)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $TimeWindowDtoCopyWith<$Res>  {
-  factory $TimeWindowDtoCopyWith(TimeWindowDto value, $Res Function(TimeWindowDto) _then) = _$TimeWindowDtoCopyWithImpl;
+abstract mixin class $SubjectDtoCopyWith<$Res>  {
+  factory $SubjectDtoCopyWith(SubjectDto value, $Res Function(SubjectDto) _then) = _$SubjectDtoCopyWithImpl;
 @useResult
 $Res call({
- String mode, String? approximateTime, int? windowMinutes
+@JsonKey(name: 'birth_data') BirthDataV3Dto birthData
 });
 
 
-
+$BirthDataV3DtoCopyWith<$Res> get birthData;
 
 }
 /// @nodoc
-class _$TimeWindowDtoCopyWithImpl<$Res>
-    implements $TimeWindowDtoCopyWith<$Res> {
-  _$TimeWindowDtoCopyWithImpl(this._self, this._then);
+class _$SubjectDtoCopyWithImpl<$Res>
+    implements $SubjectDtoCopyWith<$Res> {
+  _$SubjectDtoCopyWithImpl(this._self, this._then);
 
-  final TimeWindowDto _self;
-  final $Res Function(TimeWindowDto) _then;
+  final SubjectDto _self;
+  final $Res Function(SubjectDto) _then;
 
-/// Create a copy of TimeWindowDto
+/// Create a copy of SubjectDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? mode = null,Object? approximateTime = freezed,Object? windowMinutes = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? birthData = null,}) {
   return _then(_self.copyWith(
-mode: null == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
-as String,approximateTime: freezed == approximateTime ? _self.approximateTime : approximateTime // ignore: cast_nullable_to_non_nullable
-as String?,windowMinutes: freezed == windowMinutes ? _self.windowMinutes : windowMinutes // ignore: cast_nullable_to_non_nullable
-as int?,
+birthData: null == birthData ? _self.birthData : birthData // ignore: cast_nullable_to_non_nullable
+as BirthDataV3Dto,
   ));
 }
-
+/// Create a copy of SubjectDto
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$BirthDataV3DtoCopyWith<$Res> get birthData {
+  
+  return $BirthDataV3DtoCopyWith<$Res>(_self.birthData, (value) {
+    return _then(_self.copyWith(birthData: value));
+  });
+}
 }
 
 
-/// Adds pattern-matching-related methods to [TimeWindowDto].
-extension TimeWindowDtoPatterns on TimeWindowDto {
+/// Adds pattern-matching-related methods to [SubjectDto].
+extension SubjectDtoPatterns on SubjectDto {
 /// A variant of `map` that fallback to returning `orElse`.
 ///
 /// It is equivalent to doing:
@@ -360,10 +388,10 @@ extension TimeWindowDtoPatterns on TimeWindowDto {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _TimeWindowDto value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _SubjectDto value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _TimeWindowDto() when $default != null:
+case _SubjectDto() when $default != null:
 return $default(_that);case _:
   return orElse();
 
@@ -382,10 +410,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _TimeWindowDto value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _SubjectDto value)  $default,){
 final _that = this;
 switch (_that) {
-case _TimeWindowDto():
+case _SubjectDto():
 return $default(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -403,10 +431,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _TimeWindowDto value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _SubjectDto value)?  $default,){
 final _that = this;
 switch (_that) {
-case _TimeWindowDto() when $default != null:
+case _SubjectDto() when $default != null:
 return $default(_that);case _:
   return null;
 
@@ -424,10 +452,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String mode,  String? approximateTime,  int? windowMinutes)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'birth_data')  BirthDataV3Dto birthData)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _TimeWindowDto() when $default != null:
-return $default(_that.mode,_that.approximateTime,_that.windowMinutes);case _:
+case _SubjectDto() when $default != null:
+return $default(_that.birthData);case _:
   return orElse();
 
 }
@@ -445,10 +473,10 @@ return $default(_that.mode,_that.approximateTime,_that.windowMinutes);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String mode,  String? approximateTime,  int? windowMinutes)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'birth_data')  BirthDataV3Dto birthData)  $default,) {final _that = this;
 switch (_that) {
-case _TimeWindowDto():
-return $default(_that.mode,_that.approximateTime,_that.windowMinutes);case _:
+case _SubjectDto():
+return $default(_that.birthData);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -465,10 +493,10 @@ return $default(_that.mode,_that.approximateTime,_that.windowMinutes);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String mode,  String? approximateTime,  int? windowMinutes)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'birth_data')  BirthDataV3Dto birthData)?  $default,) {final _that = this;
 switch (_that) {
-case _TimeWindowDto() when $default != null:
-return $default(_that.mode,_that.approximateTime,_that.windowMinutes);case _:
+case _SubjectDto() when $default != null:
+return $default(_that.birthData);case _:
   return null;
 
 }
@@ -477,116 +505,121 @@ return $default(_that.mode,_that.approximateTime,_that.windowMinutes);case _:
 }
 
 /// @nodoc
-@JsonSerializable()
 
-class _TimeWindowDto implements TimeWindowDto {
-  const _TimeWindowDto({required this.mode, this.approximateTime, this.windowMinutes});
-  factory _TimeWindowDto.fromJson(Map<String, dynamic> json) => _$TimeWindowDtoFromJson(json);
+@JsonSerializable(explicitToJson: true)
+class _SubjectDto implements SubjectDto {
+  const _SubjectDto({@JsonKey(name: 'birth_data') required this.birthData});
+  factory _SubjectDto.fromJson(Map<String, dynamic> json) => _$SubjectDtoFromJson(json);
 
-@override final  String mode;
-@override final  String? approximateTime;
-@override final  int? windowMinutes;
+@override@JsonKey(name: 'birth_data') final  BirthDataV3Dto birthData;
 
-/// Create a copy of TimeWindowDto
+/// Create a copy of SubjectDto
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$TimeWindowDtoCopyWith<_TimeWindowDto> get copyWith => __$TimeWindowDtoCopyWithImpl<_TimeWindowDto>(this, _$identity);
+_$SubjectDtoCopyWith<_SubjectDto> get copyWith => __$SubjectDtoCopyWithImpl<_SubjectDto>(this, _$identity);
 
 @override
 Map<String, dynamic> toJson() {
-  return _$TimeWindowDtoToJson(this, );
+  return _$SubjectDtoToJson(this, );
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TimeWindowDto&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.approximateTime, approximateTime) || other.approximateTime == approximateTime)&&(identical(other.windowMinutes, windowMinutes) || other.windowMinutes == windowMinutes));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SubjectDto&&(identical(other.birthData, birthData) || other.birthData == birthData));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,mode,approximateTime,windowMinutes);
+int get hashCode => Object.hash(runtimeType,birthData);
 
 @override
 String toString() {
-  return 'TimeWindowDto(mode: $mode, approximateTime: $approximateTime, windowMinutes: $windowMinutes)';
+  return 'SubjectDto(birthData: $birthData)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$TimeWindowDtoCopyWith<$Res> implements $TimeWindowDtoCopyWith<$Res> {
-  factory _$TimeWindowDtoCopyWith(_TimeWindowDto value, $Res Function(_TimeWindowDto) _then) = __$TimeWindowDtoCopyWithImpl;
+abstract mixin class _$SubjectDtoCopyWith<$Res> implements $SubjectDtoCopyWith<$Res> {
+  factory _$SubjectDtoCopyWith(_SubjectDto value, $Res Function(_SubjectDto) _then) = __$SubjectDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String mode, String? approximateTime, int? windowMinutes
+@JsonKey(name: 'birth_data') BirthDataV3Dto birthData
 });
 
 
-
+@override $BirthDataV3DtoCopyWith<$Res> get birthData;
 
 }
 /// @nodoc
-class __$TimeWindowDtoCopyWithImpl<$Res>
-    implements _$TimeWindowDtoCopyWith<$Res> {
-  __$TimeWindowDtoCopyWithImpl(this._self, this._then);
+class __$SubjectDtoCopyWithImpl<$Res>
+    implements _$SubjectDtoCopyWith<$Res> {
+  __$SubjectDtoCopyWithImpl(this._self, this._then);
 
-  final _TimeWindowDto _self;
-  final $Res Function(_TimeWindowDto) _then;
+  final _SubjectDto _self;
+  final $Res Function(_SubjectDto) _then;
 
-/// Create a copy of TimeWindowDto
+/// Create a copy of SubjectDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? mode = null,Object? approximateTime = freezed,Object? windowMinutes = freezed,}) {
-  return _then(_TimeWindowDto(
-mode: null == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
-as String,approximateTime: freezed == approximateTime ? _self.approximateTime : approximateTime // ignore: cast_nullable_to_non_nullable
-as String?,windowMinutes: freezed == windowMinutes ? _self.windowMinutes : windowMinutes // ignore: cast_nullable_to_non_nullable
-as int?,
+@override @pragma('vm:prefer-inline') $Res call({Object? birthData = null,}) {
+  return _then(_SubjectDto(
+birthData: null == birthData ? _self.birthData : birthData // ignore: cast_nullable_to_non_nullable
+as BirthDataV3Dto,
   ));
 }
 
-
+/// Create a copy of SubjectDto
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$BirthDataV3DtoCopyWith<$Res> get birthData {
+  
+  return $BirthDataV3DtoCopyWith<$Res>(_self.birthData, (value) {
+    return _then(_self.copyWith(birthData: value));
+  });
+}
 }
 
 
 /// @nodoc
-mixin _$LifeEventDto {
+mixin _$TimeSearchDto {
 
- String get id; String get category; int get year; int? get month; String? get description;
-/// Create a copy of LifeEventDto
+@JsonKey(name: 'delta_minutes') int? get deltaMinutes;@JsonKey(name: 'step_minutes') int? get stepMinutes; String? get start; String? get end;
+/// Create a copy of TimeSearchDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$LifeEventDtoCopyWith<LifeEventDto> get copyWith => _$LifeEventDtoCopyWithImpl<LifeEventDto>(this as LifeEventDto, _$identity);
+$TimeSearchDtoCopyWith<TimeSearchDto> get copyWith => _$TimeSearchDtoCopyWithImpl<TimeSearchDto>(this as TimeSearchDto, _$identity);
 
-  /// Serializes this LifeEventDto to a JSON map.
+  /// Serializes this TimeSearchDto to a JSON map.
   Map<String, dynamic> toJson();
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LifeEventDto&&(identical(other.id, id) || other.id == id)&&(identical(other.category, category) || other.category == category)&&(identical(other.year, year) || other.year == year)&&(identical(other.month, month) || other.month == month)&&(identical(other.description, description) || other.description == description));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TimeSearchDto&&(identical(other.deltaMinutes, deltaMinutes) || other.deltaMinutes == deltaMinutes)&&(identical(other.stepMinutes, stepMinutes) || other.stepMinutes == stepMinutes)&&(identical(other.start, start) || other.start == start)&&(identical(other.end, end) || other.end == end));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,category,year,month,description);
+int get hashCode => Object.hash(runtimeType,deltaMinutes,stepMinutes,start,end);
 
 @override
 String toString() {
-  return 'LifeEventDto(id: $id, category: $category, year: $year, month: $month, description: $description)';
+  return 'TimeSearchDto(deltaMinutes: $deltaMinutes, stepMinutes: $stepMinutes, start: $start, end: $end)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $LifeEventDtoCopyWith<$Res>  {
-  factory $LifeEventDtoCopyWith(LifeEventDto value, $Res Function(LifeEventDto) _then) = _$LifeEventDtoCopyWithImpl;
+abstract mixin class $TimeSearchDtoCopyWith<$Res>  {
+  factory $TimeSearchDtoCopyWith(TimeSearchDto value, $Res Function(TimeSearchDto) _then) = _$TimeSearchDtoCopyWithImpl;
 @useResult
 $Res call({
- String id, String category, int year, int? month, String? description
+@JsonKey(name: 'delta_minutes') int? deltaMinutes,@JsonKey(name: 'step_minutes') int? stepMinutes, String? start, String? end
 });
 
 
@@ -594,22 +627,21 @@ $Res call({
 
 }
 /// @nodoc
-class _$LifeEventDtoCopyWithImpl<$Res>
-    implements $LifeEventDtoCopyWith<$Res> {
-  _$LifeEventDtoCopyWithImpl(this._self, this._then);
+class _$TimeSearchDtoCopyWithImpl<$Res>
+    implements $TimeSearchDtoCopyWith<$Res> {
+  _$TimeSearchDtoCopyWithImpl(this._self, this._then);
 
-  final LifeEventDto _self;
-  final $Res Function(LifeEventDto) _then;
+  final TimeSearchDto _self;
+  final $Res Function(TimeSearchDto) _then;
 
-/// Create a copy of LifeEventDto
+/// Create a copy of TimeSearchDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? category = null,Object? year = null,Object? month = freezed,Object? description = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? deltaMinutes = freezed,Object? stepMinutes = freezed,Object? start = freezed,Object? end = freezed,}) {
   return _then(_self.copyWith(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,category: null == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
-as String,year: null == year ? _self.year : year // ignore: cast_nullable_to_non_nullable
-as int,month: freezed == month ? _self.month : month // ignore: cast_nullable_to_non_nullable
-as int?,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+deltaMinutes: freezed == deltaMinutes ? _self.deltaMinutes : deltaMinutes // ignore: cast_nullable_to_non_nullable
+as int?,stepMinutes: freezed == stepMinutes ? _self.stepMinutes : stepMinutes // ignore: cast_nullable_to_non_nullable
+as int?,start: freezed == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
+as String?,end: freezed == end ? _self.end : end // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -617,8 +649,8 @@ as String?,
 }
 
 
-/// Adds pattern-matching-related methods to [LifeEventDto].
-extension LifeEventDtoPatterns on LifeEventDto {
+/// Adds pattern-matching-related methods to [TimeSearchDto].
+extension TimeSearchDtoPatterns on TimeSearchDto {
 /// A variant of `map` that fallback to returning `orElse`.
 ///
 /// It is equivalent to doing:
@@ -631,10 +663,10 @@ extension LifeEventDtoPatterns on LifeEventDto {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _LifeEventDto value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _TimeSearchDto value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _LifeEventDto() when $default != null:
+case _TimeSearchDto() when $default != null:
 return $default(_that);case _:
   return orElse();
 
@@ -653,10 +685,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _LifeEventDto value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _TimeSearchDto value)  $default,){
 final _that = this;
 switch (_that) {
-case _LifeEventDto():
+case _TimeSearchDto():
 return $default(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -674,10 +706,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _LifeEventDto value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _TimeSearchDto value)?  $default,){
 final _that = this;
 switch (_that) {
-case _LifeEventDto() when $default != null:
+case _TimeSearchDto() when $default != null:
 return $default(_that);case _:
   return null;
 
@@ -695,10 +727,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String category,  int year,  int? month,  String? description)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'delta_minutes')  int? deltaMinutes, @JsonKey(name: 'step_minutes')  int? stepMinutes,  String? start,  String? end)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _LifeEventDto() when $default != null:
-return $default(_that.id,_that.category,_that.year,_that.month,_that.description);case _:
+case _TimeSearchDto() when $default != null:
+return $default(_that.deltaMinutes,_that.stepMinutes,_that.start,_that.end);case _:
   return orElse();
 
 }
@@ -716,10 +748,10 @@ return $default(_that.id,_that.category,_that.year,_that.month,_that.description
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String category,  int year,  int? month,  String? description)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'delta_minutes')  int? deltaMinutes, @JsonKey(name: 'step_minutes')  int? stepMinutes,  String? start,  String? end)  $default,) {final _that = this;
 switch (_that) {
-case _LifeEventDto():
-return $default(_that.id,_that.category,_that.year,_that.month,_that.description);case _:
+case _TimeSearchDto():
+return $default(_that.deltaMinutes,_that.stepMinutes,_that.start,_that.end);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -736,10 +768,10 @@ return $default(_that.id,_that.category,_that.year,_that.month,_that.description
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String category,  int year,  int? month,  String? description)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'delta_minutes')  int? deltaMinutes, @JsonKey(name: 'step_minutes')  int? stepMinutes,  String? start,  String? end)?  $default,) {final _that = this;
 switch (_that) {
-case _LifeEventDto() when $default != null:
-return $default(_that.id,_that.category,_that.year,_that.month,_that.description);case _:
+case _TimeSearchDto() when $default != null:
+return $default(_that.deltaMinutes,_that.stepMinutes,_that.start,_that.end);case _:
   return null;
 
 }
@@ -750,50 +782,321 @@ return $default(_that.id,_that.category,_that.year,_that.month,_that.description
 /// @nodoc
 @JsonSerializable()
 
-class _LifeEventDto implements LifeEventDto {
-  const _LifeEventDto({required this.id, required this.category, required this.year, this.month, this.description});
-  factory _LifeEventDto.fromJson(Map<String, dynamic> json) => _$LifeEventDtoFromJson(json);
+class _TimeSearchDto implements TimeSearchDto {
+  const _TimeSearchDto({@JsonKey(name: 'delta_minutes') this.deltaMinutes, @JsonKey(name: 'step_minutes') this.stepMinutes, this.start, this.end});
+  factory _TimeSearchDto.fromJson(Map<String, dynamic> json) => _$TimeSearchDtoFromJson(json);
 
-@override final  String id;
+@override@JsonKey(name: 'delta_minutes') final  int? deltaMinutes;
+@override@JsonKey(name: 'step_minutes') final  int? stepMinutes;
+@override final  String? start;
+@override final  String? end;
+
+/// Create a copy of TimeSearchDto
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$TimeSearchDtoCopyWith<_TimeSearchDto> get copyWith => __$TimeSearchDtoCopyWithImpl<_TimeSearchDto>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$TimeSearchDtoToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TimeSearchDto&&(identical(other.deltaMinutes, deltaMinutes) || other.deltaMinutes == deltaMinutes)&&(identical(other.stepMinutes, stepMinutes) || other.stepMinutes == stepMinutes)&&(identical(other.start, start) || other.start == start)&&(identical(other.end, end) || other.end == end));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,deltaMinutes,stepMinutes,start,end);
+
+@override
+String toString() {
+  return 'TimeSearchDto(deltaMinutes: $deltaMinutes, stepMinutes: $stepMinutes, start: $start, end: $end)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$TimeSearchDtoCopyWith<$Res> implements $TimeSearchDtoCopyWith<$Res> {
+  factory _$TimeSearchDtoCopyWith(_TimeSearchDto value, $Res Function(_TimeSearchDto) _then) = __$TimeSearchDtoCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(name: 'delta_minutes') int? deltaMinutes,@JsonKey(name: 'step_minutes') int? stepMinutes, String? start, String? end
+});
+
+
+
+
+}
+/// @nodoc
+class __$TimeSearchDtoCopyWithImpl<$Res>
+    implements _$TimeSearchDtoCopyWith<$Res> {
+  __$TimeSearchDtoCopyWithImpl(this._self, this._then);
+
+  final _TimeSearchDto _self;
+  final $Res Function(_TimeSearchDto) _then;
+
+/// Create a copy of TimeSearchDto
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? deltaMinutes = freezed,Object? stepMinutes = freezed,Object? start = freezed,Object? end = freezed,}) {
+  return _then(_TimeSearchDto(
+deltaMinutes: freezed == deltaMinutes ? _self.deltaMinutes : deltaMinutes // ignore: cast_nullable_to_non_nullable
+as int?,stepMinutes: freezed == stepMinutes ? _self.stepMinutes : stepMinutes // ignore: cast_nullable_to_non_nullable
+as int?,start: freezed == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
+as String?,end: freezed == end ? _self.end : end // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$EventV3Dto {
+
+ String get category; String get date;@JsonKey(name: 'date_precision') String? get datePrecision; String? get description;
+/// Create a copy of EventV3Dto
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$EventV3DtoCopyWith<EventV3Dto> get copyWith => _$EventV3DtoCopyWithImpl<EventV3Dto>(this as EventV3Dto, _$identity);
+
+  /// Serializes this EventV3Dto to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventV3Dto&&(identical(other.category, category) || other.category == category)&&(identical(other.date, date) || other.date == date)&&(identical(other.datePrecision, datePrecision) || other.datePrecision == datePrecision)&&(identical(other.description, description) || other.description == description));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,category,date,datePrecision,description);
+
+@override
+String toString() {
+  return 'EventV3Dto(category: $category, date: $date, datePrecision: $datePrecision, description: $description)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $EventV3DtoCopyWith<$Res>  {
+  factory $EventV3DtoCopyWith(EventV3Dto value, $Res Function(EventV3Dto) _then) = _$EventV3DtoCopyWithImpl;
+@useResult
+$Res call({
+ String category, String date,@JsonKey(name: 'date_precision') String? datePrecision, String? description
+});
+
+
+
+
+}
+/// @nodoc
+class _$EventV3DtoCopyWithImpl<$Res>
+    implements $EventV3DtoCopyWith<$Res> {
+  _$EventV3DtoCopyWithImpl(this._self, this._then);
+
+  final EventV3Dto _self;
+  final $Res Function(EventV3Dto) _then;
+
+/// Create a copy of EventV3Dto
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? category = null,Object? date = null,Object? datePrecision = freezed,Object? description = freezed,}) {
+  return _then(_self.copyWith(
+category: null == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
+as String,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
+as String,datePrecision: freezed == datePrecision ? _self.datePrecision : datePrecision // ignore: cast_nullable_to_non_nullable
+as String?,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [EventV3Dto].
+extension EventV3DtoPatterns on EventV3Dto {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _EventV3Dto value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _EventV3Dto() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _EventV3Dto value)  $default,){
+final _that = this;
+switch (_that) {
+case _EventV3Dto():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _EventV3Dto value)?  $default,){
+final _that = this;
+switch (_that) {
+case _EventV3Dto() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String category,  String date, @JsonKey(name: 'date_precision')  String? datePrecision,  String? description)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _EventV3Dto() when $default != null:
+return $default(_that.category,_that.date,_that.datePrecision,_that.description);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String category,  String date, @JsonKey(name: 'date_precision')  String? datePrecision,  String? description)  $default,) {final _that = this;
+switch (_that) {
+case _EventV3Dto():
+return $default(_that.category,_that.date,_that.datePrecision,_that.description);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String category,  String date, @JsonKey(name: 'date_precision')  String? datePrecision,  String? description)?  $default,) {final _that = this;
+switch (_that) {
+case _EventV3Dto() when $default != null:
+return $default(_that.category,_that.date,_that.datePrecision,_that.description);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _EventV3Dto implements EventV3Dto {
+  const _EventV3Dto({required this.category, required this.date, @JsonKey(name: 'date_precision') this.datePrecision, this.description});
+  factory _EventV3Dto.fromJson(Map<String, dynamic> json) => _$EventV3DtoFromJson(json);
+
 @override final  String category;
-@override final  int year;
-@override final  int? month;
+@override final  String date;
+@override@JsonKey(name: 'date_precision') final  String? datePrecision;
 @override final  String? description;
 
-/// Create a copy of LifeEventDto
+/// Create a copy of EventV3Dto
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$LifeEventDtoCopyWith<_LifeEventDto> get copyWith => __$LifeEventDtoCopyWithImpl<_LifeEventDto>(this, _$identity);
+_$EventV3DtoCopyWith<_EventV3Dto> get copyWith => __$EventV3DtoCopyWithImpl<_EventV3Dto>(this, _$identity);
 
 @override
 Map<String, dynamic> toJson() {
-  return _$LifeEventDtoToJson(this, );
+  return _$EventV3DtoToJson(this, );
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LifeEventDto&&(identical(other.id, id) || other.id == id)&&(identical(other.category, category) || other.category == category)&&(identical(other.year, year) || other.year == year)&&(identical(other.month, month) || other.month == month)&&(identical(other.description, description) || other.description == description));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventV3Dto&&(identical(other.category, category) || other.category == category)&&(identical(other.date, date) || other.date == date)&&(identical(other.datePrecision, datePrecision) || other.datePrecision == datePrecision)&&(identical(other.description, description) || other.description == description));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,category,year,month,description);
+int get hashCode => Object.hash(runtimeType,category,date,datePrecision,description);
 
 @override
 String toString() {
-  return 'LifeEventDto(id: $id, category: $category, year: $year, month: $month, description: $description)';
+  return 'EventV3Dto(category: $category, date: $date, datePrecision: $datePrecision, description: $description)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$LifeEventDtoCopyWith<$Res> implements $LifeEventDtoCopyWith<$Res> {
-  factory _$LifeEventDtoCopyWith(_LifeEventDto value, $Res Function(_LifeEventDto) _then) = __$LifeEventDtoCopyWithImpl;
+abstract mixin class _$EventV3DtoCopyWith<$Res> implements $EventV3DtoCopyWith<$Res> {
+  factory _$EventV3DtoCopyWith(_EventV3Dto value, $Res Function(_EventV3Dto) _then) = __$EventV3DtoCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String category, int year, int? month, String? description
+ String category, String date,@JsonKey(name: 'date_precision') String? datePrecision, String? description
 });
 
 
@@ -801,22 +1104,21 @@ $Res call({
 
 }
 /// @nodoc
-class __$LifeEventDtoCopyWithImpl<$Res>
-    implements _$LifeEventDtoCopyWith<$Res> {
-  __$LifeEventDtoCopyWithImpl(this._self, this._then);
+class __$EventV3DtoCopyWithImpl<$Res>
+    implements _$EventV3DtoCopyWith<$Res> {
+  __$EventV3DtoCopyWithImpl(this._self, this._then);
 
-  final _LifeEventDto _self;
-  final $Res Function(_LifeEventDto) _then;
+  final _EventV3Dto _self;
+  final $Res Function(_EventV3Dto) _then;
 
-/// Create a copy of LifeEventDto
+/// Create a copy of EventV3Dto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? category = null,Object? year = null,Object? month = freezed,Object? description = freezed,}) {
-  return _then(_LifeEventDto(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,category: null == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
-as String,year: null == year ? _self.year : year // ignore: cast_nullable_to_non_nullable
-as int,month: freezed == month ? _self.month : month // ignore: cast_nullable_to_non_nullable
-as int?,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+@override @pragma('vm:prefer-inline') $Res call({Object? category = null,Object? date = null,Object? datePrecision = freezed,Object? description = freezed,}) {
+  return _then(_EventV3Dto(
+category: null == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
+as String,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
+as String,datePrecision: freezed == datePrecision ? _self.datePrecision : datePrecision // ignore: cast_nullable_to_non_nullable
+as String?,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -826,92 +1128,90 @@ as String?,
 
 
 /// @nodoc
-mixin _$RectificationRequestDto {
+mixin _$RectificationSearchRequestDto {
 
- String get requestId; String get birthDate; BirthPlaceDto get birthPlace; TimeWindowDto get timeWindow; List<LifeEventDto> get lifeEvents;
-/// Create a copy of RectificationRequestDto
+ SubjectDto get subject;@JsonKey(name: 'time_search') TimeSearchDto get timeSearch; List<EventV3Dto> get events;
+/// Create a copy of RectificationSearchRequestDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$RectificationRequestDtoCopyWith<RectificationRequestDto> get copyWith => _$RectificationRequestDtoCopyWithImpl<RectificationRequestDto>(this as RectificationRequestDto, _$identity);
+$RectificationSearchRequestDtoCopyWith<RectificationSearchRequestDto> get copyWith => _$RectificationSearchRequestDtoCopyWithImpl<RectificationSearchRequestDto>(this as RectificationSearchRequestDto, _$identity);
 
-  /// Serializes this RectificationRequestDto to a JSON map.
+  /// Serializes this RectificationSearchRequestDto to a JSON map.
   Map<String, dynamic> toJson();
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RectificationRequestDto&&(identical(other.requestId, requestId) || other.requestId == requestId)&&(identical(other.birthDate, birthDate) || other.birthDate == birthDate)&&(identical(other.birthPlace, birthPlace) || other.birthPlace == birthPlace)&&(identical(other.timeWindow, timeWindow) || other.timeWindow == timeWindow)&&const DeepCollectionEquality().equals(other.lifeEvents, lifeEvents));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RectificationSearchRequestDto&&(identical(other.subject, subject) || other.subject == subject)&&(identical(other.timeSearch, timeSearch) || other.timeSearch == timeSearch)&&const DeepCollectionEquality().equals(other.events, events));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,requestId,birthDate,birthPlace,timeWindow,const DeepCollectionEquality().hash(lifeEvents));
+int get hashCode => Object.hash(runtimeType,subject,timeSearch,const DeepCollectionEquality().hash(events));
 
 @override
 String toString() {
-  return 'RectificationRequestDto(requestId: $requestId, birthDate: $birthDate, birthPlace: $birthPlace, timeWindow: $timeWindow, lifeEvents: $lifeEvents)';
+  return 'RectificationSearchRequestDto(subject: $subject, timeSearch: $timeSearch, events: $events)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $RectificationRequestDtoCopyWith<$Res>  {
-  factory $RectificationRequestDtoCopyWith(RectificationRequestDto value, $Res Function(RectificationRequestDto) _then) = _$RectificationRequestDtoCopyWithImpl;
+abstract mixin class $RectificationSearchRequestDtoCopyWith<$Res>  {
+  factory $RectificationSearchRequestDtoCopyWith(RectificationSearchRequestDto value, $Res Function(RectificationSearchRequestDto) _then) = _$RectificationSearchRequestDtoCopyWithImpl;
 @useResult
 $Res call({
- String requestId, String birthDate, BirthPlaceDto birthPlace, TimeWindowDto timeWindow, List<LifeEventDto> lifeEvents
+ SubjectDto subject,@JsonKey(name: 'time_search') TimeSearchDto timeSearch, List<EventV3Dto> events
 });
 
 
-$BirthPlaceDtoCopyWith<$Res> get birthPlace;$TimeWindowDtoCopyWith<$Res> get timeWindow;
+$SubjectDtoCopyWith<$Res> get subject;$TimeSearchDtoCopyWith<$Res> get timeSearch;
 
 }
 /// @nodoc
-class _$RectificationRequestDtoCopyWithImpl<$Res>
-    implements $RectificationRequestDtoCopyWith<$Res> {
-  _$RectificationRequestDtoCopyWithImpl(this._self, this._then);
+class _$RectificationSearchRequestDtoCopyWithImpl<$Res>
+    implements $RectificationSearchRequestDtoCopyWith<$Res> {
+  _$RectificationSearchRequestDtoCopyWithImpl(this._self, this._then);
 
-  final RectificationRequestDto _self;
-  final $Res Function(RectificationRequestDto) _then;
+  final RectificationSearchRequestDto _self;
+  final $Res Function(RectificationSearchRequestDto) _then;
 
-/// Create a copy of RectificationRequestDto
+/// Create a copy of RectificationSearchRequestDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? requestId = null,Object? birthDate = null,Object? birthPlace = null,Object? timeWindow = null,Object? lifeEvents = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? subject = null,Object? timeSearch = null,Object? events = null,}) {
   return _then(_self.copyWith(
-requestId: null == requestId ? _self.requestId : requestId // ignore: cast_nullable_to_non_nullable
-as String,birthDate: null == birthDate ? _self.birthDate : birthDate // ignore: cast_nullable_to_non_nullable
-as String,birthPlace: null == birthPlace ? _self.birthPlace : birthPlace // ignore: cast_nullable_to_non_nullable
-as BirthPlaceDto,timeWindow: null == timeWindow ? _self.timeWindow : timeWindow // ignore: cast_nullable_to_non_nullable
-as TimeWindowDto,lifeEvents: null == lifeEvents ? _self.lifeEvents : lifeEvents // ignore: cast_nullable_to_non_nullable
-as List<LifeEventDto>,
+subject: null == subject ? _self.subject : subject // ignore: cast_nullable_to_non_nullable
+as SubjectDto,timeSearch: null == timeSearch ? _self.timeSearch : timeSearch // ignore: cast_nullable_to_non_nullable
+as TimeSearchDto,events: null == events ? _self.events : events // ignore: cast_nullable_to_non_nullable
+as List<EventV3Dto>,
   ));
 }
-/// Create a copy of RectificationRequestDto
+/// Create a copy of RectificationSearchRequestDto
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$BirthPlaceDtoCopyWith<$Res> get birthPlace {
+$SubjectDtoCopyWith<$Res> get subject {
   
-  return $BirthPlaceDtoCopyWith<$Res>(_self.birthPlace, (value) {
-    return _then(_self.copyWith(birthPlace: value));
+  return $SubjectDtoCopyWith<$Res>(_self.subject, (value) {
+    return _then(_self.copyWith(subject: value));
   });
-}/// Create a copy of RectificationRequestDto
+}/// Create a copy of RectificationSearchRequestDto
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$TimeWindowDtoCopyWith<$Res> get timeWindow {
+$TimeSearchDtoCopyWith<$Res> get timeSearch {
   
-  return $TimeWindowDtoCopyWith<$Res>(_self.timeWindow, (value) {
-    return _then(_self.copyWith(timeWindow: value));
+  return $TimeSearchDtoCopyWith<$Res>(_self.timeSearch, (value) {
+    return _then(_self.copyWith(timeSearch: value));
   });
 }
 }
 
 
-/// Adds pattern-matching-related methods to [RectificationRequestDto].
-extension RectificationRequestDtoPatterns on RectificationRequestDto {
+/// Adds pattern-matching-related methods to [RectificationSearchRequestDto].
+extension RectificationSearchRequestDtoPatterns on RectificationSearchRequestDto {
 /// A variant of `map` that fallback to returning `orElse`.
 ///
 /// It is equivalent to doing:
@@ -924,10 +1224,10 @@ extension RectificationRequestDtoPatterns on RectificationRequestDto {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _RectificationRequestDto value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _RectificationSearchRequestDto value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _RectificationRequestDto() when $default != null:
+case _RectificationSearchRequestDto() when $default != null:
 return $default(_that);case _:
   return orElse();
 
@@ -946,10 +1246,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _RectificationRequestDto value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _RectificationSearchRequestDto value)  $default,){
 final _that = this;
 switch (_that) {
-case _RectificationRequestDto():
+case _RectificationSearchRequestDto():
 return $default(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -967,10 +1267,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _RectificationRequestDto value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _RectificationSearchRequestDto value)?  $default,){
 final _that = this;
 switch (_that) {
-case _RectificationRequestDto() when $default != null:
+case _RectificationSearchRequestDto() when $default != null:
 return $default(_that);case _:
   return null;
 
@@ -988,10 +1288,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String requestId,  String birthDate,  BirthPlaceDto birthPlace,  TimeWindowDto timeWindow,  List<LifeEventDto> lifeEvents)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( SubjectDto subject, @JsonKey(name: 'time_search')  TimeSearchDto timeSearch,  List<EventV3Dto> events)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _RectificationRequestDto() when $default != null:
-return $default(_that.requestId,_that.birthDate,_that.birthPlace,_that.timeWindow,_that.lifeEvents);case _:
+case _RectificationSearchRequestDto() when $default != null:
+return $default(_that.subject,_that.timeSearch,_that.events);case _:
   return orElse();
 
 }
@@ -1009,10 +1309,10 @@ return $default(_that.requestId,_that.birthDate,_that.birthPlace,_that.timeWindo
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String requestId,  String birthDate,  BirthPlaceDto birthPlace,  TimeWindowDto timeWindow,  List<LifeEventDto> lifeEvents)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( SubjectDto subject, @JsonKey(name: 'time_search')  TimeSearchDto timeSearch,  List<EventV3Dto> events)  $default,) {final _that = this;
 switch (_that) {
-case _RectificationRequestDto():
-return $default(_that.requestId,_that.birthDate,_that.birthPlace,_that.timeWindow,_that.lifeEvents);case _:
+case _RectificationSearchRequestDto():
+return $default(_that.subject,_that.timeSearch,_that.events);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1029,10 +1329,10 @@ return $default(_that.requestId,_that.birthDate,_that.birthPlace,_that.timeWindo
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String requestId,  String birthDate,  BirthPlaceDto birthPlace,  TimeWindowDto timeWindow,  List<LifeEventDto> lifeEvents)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( SubjectDto subject, @JsonKey(name: 'time_search')  TimeSearchDto timeSearch,  List<EventV3Dto> events)?  $default,) {final _that = this;
 switch (_that) {
-case _RectificationRequestDto() when $default != null:
-return $default(_that.requestId,_that.birthDate,_that.birthPlace,_that.timeWindow,_that.lifeEvents);case _:
+case _RectificationSearchRequestDto() when $default != null:
+return $default(_that.subject,_that.timeSearch,_that.events);case _:
   return null;
 
 }
@@ -1041,102 +1341,98 @@ return $default(_that.requestId,_that.birthDate,_that.birthPlace,_that.timeWindo
 }
 
 /// @nodoc
-@JsonSerializable()
 
-class _RectificationRequestDto implements RectificationRequestDto {
-  const _RectificationRequestDto({required this.requestId, required this.birthDate, required this.birthPlace, required this.timeWindow, required final  List<LifeEventDto> lifeEvents}): _lifeEvents = lifeEvents;
-  factory _RectificationRequestDto.fromJson(Map<String, dynamic> json) => _$RectificationRequestDtoFromJson(json);
+@JsonSerializable(explicitToJson: true)
+class _RectificationSearchRequestDto implements RectificationSearchRequestDto {
+  const _RectificationSearchRequestDto({required this.subject, @JsonKey(name: 'time_search') required this.timeSearch, required final  List<EventV3Dto> events}): _events = events;
+  factory _RectificationSearchRequestDto.fromJson(Map<String, dynamic> json) => _$RectificationSearchRequestDtoFromJson(json);
 
-@override final  String requestId;
-@override final  String birthDate;
-@override final  BirthPlaceDto birthPlace;
-@override final  TimeWindowDto timeWindow;
- final  List<LifeEventDto> _lifeEvents;
-@override List<LifeEventDto> get lifeEvents {
-  if (_lifeEvents is EqualUnmodifiableListView) return _lifeEvents;
+@override final  SubjectDto subject;
+@override@JsonKey(name: 'time_search') final  TimeSearchDto timeSearch;
+ final  List<EventV3Dto> _events;
+@override List<EventV3Dto> get events {
+  if (_events is EqualUnmodifiableListView) return _events;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_lifeEvents);
+  return EqualUnmodifiableListView(_events);
 }
 
 
-/// Create a copy of RectificationRequestDto
+/// Create a copy of RectificationSearchRequestDto
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$RectificationRequestDtoCopyWith<_RectificationRequestDto> get copyWith => __$RectificationRequestDtoCopyWithImpl<_RectificationRequestDto>(this, _$identity);
+_$RectificationSearchRequestDtoCopyWith<_RectificationSearchRequestDto> get copyWith => __$RectificationSearchRequestDtoCopyWithImpl<_RectificationSearchRequestDto>(this, _$identity);
 
 @override
 Map<String, dynamic> toJson() {
-  return _$RectificationRequestDtoToJson(this, );
+  return _$RectificationSearchRequestDtoToJson(this, );
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RectificationRequestDto&&(identical(other.requestId, requestId) || other.requestId == requestId)&&(identical(other.birthDate, birthDate) || other.birthDate == birthDate)&&(identical(other.birthPlace, birthPlace) || other.birthPlace == birthPlace)&&(identical(other.timeWindow, timeWindow) || other.timeWindow == timeWindow)&&const DeepCollectionEquality().equals(other._lifeEvents, _lifeEvents));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RectificationSearchRequestDto&&(identical(other.subject, subject) || other.subject == subject)&&(identical(other.timeSearch, timeSearch) || other.timeSearch == timeSearch)&&const DeepCollectionEquality().equals(other._events, _events));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,requestId,birthDate,birthPlace,timeWindow,const DeepCollectionEquality().hash(_lifeEvents));
+int get hashCode => Object.hash(runtimeType,subject,timeSearch,const DeepCollectionEquality().hash(_events));
 
 @override
 String toString() {
-  return 'RectificationRequestDto(requestId: $requestId, birthDate: $birthDate, birthPlace: $birthPlace, timeWindow: $timeWindow, lifeEvents: $lifeEvents)';
+  return 'RectificationSearchRequestDto(subject: $subject, timeSearch: $timeSearch, events: $events)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$RectificationRequestDtoCopyWith<$Res> implements $RectificationRequestDtoCopyWith<$Res> {
-  factory _$RectificationRequestDtoCopyWith(_RectificationRequestDto value, $Res Function(_RectificationRequestDto) _then) = __$RectificationRequestDtoCopyWithImpl;
+abstract mixin class _$RectificationSearchRequestDtoCopyWith<$Res> implements $RectificationSearchRequestDtoCopyWith<$Res> {
+  factory _$RectificationSearchRequestDtoCopyWith(_RectificationSearchRequestDto value, $Res Function(_RectificationSearchRequestDto) _then) = __$RectificationSearchRequestDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String requestId, String birthDate, BirthPlaceDto birthPlace, TimeWindowDto timeWindow, List<LifeEventDto> lifeEvents
+ SubjectDto subject,@JsonKey(name: 'time_search') TimeSearchDto timeSearch, List<EventV3Dto> events
 });
 
 
-@override $BirthPlaceDtoCopyWith<$Res> get birthPlace;@override $TimeWindowDtoCopyWith<$Res> get timeWindow;
+@override $SubjectDtoCopyWith<$Res> get subject;@override $TimeSearchDtoCopyWith<$Res> get timeSearch;
 
 }
 /// @nodoc
-class __$RectificationRequestDtoCopyWithImpl<$Res>
-    implements _$RectificationRequestDtoCopyWith<$Res> {
-  __$RectificationRequestDtoCopyWithImpl(this._self, this._then);
+class __$RectificationSearchRequestDtoCopyWithImpl<$Res>
+    implements _$RectificationSearchRequestDtoCopyWith<$Res> {
+  __$RectificationSearchRequestDtoCopyWithImpl(this._self, this._then);
 
-  final _RectificationRequestDto _self;
-  final $Res Function(_RectificationRequestDto) _then;
+  final _RectificationSearchRequestDto _self;
+  final $Res Function(_RectificationSearchRequestDto) _then;
 
-/// Create a copy of RectificationRequestDto
+/// Create a copy of RectificationSearchRequestDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? requestId = null,Object? birthDate = null,Object? birthPlace = null,Object? timeWindow = null,Object? lifeEvents = null,}) {
-  return _then(_RectificationRequestDto(
-requestId: null == requestId ? _self.requestId : requestId // ignore: cast_nullable_to_non_nullable
-as String,birthDate: null == birthDate ? _self.birthDate : birthDate // ignore: cast_nullable_to_non_nullable
-as String,birthPlace: null == birthPlace ? _self.birthPlace : birthPlace // ignore: cast_nullable_to_non_nullable
-as BirthPlaceDto,timeWindow: null == timeWindow ? _self.timeWindow : timeWindow // ignore: cast_nullable_to_non_nullable
-as TimeWindowDto,lifeEvents: null == lifeEvents ? _self._lifeEvents : lifeEvents // ignore: cast_nullable_to_non_nullable
-as List<LifeEventDto>,
+@override @pragma('vm:prefer-inline') $Res call({Object? subject = null,Object? timeSearch = null,Object? events = null,}) {
+  return _then(_RectificationSearchRequestDto(
+subject: null == subject ? _self.subject : subject // ignore: cast_nullable_to_non_nullable
+as SubjectDto,timeSearch: null == timeSearch ? _self.timeSearch : timeSearch // ignore: cast_nullable_to_non_nullable
+as TimeSearchDto,events: null == events ? _self._events : events // ignore: cast_nullable_to_non_nullable
+as List<EventV3Dto>,
   ));
 }
 
-/// Create a copy of RectificationRequestDto
+/// Create a copy of RectificationSearchRequestDto
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$BirthPlaceDtoCopyWith<$Res> get birthPlace {
+$SubjectDtoCopyWith<$Res> get subject {
   
-  return $BirthPlaceDtoCopyWith<$Res>(_self.birthPlace, (value) {
-    return _then(_self.copyWith(birthPlace: value));
+  return $SubjectDtoCopyWith<$Res>(_self.subject, (value) {
+    return _then(_self.copyWith(subject: value));
   });
-}/// Create a copy of RectificationRequestDto
+}/// Create a copy of RectificationSearchRequestDto
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$TimeWindowDtoCopyWith<$Res> get timeWindow {
+$TimeSearchDtoCopyWith<$Res> get timeSearch {
   
-  return $TimeWindowDtoCopyWith<$Res>(_self.timeWindow, (value) {
-    return _then(_self.copyWith(timeWindow: value));
+  return $TimeSearchDtoCopyWith<$Res>(_self.timeSearch, (value) {
+    return _then(_self.copyWith(timeSearch: value));
   });
 }
 }

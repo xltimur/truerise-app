@@ -11,6 +11,7 @@ enum ErrorScreenKind {
   noInternet,
   badRequest,
   unauthorized,
+  missingApiKey,
   server,
   malformed;
 
@@ -19,6 +20,7 @@ enum ErrorScreenKind {
     ErrorScreenKind.noInternet => RoutePaths.errorNoInternet,
     ErrorScreenKind.badRequest => RoutePaths.errorBadRequest,
     ErrorScreenKind.unauthorized => RoutePaths.errorUnauthorized,
+    ErrorScreenKind.missingApiKey => RoutePaths.errorMissingApiKey,
     ErrorScreenKind.server => RoutePaths.errorServer,
     ErrorScreenKind.malformed => RoutePaths.errorMalformed,
   };
@@ -38,6 +40,10 @@ ErrorScreenKind errorScreenForFailure(AppFailure failure) {
     NoNetworkFailure() => ErrorScreenKind.noInternet,
     BadRequestFailure() => ErrorScreenKind.badRequest,
     UnauthorizedFailure() => ErrorScreenKind.unauthorized,
+    // No API key configured — distinct screen with a direct deep-link
+    // into Settings so a first-time live-mode user isn't stuck on the
+    // generic "credentials rejected" copy.
+    MissingApiKeyFailure() => ErrorScreenKind.missingApiKey,
     ServerFailure() => ErrorScreenKind.server,
     RateLimitedFailure() => ErrorScreenKind.server,
     MalformedResponseFailure() => ErrorScreenKind.malformed,

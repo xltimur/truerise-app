@@ -73,20 +73,55 @@ Integration coverage of this flow lives in
 `integration_test/demo_flow_test.dart` (run with
 `flutter test integration_test/demo_flow_test.dart`).
 
+### Running the Live mode (real astrology-api.io calculation)
+
+Live mode calls the real [astrology-api.io](https://api.astrology-api.io)
+rectification API and costs **15 credits per request**. The key can come
+from either of two sources (Settings entry wins):
+
+1. **Bundled `.env` (demo / review builds).** `lib/main.dart` calls
+   `dotenv.load(fileName: '.env')` at startup, and `proApiKeyProvider`
+   falls back to `ASTRO_API_KEY` from that file when secure storage is
+   empty. The committed `.env` lets a reviewer install the APK and run
+   the live flow without typing a key. See `.env.example` for the
+   security caveat — anything in `.env` is baked into the binary as an
+   asset and is recoverable from the APK, so use a low-budget key only.
+2. **In-app Settings (production / per-user).** Open **Settings → API
+   Key**, paste a key. Stored exclusively in `flutter_secure_storage`;
+   never written to SharedPreferences, Drift, logs, or request bodies.
+
+Live flow:
+
+1. Launch the app with `flutter run` (no special `--dart-define` needed
+   for provider-direct mode — the provider URL is baked in as the
+   default).
+2. Disable **Demo mode** on the Settings screen if it is on.
+3. From the home screen tap **New calculation**, fill in your birth
+   data and life events, then tap **Rectify**.
+
+The app connects directly to `https://api.astrology-api.io/api/v3/rectification/search`
+with `Authorization: Bearer <key>`. If no key is configured (no `.env`
+entry, no Settings entry) the app shows a **Configuration error** screen
+that links back to Settings — not a generic network error.
+
+See `docs/api-integration.md` for the full endpoint reference and
+`docs/implementation-plan.md` §9.5 for the security boundary.
+
 ---
 
-## Environment configuration (`--dart-define`)
+## Environment configuration (`.env` + `--dart-define`)
 
-The app does **not** read a `.env` file at runtime. All build-time
-configuration is passed via `--dart-define`. The committed
-[`.env.example`](.env.example) is a template for the values a developer
-or CI should forward to the Flutter toolchain — it is not loaded
-automatically.
+The app reads `.env` at runtime via `flutter_dotenv` (loaded in
+`lib/main.dart`, bundled as a Flutter asset declared in `pubspec.yaml`).
+Today only `ASTRO_API_KEY` is consumed from `.env`; the other
+`RECTIFY_*` keys below are still passed to the Flutter toolchain via
+`--dart-define`. The committed [`.env.example`](.env.example) is the
+template, and a real `.env` is committed for the demo / review build.
 
 Typical workflow:
 
 ```bash
-cp .env.example .env             # .env is git-ignored
+cp .env.example .env             # base `.env` is tracked (demo/review build); `.env.local` etc. are ignored
 # edit .env with your local values
 
 set -a; source .env; set +a
@@ -105,6 +140,8 @@ Public configuration keys (full reference: `docs/implementation-plan.md`
 | `RECTIFY_PROXY_BASE_URL` | Base URL of the backend rectification proxy. |
 | `RECTIFY_PROXY_PATH` | Optional path prefix appended to the proxy. |
 | `RECTIFY_PROXY_APP_ID` | Public app identifier (NOT a secret; see Appendix B). |
+| `RECTIFY_PROVIDER_BASE_URL` | Provider-direct base URL (default: `https://api.astrology-api.io`). |
+| `RECTIFY_PROVIDER_PATH` | Provider-direct endpoint path (default: `/api/v3/rectification/search`). |
 | `RECTIFY_GEOCODING_BASE_URL` | Public geocoding provider URL. |
 | `RECTIFY_GEOCODING_PUBLIC_KEY` | URL/bundle-id-restricted `pk.…` token only. |
 
@@ -149,8 +186,10 @@ developer. None of them are required to run the demo flow.
 - **IDE state** — `.idea/`, `*.iml`, `*.iws`, `*.ipr`.
 - **Build output** — `/build/`, `.dart_tool/`, `.flutter-plugins-dependencies`,
   `app.*.symbols`, `app.*.map.json`, `/coverage/`, `/android/app/{debug,profile,release}`.
-- **Environment files** — `.env`, `.env.local`, `.env.dev`, … (only
-  `.env.example` is committed).
+- **Environment overrides** — `.env.local`, `.env.dev`, `.env.staging`,
+  `.env.prod`, `.env.*.local`. The base `.env` IS committed for the
+  demo / review APK build (see `.env.example`); per-developer overrides
+  stay local.
 - **Android signing material** — `android/key.properties`,
   `**/*.keystore`, `**/*.jks` (only `android/key.properties.example`
   is committed).
@@ -178,11 +217,12 @@ git push -u origin main
 (or, without `gh`, create the empty remote in the GitHub UI and then
 `git remote add origin <url> && git push -u origin main`.)
 
-Before pushing for the first time, confirm `.env`,
-`android/key.properties`, and any keystore files are **not** tracked:
+Before pushing for the first time, confirm `android/key.properties`
+and any keystore files are **not** tracked (the committed `.env` is
+intentional — see the section above):
 
 ```bash
-git ls-files | grep -E '(\.env$|\.env\.|key\.properties$|\.jks$|\.keystore$|google-services\.json|GoogleService-Info\.plist)'
+git ls-files | grep -E '(key\.properties$|\.jks$|\.keystore$|google-services\.json|GoogleService-Info\.plist)'
 # should print nothing
 ```
 
