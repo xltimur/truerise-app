@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:rectify/app/route_names.dart';
+import 'package:rectify/core/sharing/share_copy_builder.dart';
+import 'package:rectify/core/sharing/share_service.dart';
 import 'package:rectify/data/models/candidate_time.dart';
 import 'package:rectify/data/models/saved_calculation.dart';
 import 'package:rectify/data/models/time_format.dart';
@@ -101,6 +103,9 @@ const Key resultSaveButtonKey = ValueKey<String>('result-save-button');
 
 @visibleForTesting
 const Key resultEvidenceButtonKey = ValueKey<String>('result-evidence-button');
+
+@visibleForTesting
+const Key resultShareButtonKey = ValueKey<String>('result-share-button');
 
 class _ResultBody extends ConsumerWidget {
   const _ResultBody({required this.saved});
@@ -202,6 +207,8 @@ class _ResultBody extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.s3),
+          _ShareResultButton(key: resultShareButtonKey, saved: saved),
+          const SizedBox(height: AppSpacing.s3),
           _SaveToHistoryButton(saved: saved),
           if (saved.result.isDemo) ...<Widget>[
             const SizedBox(height: AppSpacing.s7),
@@ -209,6 +216,33 @@ class _ResultBody extends ConsumerWidget {
           ],
         ],
       ),
+    );
+  }
+}
+
+/// Privacy-safe share CTA. Builds share text with [ShareCopyBuilder]
+/// (no birth city, birth date, events, or API details) then delegates
+/// to [ShareService]. Shows a SnackBar when the clipboard fallback is
+/// used instead of the native share sheet.
+class _ShareResultButton extends ConsumerWidget {
+  const _ShareResultButton({required this.saved, super.key});
+
+  final SavedCalculation saved;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return GhostButton(
+      label: 'Share result',
+      onPressed: () async {
+        final svc = ref.read(shareServiceProvider);
+        final text = ShareCopyBuilder.build(saved);
+        final usedNative = await svc.share(text);
+        if (!usedNative && context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Copied to clipboard')),
+          );
+        }
+      },
     );
   }
 }

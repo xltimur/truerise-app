@@ -3225,3 +3225,63 @@ passed auth — it reached business logic, not 401/403 — so the existing
 
 - **None.** No `git add`, `git commit`, or `git push` was run.
 
+
+### 2026-05-22 — Privacy-safe result sharing
+
+- **Claude session:** `8663383f-924c-4eb2-a3b4-ff86a5008944`
+- **Goal:** Add a "Share result" CTA to the result screen that exposes
+  only the rectified time, ascendant, and confidence — never birth city,
+  birth date, life events, labels, API IDs, or keys.
+
+### Architecture
+
+- `ShareService` abstract interface — `Future<bool> share(String text)`.
+  Returns `true` when the native OS share sheet was invoked, `false`
+  when the clipboard fallback was used. The result screen shows a
+  "Copied to clipboard" SnackBar on `false`.
+- `PlatformShareService` uses a `MethodChannel('rectify/share')` with
+  `MissingPluginException` / `PlatformException` catch-and-fallback to
+  `Clipboard.setData`.
+- `ShareCopyBuilder.build(SavedCalculation)` — pure static method, no
+  state, no IO. Outputs: rectified time (12-hour format), ascendant
+  rising sign, confidence percent, and the app tagline.
+- `shareServiceProvider` — overridable Riverpod `Provider<ShareService>`;
+  widget tests override it with `FakeShareService`.
+
+### Files created
+
+- `lib/core/sharing/share_copy_builder.dart`
+- `lib/core/sharing/share_service.dart`
+  (`PlatformShareService` + `shareServiceProvider`)
+- `test/unit/sharing/share_copy_builder_test.dart` — 10 unit tests
+  (privacy guarantees, 12-hour format, null ascendant, empty candidates)
+- `test/widget/features/calculation_flow/result_share_test.dart` —
+  5 widget tests (button visible, tap calls service, text is non-empty,
+  privacy text assertions, SnackBar on fallback, no SnackBar on native)
+- `test/helpers/fake_share_service.dart`
+
+### Files modified
+
+- `lib/features/calculation_flow/screens/result_screen.dart` — added
+  `_ShareResultButton` widget, `resultShareButtonKey` constant, imports.
+- `ios/Runner/AppDelegate.swift` — registered `rectify/share`
+  MethodChannel; uses `UIActivityViewController` with iPad popover.
+- `android/app/src/main/kotlin/com/rectify/rectify/MainActivity.kt` —
+  registered `rectify/share` MethodChannel; uses `Intent.ACTION_SEND`
+  chooser.
+
+### Verification
+
+- `dart format` — 1 file reformatted (result_share_test.dart trailing comma), rest unchanged.
+- `flutter analyze` — **No issues found!**
+- `flutter test test/unit/sharing/share_copy_builder_test.dart test/widget/features/calculation_flow/result_share_test.dart` — **19/19 passed.**
+
+### Known risks / open questions
+
+- Android: `startActivity` inside the MethodChannel handler uses
+  `FlutterActivity.startActivity` which requires the activity to be
+  running — safe for the normal foreground path.
+
+### Git operations
+
+- **None.** No `git add`, `git commit`, or `git push` was run.
