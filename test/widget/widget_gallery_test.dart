@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:rectify/features/widget_gallery/widget_gallery_screen.dart';
+import 'package:rectify/l10n/app_localizations.dart';
 import 'package:rectify/theme/theme.dart';
 import 'package:rectify/widgets/buttons/buttons.dart';
 import 'package:rectify/widgets/cards/cards.dart';
@@ -19,6 +20,8 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         theme: buildLightTheme(),
         home: const WidgetGalleryScreen(),
       ),

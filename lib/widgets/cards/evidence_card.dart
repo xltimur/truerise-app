@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/icons.dart';
 import 'package:rectify/theme/motion.dart';
@@ -67,9 +68,11 @@ class _EvidenceCardState extends State<EvidenceCard> {
     return AppCard(
       backgroundColor: useSunken ? AppColors.bgSurfaceSunken : null,
       onTap: hasExplanation ? _toggle : null,
-      semanticsLabel:
-          '${widget.category}, ${widget.date}, '
-          'match ${widget.strength.tag.replaceAll('_', ' ')}',
+      semanticsLabel: context.l10n.evidenceCardSemantic(
+        widget.category,
+        widget.date,
+        widget.strength.name,
+      ),
       padding: const EdgeInsets.symmetric(
         vertical: AppSpacing.s4,
         horizontal: AppSpacing.s5,

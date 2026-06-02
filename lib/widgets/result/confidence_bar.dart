@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/typography.dart';
 
@@ -14,7 +15,7 @@ class ConfidenceBar extends StatelessWidget {
   const ConfidenceBar({
     required this.value,
     this.height = 8,
-    this.label = 'Confidence',
+    this.label,
     super.key,
   }) : assert(
          value >= 0 && value <= 1,
@@ -27,8 +28,9 @@ class ConfidenceBar extends StatelessWidget {
   /// Track height in logical points. Default 8pt.
   final double height;
 
-  /// Optional override for the accessibility label prefix.
-  final String label;
+  /// Optional override for the accessibility label prefix. Falls back to
+  /// the localized default when null.
+  final String? label;
 
   Color _fillColor() {
     final percent = value * 100;
@@ -41,9 +43,10 @@ class ConfidenceBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final percent = (value * 100).round();
     final percentText = '$percent%';
+    final labelText = label ?? context.l10n.confidenceBarLabel;
 
     return Semantics(
-      label: '$label — $percent percent',
+      label: context.l10n.confidenceBarSemantic(labelText, percent),
       excludeSemantics: true,
       child: Row(
         children: <Widget>[

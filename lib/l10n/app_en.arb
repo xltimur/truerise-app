@@ -1,0 +1,626 @@
+{
+  "@@locale": "en",
+
+  "commonContinue": "Continue",
+  "@commonContinue": {
+    "description": "Primary button label that advances to the next step in a multi-step flow."
+  },
+  "commonNext": "Next",
+  "@commonNext": {
+    "description": "Button label that advances to the next onboarding slide."
+  },
+  "commonCancel": "Cancel",
+  "@commonCancel": {
+    "description": "Generic Cancel button label."
+  },
+
+  "onboardingSkip": "Skip",
+  "@onboardingSkip": {
+    "description": "Button that skips the onboarding slides and goes to the home screen."
+  },
+  "onboardingSlide1Title": "Your birth chart depends on your exact birth time.",
+  "@onboardingSlide1Title": {
+    "description": "Headline of the first onboarding slide explaining why birth time matters."
+  },
+  "onboardingSlide1Body": "Most people only know an approximate time — or nothing at all. {brand} narrows it down using events from your life.",
+  "@onboardingSlide1Body": {
+    "description": "Body of the first onboarding slide. {brand} is the product name, held constant across locales.",
+    "placeholders": {
+      "brand": { "type": "String", "example": "TrueRise" }
+    }
+  },
+  "onboardingSlide2Title": "How {brand} works",
+  "@onboardingSlide2Title": {
+    "description": "Headline of the second onboarding slide. {brand} is the product name, held constant across locales.",
+    "placeholders": {
+      "brand": { "type": "String", "example": "TrueRise" }
+    }
+  },
+  "onboardingSlide2Body": "1. Enter your birth date and approximate time.\n2. Add events from your life — marriage, job changes, moves, more.\n3. We calculate the most probable birth time and show you why.\n\nThe more events you add, the more accurate the result.",
+  "@onboardingSlide2Body": {
+    "description": "Body of the second onboarding slide: a numbered list describing how the calculation flow works."
+  },
+  "onboardingSlide3Title": "Ready to find your birth time?",
+  "@onboardingSlide3Title": {
+    "description": "Headline of the third onboarding slide."
+  },
+  "onboardingSlide3Body": "A demo shows you a sample result first, with no account needed.",
+  "@onboardingSlide3Body": {
+    "description": "Body of the third onboarding slide."
+  },
+  "onboardingTryDemo": "Try demo first",
+  "@onboardingTryDemo": {
+    "description": "Primary call to action on the last onboarding slide that starts the offline demo."
+  },
+  "onboardingStartReal": "Start real calculation",
+  "@onboardingStartReal": {
+    "description": "Secondary call to action on the last onboarding slide that starts a real calculation."
+  },
+  "onboardingPageLabel": "Page {page} of {count}",
+  "@onboardingPageLabel": {
+    "description": "Screen-reader label announcing the current onboarding slide position.",
+    "placeholders": {
+      "page": { "type": "int" },
+      "count": { "type": "int" }
+    }
+  },
+
+  "birthDataTitle": "Birth details",
+  "@birthDataTitle": {
+    "description": "Title of step 1 (birth details) of the calculation flow."
+  },
+  "birthDataDateLabel": "Date of birth",
+  "@birthDataDateLabel": {
+    "description": "Label for the date-of-birth field and the header of the date picker."
+  },
+  "birthDataDatePlaceholder": "Select date",
+  "@birthDataDatePlaceholder": {
+    "description": "Placeholder shown in the date-of-birth field before a date is chosen."
+  },
+  "birthDataCityLabel": "City of birth",
+  "@birthDataCityLabel": {
+    "description": "Label for the city-of-birth search field."
+  },
+  "birthDataCityHint": "Start typing a city",
+  "@birthDataCityHint": {
+    "description": "Hint shown inside the city-of-birth field."
+  },
+  "birthDataLabelLabel": "Label (optional)",
+  "@birthDataLabelLabel": {
+    "description": "Label for the optional free-text name a user can give a calculation."
+  },
+  "birthDataLabelHelper": "Shown in your history list.",
+  "@birthDataLabelHelper": {
+    "description": "Helper text under the optional label field."
+  },
+  "birthDataLabelHint": "e.g. My birth time",
+  "@birthDataLabelHint": {
+    "description": "Example hint for the optional label field."
+  },
+  "birthDataSearching": "Searching…",
+  "@birthDataSearching": {
+    "description": "Shown while city suggestions are loading."
+  },
+  "birthDataNoMatches": "No matches. Demo accepts the typed name.",
+  "@birthDataNoMatches": {
+    "description": "Shown when no city matches the query; the demo still accepts the free-typed name."
+  },
+
+  "timeWindowTitle": "Do you know an approximate birth time?",
+  "@timeWindowTitle": {
+    "description": "Title of step 2 (time window) of the calculation flow."
+  },
+  "timeWindowModeApprox": "I have an approximate time",
+  "@timeWindowModeApprox": {
+    "description": "Radio option: the user knows an approximate birth time."
+  },
+  "timeWindowModeUnknown": "I have no idea",
+  "@timeWindowModeUnknown": {
+    "description": "Radio option: the user does not know their birth time at all."
+  },
+  "timeWindowApproxTimeLabel": "Approximate time",
+  "@timeWindowApproxTimeLabel": {
+    "description": "Label for the approximate-time picker field."
+  },
+  "timeWindowChooseTime": "Choose time",
+  "@timeWindowChooseTime": {
+    "description": "Placeholder for the approximate-time picker before a time is chosen."
+  },
+  "timeWindowTimePickerHelp": "Approximate birth time",
+  "@timeWindowTimePickerHelp": {
+    "description": "Header text of the system time picker for the approximate birth time."
+  },
+  "timeWindowSearchWindow": "Search window",
+  "@timeWindowSearchWindow": {
+    "description": "Label for the search-window picker and the title of its bottom sheet."
+  },
+  "timeWindowDeltaMinutes": "± {minutes} min",
+  "@timeWindowDeltaMinutes": {
+    "description": "Search-window width expressed in minutes, e.g. ± 30 min.",
+    "placeholders": {
+      "minutes": { "type": "int" }
+    }
+  },
+  "timeWindowDeltaHours": "{hours, plural, =1{± 1 hour} other{± {hours} hours}}",
+  "@timeWindowDeltaHours": {
+    "description": "Search-window width expressed in hours, e.g. ± 1 hour or ± 3 hours.",
+    "placeholders": {
+      "hours": { "type": "int" }
+    }
+  },
+  "timeWindowRangeCopy": "We'll search between {start} and {end}.",
+  "@timeWindowRangeCopy": {
+    "description": "Explains the time span that will be searched. start and end are pre-formatted clock times.",
+    "placeholders": {
+      "start": { "type": "String" },
+      "end": { "type": "String" }
+    }
+  },
+  "timeWindowApproxHint": "A wider window gives more candidates but may reduce precision.",
+  "@timeWindowApproxHint": {
+    "description": "Hint under the search-window picker in approximate mode."
+  },
+  "timeWindowUnknownBody": "We'll search the entire 24-hour range. This may produce more candidates with lower confidence.",
+  "@timeWindowUnknownBody": {
+    "description": "Body shown when the user has no idea of their birth time."
+  },
+  "timeWindowUnknownHint": "Adding more life events will help narrow it down.",
+  "@timeWindowUnknownHint": {
+    "description": "Hint encouraging more life events when the birth time is unknown."
+  },
+
+  "lifeEventsTitle": "Life events",
+  "@lifeEventsTitle": {
+    "description": "Title of step 3 (life events) when no events have been added yet."
+  },
+  "lifeEventsTitleWithCount": "{count, plural, =1{Life events  (1 added)} other{Life events  ({count} added)}}",
+  "@lifeEventsTitleWithCount": {
+    "description": "Title of step 3 with a count of how many life events have been added.",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "lifeEventsAddEvent": "Add event",
+  "@lifeEventsAddEvent": {
+    "description": "Button to add another life event when at least one already exists."
+  },
+  "lifeEventsAddFirstEvent": "Add first event",
+  "@lifeEventsAddFirstEvent": {
+    "description": "Button to add the first life event when the list is empty."
+  },
+  "lifeEventsContinueDemo": "Continue (demo)",
+  "@lifeEventsContinueDemo": {
+    "description": "Continue button label on the life-events step while in demo mode."
+  },
+  "lifeEventsEmptyBody": "Add memorable events from your life. The more you add, the better.",
+  "@lifeEventsEmptyBody": {
+    "description": "Body shown on the life-events step when no events have been added."
+  },
+  "lifeEventsGuidanceEmpty": "Add at least 5 events for a real calculation. 3 for a demo.",
+  "@lifeEventsGuidanceEmpty": {
+    "description": "Guidance banner shown on the empty life-events step explaining the recommended event counts."
+  },
+  "lifeEventsNoEvents": "No events yet.",
+  "@lifeEventsNoEvents": {
+    "description": "Placeholder shown in the empty life-events list area."
+  },
+  "lifeEventsGuidanceCount": "{count, plural, =1{1 event. Add 5+ for a stronger real calculation.} other{{count} events. Add 5+ for a stronger real calculation.}}",
+  "@lifeEventsGuidanceCount": {
+    "description": "Soft warning shown when the user has some events but fewer than the recommended five.",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "eventCategoryMarriage": "Marriage / Partnership",
+  "@eventCategoryMarriage": {
+    "description": "Life-event category: marriage or partnership."
+  },
+  "eventCategoryDivorce": "Divorce / Separation",
+  "@eventCategoryDivorce": {
+    "description": "Life-event category: divorce or separation."
+  },
+  "eventCategoryCareerChange": "Career change",
+  "@eventCategoryCareerChange": {
+    "description": "Life-event category: a change of career."
+  },
+  "eventCategoryJobLoss": "Job loss",
+  "@eventCategoryJobLoss": {
+    "description": "Life-event category: losing a job."
+  },
+  "eventCategoryRelocation": "Relocation (major)",
+  "@eventCategoryRelocation": {
+    "description": "Life-event category: a major relocation or move."
+  },
+  "eventCategoryChildBirth": "Birth of child",
+  "@eventCategoryChildBirth": {
+    "description": "Life-event category: the birth of a child."
+  },
+  "eventCategoryFamilyDeath": "Death of family member",
+  "@eventCategoryFamilyDeath": {
+    "description": "Life-event category: the death of a family member."
+  },
+  "eventCategoryIllness": "Major illness / surgery",
+  "@eventCategoryIllness": {
+    "description": "Life-event category: a major illness or surgery. Descriptive label, not medical advice."
+  },
+  "eventCategoryAccident": "Accident or injury",
+  "@eventCategoryAccident": {
+    "description": "Life-event category: an accident or injury."
+  },
+  "eventCategoryEducation": "Education milestone",
+  "@eventCategoryEducation": {
+    "description": "Life-event category: an education milestone."
+  },
+  "eventCategoryFinancial": "Financial turning point",
+  "@eventCategoryFinancial": {
+    "description": "Life-event category: a financial turning point. Descriptive label, not financial advice."
+  },
+  "eventCategoryOther": "Other",
+  "@eventCategoryOther": {
+    "description": "Life-event category: anything that does not fit the other categories."
+  },
+
+  "confirmationTitle": "Confirm your calculation",
+  "@confirmationTitle": {
+    "description": "Title of the confirmation step that reviews the draft before submitting."
+  },
+  "confirmationBackToEdit": "Back to edit",
+  "@confirmationBackToEdit": {
+    "description": "Secondary button that returns to the life-events step to edit the draft."
+  },
+  "confirmationCalculate": "Calculate",
+  "@confirmationCalculate": {
+    "description": "Primary button that submits a real calculation."
+  },
+  "confirmationCalculateDemo": "Calculate (demo)",
+  "@confirmationCalculateDemo": {
+    "description": "Primary button that submits the offline demo calculation."
+  },
+  "confirmationDatePending": "Date pending",
+  "@confirmationDatePending": {
+    "description": "Shown in the review summary when no birth date has been chosen yet."
+  },
+  "confirmationRowDate": "Date",
+  "@confirmationRowDate": {
+    "description": "Label for the birth-date row in the review summary."
+  },
+  "confirmationRowCity": "City",
+  "@confirmationRowCity": {
+    "description": "Label for the city row in the review summary."
+  },
+  "confirmationRowLabel": "Label",
+  "@confirmationRowLabel": {
+    "description": "Label for the optional name row in the review summary."
+  },
+  "confirmationTimeWindow": "Time window",
+  "@confirmationTimeWindow": {
+    "description": "Heading of the time-window card in the review summary."
+  },
+  "confirmationFullDayWindow": "Full 24-hour window",
+  "@confirmationFullDayWindow": {
+    "description": "Shown in the review summary when the birth time is unknown and the full day is searched."
+  },
+  "confirmationWindowApprox": "{time} ({window})",
+  "@confirmationWindowApprox": {
+    "description": "Time-window summary line combining the approximate time and its search width. Both parts are pre-formatted.",
+    "placeholders": {
+      "time": { "type": "String" },
+      "window": { "type": "String" }
+    }
+  },
+  "confirmationLifeEventsCount": "Life events ({count})",
+  "@confirmationLifeEventsCount": {
+    "description": "Heading of the life-events card in the review summary, with the number of events.",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "confirmationDemoNote": "Demo mode — we'll show a sample result with no network request.",
+  "@confirmationDemoNote": {
+    "description": "Note shown on the confirmation step when running in offline demo mode."
+  },
+
+  "loadingTitle": "Calculating your probable birth time…",
+  "@loadingTitle": {
+    "description": "Main heading on the calculation loading screen for a real calculation."
+  },
+  "loadingDemoTitle": "Running demo calculation…",
+  "@loadingDemoTitle": {
+    "description": "Main heading on the calculation loading screen while running the offline demo."
+  },
+  "loadingRotating1": "Analyzing life events…",
+  "@loadingRotating1": {
+    "description": "First rotating status line shown under the loader."
+  },
+  "loadingRotating2": "Mapping planetary transits…",
+  "@loadingRotating2": {
+    "description": "Second rotating status line shown under the loader."
+  },
+  "loadingRotating3": "Ranking candidates…",
+  "@loadingRotating3": {
+    "description": "Third rotating status line shown under the loader."
+  },
+  "loadingTakesUnder": "This usually takes under 10 seconds.",
+  "@loadingTakesUnder": {
+    "description": "Reassurance shown under the loader about the expected wait time."
+  },
+
+  "addEventAddTitle": "Add life event",
+  "@addEventAddTitle": {
+    "description": "Title of the add/edit sheet when adding a new life event."
+  },
+  "addEventEditTitle": "Edit life event",
+  "@addEventEditTitle": {
+    "description": "Title of the add/edit sheet when editing an existing life event."
+  },
+  "addEventSelectCategory": "Select category",
+  "@addEventSelectCategory": {
+    "description": "Title of the bottom sheet that picks a life-event category."
+  },
+  "addEventCategoryLabel": "Category",
+  "@addEventCategoryLabel": {
+    "description": "Label for the category picker row in the add/edit sheet."
+  },
+  "addEventChooseCategory": "Choose category",
+  "@addEventChooseCategory": {
+    "description": "Placeholder for the category row before a category is chosen."
+  },
+  "addEventMonth": "Month",
+  "@addEventMonth": {
+    "description": "Label for the month picker row and the title of its bottom sheet."
+  },
+  "addEventNoMonth": "No month",
+  "@addEventNoMonth": {
+    "description": "Option in the month picker for events with no specific month."
+  },
+  "addEventYear": "Year",
+  "@addEventYear": {
+    "description": "Label for the year picker row and the title of its bottom sheet."
+  },
+  "addEventMonthOptional": "Month is optional.",
+  "@addEventMonthOptional": {
+    "description": "Helper text under the month/year row explaining the month can be omitted."
+  },
+  "addEventDescriptionLabel": "Description (optional)",
+  "@addEventDescriptionLabel": {
+    "description": "Label for the optional free-text description field in the add/edit sheet."
+  },
+  "addEventDescriptionHint": "Anything that helps narrow timing",
+  "@addEventDescriptionHint": {
+    "description": "Hint inside the optional description field."
+  },
+  "addEventCharCount": "{current} / {max}",
+  "@addEventCharCount": {
+    "description": "Character counter under the description field, showing the current length over the maximum.",
+    "placeholders": {
+      "current": { "type": "int" },
+      "max": { "type": "int" }
+    }
+  },
+  "addEventSaveChanges": "Save changes",
+  "@addEventSaveChanges": {
+    "description": "Primary button label when editing an existing life event."
+  },
+
+  "commonBackToHistory": "Back to history",
+  "@commonBackToHistory": {
+    "description": "Button that returns to the home/history screen from the result, evidence, or error screens."
+  },
+  "commonDismiss": "Dismiss",
+  "@commonDismiss": {
+    "description": "Tooltip for the close (x) button that dismisses an inline card or nudge."
+  },
+
+  "resultTitle": "Result",
+  "@resultTitle": {
+    "description": "Top-navigation title of the hero result screen."
+  },
+  "resultNotFoundTitle": "We couldn't find that result.",
+  "@resultNotFoundTitle": {
+    "description": "Empty-state title shown when a result id can't be resolved (e.g. a stale link)."
+  },
+  "resultNotFoundBody": "It may have been deleted from your history. Open a saved calculation, or start a new one.",
+  "@resultNotFoundBody": {
+    "description": "Empty-state body shown when a result can't be found."
+  },
+  "resultRisingSign": "{sign} Rising",
+  "@resultRisingSign": {
+    "description": "Rising-sign caption on the result hero and candidate cards, e.g. Gemini Rising.",
+    "placeholders": {
+      "sign": { "type": "String", "example": "Gemini" }
+    }
+  },
+  "resultSampleData": "(sample data)",
+  "@resultSampleData": {
+    "description": "Caption shown in place of a rising sign when a demo result has no real ascendant."
+  },
+  "resultOtherCandidates": "Other candidates",
+  "@resultOtherCandidates": {
+    "description": "Heading above the secondary candidate cards on the result screen."
+  },
+  "resultSeeEvidence": "See how we got this",
+  "@resultSeeEvidence": {
+    "description": "Button that opens the evidence breakdown screen."
+  },
+  "resultShare": "Share result",
+  "@resultShare": {
+    "description": "Button that shares a privacy-safe summary of the result."
+  },
+  "resultCopiedToClipboard": "Copied to clipboard",
+  "@resultCopiedToClipboard": {
+    "description": "Snackbar shown when the share text was copied to the clipboard instead of opening the native share sheet."
+  },
+  "resultSaveToHistory": "Save to history",
+  "@resultSaveToHistory": {
+    "description": "Button that confirms saving the result to history."
+  },
+  "resultSaved": "Saved ✓",
+  "@resultSaved": {
+    "description": "Saved-confirmation label shown briefly after the user taps Save to history."
+  },
+  "resultDemoNudgeLabel": "Demo upgrade nudge",
+  "@resultDemoNudgeLabel": {
+    "description": "Screen-reader label for the demo upgrade nudge container at the bottom of a demo result."
+  },
+  "resultDemoNudgeTitle": "This was a demo.",
+  "@resultDemoNudgeTitle": {
+    "description": "Title of the demo upgrade nudge."
+  },
+  "resultDemoNudgeBody": "Run a real calculation with your own birth data.",
+  "@resultDemoNudgeBody": {
+    "description": "Body of the demo upgrade nudge."
+  },
+  "resultStartNewCalculation": "Start a new calculation",
+  "@resultStartNewCalculation": {
+    "description": "Button in the demo nudge that starts a new calculation flow."
+  },
+
+  "evidenceTitle": "Evidence",
+  "@evidenceTitle": {
+    "description": "Top-navigation title of the evidence breakdown screen."
+  },
+  "evidenceNotFoundTitle": "We couldn't find that evidence.",
+  "@evidenceNotFoundTitle": {
+    "description": "Empty-state title on the evidence screen when the underlying result can't be resolved."
+  },
+  "evidenceNotFoundBody": "The underlying result may have been deleted. Return to your history to pick another calculation.",
+  "@evidenceNotFoundBody": {
+    "description": "Empty-state body on the evidence screen."
+  },
+  "evidenceWhyTitle": "Why {time}?",
+  "@evidenceWhyTitle": {
+    "description": "Evidence-screen headline asking why the top candidate time was chosen. time is a pre-formatted clock time.",
+    "placeholders": {
+      "time": { "type": "String", "example": "7:14 AM" }
+    }
+  },
+  "evidenceNoEvidence": "We don't have event-level evidence for this result.",
+  "@evidenceNoEvidence": {
+    "description": "Shown on the evidence screen when there is no per-event evidence to display."
+  },
+  "evidenceStrongSummary": "{total, plural, =1{{strong} of 1 event strongly supported this time.} other{{strong} of {total} events strongly supported this time.}}",
+  "@evidenceStrongSummary": {
+    "description": "Evidence summary counting how many of the total events strongly supported the chosen time.",
+    "placeholders": {
+      "strong": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "evidenceEventFallback": "Event",
+  "@evidenceEventFallback": {
+    "description": "Fallback category label for an evidence row whose source life event can't be found."
+  },
+
+  "heroResultEyebrow": "YOUR MOST PROBABLE BIRTH TIME",
+  "@heroResultEyebrow": {
+    "description": "Eyebrow label above the time on the hero result card."
+  },
+  "heroResultSemantic": "{eyebrow}: {time}, {risingSign}",
+  "@heroResultSemantic": {
+    "description": "Screen-reader label for the hero result card combining eyebrow, time, and rising sign. All parts are pre-formatted.",
+    "placeholders": {
+      "eyebrow": { "type": "String" },
+      "time": { "type": "String" },
+      "risingSign": { "type": "String" }
+    }
+  },
+
+  "confidenceBarLabel": "Confidence",
+  "@confidenceBarLabel": {
+    "description": "Default accessibility label prefix for the confidence bar."
+  },
+  "confidenceBarSemantic": "{label} — {percent} percent",
+  "@confidenceBarSemantic": {
+    "description": "Screen-reader label for the confidence bar, e.g. Confidence — 82 percent.",
+    "placeholders": {
+      "label": { "type": "String" },
+      "percent": { "type": "int" }
+    }
+  },
+
+  "matchStrengthStrong": "STRONG",
+  "@matchStrengthStrong": {
+    "description": "Match-strength label: strong support."
+  },
+  "matchStrengthModerate": "MODERATE",
+  "@matchStrengthModerate": {
+    "description": "Match-strength label: moderate support."
+  },
+  "matchStrengthWeak": "WEAK",
+  "@matchStrengthWeak": {
+    "description": "Match-strength label: weak support."
+  },
+  "matchStrengthNone": "NO MATCH",
+  "@matchStrengthNone": {
+    "description": "Match-strength label: no support."
+  },
+  "matchStrengthSemantic": "{strength, select, strong{Match strength strong} moderate{Match strength moderate} weak{Match strength weak} none{Match strength no match} other{Match strength}}",
+  "@matchStrengthSemantic": {
+    "description": "Screen-reader label announcing the match-strength level of an evidence row.",
+    "placeholders": {
+      "strength": { "type": "String" }
+    }
+  },
+
+  "candidateCardSemantic": "Candidate {time}, {risingSign}, confidence {percent} percent",
+  "@candidateCardSemantic": {
+    "description": "Screen-reader label for a secondary candidate card. time and risingSign are pre-formatted.",
+    "placeholders": {
+      "time": { "type": "String" },
+      "risingSign": { "type": "String" },
+      "percent": { "type": "int" }
+    }
+  },
+
+  "historyCardSemantic": "{isDemo, select, true{{label}, {date}, {time} {risingSign}, confidence {percent} percent, demo} other{{label}, {date}, {time} {risingSign}, confidence {percent} percent}}",
+  "@historyCardSemantic": {
+    "description": "Screen-reader label for a saved-calculation history card; appends a demo marker for demo results. label, date, time, and risingSign are pre-formatted.",
+    "placeholders": {
+      "isDemo": { "type": "String" },
+      "label": { "type": "String" },
+      "date": { "type": "String" },
+      "time": { "type": "String" },
+      "risingSign": { "type": "String" },
+      "percent": { "type": "int" }
+    }
+  },
+
+  "evidenceCardSemantic": "{category}, {date}, {strength, select, strong{match strong} moderate{match moderate} weak{match weak} none{match none} other{match}}",
+  "@evidenceCardSemantic": {
+    "description": "Screen-reader label for an evidence row combining category, date, and match strength. category and date are pre-formatted.",
+    "placeholders": {
+      "category": { "type": "String" },
+      "date": { "type": "String" },
+      "strength": { "type": "String" }
+    }
+  },
+
+  "demoPillLabel": "DEMO",
+  "@demoPillLabel": {
+    "description": "Text shown inside the DEMO status pill."
+  },
+  "demoPillSemantic": "{label} calculation badge",
+  "@demoPillSemantic": {
+    "description": "Screen-reader label for the DEMO status pill.",
+    "placeholders": {
+      "label": { "type": "String" }
+    }
+  },
+
+  "eventCardSemantic": "Event: {category} on {date}",
+  "@eventCardSemantic": {
+    "description": "Screen-reader label for a life-event row. category and date are pre-formatted.",
+    "placeholders": {
+      "category": { "type": "String" },
+      "date": { "type": "String" }
+    }
+  },
+  "eventCardDeleteSemantic": "Delete event {category}",
+  "@eventCardDeleteSemantic": {
+    "description": "Screen-reader label for the delete button on a life-event row.",
+    "placeholders": {
+      "category": { "type": "String" }
+    }
+  }
+}

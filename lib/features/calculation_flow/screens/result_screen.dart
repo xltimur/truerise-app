@@ -5,12 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:rectify/app/route_names.dart';
+import 'package:rectify/core/formatting/app_date_format.dart';
 import 'package:rectify/core/sharing/share_copy_builder.dart';
 import 'package:rectify/core/sharing/share_service.dart';
-import 'package:rectify/data/models/candidate_time.dart';
 import 'package:rectify/data/models/saved_calculation.dart';
-import 'package:rectify/data/models/time_format.dart';
 import 'package:rectify/features/calculation_flow/state/result_providers.dart';
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/providers/settings_controller.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/spacing.dart';
@@ -49,7 +49,7 @@ class ResultScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.bgApp,
       appBar: TopNav(
-        title: 'Result',
+        title: context.l10n.resultTitle,
         onBack: () {
           if (context.canPop()) {
             context.pop();
@@ -78,15 +78,14 @@ class _ResultNotFound extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenEdge),
       child: EmptyState(
-        title: "We couldn't find that result.",
-        body:
-            'It may have been deleted from your history. '
-            'Open a saved calculation, or start a new one.',
+        title: l10n.resultNotFoundTitle,
+        body: l10n.resultNotFoundBody,
         cta: PrimaryButton(
-          label: 'Back to history',
+          label: l10n.commonBackToHistory,
           expand: false,
           onPressed: () => context.go(RoutePaths.home),
         ),
@@ -112,29 +111,9 @@ class _ResultBody extends ConsumerWidget {
 
   final SavedCalculation saved;
 
-  ({String time, String meridiem}) _format(
-    CandidateTime candidate,
-    TimeFormat format,
-  ) {
-    final time = candidate.time;
-    if (format == TimeFormat.h24) {
-      return (
-        time:
-            '${time.hour.toString().padLeft(2, '0')}:'
-            '${time.minute.toString().padLeft(2, '0')}',
-        meridiem: '',
-      );
-    }
-    final isPm = time.hour >= 12;
-    final hour12 = ((time.hour + 11) % 12) + 1;
-    return (
-      time: '$hour12:${time.minute.toString().padLeft(2, '0')}',
-      meridiem: isPm ? 'PM' : 'AM',
-    );
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
     final settings = ref.watch(settingsControllerProvider);
     final candidates = saved.result.candidates;
 
@@ -147,7 +126,10 @@ class _ResultBody extends ConsumerWidget {
 
     final top = candidates.first;
     final secondary = candidates.skip(1).take(2).toList();
-    final topFormatted = _format(top, settings.timeFormat);
+    final topFormatted = AppDateFormat.clockParts(
+      top.time,
+      settings.timeFormat,
+    );
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(
@@ -171,26 +153,29 @@ class _ResultBody extends ConsumerWidget {
               time: topFormatted.time,
               meridiem: topFormatted.meridiem,
               risingSign: top.ascendant != null
-                  ? '${top.ascendant} Rising'
-                  : '(sample data)',
+                  ? l10n.resultRisingSign(top.ascendant!)
+                  : l10n.resultSampleData,
             ),
           ),
           const SizedBox(height: AppSpacing.s5),
           ConfidenceBar(value: top.confidence),
           if (secondary.isNotEmpty) ...<Widget>[
             const SizedBox(height: AppSpacing.s6),
-            Text('Other candidates', style: AppTypography.titleSm),
+            Text(l10n.resultOtherCandidates, style: AppTypography.titleSm),
             const SizedBox(height: AppSpacing.s3),
             for (final candidate in secondary) ...<Widget>[
               Builder(
                 builder: (context) {
-                  final formatted = _format(candidate, settings.timeFormat);
+                  final formatted = AppDateFormat.clockParts(
+                    candidate.time,
+                    settings.timeFormat,
+                  );
                   return CandidateCard(
                     time: formatted.time,
                     meridiem: formatted.meridiem,
                     risingSign: candidate.ascendant != null
-                        ? '${candidate.ascendant} Rising'
-                        : '(sample data)',
+                        ? l10n.resultRisingSign(candidate.ascendant!)
+                        : l10n.resultSampleData,
                     confidence: candidate.confidence,
                   );
                 },
@@ -201,7 +186,7 @@ class _ResultBody extends ConsumerWidget {
           const SizedBox(height: AppSpacing.s6),
           PrimaryButton(
             key: resultEvidenceButtonKey,
-            label: 'See how we got this',
+            label: l10n.resultSeeEvidence,
             onPressed: () => context.go(
               RoutePaths.calcEvidenceFor(saved.request.id),
             ),
@@ -231,15 +216,16 @@ class _ShareResultButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
     return GhostButton(
-      label: 'Share result',
+      label: l10n.resultShare,
       onPressed: () async {
         final svc = ref.read(shareServiceProvider);
         final text = ShareCopyBuilder.build(saved);
         final usedNative = await svc.share(text);
         if (!usedNative && context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Copied to clipboard')),
+            SnackBar(content: Text(l10n.resultCopiedToClipboard)),
           );
         }
       },
@@ -278,9 +264,10 @@ class _SaveToHistoryButtonState extends ConsumerState<_SaveToHistoryButton> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return SecondaryButton(
       key: resultSaveButtonKey,
-      label: _saved ? 'Saved ✓' : 'Save to history',
+      label: _saved ? l10n.resultSaved : l10n.resultSaveToHistory,
       onPressed: _saved ? null : _save,
     );
   }
@@ -322,9 +309,10 @@ class _DemoUpgradeNudgeState extends State<_DemoUpgradeNudge> {
   @override
   Widget build(BuildContext context) {
     if (_dismissed) return const SizedBox.shrink();
+    final l10n = context.l10n;
     return Semantics(
       container: true,
-      label: 'Demo upgrade nudge',
+      label: l10n.resultDemoNudgeLabel,
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: AppColors.bgSurface,
@@ -340,7 +328,7 @@ class _DemoUpgradeNudgeState extends State<_DemoUpgradeNudge> {
                 children: <Widget>[
                   Expanded(
                     child: Text(
-                      'This was a demo.',
+                      l10n.resultDemoNudgeTitle,
                       style: AppTypography.titleSm,
                     ),
                   ),
@@ -349,7 +337,7 @@ class _DemoUpgradeNudgeState extends State<_DemoUpgradeNudge> {
                       Icons.close,
                       color: AppColors.inkSoft,
                     ),
-                    tooltip: 'Dismiss',
+                    tooltip: l10n.commonDismiss,
                     iconSize: 20,
                     splashRadius: 18,
                     onPressed: () => setState(() => _dismissed = true),
@@ -357,14 +345,14 @@ class _DemoUpgradeNudgeState extends State<_DemoUpgradeNudge> {
                 ],
               ),
               Text(
-                'Run a real calculation with your own birth data.',
+                l10n.resultDemoNudgeBody,
                 style: AppTypography.bodySm.copyWith(
                   color: AppColors.inkSoft,
                 ),
               ),
               const SizedBox(height: AppSpacing.s3),
               GhostButton(
-                label: 'Start a new calculation',
+                label: l10n.resultStartNewCalculation,
                 onPressed: () => context.go(RoutePaths.newCalculation),
               ),
             ],

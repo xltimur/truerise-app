@@ -92,7 +92,7 @@ void main() {
       expect(store.readSync().onboardingDone, isTrue);
 
       // And the router took us off the onboarding screen.
-      expect(find.text('Rectify'), findsOneWidget);
+      expect(find.text('TrueRise'), findsOneWidget);
       expect(
         find.textContaining('Your birth chart depends on'),
         findsNothing,
@@ -116,7 +116,7 @@ void main() {
       container.read(settingsControllerProvider).onboardingDone,
       isTrue,
     );
-    expect(find.text('Rectify'), findsOneWidget);
+    expect(find.text('TrueRise'), findsOneWidget);
   });
 
   testWidgets(
@@ -127,7 +127,7 @@ void main() {
       await tester.pumpWidget(_wrap(prefs));
       await tester.pumpAndSettle();
 
-      expect(find.text('Rectify'), findsOneWidget);
+      expect(find.text('TrueRise'), findsOneWidget);
       expect(find.textContaining('Your birth chart depends on'), findsNothing);
     },
   );

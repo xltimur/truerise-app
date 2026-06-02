@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import 'package:rectify/app/route_names.dart';
-import 'package:rectify/data/models/life_event.dart';
-import 'package:rectify/data/models/time_format.dart';
+import 'package:rectify/core/formatting/app_date_format.dart';
 import 'package:rectify/data/models/time_window_mode.dart';
 import 'package:rectify/features/calculation_flow/state/calculation_flow_controller.dart';
 import 'package:rectify/features/calculation_flow/state/calculation_flow_state.dart';
 import 'package:rectify/features/calculation_flow/widgets/calc_step_scaffold.dart';
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/providers/settings_controller.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/icons.dart';
@@ -17,21 +16,6 @@ import 'package:rectify/theme/spacing.dart';
 import 'package:rectify/theme/typography.dart';
 import 'package:rectify/widgets/buttons/buttons.dart';
 import 'package:rectify/widgets/cards/app_card.dart';
-
-const _monthLabels = <int, String>{
-  1: 'Jan',
-  2: 'Feb',
-  3: 'Mar',
-  4: 'Apr',
-  5: 'May',
-  6: 'Jun',
-  7: 'Jul',
-  8: 'Aug',
-  9: 'Sep',
-  10: 'Oct',
-  11: 'Nov',
-  12: 'Dec',
-};
 
 /// Step 4 of the calc flow — summary before the (demo) submit.
 ///
@@ -41,33 +25,14 @@ const _monthLabels = <int, String>{
 class ConfirmationScreen extends ConsumerWidget {
   const ConfirmationScreen({super.key});
 
-  String _formatDate(DateTime date) =>
-      DateFormat('MMMM d, y').format(date.toLocal());
-
-  String _formatTime(TimeOfDay time, TimeFormat format) {
-    if (format == TimeFormat.h24) {
-      return '${time.hour.toString().padLeft(2, '0')}:'
-          '${time.minute.toString().padLeft(2, '0')}';
-    }
-    final isPm = time.hour >= 12;
-    final hour12 = ((time.hour + 11) % 12) + 1;
-    return '$hour12:${time.minute.toString().padLeft(2, '0')} '
-        '${isPm ? 'PM' : 'AM'}';
-  }
-
-  String _formatWindow(int minutes) {
-    if (minutes < 60) return '± $minutes min';
-    final hours = minutes ~/ 60;
-    return hours == 1 ? '± 1 hour' : '± $hours hours';
-  }
-
-  String _formatEvent(LifeEvent event) {
-    if (event.month == null) return event.year.toString();
-    return '${_monthLabels[event.month]} ${event.year}';
+  String _formatWindow(AppLocalizations l10n, int minutes) {
+    if (minutes < 60) return l10n.timeWindowDeltaMinutes(minutes);
+    return l10n.timeWindowDeltaHours(minutes ~/ 60);
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
     final flow = ref.watch(calculationFlowControllerProvider);
     final controller = ref.read(calculationFlowControllerProvider.notifier);
     final timeFormat = ref.watch(
@@ -76,31 +41,32 @@ class ConfirmationScreen extends ConsumerWidget {
 
     final birthDate = flow.birthDate;
     final birthLine = birthDate == null
-        ? 'Date pending'
-        : _formatDate(birthDate);
+        ? l10n.confirmationDatePending
+        : AppDateFormat.longDate(birthDate);
     final cityLine = flow.birthCity.trim().isEmpty
         ? '—'
         : flow.birthCity.trim();
     final labelLine = flow.label.trim().isEmpty ? null : flow.label.trim();
 
     final windowLine = switch (flow.timeWindowMode) {
-      TimeWindowMode.unknown => 'Full 24-hour window',
-      TimeWindowMode.approximate =>
-        '${_formatTime(flow.approximateTime, timeFormat)} '
-            '(${_formatWindow(flow.windowMinutes)})',
+      TimeWindowMode.unknown => l10n.confirmationFullDayWindow,
+      TimeWindowMode.approximate => l10n.confirmationWindowApprox(
+        AppDateFormat.clockTime(flow.approximateTime, timeFormat),
+        _formatWindow(l10n, flow.windowMinutes),
+      ),
     };
 
     final canSubmit = flow.readyToSubmit && !flow.submitting;
 
     return CalcStepScaffold(
       step: CalculationFlowStep.confirm,
-      title: 'Confirm your calculation',
+      title: l10n.confirmationTitle,
       onBack: () {
         controller.back();
         context.go(RoutePaths.calcEvents);
       },
       secondaryAction: SecondaryButton(
-        label: 'Back to edit',
+        label: l10n.confirmationBackToEdit,
         icon: AppIcons.back,
         onPressed: () {
           controller.back();
@@ -108,7 +74,9 @@ class ConfirmationScreen extends ConsumerWidget {
         },
       ),
       primaryAction: PrimaryButton(
-        label: flow.isDemo ? 'Calculate (demo)' : 'Calculate',
+        label: flow.isDemo
+            ? l10n.confirmationCalculateDemo
+            : l10n.confirmationCalculate,
         icon: AppIcons.check,
         onPressed: canSubmit
             ? () {
@@ -124,12 +92,15 @@ class ConfirmationScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Text('Birth details', style: AppTypography.titleSm),
+                Text(l10n.birthDataTitle, style: AppTypography.titleSm),
                 const SizedBox(height: AppSpacing.s2),
-                _ReviewRow(label: 'Date', value: birthLine),
-                _ReviewRow(label: 'City', value: cityLine),
+                _ReviewRow(label: l10n.confirmationRowDate, value: birthLine),
+                _ReviewRow(label: l10n.confirmationRowCity, value: cityLine),
                 if (labelLine != null)
-                  _ReviewRow(label: 'Label', value: labelLine),
+                  _ReviewRow(
+                    label: l10n.confirmationRowLabel,
+                    value: labelLine,
+                  ),
               ],
             ),
           ),
@@ -139,7 +110,10 @@ class ConfirmationScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Text('Time window', style: AppTypography.titleSm),
+                Text(
+                  l10n.confirmationTimeWindow,
+                  style: AppTypography.titleSm,
+                ),
                 const SizedBox(height: AppSpacing.s2),
                 Text(windowLine, style: AppTypography.bodyMd),
               ],
@@ -152,7 +126,7 @@ class ConfirmationScreen extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Text(
-                  'Life events (${flow.events.length})',
+                  l10n.confirmationLifeEventsCount(flow.events.length),
                   style: AppTypography.titleSm,
                 ),
                 const SizedBox(height: AppSpacing.s2),
@@ -164,13 +138,16 @@ class ConfirmationScreen extends ConsumerWidget {
                       children: <Widget>[
                         Expanded(
                           child: Text(
-                            eventCategoryLabel(event.category),
+                            eventCategoryLabel(l10n, event.category),
                             style: AppTypography.bodyMd,
                           ),
                         ),
                         const SizedBox(width: AppSpacing.s3),
                         Text(
-                          _formatEvent(event),
+                          AppDateFormat.optionalMonthYear(
+                            event.month,
+                            event.year,
+                          ),
                           style: AppTypography.bodySm.copyWith(
                             color: AppColors.inkSoft,
                           ),
@@ -184,8 +161,7 @@ class ConfirmationScreen extends ConsumerWidget {
           if (flow.isDemo) ...<Widget>[
             const SizedBox(height: AppSpacing.s4),
             Text(
-              "Demo mode — we'll show a sample result with no network "
-              'request.',
+              l10n.confirmationDemoNote,
               style: AppTypography.bodySm.copyWith(color: AppColors.inkSoft),
             ),
           ],

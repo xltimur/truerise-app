@@ -3,11 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:rectify/app/route_names.dart';
+import 'package:rectify/core/formatting/app_date_format.dart';
 import 'package:rectify/data/models/time_format.dart';
 import 'package:rectify/data/models/time_window_mode.dart';
 import 'package:rectify/features/calculation_flow/state/calculation_flow_controller.dart';
 import 'package:rectify/features/calculation_flow/state/calculation_flow_state.dart';
 import 'package:rectify/features/calculation_flow/widgets/calc_step_scaffold.dart';
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/providers/settings_controller.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/icons.dart';
@@ -21,21 +23,9 @@ import 'package:rectify/widgets/sheets/bottom_sheet_picker.dart';
 class TimeWindowScreen extends ConsumerWidget {
   const TimeWindowScreen({super.key});
 
-  String _formatTime(TimeOfDay time, TimeFormat format) {
-    if (format == TimeFormat.h24) {
-      return '${time.hour.toString().padLeft(2, '0')}:'
-          '${time.minute.toString().padLeft(2, '0')}';
-    }
-    final isPm = time.hour >= 12;
-    final hour12 = ((time.hour + 11) % 12) + 1;
-    return '$hour12:${time.minute.toString().padLeft(2, '0')} '
-        '${isPm ? 'PM' : 'AM'}';
-  }
-
-  String _windowLabel(int minutes) {
-    if (minutes < 60) return '± $minutes min';
-    final hours = minutes ~/ 60;
-    return hours == 1 ? '± 1 hour' : '± $hours hours';
+  String _windowLabel(AppLocalizations l10n, int minutes) {
+    if (minutes < 60) return l10n.timeWindowDeltaMinutes(minutes);
+    return l10n.timeWindowDeltaHours(minutes ~/ 60);
   }
 
   Future<void> _pickTime(
@@ -46,7 +36,7 @@ class TimeWindowScreen extends ConsumerWidget {
     final picked = await showTimePicker(
       context: context,
       initialTime: current,
-      helpText: 'Approximate birth time',
+      helpText: context.l10n.timeWindowTimePickerHelp,
     );
     if (picked == null) return;
     ref
@@ -63,11 +53,14 @@ class TimeWindowScreen extends ConsumerWidget {
   ) async {
     final picked = await BottomSheetPicker.show<int>(
       context: context,
-      title: 'Search window',
+      title: context.l10n.timeWindowSearchWindow,
       value: current,
       options: <BottomSheetOption<int>>[
         for (final minutes in kWindowMinuteOptions)
-          BottomSheetOption<int>(value: minutes, label: _windowLabel(minutes)),
+          BottomSheetOption<int>(
+            value: minutes,
+            label: _windowLabel(context.l10n, minutes),
+          ),
       ],
     );
     if (picked == null) return;
@@ -79,6 +72,7 @@ class TimeWindowScreen extends ConsumerWidget {
   }
 
   String _rangeCopy(
+    AppLocalizations l10n,
     TimeOfDay start,
     int minutes,
     TimeFormat format,
@@ -88,8 +82,10 @@ class TimeWindowScreen extends ConsumerWidget {
     final hi = (base + minutes).clamp(0, 24 * 60 - 1);
     final loTime = TimeOfDay(hour: lo ~/ 60, minute: lo % 60);
     final hiTime = TimeOfDay(hour: hi ~/ 60, minute: hi % 60);
-    return "We'll search between ${_formatTime(loTime, format)} and "
-        '${_formatTime(hiTime, format)}.';
+    return l10n.timeWindowRangeCopy(
+      AppDateFormat.clockTime(loTime, format),
+      AppDateFormat.clockTime(hiTime, format),
+    );
   }
 
   @override
@@ -104,13 +100,13 @@ class TimeWindowScreen extends ConsumerWidget {
 
     return CalcStepScaffold(
       step: CalculationFlowStep.window,
-      title: 'Do you know an approximate birth time?',
+      title: context.l10n.timeWindowTitle,
       onBack: () {
         controller.back();
         context.go(RoutePaths.calcBirth);
       },
       primaryAction: PrimaryButton(
-        label: 'Continue',
+        label: context.l10n.commonContinue,
         icon: AppIcons.forward,
         onPressed: flow.windowStepValid
             ? () {
@@ -124,14 +120,14 @@ class TimeWindowScreen extends ConsumerWidget {
         children: <Widget>[
           RadioGroup<TimeWindowMode>(
             value: flow.timeWindowMode,
-            options: const <RadioOption<TimeWindowMode>>[
+            options: <RadioOption<TimeWindowMode>>[
               RadioOption<TimeWindowMode>(
                 value: TimeWindowMode.approximate,
-                label: 'I have an approximate time',
+                label: context.l10n.timeWindowModeApprox,
               ),
               RadioOption<TimeWindowMode>(
                 value: TimeWindowMode.unknown,
-                label: 'I have no idea',
+                label: context.l10n.timeWindowModeUnknown,
               ),
             ],
             onChanged: controller.setWindowMode,
@@ -139,37 +135,43 @@ class TimeWindowScreen extends ConsumerWidget {
           const SizedBox(height: AppSpacing.s5),
           if (isApprox) ...<Widget>[
             TimePickerField(
-              label: 'Approximate time',
-              placeholder: 'Choose time',
-              formattedValue: _formatTime(flow.approximateTime, timeFormat),
+              label: context.l10n.timeWindowApproxTimeLabel,
+              placeholder: context.l10n.timeWindowChooseTime,
+              formattedValue: AppDateFormat.clockTime(
+                flow.approximateTime,
+                timeFormat,
+              ),
               onTap: () => _pickTime(context, ref, flow.approximateTime),
             ),
             const SizedBox(height: AppSpacing.s4),
             _PickerRow(
-              label: 'Search window',
-              value: _windowLabel(flow.windowMinutes),
+              label: context.l10n.timeWindowSearchWindow,
+              value: _windowLabel(context.l10n, flow.windowMinutes),
               onTap: () => _pickWindow(context, ref, flow.windowMinutes),
             ),
             const SizedBox(height: AppSpacing.s4),
             Text(
-              _rangeCopy(flow.approximateTime, flow.windowMinutes, timeFormat),
+              _rangeCopy(
+                context.l10n,
+                flow.approximateTime,
+                flow.windowMinutes,
+                timeFormat,
+              ),
               style: AppTypography.bodyMd,
             ),
             const SizedBox(height: AppSpacing.s3),
             Text(
-              'A wider window gives more candidates but may reduce '
-              'precision.',
+              context.l10n.timeWindowApproxHint,
               style: AppTypography.bodySm.copyWith(color: AppColors.inkSoft),
             ),
           ] else ...<Widget>[
             Text(
-              "We'll search the entire 24-hour range. This may produce "
-              'more candidates with lower confidence.',
+              context.l10n.timeWindowUnknownBody,
               style: AppTypography.bodyMd,
             ),
             const SizedBox(height: AppSpacing.s3),
             Text(
-              'Adding more life events will help narrow it down.',
+              context.l10n.timeWindowUnknownHint,
               style: AppTypography.bodySm.copyWith(color: AppColors.inkSoft),
             ),
           ],

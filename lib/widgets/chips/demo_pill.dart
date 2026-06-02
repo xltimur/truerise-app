@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/widgets/chips/chip_pill.dart';
 
 /// "DEMO" status pill (`docs/design-system.md` §9.5, §11.6).
@@ -8,16 +9,17 @@ import 'package:rectify/widgets/chips/chip_pill.dart';
 /// the evidence screen, and demo-result history cards. Never on
 /// settings, onboarding, or input screens.
 class DemoPill extends StatelessWidget {
-  const DemoPill({this.label = 'DEMO', super.key});
+  const DemoPill({this.label, super.key});
 
-  final String label;
+  final String? label;
 
   @override
   Widget build(BuildContext context) {
+    final labelText = label ?? context.l10n.demoPillLabel;
     return ChipPill(
-      label: label,
+      label: labelText,
       variant: ChipPillVariant.status,
-      semanticsLabel: '$label calculation badge',
+      semanticsLabel: context.l10n.demoPillSemantic(labelText),
     );
   }
 }

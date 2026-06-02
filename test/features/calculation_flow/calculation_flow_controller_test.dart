@@ -120,6 +120,78 @@ void main() {
     });
   });
 
+  group('Age gate (18+)', () {
+    final reference = DateTime(2026, 6, 2);
+
+    test('latestAllowedBirthDate is minimumAgeYears before the reference', () {
+      expect(
+        CalculationFlowState.latestAllowedBirthDate(reference),
+        DateTime(2008, 6, 2),
+      );
+    });
+
+    test('isOldEnough treats the cutoff day as inclusive', () {
+      // Exactly 18 on the reference day → allowed.
+      expect(
+        CalculationFlowState.isOldEnough(DateTime(2008, 6, 2), reference),
+        isTrue,
+      );
+      // One day too young → blocked.
+      expect(
+        CalculationFlowState.isOldEnough(DateTime(2008, 6, 3), reference),
+        isFalse,
+      );
+      // Comfortably adult / comfortably minor.
+      expect(
+        CalculationFlowState.isOldEnough(DateTime(1990, 6, 15), reference),
+        isTrue,
+      );
+      expect(
+        CalculationFlowState.isOldEnough(DateTime(2015, 6, 15), reference),
+        isFalse,
+      );
+    });
+
+    test('an under-age birth date never passes birthStepValid or next()', () {
+      final container = _container(
+        prefs: prefs,
+        rectifier: rectifier,
+        drafts: drafts,
+      );
+      addTearDown(container.dispose);
+      final controller = container.read(
+        calculationFlowControllerProvider.notifier,
+      );
+
+      // A child born ~5 years ago is unambiguously under 18 regardless of
+      // the day this test runs, so the assertion is not date-flaky.
+      final now = DateTime.now();
+      controller
+        ..setBirthDate(DateTime.utc(now.year - 5, 6, 15))
+        ..setBirthCityText('Kyiv, Ukraine');
+
+      expect(
+        container.read(calculationFlowControllerProvider).birthStepValid,
+        isFalse,
+        reason: 'city is set but the date fails the 18+ gate',
+      );
+
+      // The flow refuses to advance off the birth step.
+      controller.next();
+      expect(
+        container.read(calculationFlowControllerProvider).step,
+        CalculationFlowStep.birth,
+      );
+
+      // Swapping in an adult date unblocks the step.
+      controller.setBirthDate(DateTime.utc(now.year - 40, 6, 15));
+      expect(
+        container.read(calculationFlowControllerProvider).birthStepValid,
+        isTrue,
+      );
+    });
+  });
+
   group('Window step mode selection', () {
     test('switches between approximate and unknown modes', () {
       final container = _container(

@@ -1,0 +1,393 @@
+# Store Listing — English Tier 0 (TrueRise)
+
+**Impl Run A.4 · 2026-06-02 · model `claude-opus-4-8`.**
+**Status: ready-to-paste English metadata for App Store Connect + Google Play
+Console.** Finalizes the owner-independent part of **P0-8** in
+`docs/store-submission-readiness.md` (store metadata + replace the `pubspec`
+placeholder description). Screenshots, hosted URLs, signing, and the bundle-ID
+decision remain owner work (see the checklist at the end).
+
+> **How to use this file.** Each field below is the literal string to paste,
+> with an approximate character count. **Re-count every field in the store
+> console before locking** — App Store Connect and Play Console count glyphs
+> differently from this file. Counts here were taken with a byte/character
+> check; the only field where the count is load-bearing for a hard limit is the
+> iOS keyword field (shown exactly). Nothing in this document asserts a store
+> ranking, install count, rating, trademark clearance, or store approval; those
+> are owner items.
+>
+> **Research preserved, not re-opened.** This finalizes the drafts in
+> `docs/aso-naming-strategy.md` (Run 3) and `docs/store-submission-readiness.md`
+> (Run 6) against the verified post-A.1/A.2/A.3 build; it does not change the
+> conclusions in `docs/competitor-aso-research.md` (Run 2) or
+> `docs/feature-gap-analysis.md` (Run 4).
+
+---
+
+## 1. Decision summary
+
+- **Public brand:** **TrueRise** — one word, English, kept in every locale; the
+  descriptor tail carries the search intent. (Bundle/codename stays `rectify` /
+  `com.rectify.rectify` pending the owner's bundle-ID decision.)
+- **Positioning:** a focused **birth-time calculation utility** that estimates an
+  unknown birth time from the user's own life events and returns candidate times
+  with an **honest confidence score** and per-event evidence. Framed as a tool,
+  **not** a horoscope or fortune-telling app — this is both the product truth and
+  the Apple **4.3(b)** survival posture (precedent: Vedic Samay ships in
+  Utilities; `docs/competitor-aso-research.md` §10).
+- **Category recommendation:**
+  - **App Store:** Primary **Utilities**; optional Secondary **Reference**. Do
+    not select Lifestyle or any horoscope-adjacent slot.
+  - **Google Play:** **Tools.** (Lifestyle is the discovery-oriented alternative;
+    if ever chosen, the utility framing matters more, not less. Recommend Tools
+    for consistency.)
+- **Growth angle baked into the copy:** the listing emphasizes **privacy-safe,
+  shareable insight** — a result you can share as a short line (time + rising +
+  confidence) **without** sharing any birth data — because that shipped text
+  share is the product's only organic spread loop today
+  (`docs/feature-gap-analysis.md` §6.1). It does **not** imply an image/“share
+  card,” which is an unbuilt V1.5 feature.
+- **Already true in the build (verified via Impl Run A.1/A.2/A.3):** display name
+  is **TrueRise**; an in-app **18+ birth-date gate** is enforced; the privacy
+  screen discloses live-mode transmission; the app icon is the production
+  TrueRise mark; the privacy/data-safety package is drafted
+  (`docs/privacy-policy.md`, `docs/apple-privacy-labels.md`,
+  `docs/play-data-safety.md`).
+- **What the owner still must provide (gates submission — not decidable here):**
+  1. **Hosted privacy-policy URL** (publish `docs/privacy-policy.md`, fill its
+     `[OWNER/LEGAL]` blanks) — required in both listings.
+  2. **Support URL** (and Play's required support email / contact).
+  3. **Bundle/package-ID decision** — keep `com.rectify.rectify` or rebrand to a
+     `com.truerise.*` ID *before* the first store record (immutable after).
+  4. **Release signing** — Android upload keystore + Play App Signing; iOS
+     distribution profile.
+  5. **Screenshots** — capture in the next run from the post-A.1/A.3 build (copy
+     plan in §6); none are created here.
+  6. **Trademark clearance + App Store name availability** for “TrueRise.”
+  7. **Console character re-count**, **category confirmation**, **age rating**
+     consistent with the 18+ gate, **Apple privacy labels + Play Data Safety**
+     completion, **precise-location classification** call, and **demo/review key
+     rotation** (see §8).
+
+---
+
+## 2. App Store package (English, US)
+
+### 2.1 App Name — limit 30
+
+```
+TrueRise: Birth Time Finder
+```
+
+(~27 chars.) Brand + the high-intent long-tail descriptor “Birth Time Finder.”
+
+### 2.2 Subtitle — limit 30
+
+```
+Rectify your birth time
+```
+
+(~23 chars.) Uses **rectify** as the domain verb (not the brand) to capture the
+“rectify birth time” intent.
+
+- **Conservative alternative (recommended verbatim for a future German front and
+  for the most review-cautious posture):** `Estimate your birth time` (~24) —
+  leads with the probabilistic verb.
+- **Brand-echo alternative:** `Find your real birth time` (~25).
+
+### 2.3 Promotional Text — limit 170 (updatable without review)
+
+```
+Estimate your unknown birth time from the life events you remember — privately, on your device. Share the result, never your private data.
+```
+
+(~138 chars.) Promo text is editable any time, so it carries the
+privacy/shareable hook. Plain alternative (no share angle):
+`An honest, private way to estimate your unknown birth time from the events you actually remember.` (~95).
+
+### 2.4 Full Description
+
+```
+Do you know your exact birth time? Most people don't — and without it, your rising sign and house placements are guesswork. TrueRise estimates your most likely birth time from the life events you already remember, and shows you the evidence behind every candidate.
+
+HOW IT WORKS
+- Enter an approximate birth window (or "I don't know") and your birthplace.
+- Add a few dated life events — moves, relationships, career changes, family milestones, and more.
+- TrueRise scores candidate times using astrological timing methods (transits and progressions) and ranks them by confidence.
+- Open "See how we got this" to review, event by event, why each candidate scored the way it did.
+
+HONEST BY DESIGN
+Rectification is an estimate, not a certainty. Every result is shown as a most-likely time with a confidence score and a few alternative candidates — never a guaranteed answer, and never a prediction about your future. The more dated events you add, the stronger the estimate.
+
+PRIVATE BY DEFAULT
+- Your birth details and life events are stored on your device.
+- No account, no sign-up, no profile.
+- Demo mode runs the whole flow offline, with no network and no key, so you can try it before entering anything real.
+- One tap in Settings erases all your data.
+- A live calculation sends your birth and event details to a calculation provider over a secure connection, only to compute your result — never for advertising or tracking.
+
+SHARE WITHOUT OVERSHARING
+Share your result as a short line — your estimated time, rising sign, and confidence — with no birth date, birthplace, or life events attached. Your insight travels; your private data stays with you.
+
+WHO IT'S FOR
+Anyone with an unknown or uncertain birth time who wants their rising sign and house placements — a focused birth-time calculator, not a horoscope feed.
+
+TrueRise provides astrological birth-time estimates for personal interest. It does not provide medical, psychological, legal, or financial advice, and its results are not deterministic.
+
+Try the free, offline demo — no birth time needed to start.
+```
+
+(Well under the 4000 limit. Leads with the calculation function and probabilistic
+framing; mentions astrology only as the *method*; never uses fortune-telling
+lexicon or certainty claims.)
+
+### 2.5 iOS keyword field — limit 100 (comma-separated, no spaces)
+
+The field must not repeat words already in the Name/Subtitle (`truerise, birth,
+time, finder, rectify, your`). Apple indexes Name + Subtitle + keywords together
+and de-duplicates.
+
+**Recommended (Tier 0 launch — high-intent long-tail + light astrology reach):**
+
+```
+rectification,ascendant,rising,natal,chart,calculator,unknown,accurate,astrology,houses,sign
+```
+
+**(92 / 100 characters.)**
+
+**Conservative variant (no head terms — use for a future German front / safest
+4.3 posture):**
+
+```
+rectification,ascendant,rising,calculator,unknown,approximate,accurate,natal,chart,houses
+```
+
+**(89 / 100 characters.)**
+
+> Do **not** pad the field with `horoscope`, `zodiac`, or `fortune` to use up
+> characters — leave it short. Re-count in App Store Connect after the
+> Name/Subtitle are locked; localized glyph counts differ.
+
+### 2.6 App Review Notes (draft)
+
+```
+TrueRise is a utility that estimates an unknown birth time from user-entered life events and returns candidate times with an honest confidence score. It is not a horoscope or fortune-telling app and makes no deterministic or predictive claims.
+
+NO PAYMENT OR KEY REQUIRED TO REVIEW: enable Settings > Demo mode, which runs the full input > result > evidence flow entirely OFFLINE (no network, no API key, no purchase). Demo results are clearly labeled "Demo — not a real calculation."
+
+LIVE MODE (optional): a live calculation sends the user's birth date, approximate birth time/window, birthplace text and coordinates (when available), and life-event categories/dates/descriptions to a third-party calculation provider over HTTPS, solely to compute the result. It is not linked to any identity (the app has no accounts) and is not used for tracking. The review build may embed a low-budget provider key so live mode can be exercised; Demo mode needs no key.
+
+PRIVACY & DATA: on-device storage only; no analytics, crash-reporting, advertising, or tracking SDKs; the app requests NO device Location permission (the coordinates describe a birthplace the user selects, not current device location); Settings > Delete all data erases all local data. Privacy policy: [OWNER: hosted URL].
+
+AGE: the app enforces an in-app 18+ birth-date gate; please set the App Store age rating consistently.
+```
+
+(Authoritative data posture: `docs/apple-privacy-labels.md`. Replace
+`[OWNER: hosted URL]` before submitting.)
+
+---
+
+## 3. Google Play package (English, en-US)
+
+### 3.1 Title — limit 30
+
+```
+TrueRise: Birth Time Finder
+```
+
+(~27 chars.)
+
+### 3.2 Short description — limit 80
+
+```
+Estimate your unknown birth time from real life events. Private, on-device.
+```
+
+(~75 chars.) Leads with intent + method + privacy.
+
+- **Evidence-forward alternative:** `Find your most likely birth time from your life events — with evidence.` (~70).
+- **Question-hook alternative:** `Don't know your birth time? Estimate it from your life events, privately.` (~73).
+
+### 3.3 Full description — limit 4000 (first ~250 chars are the hook)
+
+```
+You don't know your exact birth time — so your rising sign and houses are uncertain. TrueRise estimates your most likely birth time from the real events of your life, and shows the evidence behind every candidate, with a confidence score. No exact time needed to start.
+
+HOW IT WORKS
+- Enter an approximate birth window (or mark it unknown) plus your birthplace.
+- Add a few dated life events: moves, relationships, career changes, family milestones, losses, and more.
+- TrueRise scores candidate birth times using astrological timing methods (transits and progressions) and ranks them by confidence.
+- Tap "See how we got this" to review, event by event, why each candidate scored the way it did.
+
+WHY IT'S DIFFERENT
+Most astrology apps demand an exact birth time and treat an unknown one as a dead end. TrueRise is the tool for that exact moment: it estimates the time instead of asking you to guess. The more dated events you add, the stronger the estimate.
+
+HONEST CONFIDENCE, NOT CERTAINTY
+Birth-time rectification is a probabilistic estimate. Results are always shown as a most-likely time with a confidence score and a few alternatives — never a guaranteed answer, and never a prediction about your future.
+
+PRIVATE BY DEFAULT
+- Your birth details and life events stay on your device.
+- No account and no sign-up.
+- Demo mode runs the entire flow offline — no network, no key — so you can try it first.
+- Delete everything in one tap from Settings.
+- A live calculation sends your details to a calculation provider over a secure (HTTPS) connection solely to compute your result; there is no advertising, analytics, or tracking.
+
+SHARE WITHOUT OVERSHARING
+Share your result as a short line — estimated time, rising sign, and confidence — with no birth date, birthplace, or life events included. Your insight is shareable; your private data is not.
+
+WHO IT'S FOR
+Anyone with an unknown or uncertain birth time who wants their rising sign and house placements — a focused birth-time calculator, not a horoscope feed.
+
+TrueRise provides astrological birth-time estimates for personal interest. It does not offer medical, psychological, legal, or financial advice, and its results are not deterministic.
+
+Try the free demo — offline, private, no birth time required.
+```
+
+### 3.4 Suggested category, tags, and search phrases
+
+- **Category:** **Tools.**
+- **Tags (pick from Play's fixed tag list; closest matches):** *Utilities /
+  Tools*, *Calculator*; if an astrology/horoscope tag is offered, use **at most
+  one** and keep it secondary — keep the visible listing utility-led.
+- **Search phrases to support naturally in the text (do not list them as a
+  block):** birth time rectification, rectify birth time, unknown birth time,
+  birth time calculator, find my birth time, approximate birth time, rising sign
+  / ascendant from life events. Use each at most once or twice in real
+  sentences; Play penalizes repetition.
+
+### 3.5 Reviewer notes (draft)
+
+```
+TrueRise is a Tools-category utility that estimates an unknown birth time from user-entered life events, returning candidate times with a confidence score. No deterministic, predictive, medical, legal, or financial claims are made.
+
+TEST WITHOUT LIVE CREDITS OR PAYMENT: Settings > Demo mode runs the complete flow OFFLINE (no network, no key, no purchase); demo results are labeled "Demo — not a real calculation." The Play pre-launch report can be run in Demo mode.
+
+LIVE MODE (optional) transmits birth date, approximate birth time/window, birthplace text + coordinates (when available), and life-event categories/dates/descriptions to a third-party calculation provider over HTTPS, solely to compute the result; not linked to identity (no accounts), not used for tracking. The Data safety form should match this flow (see docs/play-data-safety.md): encrypted in transit = yes; in-app deletion = yes.
+
+PRIVACY & DATA: on-device storage; no analytics/crash/ads/tracking SDKs; only the INTERNET permission is declared; no device Location permission (coordinates are a selected birthplace, not GPS). Privacy policy: [OWNER: hosted URL]. Target audience: adults; in-app 18+ gate — set the content rating consistently.
+```
+
+---
+
+## 4. ASO query mapping
+
+How the chosen Name / Subtitle / keywords / description cover the searches a
+real user would type. **Lane** follows the Run 3 grouping: **compete** =
+high-intent long-tail where a new single-purpose app can realistically rank;
+**stretch** = generic-calculator competition; **reach-only** = too-competitive
+head term, hidden-field reach at most (no ranking promise). No top-10 position is
+guaranteed for any term.
+
+| Likely search | Lane | Where it is covered | Rationale |
+|---|---|---|---|
+| birth time rectification | compete | keyword `rectification`; description (“birth-time rectification…”) | The core intent and the app's actual job; lane is uncontested by a like-for-like app (Run 2 §6.1). |
+| rectify birth time / unknown birth time | compete | Subtitle “Rectify your birth time”; short desc “unknown birth time”; keyword `unknown` | Highest-intent long-tail; placed in the visible, highest-signal slots. |
+| find my birth time / birth time calculator | compete | Name “Birth Time Finder”; keyword `calculator` | Direct descriptor match; “calculator” reinforces the utility frame. |
+| birth chart time finder | compete | Name tail “Birth Time Finder” + keyword `chart` | Title carries “Birth Time Finder”; `chart` adds the “birth chart” adjacency. |
+| rising sign calculator / ascendant calculator | stretch | keywords `rising`, `ascendant`, `calculator`; description (“rising sign”) | Generic chart-calculator competition is heavy; targeted as reach, not a primary success metric. |
+| approximate / accurate birth time | compete | keyword `approximate`* / `accurate`; short + full description | Names the user's problem (“approximate”) and benefit; *`approximate` is in the conservative keyword variant. |
+| astrology birth chart / natal chart | reach-only | keywords `astrology`, `chart`, `natal` (hidden field, Option H); one incidental description mention | Too-competitive head terms; included only as light hidden reach so the visible listing stays utility-led (4.3(b)). |
+| houses / ascendant (chart terms) | reach-only | keywords `houses`, `ascendant`, `sign` | Supporting astrology vocabulary in the hidden field; never in the visible title/subtitle. |
+
+**Avoided on purpose (policy/relevance):** `horoscope`, `zodiac`, `fortune`,
+`psychic`, `tarot`, `prediction`, `future`, `destiny` — Group D terms that raise
+Apple 4.3(b) and misleading-claim risk and pull the wrong audience
+(`docs/aso-naming-strategy.md` §4.4 / §7.3).
+
+---
+
+## 5. Screenshot copy plan (for the next capture run — no files created here)
+
+Capture from a **post-A.1/A.3 build** (TrueRise name + production icon, no
+“Rectify” leak). Four frames, ordered answer → trust → privacy → spread; every
+frame must show **real, shipped UI** (`docs/store-submission-readiness.md` §8.2).
+Capture in both 12h and 24h time formats.
+
+| # | Frame (shipped UI) | Overlay / caption text |
+|---|---|---|
+| 1 | **The answer** — hero result card: estimated time + “X Rising” + confidence bar | `Find your real birth time — with an honest confidence score.` |
+| 2 | **The evidence** — “See how we got this” per-event breakdown + alternate candidates | `See why — from the life events you actually remember.` |
+| 3 | **Private & offline** — Demo pill + Settings privacy posture (on-device, Delete all data, demo = no network) | `Private by default. Try it free, offline, in Demo mode.` |
+| 4 | **Share the result** — the Share button + OS share sheet carrying the privacy-safe **text** | `Share your result — never your birth data.` |
+
+> **Frame 4 must show the TEXT share** (the shipped `ShareCopyBuilder` line:
+> time + rising + confidence + “Calculated with TrueRise”). Do **not** mock up an
+> image/“share card” — that feature is unbuilt (V1.5). Do not lead any frame with
+> zodiac wheels, horoscopes, or mystic imagery.
+
+Optional later: a Play **feature graphic** (1024×500) using the same
+answer-first message; not required to submit.
+
+---
+
+## 6. Compliance guardrails (apply to every visible surface + future edits)
+
+- **No deterministic claims.** Always “most likely” / “estimate” / “candidate” +
+  a confidence score; never “your birth time is X,” “exact,” “guaranteed,”
+  “100%,” “definitive,” or “proven” as a *result* claim.
+- **No sensitive life predictions.** Do not predict future events, relationships,
+  health outcomes, death, or fortune. Results describe a *time estimate*, nothing
+  more.
+- **No emergency / health / finance / legal advice.** Keep the explicit
+  disclaimer (“not medical, psychological, legal, or financial advice”). Never
+  frame the app as guidance for any such decision.
+- **No fortune-telling lexicon.** Avoid fortune, psychic, tarot, oracle,
+  divination, palm reading, destiny, “predict your future” — in title, subtitle,
+  keywords, description, screenshots, and promo text.
+- **Astrology as method, not category.** Reference transits/progressions as the
+  calculation *method*; keep astrology/horoscope/zodiac out of the visible
+  title/subtitle and the first screenshot (Apple 4.3(b)).
+- **Privacy-safe sharing only.** Any sharing copy must match the shipped text
+  share: time + rising + confidence + brand, **no PII**. Do not depict an
+  image/share-card (unbuilt).
+- **Age gate 18+.** Listing tone, target-audience declaration (adults), and store
+  age rating must all match the in-app 18+ birth-date gate.
+- **Honest expectation-setting.** “More events = stronger estimate”;
+  rectification cannot guarantee precision.
+
+---
+
+## 7. Final owner checklist (before locking the listing / submitting)
+
+- [ ] **Hosted privacy-policy URL** live (publish `docs/privacy-policy.md`, fill
+      all `[OWNER/LEGAL]` blanks) and entered in both consoles.
+- [ ] **Support URL** (+ Play support email/contact) provided.
+- [ ] **Bundle/package-ID decision** made and applied *before* the first store
+      record (`com.rectify.rectify` vs `com.truerise.*` — immutable after).
+- [ ] **Release signing** configured (Android upload keystore + Play App Signing;
+      iOS distribution profile); release no longer debug-signed.
+- [ ] **Screenshots** captured per §5 from a post-A.1/A.3 build (next run).
+- [ ] **Trademark clearance + App Store name availability** for “TrueRise”
+      confirmed.
+- [ ] **Character re-count** of Name/Subtitle/keywords/Title/short description in
+      each console.
+- [ ] **Category** confirmed: Utilities (+ optional Reference) on iOS; Tools on
+      Play.
+- [ ] **Age rating** questionnaires completed consistent with the **18+** gate;
+      Play target audience = adults.
+- [ ] **Apple App Privacy labels** entered (`docs/apple-privacy-labels.md`) and
+      **Play Data Safety** form completed (`docs/play-data-safety.md`), including
+      the **precise-location classification** call and Collected-vs-Shared
+      decision.
+- [ ] **Demo/review key rotation** to a low-budget, capped key; reviewer notes
+      point to offline Demo mode.
+
+---
+
+## 8. Source / preserved conclusions
+
+- `docs/aso-naming-strategy.md` (Run 3) — name = TrueRise + descriptor tail;
+  Utilities/Tools; keyword Groups A–D; Option H for Tier 0, Option C for DE;
+  probabilistic copy rules. **Finalized here, not changed.**
+- `docs/store-submission-readiness.md` (Run 6) — P0-8 scope; English Tier 0
+  package; 4-frame screenshot storyboard; reviewer-note language. **Closed here
+  for the owner-independent part.**
+- `docs/competitor-aso-research.md` (Run 2) — Vedic Samay = Utilities precedent;
+  Apple 4.3(b) risk; “is it accurate, can you show me why?” axis. **Preserved.**
+- `docs/feature-gap-analysis.md` (Run 4) — text share is PII-free and shipped;
+  image/share-card is unbuilt V1.5; demo is offline. **Preserved.**
+- `docs/privacy-policy.md`, `docs/apple-privacy-labels.md`,
+  `docs/play-data-safety.md` (Run A.2) — authoritative data posture used in the
+  reviewer notes (on-device storage; offline demo; live HTTPS transmission of
+  birth/event data to a third-party provider; no accounts/analytics/tracking;
+  18+ gate; on-device geocoding). **Referenced, not changed.**

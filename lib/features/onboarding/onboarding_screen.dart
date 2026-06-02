@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:rectify/app/route_names.dart';
 import 'package:rectify/features/onboarding/onboarding_controller.dart';
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/spacing.dart';
 import 'package:rectify/theme/typography.dart';
@@ -15,7 +16,7 @@ import 'package:rectify/widgets/buttons/buttons.dart';
 /// and `docs/design-system.md` §10.6.
 ///
 /// Slide 1: what is birth-time rectification.
-/// Slide 2: how Rectify works.
+/// Slide 2: how TrueRise works.
 /// Slide 3: two stacked CTAs ("Try demo first" / "Start real calculation");
 ///          no Skip on the final slide per §10.6.
 class OnboardingScreen extends ConsumerStatefulWidget {
@@ -79,7 +80,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     if (!isLast)
                       GhostButton(
                         key: const ValueKey<String>('onboarding-skip'),
-                        label: 'Skip',
+                        label: context.l10n.onboardingSkip,
                         onPressed: _finishAndGo,
                       ),
                   ],
@@ -91,35 +92,21 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 key: const ValueKey<String>('onboarding-pageview'),
                 controller: _pageController,
                 onPageChanged: (next) => setState(() => _index = next),
-                children: const <Widget>[
+                children: <Widget>[
                   _OnboardingSlide(
                     icon: LucideIcons.clock,
-                    headline:
-                        'Your birth chart depends on your exact '
-                        'birth time.',
-                    body:
-                        'Most people only know an approximate time — '
-                        'or nothing at all. Rectify narrows it down using '
-                        'events from your life.',
+                    headline: context.l10n.onboardingSlide1Title,
+                    body: context.l10n.onboardingSlide1Body(appBrandName),
                   ),
                   _OnboardingSlide(
                     icon: LucideIcons.listChecks,
-                    headline: 'How Rectify works',
-                    body:
-                        '1. Enter your birth date and approximate time.\n'
-                        '2. Add events from your life — marriage, job '
-                        'changes, moves, more.\n'
-                        '3. We calculate the most probable birth time '
-                        'and show you why.\n\n'
-                        'The more events you add, the more accurate '
-                        'the result.',
+                    headline: context.l10n.onboardingSlide2Title(appBrandName),
+                    body: context.l10n.onboardingSlide2Body,
                   ),
                   _OnboardingSlide(
                     icon: LucideIcons.compass,
-                    headline: 'Ready to find your birth time?',
-                    body:
-                        'A demo shows you a sample result first, '
-                        'with no account needed.',
+                    headline: context.l10n.onboardingSlide3Title,
+                    body: context.l10n.onboardingSlide3Body,
                   ),
                 ],
               ),
@@ -138,18 +125,18 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         PrimaryButton(
-                          label: 'Try demo first',
+                          label: context.l10n.onboardingTryDemo,
                           onPressed: _finishAndGo,
                         ),
                         const SizedBox(height: AppSpacing.s3),
                         SecondaryButton(
-                          label: 'Start real calculation',
+                          label: context.l10n.onboardingStartReal,
                           onPressed: _finishAndGo,
                         ),
                       ],
                     )
                   : PrimaryButton(
-                      label: 'Next',
+                      label: context.l10n.commonNext,
                       onPressed: _next,
                     ),
             ),
@@ -202,7 +189,7 @@ class _PageDots extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: 'Page ${current + 1} of $count',
+      label: context.l10n.onboardingPageLabel(current + 1, count),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[

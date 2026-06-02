@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/icons.dart';
 import 'package:rectify/theme/spacing.dart';
@@ -31,9 +32,10 @@ class EventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return AppCard(
       onTap: onTap,
-      semanticsLabel: 'Event: $category on $date',
+      semanticsLabel: l10n.eventCardSemantic(category, date),
       padding: const EdgeInsets.symmetric(
         vertical: AppSpacing.s4,
         horizontal: AppSpacing.s5,
@@ -72,7 +74,7 @@ class EventCard extends StatelessWidget {
               height: 32,
               child: Semantics(
                 button: true,
-                label: 'Delete event $category',
+                label: l10n.eventCardDeleteSemantic(category),
                 excludeSemantics: true,
                 child: IconButton(
                   visualDensity: VisualDensity.compact,

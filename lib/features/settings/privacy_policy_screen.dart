@@ -36,14 +36,14 @@ class PrivacyPolicyScreen extends StatelessWidget {
         ),
         children: <Widget>[
           Text(
-            'What Rectify stores',
+            'What TrueRise stores',
             style: AppTypography.titleLg,
           ),
           const SizedBox(height: AppSpacing.s4),
           const _Body(
             'Everything you enter — birth date, birth city, life '
             'events, calculation results — is stored on this device '
-            'only. Nothing is uploaded to a Rectify account, because '
+            'only. Nothing is uploaded to a TrueRise account, because '
             'we do not run user accounts. Deleting the app removes '
             'every byte of that data.',
           ),
@@ -74,6 +74,21 @@ class PrivacyPolicyScreen extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.sectionGap),
           Text(
+            'Live calculations',
+            style: AppTypography.titleLg,
+          ),
+          const SizedBox(height: AppSpacing.s4),
+          const _Body(
+            'Running a live (non-demo) calculation sends your birth date '
+            'and approximate time, your birthplace coordinates, and the '
+            'descriptions of the life events you add to a third-party '
+            'calculation provider over HTTPS. That data is transmitted '
+            'solely to compute your rectified birth time — it is not used '
+            'to build a profile and is not tied to any TrueRise account, '
+            'because there are none.',
+          ),
+          const SizedBox(height: AppSpacing.sectionGap),
+          Text(
             'Deleting your data',
             style: AppTypography.titleLg,
           ),
@@ -93,7 +108,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.s4),
           const _Body(
-            'This release of Rectify ships without an analytics SDK '
+            'This release of TrueRise ships without an analytics SDK '
             'and without crash reporting. If a future release adds '
             'either, it will be disclosed here and limited to '
             'anonymous, non-identifying data.',

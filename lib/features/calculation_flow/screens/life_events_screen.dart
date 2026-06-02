@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:rectify/app/route_names.dart';
+import 'package:rectify/core/formatting/app_date_format.dart';
 import 'package:rectify/data/models/event_category.dart';
 import 'package:rectify/data/models/life_event.dart';
 import 'package:rectify/features/calculation_flow/state/calculation_flow_controller.dart';
 import 'package:rectify/features/calculation_flow/state/calculation_flow_state.dart';
 import 'package:rectify/features/calculation_flow/widgets/add_event_sheet.dart';
 import 'package:rectify/features/calculation_flow/widgets/calc_step_scaffold.dart';
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/icons.dart';
 import 'package:rectify/theme/radius.dart';
@@ -16,21 +18,6 @@ import 'package:rectify/theme/spacing.dart';
 import 'package:rectify/theme/typography.dart';
 import 'package:rectify/widgets/buttons/buttons.dart';
 import 'package:rectify/widgets/cards/event_card.dart';
-
-const _monthLabels = <int, String>{
-  1: 'Jan',
-  2: 'Feb',
-  3: 'Mar',
-  4: 'Apr',
-  5: 'May',
-  6: 'Jun',
-  7: 'Jul',
-  8: 'Aug',
-  9: 'Sep',
-  10: 'Oct',
-  11: 'Nov',
-  12: 'Dec',
-};
 
 /// Step 3 of the calc flow (`docs/ascii-wireframes.md` Screen 4).
 class LifeEventsScreen extends ConsumerWidget {
@@ -51,10 +38,8 @@ class LifeEventsScreen extends ConsumerWidget {
     EventCategory.other => AppIcons.eventOther,
   };
 
-  String _formatDate(LifeEvent event) {
-    if (event.month == null) return event.year.toString();
-    return '${_monthLabels[event.month]} ${event.year}';
-  }
+  String _formatDate(LifeEvent event) =>
+      AppDateFormat.optionalMonthYear(event.month, event.year);
 
   Future<void> _addEvent(BuildContext context, WidgetRef ref) async {
     final result = await AddEventSheet.show(context);
@@ -100,19 +85,23 @@ class LifeEventsScreen extends ConsumerWidget {
     return CalcStepScaffold(
       step: CalculationFlowStep.events,
       title: hasEvents
-          ? 'Life events  (${events.length} added)'
-          : 'Life events',
+          ? context.l10n.lifeEventsTitleWithCount(events.length)
+          : context.l10n.lifeEventsTitle,
       onBack: () {
         controller.back();
         context.go(RoutePaths.calcWindow);
       },
       secondaryAction: SecondaryButton(
-        label: hasEvents ? 'Add event' : 'Add first event',
+        label: hasEvents
+            ? context.l10n.lifeEventsAddEvent
+            : context.l10n.lifeEventsAddFirstEvent,
         icon: AppIcons.add,
         onPressed: () => _addEvent(context, ref),
       ),
       primaryAction: PrimaryButton(
-        label: flow.isDemo ? 'Continue (demo)' : 'Continue',
+        label: flow.isDemo
+            ? context.l10n.lifeEventsContinueDemo
+            : context.l10n.commonContinue,
         icon: AppIcons.forward,
         onPressed: canContinue
             ? () {
@@ -126,21 +115,18 @@ class LifeEventsScreen extends ConsumerWidget {
         children: <Widget>[
           if (!hasEvents) ...<Widget>[
             Text(
-              'Add memorable events from your life. '
-              'The more you add, the better.',
+              context.l10n.lifeEventsEmptyBody,
               style: AppTypography.bodyMd,
             ),
             const SizedBox(height: AppSpacing.s4),
-            const _GuidanceBanner(
-              text:
-                  'Add at least 5 events for a real calculation. '
-                  '3 for a demo.',
+            _GuidanceBanner(
+              text: context.l10n.lifeEventsGuidanceEmpty,
             ),
             const SizedBox(height: AppSpacing.s7),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: AppSpacing.s7),
               child: Text(
-                'No events yet.',
+                context.l10n.lifeEventsNoEvents,
                 textAlign: TextAlign.center,
                 style: AppTypography.bodyMd.copyWith(color: AppColors.inkSoft),
               ),
@@ -150,9 +136,7 @@ class LifeEventsScreen extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: AppSpacing.s4),
                 child: _GuidanceBanner(
-                  text:
-                      '${events.length} events. '
-                      'Add 5+ for a stronger real calculation.',
+                  text: context.l10n.lifeEventsGuidanceCount(events.length),
                 ),
               ),
             for (var i = 0; i < events.length; i++)
@@ -160,7 +144,10 @@ class LifeEventsScreen extends ConsumerWidget {
                 padding: const EdgeInsets.only(bottom: AppSpacing.s3),
                 child: EventCard(
                   icon: _iconFor(events[i].category),
-                  category: eventCategoryLabel(events[i].category),
+                  category: eventCategoryLabel(
+                    context.l10n,
+                    events[i].category,
+                  ),
                   date: _formatDate(events[i]),
                   onTap: () => _editEvent(context, ref, events[i]),
                   onDelete: () => controller.removeEvent(events[i].id),

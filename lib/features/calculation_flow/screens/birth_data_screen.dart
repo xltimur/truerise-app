@@ -3,14 +3,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import 'package:rectify/app/route_names.dart';
+import 'package:rectify/core/formatting/app_date_format.dart';
 import 'package:rectify/data/models/geo_place.dart';
 import 'package:rectify/features/calculation_flow/geocoding/geocoding_service.dart';
 import 'package:rectify/features/calculation_flow/state/calculation_flow_controller.dart';
 import 'package:rectify/features/calculation_flow/state/calculation_flow_state.dart';
 import 'package:rectify/features/calculation_flow/widgets/calc_step_scaffold.dart';
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/icons.dart';
 import 'package:rectify/theme/radius.dart';
@@ -87,14 +88,32 @@ class _BirthDataScreenState extends ConsumerState<BirthDataScreen> {
   Future<void> _pickDate() async {
     final state = ref.read(calculationFlowControllerProvider);
     final now = DateTime.now();
-    final initial =
-        state.birthDate ?? DateTime(now.year - 30, now.month, now.day);
+    final firstDate = DateTime(1920);
+    // 18+ age gate: the picker cannot offer any date that would make the
+    // user a minor.
+    final lastAllowed = CalculationFlowState.latestAllowedBirthDate(now);
+    // Default to a plausible adult age when nothing is set yet.
+    final fallback = DateTime(now.year - 30, now.month, now.day);
+    final stored = state.birthDate;
+    final candidate = stored == null
+        ? fallback
+        : DateTime(stored.year, stored.month, stored.day);
+    // Clamp into [firstDate, lastAllowed] so a persisted under-age or
+    // out-of-range draft can't trip showDatePicker's internal asserts.
+    final DateTime initial;
+    if (candidate.isAfter(lastAllowed)) {
+      initial = lastAllowed;
+    } else if (candidate.isBefore(firstDate)) {
+      initial = firstDate;
+    } else {
+      initial = candidate;
+    }
     final picked = await showDatePicker(
       context: context,
       initialDate: initial,
-      firstDate: DateTime(1920),
-      lastDate: now,
-      helpText: 'Date of birth',
+      firstDate: firstDate,
+      lastDate: lastAllowed,
+      helpText: context.l10n.birthDataDateLabel,
     );
     if (picked == null) return;
     ref
@@ -104,7 +123,7 @@ class _BirthDataScreenState extends ConsumerState<BirthDataScreen> {
 
   String _formattedDate(DateTime? date) {
     if (date == null) return '';
-    return DateFormat('MMMM d, y').format(date.toLocal());
+    return AppDateFormat.longDate(date);
   }
 
   @override
@@ -129,10 +148,10 @@ class _BirthDataScreenState extends ConsumerState<BirthDataScreen> {
 
     return CalcStepScaffold(
       step: CalculationFlowStep.birth,
-      title: 'Birth details',
+      title: context.l10n.birthDataTitle,
       onBack: () => context.go(RoutePaths.home),
       primaryAction: PrimaryButton(
-        label: 'Continue',
+        label: context.l10n.commonContinue,
         icon: AppIcons.forward,
         onPressed: flow.birthStepValid
             ? () {
@@ -146,16 +165,16 @@ class _BirthDataScreenState extends ConsumerState<BirthDataScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           DatePickerField(
-            label: 'Date of birth',
-            placeholder: 'Select date',
+            label: context.l10n.birthDataDateLabel,
+            placeholder: context.l10n.birthDataDatePlaceholder,
             formattedValue: _formattedDate(flow.birthDate),
             onTap: _pickDate,
           ),
           const SizedBox(height: AppSpacing.s4),
           InputField(
             key: const ValueKey<String>('calc-birth-city-field'),
-            label: 'City of birth',
-            hintText: 'Start typing a city',
+            label: context.l10n.birthDataCityLabel,
+            hintText: context.l10n.birthDataCityHint,
             controller: _cityController,
             leading: const Icon(
               AppIcons.search,
@@ -175,10 +194,10 @@ class _BirthDataScreenState extends ConsumerState<BirthDataScreen> {
             ),
           const SizedBox(height: AppSpacing.s4),
           InputField(
-            label: 'Label (optional)',
-            helperText: 'Shown in your history list.',
+            label: context.l10n.birthDataLabelLabel,
+            helperText: context.l10n.birthDataLabelHelper,
             controller: _labelController,
-            hintText: 'e.g. My birth time',
+            hintText: context.l10n.birthDataLabelHint,
             onChanged: controller.setLabel,
           ),
         ],
@@ -211,7 +230,7 @@ class _SuggestionsPanel extends StatelessWidget {
           ? Padding(
               padding: const EdgeInsets.all(AppSpacing.s4),
               child: Text(
-                'Searching…',
+                context.l10n.birthDataSearching,
                 style: AppTypography.bodyMd.copyWith(color: AppColors.inkSoft),
               ),
             )
@@ -219,7 +238,7 @@ class _SuggestionsPanel extends StatelessWidget {
           ? Padding(
               padding: const EdgeInsets.all(AppSpacing.s4),
               child: Text(
-                'No matches. Demo accepts the typed name.',
+                context.l10n.birthDataNoMatches,
                 style: AppTypography.bodyMd.copyWith(color: AppColors.inkSoft),
               ),
             )

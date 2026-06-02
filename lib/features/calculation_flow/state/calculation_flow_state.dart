@@ -12,6 +12,7 @@ import 'package:rectify/data/models/geo_place.dart';
 import 'package:rectify/data/models/life_event.dart';
 import 'package:rectify/data/models/time_window.dart';
 import 'package:rectify/data/models/time_window_mode.dart';
+import 'package:rectify/l10n/app_localizations.dart';
 
 /// Linear position inside the calculation flow
 /// (`docs/ascii-wireframes.md` Screens 2–4 + Confirmation).
@@ -65,7 +66,6 @@ class CalculationFlowState {
     required this.events,
     required this.isDemo,
     required this.submitting,
-    required this.submitError,
   });
 
   /// Build a fresh draft for [CalculationFlowController.build].
@@ -93,7 +93,6 @@ class CalculationFlowState {
     events: const <LifeEvent>[],
     isDemo: isDemo,
     submitting: false,
-    submitError: null,
   );
 
   /// Hydrate the draft from a persisted `CalculationRequest`.
@@ -118,7 +117,6 @@ class CalculationFlowState {
         events: request.events,
         isDemo: request.isDemo,
         submitting: false,
-        submitError: null,
       );
 
   /// Stable id assigned at flow start. Re-used by [DraftRepository] and
@@ -145,10 +143,9 @@ class CalculationFlowState {
   final bool isDemo;
 
   /// `true` while [CalculationFlowController.submit] is awaiting the
-  /// (demo) repository call. The loading screen reads this to pick
-  /// between the spinner and the post-failure copy.
+  /// (demo) repository call. The loading screen reads this to render
+  /// the [BreathRingLoader].
   final bool submitting;
-  final String? submitError;
 
   CalculationFlowState copyWith({
     String? id,
@@ -165,7 +162,6 @@ class CalculationFlowState {
     List<LifeEvent>? events,
     bool? isDemo,
     bool? submitting,
-    Object? submitError = _sentinel,
   }) => CalculationFlowState(
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
@@ -185,16 +181,41 @@ class CalculationFlowState {
     events: events ?? this.events,
     isDemo: isDemo ?? this.isDemo,
     submitting: submitting ?? this.submitting,
-    submitError: submitError == _sentinel
-        ? this.submitError
-        : submitError as String?,
   );
+
+  /// Minimum age (in years) required to run a calculation. The app is
+  /// gated to adults; a user whose birth date is exactly this many years
+  /// before the reference day counts as old enough (boundary inclusive).
+  static const int minimumAgeYears = 18;
+
+  /// Latest birth date that still clears the [minimumAgeYears] gate,
+  /// measured against [reference]. Used as the date picker's `lastDate`
+  /// and to clamp a persisted draft whose stored date is too recent.
+  static DateTime latestAllowedBirthDate(DateTime reference) => DateTime(
+    reference.year - minimumAgeYears,
+    reference.month,
+    reference.day,
+  );
+
+  /// Whether [birthDate] clears the age gate relative to [reference].
+  /// Compares calendar days only (ignoring time and zone), so a birthday
+  /// landing exactly on the cutoff day is treated as old enough.
+  static bool isOldEnough(DateTime birthDate, DateTime reference) {
+    final cutoff = latestAllowedBirthDate(reference);
+    final dateOnly = DateTime(birthDate.year, birthDate.month, birthDate.day);
+    return !dateOnly.isAfter(cutoff);
+  }
 
   /// Whether the Birth Data step has the inputs required to advance.
   /// City lat/lon may be null in MVP (geocoding is stubbed); the
   /// repository accepts demo coords so we only gate on the user-typed
-  /// surface: a chosen date and a non-empty city string.
-  bool get birthStepValid => birthDate != null && birthCity.trim().isNotEmpty;
+  /// surface: a chosen date and a non-empty city string. The date must
+  /// also clear the 18+ age gate — the picker blocks under-age picks,
+  /// but a persisted draft could still carry a too-recent date.
+  bool get birthStepValid =>
+      birthDate != null &&
+      birthCity.trim().isNotEmpty &&
+      isOldEnough(birthDate!, DateTime.now());
 
   /// Whether the Time Window step is internally consistent. The radio
   /// always carries a mode and `approximateTime` defaults to noon at
@@ -311,22 +332,25 @@ class CalculationFlowState {
   }
 }
 
-/// Human-readable mapping for [EventCategory]. Kept here so screens
-/// and tests resolve the same strings without depending on intl-
-/// localized bundles (Phase 4 ships English copy only).
-String eventCategoryLabel(EventCategory category) => switch (category) {
-  EventCategory.marriage => 'Marriage / Partnership',
-  EventCategory.divorce => 'Divorce / Separation',
-  EventCategory.careerChange => 'Career change',
-  EventCategory.jobLoss => 'Job loss',
-  EventCategory.relocation => 'Relocation (major)',
-  EventCategory.childBirth => 'Birth of child',
-  EventCategory.familyDeath => 'Death of family member',
-  EventCategory.illness => 'Major illness / surgery',
-  EventCategory.accident => 'Accident or injury',
-  EventCategory.education => 'Education milestone',
-  EventCategory.financial => 'Financial turning point',
-  EventCategory.other => 'Other',
-};
+/// Localized human-readable label for an [EventCategory].
+///
+/// Resolves through the generated [AppLocalizations] bundle so the label
+/// follows the active locale. The [EventCategory] `tag` values are stable
+/// storage identifiers and are never translated.
+String eventCategoryLabel(AppLocalizations l10n, EventCategory category) =>
+    switch (category) {
+      EventCategory.marriage => l10n.eventCategoryMarriage,
+      EventCategory.divorce => l10n.eventCategoryDivorce,
+      EventCategory.careerChange => l10n.eventCategoryCareerChange,
+      EventCategory.jobLoss => l10n.eventCategoryJobLoss,
+      EventCategory.relocation => l10n.eventCategoryRelocation,
+      EventCategory.childBirth => l10n.eventCategoryChildBirth,
+      EventCategory.familyDeath => l10n.eventCategoryFamilyDeath,
+      EventCategory.illness => l10n.eventCategoryIllness,
+      EventCategory.accident => l10n.eventCategoryAccident,
+      EventCategory.education => l10n.eventCategoryEducation,
+      EventCategory.financial => l10n.eventCategoryFinancial,
+      EventCategory.other => l10n.eventCategoryOther,
+    };
 
 const Object _sentinel = Object();

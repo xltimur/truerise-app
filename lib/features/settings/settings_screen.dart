@@ -154,7 +154,7 @@ class SettingsScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.only(left: AppSpacing.s2),
             child: Text(
-              'Rectify  v1.0.0',
+              'TrueRise  v1.0.0',
               style: AppTypography.bodySm.copyWith(color: AppColors.inkSoft),
             ),
           ),

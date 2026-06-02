@@ -5,7 +5,7 @@
          no mic, no contacts — see docs/implementation-plan.md Phase 8. -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
-        android:label="rectify"
+        android:label="TrueRise"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

@@ -93,7 +93,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // After Skip the router redirects to Home / History.
-      expect(find.text('Rectify'), findsOneWidget);
+      expect(find.text('TrueRise'), findsOneWidget);
       expect(find.text('No calculations yet.'), findsOneWidget);
 
       final container = ProviderScope.containerOf(

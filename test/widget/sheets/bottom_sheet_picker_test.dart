@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:rectify/l10n/app_localizations.dart';
 import 'package:rectify/theme/icons.dart';
 import 'package:rectify/widgets/sheets/bottom_sheet_picker.dart';
 
@@ -208,6 +209,8 @@ void main() {
       String? result;
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Builder(
             builder: (context) => Scaffold(
               body: Center(

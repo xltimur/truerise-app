@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:rectify/data/models/match_strength.dart';
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/typography.dart';
 
@@ -12,34 +13,28 @@ class _MatchStrengthVisual {
   const _MatchStrengthVisual({
     required this.filled,
     required this.color,
-    required this.label,
   });
 
   final int filled;
   final Color color;
-  final String label;
 }
 
 const _visuals = <MatchStrength, _MatchStrengthVisual>{
   MatchStrength.strong: _MatchStrengthVisual(
     filled: 3,
     color: AppColors.confidenceStrong,
-    label: 'STRONG',
   ),
   MatchStrength.moderate: _MatchStrengthVisual(
     filled: 2,
     color: AppColors.confidenceModerate,
-    label: 'MODERATE',
   ),
   MatchStrength.weak: _MatchStrengthVisual(
     filled: 1,
     color: AppColors.confidenceWeak,
-    label: 'WEAK',
   ),
   MatchStrength.none: _MatchStrengthVisual(
     filled: 0,
     color: AppColors.confidenceNone,
-    label: 'NO MATCH',
   ),
 };
 
@@ -65,7 +60,14 @@ class MatchStrengthDots extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final visual = _visuals[strength]!;
+    final label = switch (strength) {
+      MatchStrength.strong => l10n.matchStrengthStrong,
+      MatchStrength.moderate => l10n.matchStrengthModerate,
+      MatchStrength.weak => l10n.matchStrengthWeak,
+      MatchStrength.none => l10n.matchStrengthNone,
+    };
     final dots = <Widget>[];
     for (var i = 0; i < 4; i++) {
       final filled = i < visual.filled;
@@ -86,7 +88,7 @@ class MatchStrengthDots extends StatelessWidget {
     }
 
     return Semantics(
-      label: 'Match strength ${visual.label.toLowerCase()}',
+      label: l10n.matchStrengthSemantic(strength.name),
       excludeSemantics: true,
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -95,7 +97,7 @@ class MatchStrengthDots extends StatelessWidget {
           if (showLabel) ...<Widget>[
             const SizedBox(width: 10),
             Text(
-              visual.label,
+              label,
               style: AppTypography.labelSm.copyWith(color: visual.color),
             ),
           ],

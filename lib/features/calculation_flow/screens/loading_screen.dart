@@ -9,6 +9,7 @@ import 'package:rectify/core/result.dart';
 import 'package:rectify/features/calculation_flow/state/calculation_flow_controller.dart';
 import 'package:rectify/features/calculation_flow/state/calculation_flow_state.dart';
 import 'package:rectify/features/error_flow/error_routing.dart';
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/spacing.dart';
 import 'package:rectify/theme/typography.dart';
@@ -16,11 +17,7 @@ import 'package:rectify/widgets/buttons/buttons.dart';
 import 'package:rectify/widgets/chips/demo_pill.dart';
 import 'package:rectify/widgets/feedback/breath_ring_loader.dart';
 
-const _rotatingCopy = <String>[
-  'Analyzing life events…',
-  'Mapping planetary transits…',
-  'Ranking candidates…',
-];
+const _rotatingCopyCount = 3;
 
 const _rotationInterval = Duration(milliseconds: 3000);
 
@@ -49,7 +46,7 @@ class _CalculationLoadingScreenState
     super.initState();
     _rotator = Timer.periodic(_rotationInterval, (_) {
       if (!mounted) return;
-      setState(() => _copyIndex = (_copyIndex + 1) % _rotatingCopy.length);
+      setState(() => _copyIndex = (_copyIndex + 1) % _rotatingCopyCount);
     });
     WidgetsBinding.instance.addPostFrameCallback((_) => _kickoff());
   }
@@ -91,8 +88,13 @@ class _CalculationLoadingScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final flow = ref.watch(calculationFlowControllerProvider);
-    final hasError = flow.submitError != null;
+    final rotatingCopy = <String>[
+      l10n.loadingRotating1,
+      l10n.loadingRotating2,
+      l10n.loadingRotating3,
+    ];
 
     return Scaffold(
       backgroundColor: AppColors.bgApp,
@@ -109,53 +111,35 @@ class _CalculationLoadingScreenState
                   child: DemoPill(),
                 ),
               const Spacer(),
-              if (hasError) ...<Widget>[
-                Text(
-                  "Couldn't complete the calculation.",
-                  style: AppTypography.titleMd,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: AppSpacing.s3),
-                Text(
-                  flow.submitError ?? '',
-                  textAlign: TextAlign.center,
-                  style: AppTypography.bodySm.copyWith(
+              const BreathRingLoader(),
+              const SizedBox(height: AppSpacing.s7),
+              Text(
+                flow.isDemo ? l10n.loadingDemoTitle : l10n.loadingTitle,
+                style: AppTypography.titleMd,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: AppSpacing.s4),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 240),
+                child: Text(
+                  rotatingCopy[_copyIndex],
+                  key: ValueKey<int>(_copyIndex),
+                  style: AppTypography.bodyMd.copyWith(
                     color: AppColors.inkSoft,
                   ),
-                ),
-              ] else ...<Widget>[
-                const BreathRingLoader(),
-                const SizedBox(height: AppSpacing.s7),
-                Text(
-                  flow.isDemo
-                      ? 'Running demo calculation…'
-                      : 'Calculating your probable birth time…',
-                  style: AppTypography.titleMd,
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: AppSpacing.s4),
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 240),
-                  child: Text(
-                    _rotatingCopy[_copyIndex],
-                    key: ValueKey<int>(_copyIndex),
-                    style: AppTypography.bodyMd.copyWith(
-                      color: AppColors.inkSoft,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
+              ),
+              const SizedBox(height: AppSpacing.s5),
+              Text(
+                l10n.loadingTakesUnder,
+                style: AppTypography.bodySm.copyWith(
+                  color: AppColors.inkSoft,
                 ),
-                const SizedBox(height: AppSpacing.s5),
-                Text(
-                  'This usually takes under 10 seconds.',
-                  style: AppTypography.bodySm.copyWith(
-                    color: AppColors.inkSoft,
-                  ),
-                ),
-              ],
+              ),
               const Spacer(),
               GhostButton(
-                label: 'Cancel',
+                label: l10n.commonCancel,
                 onPressed: () {
                   ref
                       .read(calculationFlowControllerProvider.notifier)

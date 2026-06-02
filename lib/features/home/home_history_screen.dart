@@ -36,7 +36,7 @@ class HomeHistoryScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.bgApp,
       appBar: TopNav(
-        title: 'Rectify',
+        title: 'TrueRise',
         trailingIcon: AppIcons.settings,
         trailingSemanticsLabel: 'Settings',
         onTrailingTap: () => context.go(RoutePaths.settings),

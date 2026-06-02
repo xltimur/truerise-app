@@ -102,7 +102,7 @@ void main() {
     expect(find.text('24-hour  (07:14)'), findsOneWidget);
     expect(find.text('Delete all data'), findsOneWidget);
     expect(find.text('Privacy Policy'), findsOneWidget);
-    expect(find.text('Rectify  v1.0.0'), findsOneWidget);
+    expect(find.text('TrueRise  v1.0.0'), findsOneWidget);
   });
 
   testWidgets('demo toggle updates settings + persists to prefs', (
@@ -294,7 +294,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(PrivacyPolicyScreen), findsOneWidget);
-    expect(find.text('What Rectify stores'), findsOneWidget);
+    expect(find.text('What TrueRise stores'), findsOneWidget);
     expect(find.text('Optional API key'), findsOneWidget);
     expect(find.text('Deleting your data'), findsOneWidget);
   });

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/spacing.dart';
 import 'package:rectify/theme/typography.dart';
@@ -38,12 +39,17 @@ class HistoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final spokenTime = meridiem.isEmpty ? time : '$time $meridiem';
     return AppCard(
       onTap: onTap,
-      semanticsLabel:
-          '$label, $date, $time${meridiem.isEmpty ? '' : ' $meridiem'} '
-          '$risingSign, confidence ${(confidence * 100).round()} percent'
-          '${isDemo ? ", demo" : ""}',
+      semanticsLabel: context.l10n.historyCardSemantic(
+        isDemo.toString(),
+        label,
+        date,
+        spokenTime,
+        risingSign,
+        (confidence * 100).round(),
+      ),
       padding: const EdgeInsets.symmetric(
         vertical: AppSpacing.s4,
         horizontal: AppSpacing.s5,

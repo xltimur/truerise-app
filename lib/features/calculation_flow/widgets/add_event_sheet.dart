@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+import 'package:rectify/core/formatting/app_date_format.dart';
 import 'package:rectify/data/models/event_category.dart';
 import 'package:rectify/data/models/life_event.dart';
 import 'package:rectify/features/calculation_flow/state/calculation_flow_state.dart';
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/icons.dart';
 import 'package:rectify/theme/radius.dart';
@@ -13,20 +15,6 @@ import 'package:rectify/widgets/inputs/inputs.dart';
 import 'package:rectify/widgets/sheets/bottom_sheet_picker.dart';
 
 const _maxDescriptionChars = 200;
-const _monthLabels = <int, String>{
-  1: 'Jan',
-  2: 'Feb',
-  3: 'Mar',
-  4: 'Apr',
-  5: 'May',
-  6: 'Jun',
-  7: 'Jul',
-  8: 'Aug',
-  9: 'Sep',
-  10: 'Oct',
-  11: 'Nov',
-  12: 'Dec',
-};
 
 /// Payload returned by [AddEventSheet.show] when the user submits the
 /// form. Untyped strings stay out of the controller surface.
@@ -110,15 +98,16 @@ class _AddEventSheetState extends State<AddEventSheet> {
   bool get _valid => _category != null && _year != null;
 
   Future<void> _pickCategory() async {
+    final l10n = context.l10n;
     final picked = await BottomSheetPicker.show<EventCategory>(
       context: context,
-      title: 'Select category',
+      title: l10n.addEventSelectCategory,
       value: _category ?? EventCategory.other,
       options: <BottomSheetOption<EventCategory>>[
         for (final category in EventCategory.values)
           BottomSheetOption<EventCategory>(
             value: category,
-            label: eventCategoryLabel(category),
+            label: eventCategoryLabel(l10n, category),
           ),
       ],
     );
@@ -127,14 +116,15 @@ class _AddEventSheetState extends State<AddEventSheet> {
   }
 
   Future<void> _pickMonth() async {
+    final l10n = context.l10n;
     final picked = await BottomSheetPicker.show<int>(
       context: context,
-      title: 'Month',
+      title: l10n.addEventMonth,
       value: _month ?? 0,
       options: <BottomSheetOption<int>>[
-        const BottomSheetOption<int>(value: 0, label: 'No month'),
+        BottomSheetOption<int>(value: 0, label: l10n.addEventNoMonth),
         for (var i = 1; i <= 12; i++)
-          BottomSheetOption<int>(value: i, label: _monthLabels[i]!),
+          BottomSheetOption<int>(value: i, label: AppDateFormat.monthAbbrev(i)),
       ],
     );
     if (picked == null) return;
@@ -148,7 +138,7 @@ class _AddEventSheetState extends State<AddEventSheet> {
     ];
     final picked = await BottomSheetPicker.show<int>(
       context: context,
-      title: 'Year',
+      title: context.l10n.addEventYear,
       value: _year ?? now.year,
       options: <BottomSheetOption<int>>[
         for (final y in years)
@@ -173,6 +163,7 @@ class _AddEventSheetState extends State<AddEventSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final isEdit = widget.existing != null;
 
     return ClipRRect(
@@ -208,16 +199,16 @@ class _AddEventSheetState extends State<AddEventSheet> {
                   ),
                   const SizedBox(height: AppSpacing.s4),
                   Text(
-                    isEdit ? 'Edit life event' : 'Add life event',
+                    isEdit ? l10n.addEventEditTitle : l10n.addEventAddTitle,
                     style: AppTypography.titleMd,
                   ),
                   const SizedBox(height: AppSpacing.s5),
                   _PickerRow(
-                    label: 'Category',
+                    label: l10n.addEventCategoryLabel,
                     value: _category == null
                         ? ''
-                        : eventCategoryLabel(_category!),
-                    placeholder: 'Choose category',
+                        : eventCategoryLabel(l10n, _category!),
+                    placeholder: l10n.addEventChooseCategory,
                     onTap: _pickCategory,
                   ),
                   const SizedBox(height: AppSpacing.s4),
@@ -225,18 +216,20 @@ class _AddEventSheetState extends State<AddEventSheet> {
                     children: <Widget>[
                       Expanded(
                         child: _PickerRow(
-                          label: 'Month',
-                          value: _month == null ? '' : _monthLabels[_month]!,
-                          placeholder: 'Month',
+                          label: l10n.addEventMonth,
+                          value: _month == null
+                              ? ''
+                              : AppDateFormat.monthAbbrev(_month!),
+                          placeholder: l10n.addEventMonth,
                           onTap: _pickMonth,
                         ),
                       ),
                       const SizedBox(width: AppSpacing.s3),
                       Expanded(
                         child: _PickerRow(
-                          label: 'Year',
+                          label: l10n.addEventYear,
                           value: _year == null ? '' : _year.toString(),
-                          placeholder: 'Year',
+                          placeholder: l10n.addEventYear,
                           onTap: _pickYear,
                         ),
                       ),
@@ -245,7 +238,7 @@ class _AddEventSheetState extends State<AddEventSheet> {
                   Padding(
                     padding: const EdgeInsets.only(top: 6),
                     child: Text(
-                      'Month is optional.',
+                      l10n.addEventMonthOptional,
                       style: AppTypography.bodySm.copyWith(
                         color: AppColors.inkSoft,
                       ),
@@ -253,9 +246,9 @@ class _AddEventSheetState extends State<AddEventSheet> {
                   ),
                   const SizedBox(height: AppSpacing.s4),
                   InputField(
-                    label: 'Description (optional)',
+                    label: l10n.addEventDescriptionLabel,
                     controller: _description,
-                    hintText: 'Anything that helps narrow timing',
+                    hintText: l10n.addEventDescriptionHint,
                     keyboardType: TextInputType.multiline,
                   ),
                   Padding(
@@ -265,7 +258,7 @@ class _AddEventSheetState extends State<AddEventSheet> {
                       builder: (context, value, _) {
                         final length = value.text.characters.length;
                         return Text(
-                          '$length / $_maxDescriptionChars',
+                          l10n.addEventCharCount(length, _maxDescriptionChars),
                           style: AppTypography.bodySm.copyWith(
                             color: length > _maxDescriptionChars
                                 ? AppColors.statusDanger
@@ -278,7 +271,9 @@ class _AddEventSheetState extends State<AddEventSheet> {
                   ),
                   const SizedBox(height: AppSpacing.s5),
                   PrimaryButton(
-                    label: isEdit ? 'Save changes' : 'Add event',
+                    label: isEdit
+                        ? l10n.addEventSaveChanges
+                        : l10n.lifeEventsAddEvent,
                     icon: AppIcons.check,
                     onPressed: _valid ? _submit : null,
                   ),

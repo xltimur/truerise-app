@@ -3285,3 +3285,784 @@ passed auth — it reached business logic, not 401/403 — so the existing
 ### Git operations
 
 - **None.** No `git add`, `git commit`, or `git push` was run.
+
+### 2026-06-02 — Growth Thesis (Run 1)
+
+- **Artifact created:** `docs/growth-thesis.md` (v0.1).
+- **Work completed:** Claude Code produced the first growth-phase
+  decision document, written before competitor research, ASO metadata,
+  localization, or any implementation. The document locks:
+  - product category and value proposition (utility / probabilistic,
+    not horoscope / deterministic);
+  - initial ICP for growth and store launch ("Maya" persona from PRD
+    §4; Arjun and Elena explicitly deferred);
+  - market priority — Tier 0 English fronts (US/UK/CA/AU/IE/NZ) →
+    Tier 1 DE / FR / PT-BR / ES localization → Tier 2 Hindi gated on
+    Vedic/KP method shipping in V1.5; explicit answer to the
+    India/Hindi vs DE/FR/PT/ES sequencing question;
+  - north-star metric — Real Rectifications Completed per Week
+    (RRC/wk), slope rather than level until post-launch data exists;
+  - supporting metric tree across acquisition, activation, value
+    moment, and quality, tied to PRD §15 targets and existing
+    instrumentation in `lib/data/api/`;
+  - ASO strategy — head terms ("astrology", "horoscope", "kundli",
+    locale equivalents) explicitly *not* realistic top-10 targets;
+    intent-matched long-tail BTR keyword set per Tier 0 and Tier 1
+    locale defined as the realistic 60–120-day ambition;
+  - seven growth hypotheses (H1–H7) plus one held-in-reserve H8,
+    each with a kill criterion;
+  - explicit non-goals — no social graph, accounts, IAP, push, in-app
+    review prompt, medical/legal/financial/deterministic claims, no
+    India marketing pre-Vedic, no professional-astrologer marketing;
+  - five blocking decisions (D1–D5) for human approval: public name
+    TrueRise vs Rectify, locale order, Hindi sequencing, P0 feature
+    criterion, pre-IAP paid-acquisition hold;
+  - scope of Run 2 (competitor research) — six concrete questions
+    Run 2 must answer with evidence rather than re-litigating Run 1;
+  - concise approval gate (A1–A5) the human must approve before any
+    later run starts.
+- **Constraints respected:** Documentation only. No Flutter / Dart code
+  was authored or edited. `lib/`, `ios/`, `android/`, `test/`,
+  `integration_test/`, `pubspec.yaml`, generated files, and build
+  configs were not touched. All external claims in the document reuse
+  sources already cited in `docs/marketing-research.md`; no new URLs
+  were invented.
+- **Verification:** Cross-checked the thesis against `docs/prd.md`
+  (§2 working title, §4 ICP, §6 value prop, §8 non-goals, §11 API
+  modes, §13 privacy, §15 metric targets, §16 risks, §17 phases),
+  `docs/mvp-scope.md` (M5/DM1–DM5 demo readiness, deferred-features
+  table), `docs/api-integration.md` (Bearer auth, 15-credit cost,
+  500-candidate cap), `docs/marketing-research.md` (ICP segments,
+  competitor pricing, "do not advertise in India for MVP"), and
+  `docs/qa-phase8-report.md` (Crashlytics deferred, no embedded
+  secrets, app-icon glyph deferred, store-submission scope) so that no
+  recommendation contradicts existing product, design, or engineering
+  decisions.
+- **Limit status:** No usage-limit stop.
+- **Open items for the next run:** Human approval of A1–A5 in the
+  growth-thesis Approval Gate; on approval, Run 2 (competitor research
+  per §11) can start.
+
+### 2026-06-02 — Growth Thesis (Run 1) revision: claude-opus-4-8 review pass
+
+- **Artifact changed:** `docs/growth-thesis.md` (v0.1 → v0.2).
+- **Why:** The v0.1 draft was produced under the `opus` alias, which resolved
+  to `claude-opus-4-7`. This pass re-reviewed it under `claude-opus-4-8`.
+- **Work completed:** Verified the document against current sources — PRD §15
+  metric targets, §17 phases/success gate, §16 India risk row (line 559),
+  marketing-research competitor pricing (incl. Cosmic Birthtime £28) — and
+  confirmed the cited code anchors still resolve (`ShareCopyBuilder` is
+  genuinely PII-free, `resultShareButtonKey`, `LiveRectificationRepository
+  .submit`, `mapDioException`, `techniques_used`). Corrected three
+  metric/citation imprecisions: §5 and §8/H1 now attribute the "first 200
+  users" gate to PRD §17 (not §15); §6.3's metric is relabelled to the
+  ≥5-events *share* that matches its target. Added an approver bottom-line
+  near the header, a decision-owner / target-date field on the §12 approval
+  gate, and an ASO volume-calibration note in §7.2 (long-tail top-10 ⇒ small
+  absolute installs, not a step change). Thesis, ICP, market order, and
+  north-star are unchanged — a precision + clarity pass, not a re-litigation.
+- **Constraints respected:** Documentation only. `lib/`, `ios/`, `android/`,
+  `test/`, `integration_test/`, `pubspec.yaml`, generated files, and build
+  configs were not touched.
+- **Verification:** No code tests applicable (docs only). Ran `git diff --stat`
+  and `git status --short`.
+- **Limit status:** No usage-limit stop.
+- **Open items for the next run:** Unchanged — human approval of A1–A5; on
+  approval, Run 2 (competitor research per §11) can start.
+
+### 2026-06-02 — Competitor & ASO Research (Run 2) [backfill]
+
+- **Claude session:** not recorded — the original Run 2 process hit the
+  5-hour usage limit immediately after writing the main document, before a
+  build-history entry was appended. This entry is a concise **backfill**
+  reconstructed on 2026-06-02 from `docs/competitor-aso-research.md` (v1.0)
+  and current git state only; it does not add claims beyond that artifact.
+- **Artifact created:** `docs/competitor-aso-research.md` (v1.0, Run 2).
+  All live evidence dated 2026-06-02.
+- **Work completed (per the artifact):** Evidence pack testing the Run 1
+  thesis (`docs/growth-thesis.md` §11) against current web/App Store/Play
+  evidence. Findings: confirms Run 1 on every load-bearing point, sharpens
+  two, challenges none of A1–A5.
+  - The mobile-native consumer BTR lane is still essentially open — the only
+    dedicated mobile-native BTR app found is **Vedic Samay** (iOS,
+    Vedic/KP, practitioner-leaning, **Utilities** category); every other BTR
+    solution is a web calculator, human service, or desktop software.
+  - Anti-positioning (A1) confirmed — Co-Star, CHANI, Nebula, The Pattern all
+    *demand* an exact birth time and degrade without it; none computes BTR.
+  - "Utilities, not horoscope" upgraded from tone to **policy survival** —
+    Apple Guideline **4.3(b)** names fortune-telling/astrology as a saturated,
+    rejection-prone category; disclaimers do not cure 4.3; Vedic Samay's
+    Utilities placement is the working precedent.
+  - Pricing — PRD ~$4.99/credit is in-region (between Vedic Samay's
+    ~$0.70–$1.00/report floor and Cosmic Birthtime's £28 ceiling) but premium
+    for a single mobile shot. No price set (V1.5 work).
+  - Credibility headwind sharper than Run 1 implied — Astrodienst (astro.com)
+    explicitly refuses rectification across EN/DE/FR/ES/PT; honest-confidence
+    copy is mandatory, Germany especially.
+  - Locale vocabulary confirmed for DE/FR/ES/PT-BR with no mobile BTR app in
+    any locale; India re-check found no mobile BTR competitor that would force
+    V1.5 sequencing to compress — Hindi stays a V1.5 *localization* item,
+    India *marketing* deferred.
+  - New watch-items: **W1** pricing calibration (V1.5 gate), **W2** EU
+    credibility copy; four §12.4 verification items handed to Run 3.
+- **Constraints respected (per the artifact):** Research- and
+  documentation-only; no Flutter/Dart code authored or edited; no ranking,
+  rating, price, review, or screenshot invented; absent evidence stated as
+  absent.
+- **Verification:** Reconstructed entry — verification reflects the artifact's
+  own stated method (live web search/page fetches, 2026-06-02) and its §2
+  access limitations (US-locale search ≠ in-store rankings; ratings/installs
+  not fetchable). No code tests applicable.
+- **Limit status:** Original Run 2 session stopped on the **5-hour usage
+  limit** right after writing the document; this is why the entry is a
+  backfill.
+- **Open items for the next run (Run 3, now addressed):** ASO naming + metadata
+  strategy; the §12.4 verification items (in-store rankings, store
+  ratings/installs, Play policy specifics, structured review sample) carried
+  forward as validation tasks.
+
+### 2026-06-02 — ASO & Naming Strategy (Run 3)
+
+- **Model:** `claude-opus-4-8` (run invoked explicitly under this model).
+- **Artifact created:** `docs/aso-naming-strategy.md` (v1.0, Run 3).
+- **Stage:** Stage 3 — resolve the public-name question (TrueRise vs Rectify)
+  and propose App Store + Google Play metadata, grounded in Run 1 and Run 2.
+- **Work completed:**
+  - **Naming decision:** recommend **TrueRise** as the public brand (kept
+    English globally), paired with a descriptive ASO-bearing tail
+    ("Birth Time Finder" / "Rectify your birth time"); `rectify` /
+    `com.rectify.rectify` stays the internal codename + bundle ID. Naming
+    decision matrix scores TrueRise vs Rectify vs three descriptive
+    alternatives across ASO fit, policy risk, memorability, trust, locale
+    portability, trademark caveat, and storytelling fit.
+  - **App Store strategy:** category **Utilities** (4.3(b) survival; Vedic
+    Samay precedent); title/subtitle candidates within ~30-char limits;
+    keyword bank grouped into high-intent long-tail / supporting astrology /
+    too-competitive head / blocked-policy terms; two ~90–98-char keyword-field
+    drafts with explicit console-validation caveats.
+  - **Google Play strategy:** Tools category; title + ~80-char short
+    description candidates; long-description outline with a first-~250-char
+    hook; no-stuffing keyword placement guidance.
+  - **Query strategy:** realistic Tier 0 long-tail top-10 targets vs
+    too-competitive head terms; DE/FR/ES/PT-BR direction using Run 2 §6
+    vocabulary (direction only, not full translation).
+  - **Policy-safe copy rules:** 4.3(b) mitigation, probabilistic/utility
+    wording, words/claims to avoid, and how to reference astrology as *method*
+    not *category*.
+  - **Screenshot storytelling:** hero (time+rising+confidence) → evidence →
+    demo/offline/privacy → privacy-safe share; the share screenshot is grounded
+    in the **verified** shipped feature (`ShareCopyBuilder`,
+    `resultShareButtonKey`, build-history 2026-05-22) — no new share-card work
+    claimed as done.
+  - **Localization:** brand stays English; descriptor is localized; DE copy
+    held to the highest credibility bar (W2).
+  - **Decision deltas + watch-items, open validation checklist, and three
+    marked metadata option sets** (Conservative / High-intent ASO / Brand-led).
+- **Material correction surfaced:** Run 1 §9.1 overstated that the binary
+  already uses "TrueRise" as its display name. Verified 2026-06-02 (read-only):
+  iOS `CFBundleDisplayName=Rectify`, Android `android:label="rectify"`, while
+  README, commit messages, and in-app share copy say "TrueRise." Aligning the
+  display name is logged as a config-alignment validation item — **not changed
+  in this run** (code/config out of scope).
+- **Constraints respected:** Documentation only. No app code/config edited;
+  `lib/`, `ios/`, `android/`, `test/`, `integration_test/`, `pubspec.yaml`,
+  generated files, build configs, screenshots, assets, and localization files
+  were not modified. `lib/core/sharing/`, `ios/Runner/Info.plist`,
+  `android/.../AndroidManifest.xml`, `android/app/build.gradle.kts`, and
+  `README.md` were **read only** to verify naming facts. No live ranking,
+  volume, rating, or trademark clearance invented — all routed to the
+  validation checklist.
+- **Verification:** Ran `git diff --stat` and `git status --short`; confirmed
+  only `docs/aso-naming-strategy.md` and `docs/claude-build-history.md` changed
+  this run, with no app code paths touched. No code tests applicable (docs
+  only).
+- **Limit status:** No usage-limit stop.
+- **Open items for the next run:** Section 11 validation checklist (trademark
+  clearance, App Store name availability, display-name alignment, in-console
+  character re-count, in-store rankings, Play policy specifics, hosted privacy
+  policy). Run 4 (Feature Gap Analysis) can proceed.
+
+### 2026-06-02 — Feature Gap Analysis (Run 4)
+
+- **Model:** `claude-opus-4-8` (run invoked explicitly under this model).
+- **Artifact created:** `docs/feature-gap-analysis.md` (v1.0, Run 4).
+- **Stage:** Stage 4 — compare the Run 1-3 growth/ASO strategy and Run 2
+  competitor evidence against the verified current implementation; produce an
+  implementation-ready feature gap backlog answering "which functions help the
+  app spread (especially social/Instagram-style sharing) and which missing
+  functions should ship before publication or V1.5."
+- **Work completed:**
+  - **Verified feature inventory** with read-only evidence paths, every line
+    labeled `[VERIFIED]` / `[ASSUMED]` / `[PROPOSED]` to keep observed behavior
+    separate from proposals.
+  - **Gap matrix G1-G24** (feature, evidence source, current status, growth
+    impact, ASO/store impact, policy risk, complexity, suggested phase, owner
+    notes).
+  - **Top-3 priorities:** P0 display-name config gate (G1, TrueRise vs Rectify,
+    config-only); the V1.5 privacy-safe share-CARD image as the real Instagram
+    lever (ranked #1 growth, gated on a pixel-level privacy review, *not* pulled
+    into pre-publication); P1 privacy-safe analytics (no SDK wired — greenfield).
+  - Competitor expectations split into **direct BTR / mainstream astrology /
+    web calculators**; P0 pre-publication, P1 growth/social, trust/credibility,
+    ASO/store assets, localization (DE/FR/PT/ES), and publication-readiness
+    gap sections.
+  - **Three recommended implementation runs** (A pre-publication config gate;
+    B privacy-safe analytics + share reach; C l10n extraction pipeline) with
+    per-batch acceptance criteria, plus risks/non-goals and a source/evidence
+    appendix.
+- **Material correction surfaced:** Run 1 (§4.2/§6.5) assumed localization
+  needs "no product code change." Direct read-only verification (no ARB files,
+  no `flutter_localizations` in `pubspec.yaml`, hardcoded English literals)
+  proves a string-extraction refactor **is** required. Logged as verified gap
+  **G20** and the headline of §9. The earlier claim that no analytics SDK is
+  wired was also confirmed by `pubspec.yaml` (no posthog/amplitude/firebase/
+  sentry), so privacy-safe instrumentation is greenfield.
+- **Constraints respected:** Documentation only. No app code edited; `lib/`,
+  `ios/`, `android/`, `test/`, `integration_test/`, `pubspec.yaml`, generated
+  files, build configs, screenshots, assets, and localization files were not
+  modified — code paths (`lib/core/sharing/`, result/life-events screens,
+  `core_providers.dart`, `pubspec.yaml`, `Info.plist`, `AndroidManifest.xml`)
+  were **read only** to verify gaps. No live ranking, rating, install, review,
+  or trademark clearance invented; absent evidence stated as absent. Privacy
+  treated as a growth requirement (no PII in any proposed share/analytics
+  surface).
+- **Verification:** Ran `git diff --stat` and `git status --short`; confirmed
+  only `docs/feature-gap-analysis.md` (new) and `docs/claude-build-history.md`
+  changed this run, with no app code paths touched. No code tests applicable
+  (docs only).
+- **Limit status:** No usage-limit stop.
+- **Open items for the next run:** Run 5 (Localization Strategy) can proceed —
+  feed it the corrected localization-refactor finding (G20) as the central
+  input. Privacy-safe analytics design (Run B) and the share-card privacy
+  review (#1 growth lever) carry forward as parallel tracks; P0 config gate
+  (G1) remains a pre-publication blocker.
+
+### 2026-06-02 — Localization Strategy and String Audit (Run 5)
+
+- **Model:** `claude-opus-4-8` (run invoked explicitly under this model).
+- **Artifacts created:** `docs/l10n-strategy.md` (v1.0, Run 5, 14 sections) and
+  `docs/l10n-string-audit.md` (v1.0, Run 5, 10 sections).
+- **Stage:** Stage 5 — turn the Run 4 localization-refactor finding (G20) into an
+  implementation-ready localization strategy plus a read-only audit of every
+  user-visible hardcoded English string, so a future extraction run (Impl Run C)
+  and Tier 1 translation run (Impl Run D) can proceed without rediscovery.
+- **Work completed:**
+  - **Strategy doc** covering: verified current l10n state; locale priority
+    (DE > FR > ES > PT-BR, with Portuguese = PT-BR) and rationale; brand/naming
+    rules (TrueRise stays English, descriptor localized, Rectify internal-only);
+    the five-surface scope split (product UI / store metadata / screenshots /
+    privacy-legal / support); binding translation principles (probabilistic,
+    no fortune/medical/legal claims, honest-confidence wording, privacy-first,
+    no paywall tone); a 10-term locale terminology table (DE/FR/ES/PT-BR) with
+    recommended vs avoid forms; per-locale tone/risk notes; store-metadata
+    direction per locale (no ranking certainty asserted); the G20 dependency +
+    Run A->C->D sequencing; a QA plan (overflow, 12/24h, dates, percent, a11y,
+    screenshots); acceptance criteria for Runs C and D; open owner decisions; and
+    a source/evidence appendix.
+  - **String audit** with: confirmed no-l10n baseline; a module-by-module
+    inventory of ~200+ user-visible strings with file paths and line numbers
+    (20 modules, type-tagged); P0/P1/P2 extraction buckets; an ICU
+    interpolation/plural/select inventory plus the time/date/number formatting
+    debt (G21); truncation/overflow risk surfaces with locale long-word
+    offenders; sensitive-language translation notes; eight implementation-ready
+    extraction batches (C0-C8); a grep-able "extraction complete" verification
+    checklist; and an evidence appendix.
+- **Key findings (verified read-only this run):**
+  - **No localization pipeline exists at all** — no `.arb`, no `l10n.yaml`, no
+    `flutter_localizations`, no `generate: true`, no `AppLocalizations`, and no
+    `localizationsDelegates`/`supportedLocales` in `lib/app/app.dart`. The l10n
+    wiring symbols appear **only in `docs/`**, never in `lib/`/`pubspec.yaml`/
+    config. `intl: ^0.20.2` is present for formatting only. Clean greenfield;
+    no stale setup to migrate. Confirms and sharpens Run 4 **G20**.
+  - **Formatting debt (G21):** hand-rolled 12/24h AM/PM literals in 5 files and
+    `Jan..Dec` month maps duplicated in 3 files; several `DateFormat` calls rely
+    on default locale. Folded into the extraction run (Batch C1).
+  - **Widget layer is already locale-clean** — result/card/picker widgets take
+    pre-formatted strings; the copy + formatting debt lives in the screen
+    callers. Extraction effort concentrates in `lib/features/.../screens/`.
+  - **Accessibility `Semantics` labels are interpolated sentences** that must be
+    extracted/translated; `match_strength_dots.dart` derives its spoken label via
+    English `toLowerCase()` (an i18n trap flagged for fix).
+  - **Dynamic error leak:** `loading_screen` shows `failure.toString()` (debug
+    text), flagged as a small correctness fix to ride along with extraction
+    (map `AppFailure` to localized copy, as the error screens already do).
+  - **Brand handling:** TrueRise never enters an ARB for translation; the still-
+    hardcoded `'Rectify'` literals (app title, top nav, settings version, privacy
+    copy) are the pre-existing G1 display-name gap, to be resolved by Impl Run A
+    before extraction — not "fixed" by the l10n run.
+- **Constraints respected:** Documentation only. No app code, config, ARB,
+  `l10n.yaml`, or `pubspec.yaml` created or changed; `lib/`, `ios/`, `android/`,
+  `test/`, `integration_test/`, assets, screenshots, and generated files were
+  **read only** for the audit. No localization implemented and no ARB files
+  created. Outputs kept ASCII-safe except quoted target-language terms (DE/FR/ES/
+  PT-BR) in the terminology tables, where correct diacritics are required. No live
+  store rankings, install/download counts, ratings, review quotes, trademark
+  clearance, or store-policy approvals invented; all such items routed to the
+  strategy's owner-decision checklist. Every claim labeled VERIFIED / ASSUMED /
+  PROPOSED.
+- **Verification:** Ran `git status --short`, `git diff --stat`, and
+  `git status --short -- lib ios android test integration_test pubspec.yaml assets
+  l10n.yaml` (scoped) to confirm only the two new docs and this history file
+  changed, with no app code paths touched. Confirmed both deliverables exist with
+  all required sections (14 / 10). No code tests applicable (docs only).
+- **Limit status:** No usage-limit stop.
+- **Open items for the next run:** Run 6 can proceed. The localization
+  implementation is sequenced as **Impl Run A (G1 brand/display name) -> Impl Run
+  C (G20 extraction + G21 formatting) -> Impl Run D (G22 Tier 1 DE/FR/ES/PT-BR
+  translation)**; none are started (code out of scope). Owner decisions before
+  implementation: native-reviewer sign-off on terminology, PT-BR-only vs PT
+  fallback, German du/Sie register, Spanish neutral vs es-419 split, zodiac
+  sign-name localization approach, per-locale store character-limit re-counts,
+  and hosted privacy-policy localization ownership. H4 (localization install-lift
+  hypothesis) needs the privacy-safe analytics track (Run B) for measurement.
+
+### 2026-06-02 — Store Submission Readiness (Run 6)
+
+- **Model:** `claude-opus-4-8` (run invoked explicitly under this model).
+- **Artifact created:** `docs/store-submission-readiness.md` (v1.0, Run 6,
+  12 sections).
+- **Stage:** Stage 6 — convert the Run 1-5 growth/ASO/localization strategy and
+  the verified current implementation into an implementation-ready,
+  evidence-labeled App Store + Google Play submission-readiness plan: P0
+  blockers, per-store config, the English Tier 0 ASO package, localized-listing
+  direction, the asset/screenshot/QA storyboard, policy-risk mitigation,
+  release sequencing, and a verification checklist.
+- **Work completed:**
+  - **12 required sections** delivered: executive summary; current verified
+    state; P0 blocking checklist; iOS readiness; Play readiness; English Tier 0
+    ASO package; localized (DE/FR/PT-BR/ES) package plan (direction only);
+    assets/screenshots/QA storyboard; policy risk + mitigation language;
+    release sequencing + ownership tracks; verification checklist + commands;
+    open owner decisions + source-evidence appendix.
+  - **P0 blocker set fixed with verified evidence:** display-name mismatch (G1);
+    debug-signed release (G5); bundle-ID immutability decision; missing hosted
+    privacy-policy URL (G2); unauthored Apple privacy labels + Play Data Safety
+    (G3); **absent age gate** (G6); default app icon (G4); placeholder/missing
+    metadata (G7) + screenshots (G8); category positioning (Utilities/Tools);
+    demo-key rotation hygiene. Localized listings flagged as blocked on G20/G22.
+  - **English Tier 0 ASO package** restated as concrete drafts (title,
+    subtitle, two keyword-field drafts, short + long description outline,
+    promo text) with approximate char counts, an explicit console-recount
+    caveat, high-intent long-tail vs too-competitive head-term separation, and
+    **no top-10 guarantee**.
+  - **Screenshot storyboard** (4 frames: answer -> evidence -> private/offline
+    -> share) grounded in shipped UI, depicting the **text** share as the spread
+    mechanism and explicitly **not** claiming the V1.5 share-card image (G9) as
+    shipped.
+- **Key findings (verified read-only this run):**
+  - **Live data flow is broader than the in-app copy implies.** The outbound
+    request DTO (`lib/data/api/dto/rectification_request_dto.dart`) sends birth
+    date/time estimate, **precise birthplace latitude/longitude**, and
+    **free-text life-event descriptions** to the third-party provider in live
+    mode (demo mode sends nothing). The in-app privacy screen emphasizes
+    "on-device only" and under-discloses this transmission -- a verified gap the
+    hosted policy, Apple privacy labels, and Play Data Safety form must close.
+  - **Brand leak is wider than just platform config.** Beyond iOS
+    `CFBundleDisplayName=Rectify` and Android `android:label="rectify"`,
+    "Rectify" is hardcoded in the Settings version row
+    (`settings_screen.dart:157` "Rectify  v1.0.0") and the privacy copy
+    (`privacy_policy_screen.dart`). G1 is a multi-site fix, not a one-line
+    config change.
+  - **Share is text-only and PII-free by construction**
+    (`share_copy_builder.dart` includes only time/ascendant/confidence;
+    `share_service.dart` uses the OS sheet + clipboard fallback). No
+    `share_plus`/screenshot package exists, confirming the share-card image is
+    genuinely unbuilt.
+  - **Release is debug-signed** (`build.gradle.kts` release `signingConfig`
+    = debug) and **no age gate** exists (`birth_data_screen.dart` firstDate
+    1920 / lastDate now, no minimum-age floor) -- both confirmed P0.
+- **Constraints respected:** Documentation only. No app code, config, assets,
+  screenshots, generated files, tests, `pubspec.yaml`, `ios/`, `android/`,
+  `lib/`, `integration_test/`, or l10n files were modified. `Info.plist`,
+  `AndroidManifest.xml`, `build.gradle.kts`, `pubspec.yaml`, `README.md`, the
+  sharing/result/settings/privacy screens, the request DTO, and the birth-data
+  screen were **read only** for evidence. No live store rankings, install
+  counts, ratings, review quotes, trademark clearance, or store approvals were
+  invented; absent evidence stated as absent. Every load-bearing claim labeled
+  VERIFIED / ASSUMED / PROPOSED.
+- **Verification:** Ran `git status --short`, `git diff --stat`, and the scoped
+  `git status --short -- lib ios android test integration_test pubspec.yaml
+  assets l10n.yaml` to confirm only the new doc and this history file changed,
+  with no app code paths touched; grepped the new doc's `^## ` headers to
+  confirm all 12 sections exist. No code tests applicable (docs only).
+- **Limit status:** No usage-limit stop.
+- **Open items for the next run:** First-submission critical path is
+  **Impl Run A** (display name -> TrueRise across config + 3 in-app string
+  sites, bundle-ID decision, release signing, age gate, app icon, privacy-copy
+  disclosure update) -> hosted privacy policy -> metadata + screenshots ->
+  internal testing -> submit **English Tier 0** under Utilities/Tools.
+  Owner decisions gate the run: bundle-ID keep-vs-rebrand, age cutoff + rating,
+  hosted-policy ownership/content, demo-key rotation, TrueRise trademark
+  clearance + App Store name availability, category confirmation, device matrix.
+  Localized listings remain blocked on Impl Run C (G20 extraction) -> Run D
+  (G22 DE/FR/ES/PT-BR translation).
+
+### 2026-06-02 — Public Brand, Age Gate, Privacy Disclosure (Impl Run A.1)
+
+- **Model:** `claude-opus-4-8` (run invoked explicitly under this model).
+- **Session id:** not surfaced to the agent this run; omitted.
+- **Stage:** First implementation run cut from the Run 6 P0 set. Closes three
+  store-blocking gaps without touching deferred MVP scope: public display name
+  (G1), absent age gate (G6), and the privacy-copy under-disclosure of live-mode
+  transmission (subset of G2/G3). Release signing, hosted privacy URL, app icon,
+  bundle-ID decision, metadata, and screenshots are intentionally **out of scope**.
+- **Files changed (code/config):**
+  - `ios/Runner/Info.plist` — `CFBundleDisplayName` Rectify -> TrueRise
+    (`CFBundleName` left lowercase `rectify`; not the home-screen label).
+  - `android/app/src/main/AndroidManifest.xml` — `android:label` rectify ->
+    TrueRise (`applicationId`/namespace untouched).
+  - `lib/app/app.dart` — `MaterialApp.router` title -> TrueRise.
+  - `lib/features/home/home_history_screen.dart` — Home top-nav title -> TrueRise.
+  - `lib/features/onboarding/onboarding_screen.dart` — slide copy: "How TrueRise
+    works" and "TrueRise narrows it down" (+ a stale doc-comment).
+  - `lib/features/settings/settings_screen.dart` — version row "TrueRise  v1.0.0"
+    (two-space style preserved for the test assertion).
+  - `lib/features/settings/privacy_policy_screen.dart` — rebranded headings/body
+    and added a new "Live calculations" section disclosing that live (non-demo)
+    runs send birth date/approx time, birthplace coordinates, and life-event
+    descriptions to a third-party provider over HTTPS solely to compute the
+    result, tied to no account.
+  - `lib/features/calculation_flow/state/calculation_flow_state.dart` — added
+    `minimumAgeYears=18`, `latestAllowedBirthDate(reference)`,
+    `isOldEnough(birthDate, reference)`; folded the 18+ gate into `birthStepValid`.
+  - `lib/features/calculation_flow/screens/birth_data_screen.dart` — date picker
+    `lastDate` now the 18+ cutoff; `initialDate` clamped into
+    `[1920-01-01, cutoff]` so a too-recent persisted draft can't trip
+    `showDatePicker` asserts.
+- **Files changed (tests):**
+  - `test/features/calculation_flow/calculation_flow_controller_test.dart` — new
+    `Age gate (18+)` group: boundary-inclusive cutoff (helpers tested against a
+    fixed reference so they are not date-flaky), plus state/`next()` proof that an
+    under-age date can neither validate the birth step nor advance the flow.
+  - `test/widget/features/onboarding/onboarding_screen_test.dart`,
+    `test/widget/features/settings/settings_screen_test.dart`,
+    `integration_test/demo_flow_test.dart` — brand-string assertions updated to
+    TrueRise. Internal `RectifyApp`/`pumpRectifyWidget`/`RectifyButtonShell`
+    references intentionally unchanged.
+- **Behavior changed:** App shows as TrueRise on the iOS/Android home screen, in
+  the OS task switcher, on Home, in onboarding, in the settings version row, and
+  throughout the privacy screen. The birth-date picker can no longer offer an
+  under-18 date, and a persisted under-age draft is blocked from Continue/submit.
+  The privacy screen now accurately distinguishes on-device storage, offline demo
+  mode, and live-mode network transmission, and restates no-account/no-analytics/
+  no-crash-reporting.
+- **Design note:** Age cutoff is **dynamic 18+** (`now.year-18`, calendar-day
+  inclusive) rather than the PRD's fixed "born before 2008", so the floor stays
+  correct as time passes; helper functions take an injected reference, keeping the
+  unit tests deterministic.
+- **Verification:** `git status --short`, `git diff --stat`; `dart format` on the
+  11 changed Dart files (0 reformatted); `rg -n "Rectify" lib ios android test
+  integration_test` audited — every remaining hit is internal (Dart class/enum
+  names, the `X-Rectify-App-Id` proxy header, test helpers, code/signing-template
+  comments), no user-visible copy left. `flutter analyze` -> **No issues found**.
+  Targeted tests green, then the **full `flutter test` suite: 242 passed**, and
+  `flutter test integration_test/demo_flow_test.dart`: **1 passed**. Toolchain:
+  Flutter 3.44.0 / Dart 3.12.0.
+- **Limit status:** No usage-limit stop.
+- **Open items / remaining P0 blockers (not in this run):** release signing
+  (debug-signed release config, G5); hosted privacy-policy URL (G2) + authored
+  Apple privacy labels / Play Data Safety (G3); app icon (G4); bundle-ID
+  keep-vs-rebrand decision; store metadata (G7) + screenshots (G8); demo-key
+  rotation. Localization of the new "Live calculations" copy is deferred to the
+  Run C extraction. `CFBundleName`/`applicationId`/namespace deliberately remain
+  `rectify` pending the bundle-ID decision.
+
+### 2026-06-02 — Privacy Policy and Store Data Safety Package (Impl Run A.2)
+
+- **Model:** `claude-opus-4-8` (run invoked explicitly under this model).
+- **Session id:** not surfaced to the agent this run; omitted.
+- **Stage:** Second implementation run from the Run 6 P0 set — produce the
+  publication-ready privacy + data-safety package that the hosted privacy-policy
+  URL (G2) and the Apple App Privacy / Play Data Safety forms (G3) depend on.
+  **Documentation only:** no hosting, no store-console submission, and no app
+  code, because those require owner accounts/hosting.
+- **Artifacts created:**
+  - `docs/privacy-policy.md` — hosted-page-ready **English** policy,
+    "Effective date: June 2, 2026", grounded in verified behavior, with
+    `[OWNER/LEGAL: …]` blanks for publisher name/contact/URL/jurisdiction and any
+    naming of the calculation provider. Covers on-device storage, offline demo
+    mode, the explicit live-mode transmission (birth date, approximate birth
+    time/window, birthplace text + coordinates when available, life-event
+    categories/descriptions over HTTPS solely to compute the result), the
+    optional user-supplied API key in secure storage, deletion, no accounts, and
+    no analytics/crash/tracking/advertising/sale.
+  - `docs/apple-privacy-labels.md` — App Store Connect *App Privacy*
+    questionnaire guidance: collected-by-developer vs transmitted-to-provider,
+    per-category recommended answers with evidence + confidence, the
+    Precise-Location judgment call, ATT (no prompt needed), reviewer note, owner
+    checklist, and open questions.
+  - `docs/play-data-safety.md` — Play Console *Data safety* guidance: data
+    types, the Collected-vs-Shared decision, purposes, encrypted-in-transit,
+    in-app deletion, optionality, no ads/tracking/analytics/crash, owner
+    checklist, and open questions.
+  - This `docs/claude-build-history.md` Run A.2 entry.
+- **Grounding (verified read-only this run):**
+  - Live mode transmits, over HTTPS, birth date, birth hour/minute + time-search
+    window, city text, lat/lon, and per-event category/date/free-text
+    description (`lib/data/api/dto/rectification_request_dto.dart`,
+    `lib/data/api/mappers.dart`, `lib/data/api/rectification_api.dart`).
+  - **Demo mode is fully offline** — the repository short-circuits before any
+    HTTP and a Dio client is asserted *never* constructed in demo
+    (`lib/data/repos/rectification_repository.dart`, `lib/data/api/api_client.dart`).
+  - **City search/geocoding is an on-device stub** — search text is never
+    transmitted (`lib/features/calculation_flow/geocoding/geocoding_service.dart`
+    `StubGeocodingService`); the live calculation is the **only** user-data
+    network egress. `google_fonts` is unreferenced in `lib/` (bundled fonts), so
+    no font fetch.
+  - Secure storage holds only the user-supplied `pro_api_key`
+    (`lib/data/secure/secure_key_store.dart`); local Drift + prefs stay on
+    device; Delete-all-data wipes DB + prefs + secure key
+    (`lib/data/repos/settings_repository.dart`).
+  - **No** analytics/crash/ads/tracking SDKs and **no** accounts (full
+    `pubspec.yaml`; `lib/app/router.dart`). The optional calculation **label** is
+    stored locally and is **not** sent to the provider.
+- **Key decisions / framing:**
+  - Birthplace lat/lon (4 decimals) meets the Apple/Google "precise location"
+    resolution test but is a *birthplace the user selects*, not device location
+    (the app requests no location permission). Both store docs present the
+    conservative "declare Precise Location" option **and** the "Other Data / not
+    device location" reading, flag it as the key `[OWNER/LEGAL]` call, and
+    explicitly **do not hide** it.
+  - Collected-vs-Shared (Play) and the provider's processor-vs-third-party
+    status are left as `[OWNER/LEGAL]` decisions; conservative default = declare
+    Shared while unconfirmed. No DPA, retention period, provider name, company
+    name, address, email, or hosted URL was invented — all are marked
+    placeholders.
+- **Constraints respected:** Documentation only. No writes to `lib/`, `ios/`,
+  `android/`, `test/`, `integration_test/`, `pubspec.yaml`, `pubspec.lock`,
+  `l10n.yaml`/ARB, `assets/`, `screenshots/`, or `README.md`. No live web
+  browsing. No claim of legal compliance or store approval. English only this
+  run (localization deferred to the Run C/D pipeline).
+- **Verification:** `git status --short`; `git diff --stat`; scoped
+  `git status --short -- lib ios android test integration_test pubspec.yaml
+  pubspec.lock assets l10n.yaml` → returned exactly the 13 pre-existing Run A.1
+  files (all `M`, none added), confirming this run touched no forbidden paths;
+  `rg -n "^#|^##|TODO|PLACEHOLDER|OWNER|LEGAL|Location|birthplace|coordinates|life-event|analytics|crash|tracking|advertising|demo"`
+  across the three new docs confirmed the headings, the explicit live-mode field
+  list, the `[OWNER/LEGAL]` placeholders, and the no-analytics/crash/tracking/
+  advertising statements. No code/tests applicable (docs only); Flutter
+  toolchain not invoked.
+- **Limit status:** No usage-limit stop.
+- **Open items (owner/legal, before submission):** host `docs/privacy-policy.md`
+  and obtain its public URL (G2); fill every `[OWNER/LEGAL]` blank (publisher
+  name/contact, jurisdiction, provider name + its privacy URL, retention,
+  processing region, DPA); finalize the Precise-Location classification and the
+  health/sensitive free-text treatment; confirm Collected-vs-Shared from the
+  provider relationship; enter the App Privacy answers + Play Data Safety form
+  (G3); confirm the store age rating matches the in-app 18+ gate; demo/review key
+  rotation. Other P0s unchanged: release signing (G5), app icon (G4), bundle-ID
+  decision, metadata (G7), screenshots (G8). Localized policy/forms remain
+  blocked on the Run C extraction → Run D translation.
+
+### 2026-06-02 — TrueRise App Icon / Launcher Icon Replacement (Impl Run A.3)
+
+- **Model:** `claude-opus-4-8` (run invoked explicitly under this model).
+- **Session id:** not surfaced to the agent this run; omitted.
+- **Stage:** Narrow P0 store-readiness feature (resolves **G4 — app icon**).
+  Replace the stock Flutter launcher icon with a production TrueRise icon for
+  iOS and Android. No code, copy, or config behavior changed.
+- **Motif / design rationale:** abstract **sunrise / rising-time / measurement**
+  mark — a warm rising **sun** (vertical clay gradient, `accentClay`-family top
+  `#CB794A` → `accentClayDeep #7A4124`) cresting a calibrated **horizon bar**, a
+  thin **altitude arc** above it, and ruler-style **calibration ticks** below
+  (the center reference tick taller). On a `deepMidnight #1B2735` →
+  `deepMidnightSoft #2A3A4A` field with a subtle warm glow behind the sun
+  (iOS/legacy only). Reads as birth-time *estimation/calibration*, **not**
+  horoscope/fortune-telling. **No text, no Flutter logo, no zodiac glyphs, no
+  purple/pink/neon.** Bone (`bgApp #FBF8F2`) for horizon/arc/ticks. Core
+  silhouette (sun + horizon) stays legible at 20 px; fine ticks/arc degrade
+  gracefully via area-downsampling.
+- **Artifacts changed:**
+  - iOS — **all 15** `ios/Runner/Assets.xcassets/AppIcon.appiconset/*.png`
+    regenerated at the exact `Contents.json` pixel sizes (20→1024), every file
+    **8-bit RGB, no alpha**; the `1024×1024` marketing icon is the master render.
+  - Android legacy — `mipmap-{mdpi,hdpi,xhdpi,xxhdpi,xxxhdpi}/ic_launcher.png`
+    replaced at **48/72/96/144/192** (full-bleed, opaque RGB).
+- **Artifacts created:**
+  - Android adaptive — `mipmap-{…}/ic_launcher_foreground.png` at
+    **108/162/216/324/432** (transparent RGBA; motif scaled to the 66/108 safe
+    zone, `scale≈0.62`).
+  - `mipmap-anydpi-v26/ic_launcher.xml` (`adaptive-icon`: background
+    `@color/ic_launcher_background`, foreground `@mipmap/ic_launcher_foreground`).
+  - `values/ic_launcher_background.xml` (`ic_launcher_background = #1B2735`).
+  - This `docs/claude-build-history.md` Run A.3 entry.
+- **Generation method:** reproducible **pure-Python stdlib** renderer
+  (`zlib`+`struct` PNG encoder, SDF shapes with analytic anti-aliasing,
+  premultiplied area downsample) — Pillow/numpy/ImageMagick were **absent** and
+  no packages were installed and no network used. Temp generator lived under
+  `/tmp` and was **removed** after generation (nothing left in the repo).
+- **Decisions / scope:** **AndroidManifest left untouched** — no `roundIcon`
+  added: the manifest's `@mipmap/ic_launcher` resolves to the new adaptive XML
+  on API 26+ (our Android floor is API 29, so every target device uses the
+  adaptive icon), and round-only resources without a manifest reference would be
+  dead. No Android-13 monochrome/themed layer this run. The pre-existing
+  `android:label`/`CFBundleDisplayName` → "TrueRise" diffs are from Run A.1, not
+  this run.
+- **Constraints respected:** writes confined to the allowed icon/XML paths. No
+  writes to `lib/`, `test/`, `integration_test/`, `pubspec.yaml`/`.lock`,
+  `ios/Runner/Info.plist`, `ios/Runner.xcodeproj/`, `android/app/build.gradle.kts`,
+  `AndroidManifest.xml`, `assets/`, `README`, or any doc other than this one. No
+  secrets touched/logged. No claim of legal or store approval.
+- **Verification:** `git status --short`, `git diff --stat`; scoped
+  `git status --short` over the forbidden set showed only the **pre-existing
+  A.1/A.2** dirty files (none added by this run) and confirmed `pubspec*`,
+  `Runner.xcodeproj`, `build.gradle.kts` clean. A pure-Python PNG header/decoder
+  audit confirmed: **iOS 15/15** files at the expected dims and **colortype RGB
+  (2), no alpha**; Android legacy **48/72/96/144/192**; foregrounds
+  **108/162/216/324/432**, **RGBA (6)**, transparent corners + opaque motif
+  (alpha 0–255). The 1024 marketing icon **crc changed** (`1198400731` →
+  `1099947752`), avg RGB `(54.8,57.0,64.5)` dark-navy, corner exactly
+  deepMidnight `(27,39,53)`, sun pixel warm clay `(145,81,47)` — confirmed **no
+  longer the Flutter logo**. Both new XML files parsed
+  (`adaptive-icon` / `resources`). **`flutter build apk --debug` → `✓ Built
+  app-debug.apk`** (~24 s; only an unrelated `shared_preferences_android` KGP
+  deprecation warning); `unzip -l` confirmed `res/mipmap-anydpi-v26/ic_launcher.xml`
+  + all `ic_launcher.png`/`ic_launcher_foreground.png` densities packaged.
+  Toolchain: Flutter 3.44.0 / Dart 3.12.0, Android SDK at `~/Library/Android/sdk`.
+- **Limit status:** No usage-limit stop.
+- **Open items:** G4 (icon) resolved. Not done this run (out of scope): Android-13
+  themed/monochrome icon layer, iOS dark/tinted icon variants, and round-icon
+  resources. A designer pass is advisable before final submission, but the set is
+  store-valid. Other P0s unchanged — release signing (G5), hosted privacy-policy
+  URL (G2) + privacy labels/Data Safety (G3), bundle-ID decision, store metadata
+  (G7), screenshots (G8), demo-key rotation.
+
+### 2026-06-02 — English Store Metadata Finalization (Impl Run A.4)
+
+- **Model:** `claude-opus-4-8` (run invoked explicitly under this model).
+- **Session id:** not surfaced to the agent this run; omitted.
+- **Stage:** Owner-independent part of **P0-8** (store metadata) in
+  `docs/store-submission-readiness.md`. Produce a ready-to-paste **English Tier 0**
+  metadata package for App Store Connect + Google Play, and replace the `pubspec`
+  placeholder description. No app code, copy, config, or behavior changed.
+- **Artifacts created:**
+  - `docs/store-listing-en.md` — decision summary (brand TrueRise, utility/4.3(b)
+    positioning, iOS **Utilities** + optional Reference / Play **Tools**, owner
+    gating items); full **App Store** package (Name, Subtitle + 2 alts, Promo +
+    alt, Full Description, iOS keyword field shown exactly, App Review Notes);
+    full **Google Play** package (Title, Short + 2 alts, Full description, tags +
+    search phrases + category, Reviewer notes); ASO query→placement mapping table
+    (compete / stretch / reach-only lanes); 4-frame screenshot **copy** plan
+    (captions only — no image files created); compliance guardrails; final owner
+    checklist; preserved-source map.
+  - This `docs/claude-build-history.md` Run A.4 entry.
+- **Artifacts changed:**
+  - `pubspec.yaml` — line 2 `description:` only, placeholder
+    `"A new Flutter project."` → `"TrueRise estimates a likely birth time from
+    your life events, with a confidence score and per-event evidence. Private and
+    on-device."` (132 chars). No other key touched; deps and `pubspec.lock`
+    untouched.
+- **Finalized values (char counts re-verified this run):** iOS App Name
+  `TrueRise: Birth Time Finder` (27/30); iOS Subtitle `Rectify your birth time`
+  (23/30) + alts `Estimate your birth time` (24), `Find your real birth time`
+  (25); iOS Promo (138/170); iOS keyword field recommended **92/100**
+  (`rectification,ascendant,rising,natal,chart,calculator,unknown,accurate,astrology,houses,sign`,
+  0 spaces, 11 terms) / conservative **89/100** (10 terms); Play Title 27/30;
+  Play Short `Estimate your unknown birth time from real life events. Private,
+  on-device.` (75/80). Full descriptions well under 4000.
+- **Posture / decisions:** copy is utility-first and **probabilistic** (most-likely
+  time + confidence, never certainty); astrology named only as *method*; no
+  fortune-telling lexicon; explicit "not medical/psychological/legal/financial
+  advice, not deterministic" line in both long descriptions. Sharing copy is tied
+  to the **shipped PII-free text share** (time + rising + confidence + brand) — no
+  image/share-card implied (unbuilt V1.5). Reviewer notes lead with **offline
+  Demo mode** (no key/payment to review), disclose live-mode HTTPS field transfer
+  to a third-party provider, note **no device Location permission** (birthplace
+  coords are user-selected, not GPS), and carry an `[OWNER: hosted URL]`
+  placeholder. Pulls authoritative data posture from `docs/apple-privacy-labels.md`
+  / `docs/play-data-safety.md`; preserves Run 2/3/4/6 conclusions without changing
+  them.
+- **Constraints respected:** writes confined to `docs/store-listing-en.md`,
+  `pubspec.yaml` (description line only), and this file. **No** edits to `lib/`,
+  `test/`, `integration_test/`, `ios/`, `android/`, `assets/`, l10n, screenshots,
+  `README`, privacy-policy docs, or existing research docs. No dependencies added;
+  `pubspec.lock` not modified; no screenshots created and no simulator run. No
+  secrets touched/logged. No deterministic/medical/legal/financial/fortune-telling
+  claims. No store ranking/approval/trademark assertion. A.1/A.2/A.3 work left
+  intact.
+- **Verification:** `git status --short` (confirms only `docs/store-listing-en.md`
+  added + `pubspec.yaml` and this doc modified by this run; all other dirty paths
+  pre-existing from A.1/A.2/A.3); `git diff -- pubspec.yaml` (single-line
+  description change); Python char-count check of every hard-limit field (results
+  above — all within limits); Ruby `YAML.load_file` parse of `pubspec.yaml`
+  succeeded (`name=rectify`, `description` len 132 → valid YAML).
+- **Limit status:** No usage-limit stop.
+- **Open items (owner, gate submission):** hosted privacy-policy URL; support
+  URL/email; bundle/package-ID decision (before first store record); release
+  signing; **screenshots** (next run, per the §5 copy plan); trademark clearance +
+  App Store name availability; in-console character re-count; category & age-rating
+  confirmation (18+); Apple privacy labels + Play Data Safety completion incl. the
+  precise-location classification call; demo/review key rotation.
+
+### 2026-06-02 — P0 Store Screenshot Set Capture, English Tier 0 (Impl Run A.5)
+
+- **Model:** `claude-opus-4-8` (run invoked explicitly under this model).
+- **Session id:** not surfaced to the agent this run; omitted.
+- **Stage:** Owner-independent **P0 screenshot gate (G8)** in
+  `docs/store-submission-readiness.md`. Capture an initial **English Tier 0**
+  store screenshot set from the **shipped Flutter UI** (real widgets/routes/state,
+  not mockups), per the 4-frame copy plan in `docs/store-listing-en.md` §5. No app
+  code, copy, config, or behavior changed.
+- **Artifacts created (all under `screenshots/store/en/`):**
+  - `01-result-hero.png` — 1290×2796, 152,519 B. Result hero: most-probable
+    **7:14 AM**, **Gemini Rising**, **78%** confidence bar, alternate candidates
+    (7:42 AM 61% / 8:03 AM 44%), **DEMO** pill, "See how we got this" CTA.
+  - `02-evidence-breakdown.png` — 1290×2796, 311,037 B. Evidence: "Why 7:14 AM?
+    4 of 6 events strongly supported this time." Per-event **STRONG / MODERATE /
+    WEAK** match cards.
+  - `03-privacy-demo-settings.png` — 1290×2796, 193,204 B. Settings: **Demo mode**
+    toggle ON ("free, no network"), optional API key, 12h/24h time format,
+    **Delete all data** ("Cannot be undone").
+  - `04-share-result.png` — 1290×2796, 152,519 B. Clean result viewport with the
+    shipped **Share result** affordance visible in context (OS sheet not capturable
+    — see limitations).
+  - `05-privacy-policy.png` — 1290×2796, 433,627 B. **Bonus** frame: in-app
+    Privacy screen (on-device storage, offline demo, live-mode HTTPS, no accounts).
+  - `README.md` + `manifest.json` — capture method, per-frame map, intended §5
+    caption overlays (not baked in), the verbatim **PII-free share text**, and the
+    limitations below.
+  - This `docs/claude-build-history.md` Run A.5 entry.
+- **Method:** throwaway widget-test harness under `/tmp` (removed after the run;
+  copied `test/helpers` fakes alongside it, also removed). Ran on the host VM via
+  `flutter test`; rendered the real `RectifyApp` inside a `RepaintBoundary` and
+  wrote `boundary.toImage(pixelRatio: 3)` → PNG with `dart:io`. **Demo mode**
+  (offline — no network, no API key) drove a canonical **6-event** calculation
+  through the real `calculation_flow` controller, then `go_router` navigated to
+  each route. Product fonts (Inter / SourceSerif4 / JetBrainsMono) loaded from the
+  bundled `FontManifest.json` so text renders as real glyphs. iPhone 6.7"/Pro Max
+  geometry: physicalSize 1290×2796 @ DPR 3.0, safe-area insets top 177 / bottom
+  102 px. **One frame per process** (one screenshot per `flutter test` run): on
+  this toolchain `flutter_tester` crashes with SIGTERM the instant a *second*
+  `toImage` runs in the same isolate, but the first capture always flushes to disk
+  first — so per-process capture yields all five frames reliably.
+- **Share payload (documented, PII-free):** frame 4's shipped Share action emits
+  the `ShareCopyBuilder` text — only time + rising + confidence + brand, **no birth
+  date / birthplace / events / PII**. For the canonical demo result, exactly:
+  `My TrueRise rectification result:\n7:14 AM · Gemini Rising · 78% confidence\n\nCalculated with TrueRise — birth-time rectification`.
+- **Limitations (in README/manifest):** the native **OS share sheet cannot be
+  captured** from the host `flutter test` binding — frame 4 shows the shipped
+  in-app Share button and the exact emitted text is recorded verbatim; frames are
+  **raw resolution with no caption overlays / device bezels** (compositing the §5
+  captions is owner work); values come from the **offline DEMO** dataset (DEMO
+  badge visible in-frame, matching the honest/probabilistic store framing); **6.7"
+  portrait only** (same harness can emit another size by changing view geometry).
+- **Constraints respected:** writes confined to `screenshots/store/en/*` and this
+  append-only file. **No** edits to `lib/`, `test/`, `integration_test/`, `ios/`,
+  `android/`, `assets/`, l10n, `README.md`, `pubspec.yaml`, or `pubspec.lock`; **no
+  dependencies added**; **no commit**. All UI is **real shipped Flutter UI** — no
+  fabricated screens and no fake share-card image (text-share only). Bundled demo
+  `.env` key never printed, logged, or written to any artifact. A.1/A.2/A.3/A.4
+  dirty changes left intact.
+- **Verification:** `sips` on all five PNGs → every file **1290×2796**, format
+  PNG, non-zero bytes (sizes above); each frame **visually inspected** (image read)
+  to confirm real glyphs/widgets and no `.notdef` tofu; `git status --short` →
+  only `screenshots/` is newly added and this doc modified by this run, every other
+  dirty path pre-existing from A.1–A.4; `/tmp` harness and copied fakes confirmed
+  removed.
+- **Limit status:** No usage-limit stop.
+- **Open items (owner):** composite the §5 marketing captions / device bezels if
+  desired; optional second **Play / other-size** variant; remaining P0 owner gates
+  unchanged (hosted privacy-policy URL, support URL/email, bundle-ID decision,
+  release signing, trademark clearance + App Store name availability, in-console
+  character re-count, category & age-rating confirmation, Apple privacy labels +
+  Play Data Safety completion, demo/review key rotation).

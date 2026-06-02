@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/radius.dart';
 import 'package:rectify/theme/typography.dart';
@@ -19,7 +20,7 @@ class HeroResultCard extends StatelessWidget {
     required this.time,
     required this.meridiem,
     required this.risingSign,
-    this.eyebrow = 'YOUR MOST PROBABLE BIRTH TIME',
+    this.eyebrow,
     this.zodiacGlyph,
     super.key,
   });
@@ -36,8 +37,9 @@ class HeroResultCard extends StatelessWidget {
   /// Rising-sign caption (e.g. "Gemini Rising"). Type.title.md.
   final String risingSign;
 
-  /// Eyebrow above the time. Defaults to the production copy from §9.7.
-  final String eyebrow;
+  /// Eyebrow above the time. Falls back to the production copy from §9.7
+  /// when null.
+  final String? eyebrow;
 
   /// Optional 16pt monochrome zodiac glyph rendered after [risingSign].
   /// Out-of-scope for MVP scaffolding; design-system §7.4 reserves
@@ -48,6 +50,8 @@ class HeroResultCard extends StatelessWidget {
   Widget build(BuildContext context) {
     const ink = AppColors.deepInkOnMidnight;
     const eyebrowColor = AppColors.accentClayTint;
+    final eyebrowText = eyebrow ?? context.l10n.heroResultEyebrow;
+    final spokenTime = meridiem.isEmpty ? time : '$time $meridiem';
 
     final timeRow = Text.rich(
       key: heroTimeKey,
@@ -67,9 +71,11 @@ class HeroResultCard extends StatelessWidget {
 
     return Semantics(
       header: true,
-      label:
-          '$eyebrow: $time${meridiem.isEmpty ? '' : ' $meridiem'}, '
-          '$risingSign',
+      label: context.l10n.heroResultSemantic(
+        eyebrowText,
+        spokenTime,
+        risingSign,
+      ),
       excludeSemantics: true,
       child: Container(
         decoration: BoxDecoration(
@@ -84,7 +90,7 @@ class HeroResultCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Text(
-              eyebrow,
+              eyebrowText,
               textAlign: TextAlign.center,
               style: AppTypography.labelSm.copyWith(color: eyebrowColor),
             ),

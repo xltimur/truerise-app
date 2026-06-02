@@ -219,7 +219,6 @@ class CalculationFlowController extends Notifier<CalculationFlowState> {
       state.copyWith(
         step: CalculationFlowStep.loading,
         submitting: true,
-        submitError: null,
       ),
       syncDraft: false,
     );
@@ -230,14 +229,11 @@ class CalculationFlowController extends Notifier<CalculationFlowState> {
     return result.fold<Result<CalculationResult, AppFailure>>(
       ok: (value) {
         _drafts.clear();
-        state = state.copyWith(submitting: false, submitError: null);
+        state = state.copyWith(submitting: false);
         return Result.ok(value);
       },
       err: (failure) {
-        state = state.copyWith(
-          submitting: false,
-          submitError: failure.toString(),
-        );
+        state = state.copyWith(submitting: false);
         return Result.err(failure);
       },
     );

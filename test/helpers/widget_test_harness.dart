@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:rectify/l10n/app_localizations.dart';
 import 'package:rectify/theme/theme.dart';
 
 /// Wraps a widget under test in a `MaterialApp` configured with the
@@ -17,6 +18,8 @@ Widget wrapInRectifyApp(
 }) {
   return MaterialApp(
     debugShowCheckedModeBanner: false,
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
     theme: buildLightTheme(),
     home: Directionality(
       textDirection: textDirection,

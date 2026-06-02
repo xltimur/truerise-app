@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:rectify/app/router.dart';
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/theme/theme.dart';
 
 class RectifyApp extends ConsumerWidget {
@@ -12,8 +13,10 @@ class RectifyApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
 
     return MaterialApp.router(
-      title: 'Rectify',
+      title: appBrandName,
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       theme: buildLightTheme(),
       routerConfig: router,
     );

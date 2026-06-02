@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import 'package:rectify/app/route_names.dart';
-import 'package:rectify/data/models/candidate_time.dart';
+import 'package:rectify/core/formatting/app_date_format.dart';
 import 'package:rectify/data/models/event_category.dart';
 import 'package:rectify/data/models/evidence_item.dart';
 import 'package:rectify/data/models/life_event.dart';
 import 'package:rectify/data/models/match_strength.dart';
 import 'package:rectify/data/models/saved_calculation.dart';
-import 'package:rectify/data/models/time_format.dart';
 import 'package:rectify/features/calculation_flow/state/calculation_flow_state.dart';
 import 'package:rectify/features/calculation_flow/state/result_providers.dart';
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/providers/settings_controller.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/icons.dart';
@@ -47,7 +46,7 @@ class EvidenceScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.bgApp,
       appBar: TopNav(
-        title: 'Evidence',
+        title: context.l10n.evidenceTitle,
         onBack: () {
           if (context.canPop()) {
             context.pop();
@@ -76,15 +75,14 @@ class _EvidenceNotFound extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenEdge),
       child: EmptyState(
-        title: "We couldn't find that evidence.",
-        body:
-            'The underlying result may have been deleted. '
-            'Return to your history to pick another calculation.',
+        title: l10n.evidenceNotFoundTitle,
+        body: l10n.evidenceNotFoundBody,
         cta: PrimaryButton(
-          label: 'Back to history',
+          label: l10n.commonBackToHistory,
           expand: false,
           onPressed: () => context.go(RoutePaths.home),
         ),
@@ -100,24 +98,6 @@ class _EvidenceBody extends ConsumerWidget {
   const _EvidenceBody({required this.saved});
 
   final SavedCalculation saved;
-
-  String _topTimeLabel(CandidateTime top, TimeFormat format) {
-    final time = top.time;
-    if (format == TimeFormat.h24) {
-      return '${time.hour.toString().padLeft(2, '0')}:'
-          '${time.minute.toString().padLeft(2, '0')}';
-    }
-    final isPm = time.hour >= 12;
-    final hour12 = ((time.hour + 11) % 12) + 1;
-    final suffix = isPm ? 'PM' : 'AM';
-    return '$hour12:${time.minute.toString().padLeft(2, '0')} $suffix';
-  }
-
-  String _eventDateLabel(LifeEvent event) {
-    if (event.month == null) return '${event.year}';
-    final dt = DateTime(event.year, event.month!);
-    return DateFormat('MMM y').format(dt);
-  }
 
   IconData _iconFor(EventCategory category) => switch (category) {
     EventCategory.marriage => AppIcons.eventMarriage,
@@ -139,6 +119,7 @@ class _EvidenceBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
     final settings = ref.watch(settingsControllerProvider);
     final candidates = saved.result.candidates;
     final evidence = saved.result.evidence;
@@ -151,7 +132,7 @@ class _EvidenceBody extends ConsumerWidget {
     }
 
     final top = candidates.first;
-    final topTimeLabel = _topTimeLabel(top, settings.timeFormat);
+    final topTimeLabel = AppDateFormat.clockTime(top.time, settings.timeFormat);
     final strongCount = evidence
         .where(
           (item) =>
@@ -171,16 +152,15 @@ class _EvidenceBody extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Text(
-            'Why $topTimeLabel?',
+            l10n.evidenceWhyTitle(topTimeLabel),
             style: AppTypography.titleLg,
             key: evidenceSummaryKey,
           ),
           const SizedBox(height: AppSpacing.s3),
           Text(
             evidence.isEmpty
-                ? "We don't have event-level evidence for this result."
-                : '$strongCount of ${evidence.length} events strongly '
-                      'supported this time.',
+                ? l10n.evidenceNoEvidence
+                : l10n.evidenceStrongSummary(strongCount, evidence.length),
             style: AppTypography.bodyMd.copyWith(color: AppColors.inkBody),
           ),
           if (saved.result.isDemo) ...<Widget>[
@@ -196,12 +176,14 @@ class _EvidenceBody extends ConsumerWidget {
               builder: (context) {
                 final event = eventsById[item.eventId];
                 final category = event != null
-                    ? eventCategoryLabel(event.category)
-                    : 'Event';
+                    ? eventCategoryLabel(l10n, event.category)
+                    : l10n.evidenceEventFallback;
                 final icon = event != null
                     ? _iconFor(event.category)
                     : AppIcons.eventOther;
-                final date = event != null ? _eventDateLabel(event) : '';
+                final date = event != null
+                    ? AppDateFormat.optionalMonthYear(event.month, event.year)
+                    : '';
                 return EvidenceCard(
                   icon: icon,
                   category: category,
