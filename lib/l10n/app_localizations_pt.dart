@@ -375,6 +375,15 @@ class AppLocalizationsPt extends AppLocalizations {
       'Não foi possível abrir o menu de compartilhamento da imagem.';
 
   @override
+  String get resultDemoShareLabel => 'Compartilhar este exemplo';
+
+  @override
+  String get resultDemoShareTitle => 'Gostou deste exemplo? Compartilhe.';
+
+  @override
+  String get resultDemoShareButton => 'Compartilhar exemplo';
+
+  @override
   String get shareCardTagline => 'Retificação da hora de nascimento';
 
   @override

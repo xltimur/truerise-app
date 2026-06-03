@@ -4699,3 +4699,101 @@ passed auth — it reached business logic, not 401/403 — so the existing
   no published App Store ID yet; throttle is per-install (no cross-device/backend
   state, by design).
 - **Limit/quota:** none hit.
+
+### 2026-06-03 — Privacy-safe Share Discoverability (Impl Run S3 / G10)
+
+- **Model:** claude-opus-4-8. **Session id:** not captured in this run. Claude
+  committed locally after verification; no push (per task).
+- **Predecessor:** continues from `f297f62` (S2 compliant in-app review prompt),
+  which itself sits on `81ab747` (S1 privacy-safe result image sharing);
+  worktree clean at start (`main` two local commits ahead of origin, not pushed).
+- **Scope:** the low-risk subset of G10 (`docs/feature-gap-analysis.md` §6.2
+  rank 2): make the *existing* PII-free share loop easier to reach. No new share
+  payload, no share-card redesign, no analytics/crash SDK, no accounts/referrals/
+  contacts/auto-posting/IG integration, no paywalls/IAP, no push.
+- **Goal:** add share entry points from (a) the result screen CTA, (b) history
+  rows, and (c) a one-time post-demo affordance — every one reusing the exact
+  same `ShareCopyBuilder` / `ShareService` PII-free text payload (no birth
+  city/date, life events, labels, coordinates, API ids, or user-entered text).
+- **Target 1 — result CTA (improve "if needed"):** the result screen already
+  had two clearly-labelled share GhostButtons directly under the primary CTA, so
+  no structural change was warranted (no information removed, one-screen layout
+  preserved). The only change is a recognizable share glyph (`AppIcons.share =
+  LucideIcons.share2`) added to both the "Share result" and "Share image"
+  buttons to raise visual discoverability of the existing affordances. S1/S2
+  behavior (text + image share, clipboard fallback, and the S2 review invite on
+  a *successful native* share only) is untouched.
+- **Target 2 — share from history:** `HistoryCard` gains an optional `onShare`
+  callback; when provided it renders a 44pt share `IconButton` in the eyebrow
+  (the icon intercepts its own tap, so the card's open-result `onTap` does not
+  also fire). `_PopulatedHistory` wires it to `ShareService.share(
+  ShareCopyBuilder.build(item))` with the same "Copied to clipboard" SnackBar
+  fallback. The affordance renders only when `onShare` is supplied, so existing
+  `HistoryCard` widget tests and the hero goldens are unaffected. Reuses the
+  existing `resultShare` ("Share result") string for the tooltip — no new
+  translated string for this entry point.
+- **Target 3 — one-time post-demo affordance:** a dismissible `_DemoSharePrompt`
+  renders on a demo result the first time the user reaches one, gated by a new
+  `SharePromptStore` (`share.demo_prompt_seen` boolean in its own key namespace,
+  mirroring `ReviewPromptStore` so a Settings "Delete all data" wipe of the
+  `settings.*` keys does not re-open it). It marks itself seen on display, so it
+  is shown at most once, ever — non-annoying by construction. Its "Share sample"
+  button reuses the same PII-free text share + clipboard fallback.
+- **Review-prompt boundary (compliance):** neither the history share nor the
+  post-demo affordance chains the S2 `maybeInviteReview` flow — a quiet utility
+  share and a one-time nudge are not the celebratory positive moment that flow is
+  reserved for, and stacking a rating dialog on top would read as a dark pattern.
+  Both honour the fallback contract: a clipboard fallback surfaces a SnackBar and
+  is never treated as a success moment. The S2 review invite remains wired to the
+  result screen's two main share buttons on native success only, exactly as
+  shipped. Each new entry point has a focused test asserting no review dialog and
+  `requestReviewCount == 0`.
+- **Artifacts changed — code (5):** `lib/theme/icons.dart` (`AppIcons.share`);
+  `lib/widgets/cards/history_card.dart` (optional `onShare` + eyebrow share
+  button); `lib/features/home/home_history_screen.dart` (`_shareRow` wiring,
+  no review prompt); `lib/providers/core_providers.dart`
+  (`sharePromptStoreProvider`); `lib/features/calculation_flow/screens/
+  result_screen.dart` (share glyph on both CTAs + `_DemoSharePrompt` +
+  `resultDemoSharePrompt*Key`s).
+- **Artifacts created — code (1):** `lib/data/prefs/share_prompt_store.dart`.
+- **Artifacts changed — l10n (5 source + 6 generated):** added
+  `resultDemoShareLabel` / `resultDemoShareTitle` / `resultDemoShareButton` to all
+  five ARBs (en/de/fr/es/pt); regenerated `lib/l10n/app_localizations*.dart` via
+  `flutter gen-l10n` (87 insertions, 0 deletions across l10n — purely additive; no
+  hand-edits to generated files).
+- **Artifacts created — tests (3):** `test/data/prefs/share_prompt_store_test.dart`
+  (4 unit tests); `test/widget/features/home/home_history_share_test.dart` (4
+  widget tests: affordance present per row, PII-free share, clipboard fallback,
+  no review invite); `test/widget/features/calculation_flow/
+  result_demo_share_prompt_test.dart` (6 widget tests: shown once + marks seen,
+  hidden when seen, absent on a real result, PII-free share, fallback SnackBar, no
+  review invite).
+- **Artifacts changed — tests (1):**
+  `test/widget/features/calculation_flow/result_share_test.dart` (one added test
+  asserting the share glyph on both result CTAs).
+- **Method:** TDD throughout — each store/widget got a failing test first
+  (verified RED), then minimal code to green. The "hidden once seen" demo-prompt
+  test caught a real defect (the test key was on the always-present widget rather
+  than the conditionally-rendered content) before it could mask the one-time
+  guarantee; the key was moved onto the rendered container.
+- **Verification:** `flutter gen-l10n` → ok; `dart format` on the 10 touched Dart
+  files → 1 reformatted (no unrelated committed files mutated); `flutter analyze
+  lib test` → No issues found; focused share/review/history/prefs cluster → 72
+  passed; full `flutter test` → **306 passed** (was 291 after S2; +15 new);
+  `git diff --check` → clean. Integration test (`integration_test/`) not run —
+  needs a device/simulator.
+- **Constraints respected:** all S1/S2 behavior preserved; PII-free payload
+  reused unchanged at every new entry point (no birth city/date, events, label,
+  coordinates, API ids, or user text); no review prompt on history/demo shares;
+  no automatic sharing, contact access, or dark patterns; demo mode still makes
+  no app network calls (share is an OS capability via platform channel /
+  clipboard, like S1); no secrets; no deferred/out-of-scope surface added; no
+  store-doc rewrites.
+- **Residual risks / owner follow-ups:** the de/fr/es/pt copy for the three new
+  demo-share strings is engineer-drafted and wants a native-speaker pass before
+  store upload (consistent with the S1/S2/Run D translation caveats); the shipped
+  share *text* payload remains English-only (`share_copy_builder.dart`, unchanged
+  — a pre-existing localized-listing caveat, not introduced here); screenshot sets
+  were not re-captured (the new affordances are reachable from already-screenshot
+  surfaces).
+- **Limit/quota:** none hit.

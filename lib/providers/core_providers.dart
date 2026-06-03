@@ -5,6 +5,7 @@ import 'package:rectify/data/api/api_client.dart';
 import 'package:rectify/data/api/rectification_api.dart';
 import 'package:rectify/data/db/database.dart';
 import 'package:rectify/data/prefs/settings_store.dart';
+import 'package:rectify/data/prefs/share_prompt_store.dart';
 import 'package:rectify/data/secure/secure_key_store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -93,6 +94,12 @@ final sharedPreferencesProvider = Provider<SharedPreferences>(
 /// Wraps the resolved [SharedPreferences] in our typed store.
 final settingsStoreProvider = Provider<SettingsStore>(
   (ref) => SettingsStore(ref.watch(sharedPreferencesProvider)),
+);
+
+/// Wraps the resolved [SharedPreferences] in the one-time share-prompt
+/// store (drives the post-demo "share this sample" affordance).
+final sharePromptStoreProvider = Provider<SharePromptStore>(
+  (ref) => SharePromptStore(ref.watch(sharedPreferencesProvider)),
 );
 
 /// Secure-storage handle for the end-user-supplied Pro / Developer key.

@@ -20,6 +20,7 @@ abstract final class AppIcons {
   static const IconData bookmark = LucideIcons.bookmark;
   static const IconData refresh = LucideIcons.rotateCw;
   static const IconData trash = LucideIcons.trash2;
+  static const IconData share = LucideIcons.share2;
 
   // Error screens (§9.13 / implementation-plan §11.3)
   static const IconData errorTimeout = LucideIcons.clockAlert;

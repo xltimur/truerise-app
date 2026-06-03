@@ -17,6 +17,7 @@ import 'package:rectify/data/secure/secure_key_store.dart';
 import 'package:rectify/features/calculation_flow/screens/result_screen.dart';
 import 'package:rectify/providers/core_providers.dart';
 import 'package:rectify/providers/repo_providers.dart';
+import 'package:rectify/theme/icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../helpers/demo_fixtures.dart';
@@ -406,6 +407,53 @@ void main() {
       expect(caption, isNot(contains('Ukraine')));
       expect(caption, isNot(contains('1990')));
       expect(caption, isNot(contains('marriage')));
+    },
+  );
+
+  testWidgets(
+    'both share CTAs render a share glyph for discoverability',
+    (tester) async {
+      final seeded = _seedDemoCalculation();
+      final prefs = await _prefs();
+      final history = FakeHistoryRepository([seeded]);
+      final rectifier = FakeRectificationRepository(history: history);
+      final drafts = InMemoryDraftRepository();
+      final shareService = FakeShareService();
+      addTearDown(drafts.dispose);
+
+      await tester.pumpWidget(
+        _harness(
+          prefs: prefs,
+          history: history,
+          rectifier: rectifier,
+          drafts: drafts,
+          shareService: shareService,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(MaterialApp)),
+      );
+      container
+          .read(routerProvider)
+          .go(RoutePaths.calcResultFor(seeded.request.id));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.descendant(
+          of: find.byKey(resultShareButtonKey),
+          matching: find.byIcon(AppIcons.share),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(resultShareImageButtonKey),
+          matching: find.byIcon(AppIcons.share),
+        ),
+        findsOneWidget,
+      );
     },
   );
 

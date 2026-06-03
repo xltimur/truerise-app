@@ -13,8 +13,10 @@ import 'package:rectify/data/models/saved_calculation.dart';
 import 'package:rectify/features/calculation_flow/state/result_providers.dart';
 import 'package:rectify/features/reviews/review_invitation.dart';
 import 'package:rectify/l10n/l10n.dart';
+import 'package:rectify/providers/core_providers.dart';
 import 'package:rectify/providers/settings_controller.dart';
 import 'package:rectify/theme/colors.dart';
+import 'package:rectify/theme/icons.dart';
 import 'package:rectify/theme/spacing.dart';
 import 'package:rectify/theme/typography.dart';
 import 'package:rectify/widgets/buttons/buttons.dart';
@@ -113,6 +115,16 @@ const Key resultShareImageButtonKey = ValueKey<String>(
   'result-share-image-button',
 );
 
+@visibleForTesting
+const Key resultDemoSharePromptKey = ValueKey<String>(
+  'result-demo-share-prompt',
+);
+
+@visibleForTesting
+const Key resultDemoSharePromptShareKey = ValueKey<String>(
+  'result-demo-share-prompt-share',
+);
+
 class _ResultBody extends ConsumerWidget {
   const _ResultBody({required this.saved});
 
@@ -205,6 +217,7 @@ class _ResultBody extends ConsumerWidget {
           const SizedBox(height: AppSpacing.s3),
           _SaveToHistoryButton(saved: saved),
           if (saved.result.isDemo) ...<Widget>[
+            _DemoSharePrompt(saved: saved),
             const SizedBox(height: AppSpacing.s7),
             const _DemoUpgradeNudge(key: resultDemoNudgeKey),
           ],
@@ -228,6 +241,7 @@ class _ShareResultButton extends ConsumerWidget {
     final l10n = context.l10n;
     return GhostButton(
       label: l10n.resultShare,
+      icon: AppIcons.share,
       onPressed: () async {
         final svc = ref.read(shareServiceProvider);
         final text = ShareCopyBuilder.build(saved);
@@ -266,6 +280,7 @@ class _ShareImageButton extends ConsumerWidget {
     final settings = ref.watch(settingsControllerProvider);
     return GhostButton(
       label: l10n.resultShareImage,
+      icon: AppIcons.share,
       onPressed: () async {
         final svc = ref.read(shareServiceProvider);
         final top = saved.result.candidates.first;
@@ -351,6 +366,113 @@ class _SaveToHistoryButtonState extends ConsumerState<_SaveToHistoryButton> {
       // the feedback".
       setState(() {});
     });
+  }
+}
+
+/// One-time, post-demo "share this sample" affordance (G10 share
+/// discoverability). Renders only on a demo result, and only the first
+/// time the user reaches one — it marks itself seen on display via the
+/// share-prompt store so it never nags again, on this or any later demo
+/// result. Its share reuses the exact PII-free [ShareCopyBuilder] /
+/// [ShareService] text payload as every other share entry point (no birth
+/// city/date, events, label, coordinates, or API ids).
+///
+/// Deliberately does NOT chain the S2 review invitation: a gentle one-time
+/// nudge is not the celebratory positive moment that flow is reserved for,
+/// and stacking a rating dialog on top would read as a dark pattern. It
+/// still honours the fallback contract — a clipboard fallback surfaces a
+/// SnackBar and is never treated as a success moment.
+class _DemoSharePrompt extends ConsumerStatefulWidget {
+  const _DemoSharePrompt({required this.saved});
+
+  final SavedCalculation saved;
+
+  @override
+  ConsumerState<_DemoSharePrompt> createState() => _DemoSharePromptState();
+}
+
+class _DemoSharePromptState extends ConsumerState<_DemoSharePrompt> {
+  bool _visible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final store = ref.read(sharePromptStoreProvider);
+    if (!store.demoSharePromptSeen()) {
+      _visible = true;
+      // Mark seen on display so the prompt is shown at most once, ever.
+      unawaited(store.markDemoSharePromptSeen());
+    }
+  }
+
+  Future<void> _share() async {
+    final l10n = context.l10n;
+    final messenger = ScaffoldMessenger.of(context);
+    final svc = ref.read(shareServiceProvider);
+    final usedNative = await svc.share(ShareCopyBuilder.build(widget.saved));
+    if (!context.mounted) return;
+    if (!usedNative) {
+      // Clipboard fallback is a degraded path, not a win — no review prompt.
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.resultCopiedToClipboard)),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_visible) return const SizedBox.shrink();
+    final l10n = context.l10n;
+    return Padding(
+      key: resultDemoSharePromptKey,
+      padding: const EdgeInsets.only(top: AppSpacing.s6),
+      child: Semantics(
+        container: true,
+        label: l10n.resultDemoShareLabel,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: AppColors.bgSurface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.inkLine),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.s5),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        l10n.resultDemoShareTitle,
+                        style: AppTypography.titleSm,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.close,
+                        color: AppColors.inkSoft,
+                      ),
+                      tooltip: l10n.commonDismiss,
+                      iconSize: 20,
+                      splashRadius: 18,
+                      onPressed: () => setState(() => _visible = false),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.s3),
+                GhostButton(
+                  key: resultDemoSharePromptShareKey,
+                  label: l10n.resultDemoShareButton,
+                  icon: AppIcons.share,
+                  onPressed: _share,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 

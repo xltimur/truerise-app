@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import 'package:rectify/app/route_names.dart';
 import 'package:rectify/core/formatting/app_date_format.dart';
+import 'package:rectify/core/sharing/share_copy_builder.dart';
+import 'package:rectify/core/sharing/share_service.dart';
 import 'package:rectify/data/models/saved_calculation.dart';
 import 'package:rectify/features/home/history_providers.dart';
 import 'package:rectify/l10n/l10n.dart';
@@ -91,6 +93,28 @@ class _PopulatedHistory extends ConsumerWidget {
   const _PopulatedHistory({required this.items});
 
   final List<SavedCalculation> items;
+
+  /// Shares the privacy-safe summary of a saved result, reusing the same
+  /// [ShareCopyBuilder] payload as the result screen (no birth city/date,
+  /// life events, label, coordinates, or API ids). Deliberately does NOT
+  /// invite a review here — a history share is a quiet utility action, not
+  /// the celebratory positive moment the S2 review flow is reserved for.
+  Future<void> _shareRow(
+    BuildContext context,
+    WidgetRef ref,
+    SavedCalculation item,
+  ) async {
+    final l10n = context.l10n;
+    final messenger = ScaffoldMessenger.of(context);
+    final svc = ref.read(shareServiceProvider);
+    final usedNative = await svc.share(ShareCopyBuilder.build(item));
+    if (!context.mounted) return;
+    if (!usedNative) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.resultCopiedToClipboard)),
+      );
+    }
+  }
 
   Future<bool> _confirmDelete(BuildContext context, String label) async {
     final l10n = context.l10n;
@@ -194,6 +218,7 @@ class _PopulatedHistory extends ConsumerWidget {
             confidence: topCandidate?.confidence ?? 0,
             isDemo: result.isDemo,
             onTap: () => context.go(RoutePaths.calcResultFor(item.request.id)),
+            onShare: () => _shareRow(context, ref, item),
           ),
         );
       },

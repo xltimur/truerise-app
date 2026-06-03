@@ -368,6 +368,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'Couldn\'t open the share sheet for the image.';
 
   @override
+  String get resultDemoShareLabel => 'Share this sample';
+
+  @override
+  String get resultDemoShareTitle => 'Like this sample? Share it.';
+
+  @override
+  String get resultDemoShareButton => 'Share sample';
+
+  @override
   String get shareCardTagline => 'Birth-time rectification';
 
   @override

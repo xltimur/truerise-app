@@ -374,6 +374,15 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible d\'ouvrir le menu de partage pour l\'image.';
 
   @override
+  String get resultDemoShareLabel => 'Partager cet exemple';
+
+  @override
+  String get resultDemoShareTitle => 'Cet exemple vous plaît ? Partagez-le.';
+
+  @override
+  String get resultDemoShareButton => 'Partager l\'exemple';
+
+  @override
   String get shareCardTagline => 'Rectification de l\'heure de naissance';
 
   @override

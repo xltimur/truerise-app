@@ -459,6 +459,18 @@
   "@resultShareImageUnavailable": {
     "description": "Snackbar shown when the native share sheet could not be presented for an image share."
   },
+  "resultDemoShareLabel": "Share this sample",
+  "@resultDemoShareLabel": {
+    "description": "Screen-reader label for the one-time post-demo share affordance container."
+  },
+  "resultDemoShareTitle": "Like this sample? Share it.",
+  "@resultDemoShareTitle": {
+    "description": "Title of the one-time post-demo share affordance. The shared text never includes personal birth details."
+  },
+  "resultDemoShareButton": "Share sample",
+  "@resultDemoShareButton": {
+    "description": "Button in the post-demo affordance that shares the privacy-safe sample result."
+  },
   "shareCardTagline": "Birth-time rectification",
   "@shareCardTagline": {
     "description": "Short tagline printed at the bottom of the shareable result image card."

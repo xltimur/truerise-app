@@ -716,6 +716,24 @@ abstract class AppLocalizations {
   /// **'Couldn\'t open the share sheet for the image.'**
   String get resultShareImageUnavailable;
 
+  /// Screen-reader label for the one-time post-demo share affordance container.
+  ///
+  /// In en, this message translates to:
+  /// **'Share this sample'**
+  String get resultDemoShareLabel;
+
+  /// Title of the one-time post-demo share affordance. The shared text never includes personal birth details.
+  ///
+  /// In en, this message translates to:
+  /// **'Like this sample? Share it.'**
+  String get resultDemoShareTitle;
+
+  /// Button in the post-demo affordance that shares the privacy-safe sample result.
+  ///
+  /// In en, this message translates to:
+  /// **'Share sample'**
+  String get resultDemoShareButton;
+
   /// Short tagline printed at the bottom of the shareable result image card.
   ///
   /// In en, this message translates to:

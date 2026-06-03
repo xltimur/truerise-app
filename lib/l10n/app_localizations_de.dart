@@ -372,6 +372,15 @@ class AppLocalizationsDe extends AppLocalizations {
       'Das Teilen-Menü für das Bild konnte nicht geöffnet werden.';
 
   @override
+  String get resultDemoShareLabel => 'Dieses Beispiel teilen';
+
+  @override
+  String get resultDemoShareTitle => 'Gefällt dir dieses Beispiel? Teile es.';
+
+  @override
+  String get resultDemoShareButton => 'Beispiel teilen';
+
+  @override
   String get shareCardTagline => 'Geburtszeit-Korrektur';
 
   @override
