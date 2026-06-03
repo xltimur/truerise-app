@@ -365,6 +365,21 @@ class AppLocalizationsDe extends AppLocalizations {
   String get resultCopiedToClipboard => 'In die Zwischenablage kopiert';
 
   @override
+  String get resultShareImage => 'Bild teilen';
+
+  @override
+  String get resultShareImageUnavailable =>
+      'Das Teilen-Menü für das Bild konnte nicht geöffnet werden.';
+
+  @override
+  String get shareCardTagline => 'Geburtszeit-Korrektur';
+
+  @override
+  String shareCardConfidence(int percent) {
+    return '$percent % Wahrscheinlichkeit';
+  }
+
+  @override
   String get resultSaveToHistory => 'Im Verlauf speichern';
 
   @override

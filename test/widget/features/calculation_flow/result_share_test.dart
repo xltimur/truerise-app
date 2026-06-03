@@ -84,6 +84,15 @@ SavedCalculation _seedDemoCalculation({String id = 'share-demo-1'}) {
   return SavedCalculation(request: request, result: result);
 }
 
+Future<void> _waitForImageShare(FakeShareService shareService) async {
+  for (var i = 0; i < 40; i += 1) {
+    if (shareService.sharedImages.isNotEmpty) {
+      return;
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+  }
+}
+
 void main() {
   testWidgets(
     'Share result button is visible on the result screen',
@@ -276,6 +285,170 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Copied to clipboard'), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'Share image button is visible on the result screen',
+    (tester) async {
+      final seeded = _seedDemoCalculation();
+      final prefs = await _prefs();
+      final history = FakeHistoryRepository([seeded]);
+      final rectifier = FakeRectificationRepository(history: history);
+      final drafts = InMemoryDraftRepository();
+      final shareService = FakeShareService();
+      addTearDown(drafts.dispose);
+
+      await tester.pumpWidget(
+        _harness(
+          prefs: prefs,
+          history: history,
+          rectifier: rectifier,
+          drafts: drafts,
+          shareService: shareService,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(MaterialApp)),
+      );
+      container
+          .read(routerProvider)
+          .go(RoutePaths.calcResultFor(seeded.request.id));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(resultShareImageButtonKey), findsOneWidget);
+      expect(find.text('Share image'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'tapping Share image renders a PNG and shares non-empty bytes',
+    (tester) async {
+      final seeded = _seedDemoCalculation();
+      final prefs = await _prefs();
+      final history = FakeHistoryRepository([seeded]);
+      final rectifier = FakeRectificationRepository(history: history);
+      final drafts = InMemoryDraftRepository();
+      final shareService = FakeShareService();
+      addTearDown(drafts.dispose);
+
+      await tester.pumpWidget(
+        _harness(
+          prefs: prefs,
+          history: history,
+          rectifier: rectifier,
+          drafts: drafts,
+          shareService: shareService,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(MaterialApp)),
+      );
+      container
+          .read(routerProvider)
+          .go(RoutePaths.calcResultFor(seeded.request.id));
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.byKey(resultShareImageButtonKey));
+      await tester.tap(find.byKey(resultShareImageButtonKey));
+      await tester.runAsync(() => _waitForImageShare(shareService));
+      await tester.pumpAndSettle();
+
+      expect(shareService.sharedImages, hasLength(1));
+      final png = shareService.sharedImages.first.bytes;
+      expect(png, isNotEmpty);
+      // PNG magic number.
+      expect(png.sublist(0, 4), <int>[0x89, 0x50, 0x4E, 0x47]);
+    },
+  );
+
+  testWidgets(
+    'image share caption does not contain birth city or birth date',
+    (tester) async {
+      final seeded = _seedDemoCalculation();
+      final prefs = await _prefs();
+      final history = FakeHistoryRepository([seeded]);
+      final rectifier = FakeRectificationRepository(history: history);
+      final drafts = InMemoryDraftRepository();
+      final shareService = FakeShareService();
+      addTearDown(drafts.dispose);
+
+      await tester.pumpWidget(
+        _harness(
+          prefs: prefs,
+          history: history,
+          rectifier: rectifier,
+          drafts: drafts,
+          shareService: shareService,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(MaterialApp)),
+      );
+      container
+          .read(routerProvider)
+          .go(RoutePaths.calcResultFor(seeded.request.id));
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.byKey(resultShareImageButtonKey));
+      await tester.tap(find.byKey(resultShareImageButtonKey));
+      await tester.runAsync(() => _waitForImageShare(shareService));
+      await tester.pumpAndSettle();
+
+      final caption = shareService.sharedImages.first.text ?? '';
+      expect(caption, isNot(contains('Kyiv')));
+      expect(caption, isNot(contains('Ukraine')));
+      expect(caption, isNot(contains('1990')));
+      expect(caption, isNot(contains('marriage')));
+    },
+  );
+
+  testWidgets(
+    'shows SnackBar when image share could not be presented',
+    (tester) async {
+      final seeded = _seedDemoCalculation();
+      final prefs = await _prefs();
+      final history = FakeHistoryRepository([seeded]);
+      final rectifier = FakeRectificationRepository(history: history);
+      final drafts = InMemoryDraftRepository();
+      // returnsNative: false → simulates the share sheet being unavailable.
+      final shareService = FakeShareService(returnsNative: false);
+      addTearDown(drafts.dispose);
+
+      await tester.pumpWidget(
+        _harness(
+          prefs: prefs,
+          history: history,
+          rectifier: rectifier,
+          drafts: drafts,
+          shareService: shareService,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(MaterialApp)),
+      );
+      container
+          .read(routerProvider)
+          .go(RoutePaths.calcResultFor(seeded.request.id));
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.byKey(resultShareImageButtonKey));
+      await tester.tap(find.byKey(resultShareImageButtonKey));
+      await tester.runAsync(() => _waitForImageShare(shareService));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text("Couldn't open the share sheet for the image."),
+        findsOneWidget,
+      );
     },
   );
 }

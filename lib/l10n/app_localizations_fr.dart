@@ -367,6 +367,21 @@ class AppLocalizationsFr extends AppLocalizations {
   String get resultCopiedToClipboard => 'Copié dans le presse-papiers';
 
   @override
+  String get resultShareImage => 'Partager l\'image';
+
+  @override
+  String get resultShareImageUnavailable =>
+      'Impossible d\'ouvrir le menu de partage pour l\'image.';
+
+  @override
+  String get shareCardTagline => 'Rectification de l\'heure de naissance';
+
+  @override
+  String shareCardConfidence(int percent) {
+    return '$percent% de confiance';
+  }
+
+  @override
   String get resultSaveToHistory => 'Enregistrer dans l\'historique';
 
   @override

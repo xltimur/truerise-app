@@ -361,6 +361,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resultCopiedToClipboard => 'Copied to clipboard';
 
   @override
+  String get resultShareImage => 'Share image';
+
+  @override
+  String get resultShareImageUnavailable =>
+      'Couldn\'t open the share sheet for the image.';
+
+  @override
+  String get shareCardTagline => 'Birth-time rectification';
+
+  @override
+  String shareCardConfidence(int percent) {
+    return '$percent% confidence';
+  }
+
+  @override
   String get resultSaveToHistory => 'Save to history';
 
   @override

@@ -364,6 +364,21 @@ class AppLocalizationsEs extends AppLocalizations {
   String get resultCopiedToClipboard => 'Copiado al portapapeles';
 
   @override
+  String get resultShareImage => 'Compartir imagen';
+
+  @override
+  String get resultShareImageUnavailable =>
+      'No se pudo abrir el menú para compartir la imagen.';
+
+  @override
+  String get shareCardTagline => 'Rectificación de la hora de nacimiento';
+
+  @override
+  String shareCardConfidence(int percent) {
+    return '$percent% de confianza';
+  }
+
+  @override
   String get resultSaveToHistory => 'Guardar en el historial';
 
   @override

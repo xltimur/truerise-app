@@ -451,6 +451,27 @@
   "@resultCopiedToClipboard": {
     "description": "Snackbar shown when the share text was copied to the clipboard instead of opening the native share sheet."
   },
+  "resultShareImage": "Share image",
+  "@resultShareImage": {
+    "description": "Button that shares a privacy-safe image story card of the result."
+  },
+  "resultShareImageUnavailable": "Couldn't open the share sheet for the image.",
+  "@resultShareImageUnavailable": {
+    "description": "Snackbar shown when the native share sheet could not be presented for an image share."
+  },
+  "shareCardTagline": "Birth-time rectification",
+  "@shareCardTagline": {
+    "description": "Short tagline printed at the bottom of the shareable result image card."
+  },
+  "shareCardConfidence": "{percent}% confidence",
+  "@shareCardConfidence": {
+    "description": "Confidence line printed on the shareable result image card, e.g. 78% confidence.",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "resultSaveToHistory": "Save to history",
   "@resultSaveToHistory": {
     "description": "Button that confirms saving the result to history."

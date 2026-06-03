@@ -704,6 +704,30 @@ abstract class AppLocalizations {
   /// **'Copied to clipboard'**
   String get resultCopiedToClipboard;
 
+  /// Button that shares a privacy-safe image story card of the result.
+  ///
+  /// In en, this message translates to:
+  /// **'Share image'**
+  String get resultShareImage;
+
+  /// Snackbar shown when the native share sheet could not be presented for an image share.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open the share sheet for the image.'**
+  String get resultShareImageUnavailable;
+
+  /// Short tagline printed at the bottom of the shareable result image card.
+  ///
+  /// In en, this message translates to:
+  /// **'Birth-time rectification'**
+  String get shareCardTagline;
+
+  /// Confidence line printed on the shareable result image card, e.g. 78% confidence.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% confidence'**
+  String shareCardConfidence(int percent);
+
   /// Button that confirms saving the result to history.
   ///
   /// In en, this message translates to:

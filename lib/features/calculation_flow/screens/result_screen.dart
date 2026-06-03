@@ -8,6 +8,7 @@ import 'package:rectify/app/route_names.dart';
 import 'package:rectify/core/formatting/app_date_format.dart';
 import 'package:rectify/core/sharing/share_copy_builder.dart';
 import 'package:rectify/core/sharing/share_service.dart';
+import 'package:rectify/core/sharing/story_card_renderer.dart';
 import 'package:rectify/data/models/saved_calculation.dart';
 import 'package:rectify/features/calculation_flow/state/result_providers.dart';
 import 'package:rectify/l10n/l10n.dart';
@@ -106,6 +107,11 @@ const Key resultEvidenceButtonKey = ValueKey<String>('result-evidence-button');
 @visibleForTesting
 const Key resultShareButtonKey = ValueKey<String>('result-share-button');
 
+@visibleForTesting
+const Key resultShareImageButtonKey = ValueKey<String>(
+  'result-share-image-button',
+);
+
 class _ResultBody extends ConsumerWidget {
   const _ResultBody({required this.saved});
 
@@ -194,6 +200,8 @@ class _ResultBody extends ConsumerWidget {
           const SizedBox(height: AppSpacing.s3),
           _ShareResultButton(key: resultShareButtonKey, saved: saved),
           const SizedBox(height: AppSpacing.s3),
+          _ShareImageButton(key: resultShareImageButtonKey, saved: saved),
+          const SizedBox(height: AppSpacing.s3),
           _SaveToHistoryButton(saved: saved),
           if (saved.result.isDemo) ...<Widget>[
             const SizedBox(height: AppSpacing.s7),
@@ -226,6 +234,53 @@ class _ShareResultButton extends ConsumerWidget {
         if (!usedNative && context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(l10n.resultCopiedToClipboard)),
+          );
+        }
+      },
+    );
+  }
+}
+
+/// Privacy-safe visual share CTA. Renders a 1080×1920 PNG story card
+/// from the top candidate only via [StoryCardRenderer], then hands the
+/// bytes (plus the same privacy-safe caption as the text share) to
+/// [ShareService.shareImagePng]. The card carries no birth date, birth
+/// city, coordinates, events, or API details. Shows a SnackBar when the
+/// native share sheet could not be presented.
+class _ShareImageButton extends ConsumerWidget {
+  const _ShareImageButton({required this.saved, super.key});
+
+  final SavedCalculation saved;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final settings = ref.watch(settingsControllerProvider);
+    return GhostButton(
+      label: l10n.resultShareImage,
+      onPressed: () async {
+        final svc = ref.read(shareServiceProvider);
+        final top = saved.result.candidates.first;
+        final parts = AppDateFormat.clockParts(top.time, settings.timeFormat);
+        final card = StoryCardData(
+          brand: appBrandName,
+          time: parts.meridiem.isEmpty
+              ? parts.time
+              : '${parts.time} ${parts.meridiem}',
+          ascendant: top.ascendant != null
+              ? l10n.resultRisingSign(top.ascendant!)
+              : null,
+          confidenceLabel: l10n.shareCardConfidence(
+            (top.confidence * 100).round(),
+          ),
+          tagline: l10n.shareCardTagline,
+        );
+        final bytes = await StoryCardRenderer.render(card);
+        final caption = ShareCopyBuilder.build(saved);
+        final usedNative = await svc.shareImagePng(bytes, text: caption);
+        if (!usedNative && context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.resultShareImageUnavailable)),
           );
         }
       },

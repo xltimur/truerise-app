@@ -368,6 +368,21 @@ class AppLocalizationsPt extends AppLocalizations {
   String get resultCopiedToClipboard => 'Copiado para a área de transferência';
 
   @override
+  String get resultShareImage => 'Compartilhar imagem';
+
+  @override
+  String get resultShareImageUnavailable =>
+      'Não foi possível abrir o menu de compartilhamento da imagem.';
+
+  @override
+  String get shareCardTagline => 'Retificação da hora de nascimento';
+
+  @override
+  String shareCardConfidence(int percent) {
+    return '$percent% de confiança';
+  }
+
+  @override
   String get resultSaveToHistory => 'Salvar no histórico';
 
   @override
