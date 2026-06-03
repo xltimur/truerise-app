@@ -4444,3 +4444,64 @@ passed auth — it reached business logic, not 401/403 — so the existing
 - **Limit/quota:** Claude CLI streams became noisy when image inspection emitted
   inline PNG data, so Codex completed file-level documentation and verification
   from the generated artifacts instead of relying on the final Claude prose.
+
+### 2026-06-03 — Publication Readiness Reconciliation (Impl Run E.1)
+
+- **Model:** claude-opus-4-8. **Session id:**
+  `e0bca889-9521-4653-af63-fb56e8f029a1`. No commit, no push by Claude —
+  Codex verifies/commits after this run.
+- **Predecessor:** continues from clean checkpoint `887bdd8` (Run D.4 follow-up,
+  localized screenshot history reorder).
+- **Goal:** produce a current-state, evidence-based publication-readiness
+  reconciliation after the completed A/C/D work, and reconcile the stale status
+  fields in the Run 6 / Run 4 planning docs against the actual repo. Documentation
+  only.
+- **Method:** read-only audit at `887bdd8`. Verified each P0 blocker
+  (`store-submission-readiness.md` §3) and G1-G8/G20/G22
+  (`feature-gap-analysis.md`) directly against source/config: `ios/Runner/Info.plist`
+  (`CFBundleDisplayName=TrueRise`), `android/.../AndroidManifest.xml`
+  (`android:label="TrueRise"`), `android/app/build.gradle.kts` (release still
+  debug-signed), `pubspec.yaml` (real description; `flutter_localizations` +
+  `generate: true`; no `url_launcher`; `.env` still bundled),
+  `lib/l10n/*.arb` (5 locales) + `lib/l10n/l10n.dart` (`appBrandName='TrueRise'`),
+  `lib/features/calculation_flow/screens/birth_data_screen.dart` (18+ gate),
+  `lib/features/settings/privacy_policy_screen.dart` (in-app only; hosted-URL swap
+  still pending), iOS `AppIcon.appiconset` + Android adaptive
+  `mipmap-anydpi-v26/ic_launcher.xml`, and `screenshots/store/{en,de,fr,es,pt-BR}/`.
+- **Findings (what flipped since 2026-06-02):** resolved in-repo — P0-1/G1
+  (display name), P0-6/G6 (18+ age gate), P0-7/G4 (icon), P0-8/G7 (metadata +
+  pubspec desc), P0-9/G8 (raw screenshots EN+Tier1), G20 (l10n pipeline), G22
+  (Tier 1 translations + localized listing/screenshots). Authored with an owner
+  remainder — P0-4/G2 (privacy-policy content; hosting + `url_launcher` pending),
+  P0-5/G3 (Apple/Play form guidance; console entry + legal pending). Unchanged /
+  owner-gated — P0-2 (signing), P0-3 (bundle-ID), P0-10 (category), P0-11
+  (demo-key rotation). Net read: the critical path is now almost entirely
+  owner/secret/legal/console; no standalone owner-independent P0 engineering
+  surface remains (the two small engineering tasks each need an owner input
+  first).
+- **Docs changed (4):** added `docs/publication-readiness-current-status.md`
+  (authoritative current view + per-blocker reconciliation + next-action
+  ordering); added an "Impl Run E.1" reconciliation banner to the top of
+  `docs/store-submission-readiness.md` and `docs/feature-gap-analysis.md`
+  (historical Run 6 / Run 4 prose preserved below each banner, explicitly marked
+  superseded); appended this entry to `docs/claude-build-history.md`.
+- **Verification:** `git diff --check` → clean (no whitespace errors);
+  `git status --short` → only the 4 docs above (3 in `git status`; the 4th is
+  this file); scoped `git status --short -- lib ios android test
+  integration_test pubspec.yaml assets l10n.yaml lib/l10n README.md` → empty.
+  Reconciliation marker "Impl Run E.1" confirmed present in all three readiness
+  docs. **No Flutter tests were run — not required for a documentation-only
+  change** (nothing in `lib/`, `test/`, ARBs, or config changed); the most recent
+  green-test evidence remains Run D.4 localized QA plus the Phase 8 177+1 baseline
+  (`docs/qa-phase8-report.md`, not re-run).
+- **Constraints respected:** documentation only; no app code, tests, ARBs,
+  generated l10n, assets, screenshots, `ios/`, `android/`, `pubspec.yaml`,
+  README, or config modified; no network research; no features implemented; no
+  secrets; no deferred V1.5/P1/P2 scope pulled forward; no commit/push by Claude.
+- **Residual risks / owner follow-ups:** app-icon **visual** not re-rendered
+  (DONE inferred from repo assets + commit `72d6003` + Run A.3); screenshots are
+  raw 6.7" captures needing framing/captions/native review + more device sizes;
+  P0-4/P0-5 docs are preparation guidance, not a submission or legal advice;
+  share text payload remains English-only (Run D.4 caveat); the build is still
+  not submittable until P0-2/3/4/5/10/11 (owner/secret/legal/console) close.
+- **Limit/quota:** none hit; read-only audit run.

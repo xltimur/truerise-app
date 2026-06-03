@@ -2,6 +2,37 @@
 
 **Run 6 · 2026-06-02 · model `claude-opus-4-8` · documentation-only planning run.**
 
+> ## Current status as of 2026-06-03 — Impl Run E.1 (reconciliation)
+>
+> **The body of this document below is the 2026-06-02 (Run 6) baseline and is
+> preserved as historical evidence.** Since then, Impl Runs A.1–A.5, C.1, and
+> D.1–D.4 have landed. The authoritative current readiness view — including a
+> per-blocker reconciliation and the next-action ordering — is
+> **`docs/publication-readiness-current-status.md`**. Status deltas to §3 below:
+>
+> - **Resolved in-repo (supersedes the §3 / §2 "gap / absent / placeholder"
+>   prose):** **P0-1** display name = TrueRise (`Info.plist`,
+>   `AndroidManifest.xml`, `l10n.dart appBrandName`); **P0-6** 18+ age gate
+>   (`birth_data_screen.dart`); **P0-7** app icon (iOS appiconset + Android
+>   adaptive); **P0-8** store metadata (`docs/store-listing-en.md`, real
+>   `pubspec` description); **P0-9** screenshots
+>   (`screenshots/store/{en,de,fr,es,pt-BR}/`, raw).
+> - **Authored, owner remainder:** **P0-4** privacy-policy content
+>   (`docs/privacy-policy.md`) — hosting + `url_launcher` wiring still pending;
+>   **P0-5** Apple/Play forms (`docs/apple-privacy-labels.md`,
+>   `docs/play-data-safety.md`) — console entry + legal sign-off still pending.
+> - **Unchanged / still owner-gated:** **P0-2** release signing (still
+>   debug-signed), **P0-3** bundle-ID decision, **P0-10** category confirm,
+>   **P0-11** demo-key rotation.
+> - **Still true:** the build is **not submittable today** — but the open
+>   blockers are now owner/secret/legal/console items, not engineering artifacts.
+>
+> The §6 ASO drafts are finalized in `docs/store-listing-en.md`; the §7 localized
+> plan is realized in `docs/store-listing-tier1-localized.md` + the localized
+> ARBs/screenshots. Re-read those for the current copy.
+
+---
+
 > **How to read the evidence labels.** Every load-bearing claim is tagged:
 > **[VERIFIED]** = confirmed this run by reading source/config in this repo;
 > **[ASSUMED]** = inherited from a prior run's doc or a reasonable default, not

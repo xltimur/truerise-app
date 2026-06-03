@@ -8,6 +8,36 @@
   (Run 2), `docs/aso-naming-strategy.md` (Run 3), `docs/prd.md`,
   `docs/mvp-scope.md`, `docs/qa-phase8-report.md`, `docs/marketing-research.md`
 
+> ## Current status as of 2026-06-03 - Impl Run E.1 (reconciliation)
+>
+> The body below is the 2026-06-02 (Run 4) baseline, preserved as historical
+> evidence. Several P0 gaps have since been closed by Impl Runs A.1-A.5, C.1,
+> and D.1-D.4. The authoritative current view is
+> `docs/publication-readiness-current-status.md`. Status deltas to the Section 4
+> matrix / Section 5 P0 list / Section 10 table (these SUPERSEDE the "MISSING /
+> UNVERIFIED / BLOCKED / READY (doc)" labels below):
+>
+> - G1 display-name -> TrueRise: DONE [VERIFIED] (A.1) - `Info.plist`,
+>   `AndroidManifest.xml`, `lib/l10n/l10n.dart` `appBrandName='TrueRise'`.
+> - G4 app icon: DONE [VERIFIED] (A.3) - iOS appiconset + Android adaptive icon.
+> - G6 COPPA/age gate: DONE [VERIFIED] (A.1) - 18+ floor in the date picker
+>   (`birth_data_screen.dart`); corrects the Run 4 "UNVERIFIED".
+> - G7 store metadata: DONE (A.4 EN + D.3 localized) - `docs/store-listing-en.md`,
+>   `docs/store-listing-tier1-localized.md`; `pubspec.yaml` description replaced.
+> - G8 store screenshots: DONE, raw (A.5 EN + D.4 localized) -
+>   `screenshots/store/{en,de,fr,es,pt-BR}/`, 5 frames each.
+> - G20 l10n pipeline: DONE [VERIFIED] (C.1) - `flutter_localizations`,
+>   `generate: true`, `l10n.yaml`, `lib/l10n/app_en.arb` + extraction.
+> - G22 translated UI + ASO metadata (de/fr/es/pt-BR): DONE in-repo (D.1/D.3/D.4);
+>   native-speaker review + per-locale console re-count still remain. NOTE: the
+>   shipped share TEXT payload is still English-only
+>   (`share_copy_builder.dart`) - not a blocker, a localized-listing caveat.
+> - Still OPEN / owner-gated: G2 (privacy URL - content authored, hosting +
+>   `url_launcher` wiring pending), G3 (Apple/Play forms authored, console entry
+>   pending), G5 (bundle-id decision + release signing - still debug-signed).
+> - OUT-OF-SCOPE, unchanged: G9 share-card image (V1.5), G13 analytics (P1),
+>   G14 crash reporting (P1), G23 PDF (V1.5), G24 IAP (V1.5).
+
 **Scope discipline.** This run is strategy- and documentation-only. It does not
 edit app code, config, store metadata, assets, screenshots, or localization
 files, and it implements no features. It compares the Run 1-3 growth/ASO strategy
