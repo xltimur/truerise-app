@@ -192,6 +192,8 @@
   "errorMissingApiKeyBody": "Le mode en direct nécessite votre clé API astrology-api.io. Ouvrez les Réglages pour l'ajouter, ou activez le mode démo pour essayer l'application avec des données d'exemple.",
   "errorServerTitle": "Problème du côté du fournisseur",
   "errorServerBody": "Le fournisseur a renvoyé une erreur. Son service traverse peut-être un moment difficile — il vaut la peine de réessayer sous peu.",
+  "errorRateLimitedTitle": "Limite de calculs atteinte",
+  "errorRateLimitedBody": "Vous avez atteint la limite du service de calcul partagé. Patientez un instant et réessayez, activez le mode démo pour continuer à explorer hors ligne, ou ajoutez votre propre clé API dans les Réglages.",
   "errorMalformedTitle": "Impossible de lire la réponse",
   "errorMalformedBody": "La réponse du fournisseur ne correspond pas à ce que cette version attend. Réessayez, ou lancez un calcul de démonstration pendant que nous examinons le problème.",
 

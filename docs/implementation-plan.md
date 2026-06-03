@@ -788,7 +788,7 @@ A `dioProvider` reads `settingsRepositoryProvider` + `secureKeyStoreProvider` an
 | 400 | `AppFailure.badRequest(message)` | Error screen with "Review your birth data" |
 | 401 / 403 | `AppFailure.unauthorized` | Error screen with "Check Settings or try demo" |
 | 408 / timeout | `AppFailure.timeout` | Timeout error screen with retry + save-for-later |
-| 429 | `AppFailure.rateLimited` | Generic error with "Please wait a moment" |
+| 429 | `AppFailure.rateLimited` | Dedicated rate-limit screen ("Calculation limit reached") with retry + demo / own-key alternatives |
 | 5xx | `AppFailure.serverError` | Generic error with retry |
 | No network | `AppFailure.noNetwork` | No-internet screen |
 | Malformed JSON | `AppFailure.malformedResponse` | Generic error |

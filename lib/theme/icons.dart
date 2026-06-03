@@ -27,6 +27,7 @@ abstract final class AppIcons {
   static const IconData errorBadRequest = LucideIcons.circleAlert;
   static const IconData errorUnauthorized = LucideIcons.lock;
   static const IconData errorServer = LucideIcons.serverCrash;
+  static const IconData errorRateLimited = LucideIcons.hourglass;
   static const IconData errorMalformed = LucideIcons.fileWarning;
 
   // Life-event categories (§7.3)

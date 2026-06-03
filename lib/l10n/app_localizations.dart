@@ -1011,7 +1011,7 @@ abstract class AppLocalizations {
   /// **'Couldn\'t delete this entry.'**
   String get historyDeleteFailedSnack;
 
-  /// Primary button on recoverable error screens (timeout, no internet, server, malformed response) that retries the calculation.
+  /// Primary button on recoverable error screens (timeout, no internet, server, rate limit, malformed response) that retries the calculation.
   ///
   /// In en, this message translates to:
   /// **'Try again'**
@@ -1100,6 +1100,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The provider returned an error. Their service may be having a rough moment — it\'s worth another try shortly.'**
   String get errorServerBody;
+
+  /// Title of the rate-limit (HTTP 429) error screen shown when the shared/proxied calculation service is throttled.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculation limit reached'**
+  String get errorRateLimitedTitle;
+
+  /// Body of the rate-limit (HTTP 429) error screen. Offers waiting and retrying, demo mode, or adding a personal API key. 'Demo mode' and 'Settings' match their labels elsewhere in the app.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve reached the limit for the shared calculation service. Wait a little and try again, switch on Demo mode to keep exploring offline, or add your own API key in Settings.'**
+  String get errorRateLimitedBody;
 
   /// Title of the malformed-response error screen.
   ///

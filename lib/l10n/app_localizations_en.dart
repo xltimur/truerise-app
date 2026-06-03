@@ -641,6 +641,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'The provider returned an error. Their service may be having a rough moment — it\'s worth another try shortly.';
 
   @override
+  String get errorRateLimitedTitle => 'Calculation limit reached';
+
+  @override
+  String get errorRateLimitedBody =>
+      'You\'ve reached the limit for the shared calculation service. Wait a little and try again, switch on Demo mode to keep exploring offline, or add your own API key in Settings.';
+
+  @override
   String get errorMalformedTitle => 'Couldn\'t read the response';
 
   @override

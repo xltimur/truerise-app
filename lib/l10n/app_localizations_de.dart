@@ -648,6 +648,13 @@ class AppLocalizationsDe extends AppLocalizations {
       'Der Anbieter hat einen Fehler zurückgegeben. Sein Dienst hat vielleicht gerade Probleme – ein erneuter Versuch in Kürze lohnt sich.';
 
   @override
+  String get errorRateLimitedTitle => 'Berechnungslimit erreicht';
+
+  @override
+  String get errorRateLimitedBody =>
+      'Du hast das Limit des gemeinsam genutzten Berechnungsdienstes erreicht. Warte einen Moment und versuche es erneut, aktiviere den Demo-Modus, um offline weiter zu erkunden, oder füge in den Einstellungen deinen eigenen API-Schlüssel hinzu.';
+
+  @override
   String get errorMalformedTitle => 'Antwort konnte nicht gelesen werden';
 
   @override

@@ -185,6 +185,12 @@ final routerProvider = Provider<GoRouter>((ref) {
             const CalculationErrorScreen(kind: ErrorScreenKind.server),
       ),
       GoRoute(
+        path: RoutePaths.errorRateLimited,
+        name: RouteNames.errorRateLimited,
+        builder: (context, state) =>
+            const CalculationErrorScreen(kind: ErrorScreenKind.rateLimited),
+      ),
+      GoRoute(
         path: RoutePaths.errorMalformed,
         name: RouteNames.errorMalformed,
         builder: (context, state) =>

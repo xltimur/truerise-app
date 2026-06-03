@@ -18,7 +18,7 @@ import 'package:rectify/widgets/feedback/error_scaffold.dart';
 /// Phase 6 error landing screen
 /// (`docs/implementation-plan.md` §11.3 / §14 Phase 6).
 ///
-/// One file backs all six error routes; the [kind] picks copy + icon
+/// One file backs every error route; the [kind] picks copy + icon
 /// and the buttons drive a retry into the calculation flow or a
 /// cancel that drops the user back at history. Retrying preserves the
 /// in-flight draft via [DraftRepository] (in-memory in the MVP — the
@@ -65,6 +65,12 @@ class CalculationErrorScreen extends ConsumerWidget {
         icon: AppIcons.errorServer,
         title: l10n.errorServerTitle,
         description: l10n.errorServerBody,
+        primaryLabel: l10n.errorTryAgain,
+      ),
+      ErrorScreenKind.rateLimited => _ErrorCopy(
+        icon: AppIcons.errorRateLimited,
+        title: l10n.errorRateLimitedTitle,
+        description: l10n.errorRateLimitedBody,
         primaryLabel: l10n.errorTryAgain,
       ),
       ErrorScreenKind.malformed => _ErrorCopy(

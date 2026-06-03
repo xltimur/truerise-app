@@ -192,6 +192,8 @@
   "errorMissingApiKeyBody": "Der Live-Modus benötigt deinen API-Schlüssel von astrology-api.io. Öffne die Einstellungen, um ihn hinzuzufügen, oder aktiviere den Demo-Modus, um die App mit Beispieldaten zu testen.",
   "errorServerTitle": "Problem beim Anbieter",
   "errorServerBody": "Der Anbieter hat einen Fehler zurückgegeben. Sein Dienst hat vielleicht gerade Probleme – ein erneuter Versuch in Kürze lohnt sich.",
+  "errorRateLimitedTitle": "Berechnungslimit erreicht",
+  "errorRateLimitedBody": "Du hast das Limit des gemeinsam genutzten Berechnungsdienstes erreicht. Warte einen Moment und versuche es erneut, aktiviere den Demo-Modus, um offline weiter zu erkunden, oder füge in den Einstellungen deinen eigenen API-Schlüssel hinzu.",
   "errorMalformedTitle": "Antwort konnte nicht gelesen werden",
   "errorMalformedBody": "Die Antwort des Anbieters entsprach nicht dem, was diese Version erwartet. Versuche es erneut oder führe eine Demo-Berechnung durch, während wir uns darum kümmern.",
 

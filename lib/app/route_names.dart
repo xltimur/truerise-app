@@ -39,6 +39,7 @@ abstract final class RouteNames {
   static const String errorUnauthorized = 'error_unauthorized';
   static const String errorMissingApiKey = 'error_missing_api_key';
   static const String errorServer = 'error_server';
+  static const String errorRateLimited = 'error_rate_limited';
   static const String errorMalformed = 'error_malformed';
 }
 
@@ -80,5 +81,6 @@ abstract final class RoutePaths {
   static const String errorUnauthorized = '/error/unauthorized';
   static const String errorMissingApiKey = '/error/missing-api-key';
   static const String errorServer = '/error/server';
+  static const String errorRateLimited = '/error/rate-limited';
   static const String errorMalformed = '/error/malformed';
 }

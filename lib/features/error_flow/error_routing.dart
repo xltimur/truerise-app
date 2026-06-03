@@ -1,7 +1,7 @@
 import 'package:rectify/app/route_names.dart';
 import 'package:rectify/core/failures.dart';
 
-/// Identifies which of the six Phase-6 error screens to render.
+/// Identifies which of the error screens to render.
 ///
 /// Kept as a dedicated enum (rather than reading `runtimeType` at the
 /// route level) so the mapping is exhaustive and the route doesn't
@@ -13,6 +13,7 @@ enum ErrorScreenKind {
   unauthorized,
   missingApiKey,
   server,
+  rateLimited,
   malformed;
 
   String get path => switch (this) {
@@ -22,6 +23,7 @@ enum ErrorScreenKind {
     ErrorScreenKind.unauthorized => RoutePaths.errorUnauthorized,
     ErrorScreenKind.missingApiKey => RoutePaths.errorMissingApiKey,
     ErrorScreenKind.server => RoutePaths.errorServer,
+    ErrorScreenKind.rateLimited => RoutePaths.errorRateLimited,
     ErrorScreenKind.malformed => RoutePaths.errorMalformed,
   };
 }
@@ -29,11 +31,10 @@ enum ErrorScreenKind {
 /// Map an [AppFailure] to the matching error screen
 /// (`docs/implementation-plan.md` §11.3 / §14 Phase 6).
 ///
-/// Unknown / storage / rate-limited / geocoding failures collapse onto
-/// the generic server screen — those paths aren't reachable from the
-/// rectification submission flow in the MVP, but the fall-through
-/// keeps the function total so a future addition can't compile against
-/// a stale switch.
+/// Unknown / storage / geocoding failures collapse onto the generic
+/// server screen — those paths aren't reachable from the rectification
+/// submission flow in the MVP, but the fall-through keeps the function
+/// total so a future addition can't compile against a stale switch.
 ErrorScreenKind errorScreenForFailure(AppFailure failure) {
   return switch (failure) {
     TimeoutFailure() => ErrorScreenKind.timeout,
@@ -45,7 +46,10 @@ ErrorScreenKind errorScreenForFailure(AppFailure failure) {
     // generic "credentials rejected" copy.
     MissingApiKeyFailure() => ErrorScreenKind.missingApiKey,
     ServerFailure() => ErrorScreenKind.server,
-    RateLimitedFailure() => ErrorScreenKind.server,
+    // 429 from the shared proxy/provider — distinct screen so the user
+    // gets honest "you've hit the limit" copy with the demo / own-key
+    // alternatives, rather than the generic "their service is down" one.
+    RateLimitedFailure() => ErrorScreenKind.rateLimited,
     MalformedResponseFailure() => ErrorScreenKind.malformed,
     StorageFailure() => ErrorScreenKind.server,
     GeocodingFailure() => ErrorScreenKind.server,

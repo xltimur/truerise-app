@@ -650,6 +650,13 @@ class AppLocalizationsFr extends AppLocalizations {
       'Le fournisseur a renvoyé une erreur. Son service traverse peut-être un moment difficile — il vaut la peine de réessayer sous peu.';
 
   @override
+  String get errorRateLimitedTitle => 'Limite de calculs atteinte';
+
+  @override
+  String get errorRateLimitedBody =>
+      'Vous avez atteint la limite du service de calcul partagé. Patientez un instant et réessayez, activez le mode démo pour continuer à explorer hors ligne, ou ajoutez votre propre clé API dans les Réglages.';
+
+  @override
   String get errorMalformedTitle => 'Impossible de lire la réponse';
 
   @override

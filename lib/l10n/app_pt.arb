@@ -192,6 +192,8 @@
   "errorMissingApiKeyBody": "O modo ao vivo precisa da sua chave de API do astrology-api.io. Abra as Configurações para adicioná-la ou ative o modo de demonstração para testar o app com dados de exemplo.",
   "errorServerTitle": "Problema no lado do provedor",
   "errorServerBody": "O provedor retornou um erro. O serviço dele pode estar passando por um momento difícil — vale a pena tentar de novo em breve.",
+  "errorRateLimitedTitle": "Limite de cálculos atingido",
+  "errorRateLimitedBody": "Você atingiu o limite do serviço de cálculo compartilhado. Aguarde um momento e tente novamente, ative o modo de demonstração para continuar explorando off-line, ou adicione sua própria chave de API nas Configurações.",
   "errorMalformedTitle": "Não foi possível ler a resposta",
   "errorMalformedBody": "A resposta do provedor não correspondeu ao que esta versão espera. Tente novamente ou faça um cálculo de demonstração enquanto investigamos.",
 

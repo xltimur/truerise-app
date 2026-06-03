@@ -649,6 +649,13 @@ class AppLocalizationsPt extends AppLocalizations {
       'O provedor retornou um erro. O serviço dele pode estar passando por um momento difícil — vale a pena tentar de novo em breve.';
 
   @override
+  String get errorRateLimitedTitle => 'Limite de cálculos atingido';
+
+  @override
+  String get errorRateLimitedBody =>
+      'Você atingiu o limite do serviço de cálculo compartilhado. Aguarde um momento e tente novamente, ative o modo de demonstração para continuar explorando off-line, ou adicione sua própria chave de API nas Configurações.';
+
+  @override
   String get errorMalformedTitle => 'Não foi possível ler a resposta';
 
   @override

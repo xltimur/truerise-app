@@ -4505,3 +4505,46 @@ passed auth — it reached business logic, not 401/403 — so the existing
   share text payload remains English-only (Run D.4 caveat); the build is still
   not submittable until P0-2/3/4/5/10/11 (owner/secret/legal/console) close.
 - **Limit/quota:** none hit; read-only audit run.
+
+### 2026-06-03 — Rate-Limit (HTTP 429) Error UX (Impl Run F.1)
+
+- **Model:** claude-opus-4-8. **Session id:** not captured in this run. Claude
+  committed and pushed after verification (Codex monitors/verifies).
+- **Predecessor:** continues from clean checkpoint `02e8bbc` (revert of the
+  earlier rate-limit error screen experiment).
+- **Goal:** give `RateLimitedFailure` (HTTP 429 from the shared proxy/provider) a
+  dedicated, localized error screen instead of collapsing onto the generic server
+  screen. No client-side quota counter, no device fingerprint, no
+  RevenueCat/IAP/Supabase — the limit stays server/proxy-side and the app only
+  reacts to 429.
+- **Artifacts changed (code):** `lib/features/error_flow/error_routing.dart`
+  (new `ErrorScreenKind.rateLimited`; `RateLimitedFailure` maps to it),
+  `lib/app/route_names.dart` (`errorRateLimited` name + `/error/rate-limited`
+  path), `lib/app/router.dart` (route registration),
+  `lib/features/error_flow/error_screen.dart` (copy case; reuses the existing
+  "Try again" retry CTA and draft-preserving retry path),
+  `lib/theme/icons.dart` (`errorRateLimited = LucideIcons.hourglass`).
+- **Artifacts changed (l10n):** added `errorRateLimitedTitle` /
+  `errorRateLimitedBody` to all five ARBs (en/de/fr/es/pt); regenerated
+  `lib/l10n/app_localizations*.dart` via `flutter gen-l10n` (no hand-edits to
+  generated files).
+- **Artifacts changed (tests/docs):**
+  `test/widget/features/error_flow/error_routing_test.dart` (mapping + navigation
+  now expect `/error/rate-limited`); `docs/implementation-plan.md` §9.6 429 row
+  updated from "Generic error" to the dedicated screen; this entry.
+- **Method:** TDD — updated the routing test to expect the new route, watched it
+  fail (`/error/server` ≠ `/error/rate-limited`), then implemented to green.
+- **Verification:** `flutter gen-l10n` → ok; `dart format` (6 changed files) →
+  0 changed; `flutter analyze` → No issues found; focused
+  `error_routing_test.dart` + `rectification_api_test.dart` → pass; full
+  `flutter test` → 263 passed; `git diff --check` → clean; `git status` captured
+  before/after commit.
+- **Constraints respected:** no client usage counter; no per-device identifier;
+  no subscriptions/paywall/IAP/RevenueCat/Supabase/backend; demo mode untouched
+  and still offline; no API host changes beyond existing dart-define config; no
+  broad refactor; no secrets.
+- **Residual risks / owner follow-ups:** copy is engineer-drafted — native review
+  of the de/fr/es/pt rate-limit strings is still recommended before store upload;
+  429 `Retry-After` is not parsed, so the same screen is shown for a short rate
+  limit and a daily quota (by design — no client-side counter).
+- **Limit/quota:** none hit.
