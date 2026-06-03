@@ -190,6 +190,8 @@
   "errorUnauthorizedBody": "El proveedor no aceptó la clave de API en este dispositivo. Abre Ajustes para introducir una clave nueva o activa el modo demo.",
   "errorMissingApiKeyTitle": "Se requiere clave de API",
   "errorMissingApiKeyBody": "El modo en vivo necesita tu clave de API de astrology-api.io. Abre Ajustes para añadirla, o activa el modo demo para probar la app con datos de muestra.",
+  "errorRateLimitedTitle": "Límite diario de cálculos en vivo alcanzado",
+  "errorRateLimitedBody": "Se alcanzó el límite de cálculos en vivo de hoy. Inténtalo de nuevo más tarde o activa el modo demo para obtener un resultado de ejemplo sin conexión.",
   "errorServerTitle": "Problema del proveedor en su lado",
   "errorServerBody": "El proveedor devolvió un error. Su servicio puede estar pasando un mal momento; vale la pena intentarlo de nuevo en breve.",
   "errorMalformedTitle": "No se pudo leer la respuesta",

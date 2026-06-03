@@ -641,6 +641,14 @@ class AppLocalizationsDe extends AppLocalizations {
       'Der Live-Modus benötigt deinen API-Schlüssel von astrology-api.io. Öffne die Einstellungen, um ihn hinzuzufügen, oder aktiviere den Demo-Modus, um die App mit Beispieldaten zu testen.';
 
   @override
+  String get errorRateLimitedTitle =>
+      'Tageslimit für Live-Berechnungen erreicht';
+
+  @override
+  String get errorRateLimitedBody =>
+      'Das Limit für Live-Berechnungen ist für heute erreicht. Versuche es später erneut oder aktiviere den Demo-Modus für ein Offline-Beispielergebnis.';
+
+  @override
   String get errorServerTitle => 'Problem beim Anbieter';
 
   @override

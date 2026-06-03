@@ -12,6 +12,7 @@ enum ErrorScreenKind {
   badRequest,
   unauthorized,
   missingApiKey,
+  rateLimited,
   server,
   malformed;
 
@@ -21,6 +22,7 @@ enum ErrorScreenKind {
     ErrorScreenKind.badRequest => RoutePaths.errorBadRequest,
     ErrorScreenKind.unauthorized => RoutePaths.errorUnauthorized,
     ErrorScreenKind.missingApiKey => RoutePaths.errorMissingApiKey,
+    ErrorScreenKind.rateLimited => RoutePaths.errorRateLimited,
     ErrorScreenKind.server => RoutePaths.errorServer,
     ErrorScreenKind.malformed => RoutePaths.errorMalformed,
   };
@@ -29,11 +31,9 @@ enum ErrorScreenKind {
 /// Map an [AppFailure] to the matching error screen
 /// (`docs/implementation-plan.md` §11.3 / §14 Phase 6).
 ///
-/// Unknown / storage / rate-limited / geocoding failures collapse onto
-/// the generic server screen — those paths aren't reachable from the
-/// rectification submission flow in the MVP, but the fall-through
-/// keeps the function total so a future addition can't compile against
-/// a stale switch.
+/// Unknown / storage / geocoding failures collapse onto the generic
+/// server screen, while provider/proxy quota errors get a dedicated
+/// rate-limit screen so users do not retry a request that cannot run yet.
 ErrorScreenKind errorScreenForFailure(AppFailure failure) {
   return switch (failure) {
     TimeoutFailure() => ErrorScreenKind.timeout,
@@ -45,7 +45,7 @@ ErrorScreenKind errorScreenForFailure(AppFailure failure) {
     // generic "credentials rejected" copy.
     MissingApiKeyFailure() => ErrorScreenKind.missingApiKey,
     ServerFailure() => ErrorScreenKind.server,
-    RateLimitedFailure() => ErrorScreenKind.server,
+    RateLimitedFailure() => ErrorScreenKind.rateLimited,
     MalformedResponseFailure() => ErrorScreenKind.malformed,
     StorageFailure() => ErrorScreenKind.server,
     GeocodingFailure() => ErrorScreenKind.server,

@@ -190,6 +190,8 @@
   "errorUnauthorizedBody": "Le fournisseur n'a pas accepté la clé API sur cet appareil. Ouvrez les Réglages pour saisir une nouvelle clé, ou activez le mode démo.",
   "errorMissingApiKeyTitle": "Clé API requise",
   "errorMissingApiKeyBody": "Le mode en direct nécessite votre clé API astrology-api.io. Ouvrez les Réglages pour l'ajouter, ou activez le mode démo pour essayer l'application avec des données d'exemple.",
+  "errorRateLimitedTitle": "Limite quotidienne des calculs en direct atteinte",
+  "errorRateLimitedBody": "La limite des calculs en direct est atteinte pour aujourd'hui. Réessayez plus tard, ou activez le mode démo pour obtenir un résultat d'exemple hors ligne.",
   "errorServerTitle": "Problème du côté du fournisseur",
   "errorServerBody": "Le fournisseur a renvoyé une erreur. Son service traverse peut-être un moment difficile — il vaut la peine de réessayer sous peu.",
   "errorMalformedTitle": "Impossible de lire la réponse",

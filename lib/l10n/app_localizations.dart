@@ -1089,6 +1089,18 @@ abstract class AppLocalizations {
   /// **'Live mode needs your astrology-api.io API key. Open Settings to add it, or switch on Demo mode to try the app with sample data.'**
   String get errorMissingApiKeyBody;
 
+  /// Title of the rate-limit error screen shown when the server/proxy returns HTTP 429.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily live limit reached'**
+  String get errorRateLimitedTitle;
+
+  /// Body of the rate-limit error screen. The limit is enforced by the server/proxy, not by client-side counting.
+  ///
+  /// In en, this message translates to:
+  /// **'The live calculation limit for today has been reached. Please try again later, or switch to Demo mode for an offline sample result.'**
+  String get errorRateLimitedBody;
+
   /// Title of the server (5xx) error screen.
   ///
   /// In en, this message translates to:

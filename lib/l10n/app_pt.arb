@@ -190,6 +190,8 @@
   "errorUnauthorizedBody": "O provedor não aceitou a chave de API neste dispositivo. Abra as Configurações para inserir uma nova chave ou ative o modo de demonstração.",
   "errorMissingApiKeyTitle": "Chave de API necessária",
   "errorMissingApiKeyBody": "O modo ao vivo precisa da sua chave de API do astrology-api.io. Abra as Configurações para adicioná-la ou ative o modo de demonstração para testar o app com dados de exemplo.",
+  "errorRateLimitedTitle": "Limite diário de cálculos ao vivo atingido",
+  "errorRateLimitedBody": "O limite de cálculos ao vivo de hoje foi atingido. Tente novamente mais tarde ou ative o modo de demonstração para ver um resultado de exemplo off-line.",
   "errorServerTitle": "Problema no lado do provedor",
   "errorServerBody": "O provedor retornou um erro. O serviço dele pode estar passando por um momento difícil — vale a pena tentar de novo em breve.",
   "errorMalformedTitle": "Não foi possível ler a resposta",

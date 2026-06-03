@@ -179,6 +179,12 @@ final routerProvider = Provider<GoRouter>((ref) {
             const CalculationErrorScreen(kind: ErrorScreenKind.missingApiKey),
       ),
       GoRoute(
+        path: RoutePaths.errorRateLimited,
+        name: RouteNames.errorRateLimited,
+        builder: (context, state) =>
+            const CalculationErrorScreen(kind: ErrorScreenKind.rateLimited),
+      ),
+      GoRoute(
         path: RoutePaths.errorServer,
         name: RouteNames.errorServer,
         builder: (context, state) =>
