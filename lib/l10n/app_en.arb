@@ -497,6 +497,29 @@
     "description": "Button in the demo nudge that starts a new calculation flow."
   },
 
+  "reviewPromptTitle": "Review {brand}?",
+  "@reviewPromptTitle": {
+    "description": "Title of the optional, neutral in-app review invitation shown after the user successfully shares a result. {brand} is the product name, held constant across locales. Compliance: must stay neutral — no star count, no reward, no pressure, and no 'are you happy?' sentiment question that would gate who reaches the store.",
+    "placeholders": {
+      "brand": { "type": "String", "example": "TrueRise" }
+    }
+  },
+  "reviewPromptBody": "If {brand} has been useful, an honest review helps other people decide whether to try it. It only takes a moment, and it's completely optional.",
+  "@reviewPromptBody": {
+    "description": "Body of the in-app review invitation. Compliance: asks only for an honest review; never requests a specific rating or star count, never offers an incentive, and never implies any feature is gated behind reviewing.",
+    "placeholders": {
+      "brand": { "type": "String", "example": "TrueRise" }
+    }
+  },
+  "reviewPromptConfirm": "Leave a review",
+  "@reviewPromptConfirm": {
+    "description": "Neutral confirm action on the review invitation; hands off to the OS-owned review flow. Compliance: no star or rating-value wording."
+  },
+  "reviewPromptDismiss": "Not now",
+  "@reviewPromptDismiss": {
+    "description": "Neutral dismiss action on the review invitation. Declining simply closes the dialog — nothing is gated and no consolation feedback form is shown (no sentiment routing)."
+  },
+
   "evidenceTitle": "Evidence",
   "@evidenceTitle": {
     "description": "Top-navigation title of the evidence breakdown screen."

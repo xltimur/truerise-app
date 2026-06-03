@@ -764,6 +764,30 @@ abstract class AppLocalizations {
   /// **'Start a new calculation'**
   String get resultStartNewCalculation;
 
+  /// Title of the optional, neutral in-app review invitation shown after the user successfully shares a result. {brand} is the product name, held constant across locales. Compliance: must stay neutral — no star count, no reward, no pressure, and no 'are you happy?' sentiment question that would gate who reaches the store.
+  ///
+  /// In en, this message translates to:
+  /// **'Review {brand}?'**
+  String reviewPromptTitle(String brand);
+
+  /// Body of the in-app review invitation. Compliance: asks only for an honest review; never requests a specific rating or star count, never offers an incentive, and never implies any feature is gated behind reviewing.
+  ///
+  /// In en, this message translates to:
+  /// **'If {brand} has been useful, an honest review helps other people decide whether to try it. It only takes a moment, and it\'s completely optional.'**
+  String reviewPromptBody(String brand);
+
+  /// Neutral confirm action on the review invitation; hands off to the OS-owned review flow. Compliance: no star or rating-value wording.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave a review'**
+  String get reviewPromptConfirm;
+
+  /// Neutral dismiss action on the review invitation. Declining simply closes the dialog — nothing is gated and no consolation feedback form is shown (no sentiment routing).
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get reviewPromptDismiss;
+
   /// Top-navigation title of the evidence breakdown screen.
   ///
   /// In en, this message translates to:

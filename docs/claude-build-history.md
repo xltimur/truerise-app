@@ -4636,3 +4636,66 @@ passed auth — it reached business logic, not 401/403 — so the existing
   superseded API-key-sheet prose (flagged by the new reconciliation bullet, not
   excised, to preserve the historical-evidence record).
 - **Limit/quota:** none hit.
+
+### 2026-06-03 — Compliant In-App Review Prompt (Impl Run S2)
+
+- **Model:** claude-opus-4-8. **Session id:** not captured in this run. Claude
+  committed locally after verification; no push (per task).
+- **Predecessor:** continues from `81ab747` (S1 privacy-safe result image
+  sharing); worktree clean at start.
+- **Scope note / deferral reconciliation:** `docs/mvp-scope.md` (line 154) and
+  `docs/implementation-plan.md` (§1, line 45) list an in-app review prompt as
+  *post-MVP* ("add after 30-day stability period"). It is implemented now under
+  an explicit, detailed task instruction and is consistent with the post-MVP
+  growth phase that S1 (sharing — itself a deferred growth lever) opened. It is
+  not in CLAUDE.md's hard no-go list (payments/IAP/paywalls/accounts/sync/etc.).
+  No scope docs were rewritten.
+- **Goal:** invite an *honest* rating/review at a genuine positive moment, fully
+  App Store / Play compliant — never asks for 5 stars, never incentivizes, never
+  gates functionality, never branches on the rating value (the OS owns the rating
+  UI and returns nothing).
+- **Artifacts changed (code):** new `lib/core/reviews/review_service.dart`
+  (`ReviewService` abstraction + `InAppReviewService` over the `in_app_review`
+  plugin, `MissingPluginException`/`PlatformException`-guarded, + provider); new
+  `lib/data/prefs/review_prompt_store.dart` (single `review.last_prompt_at_ms`
+  throttle key; own namespace so a Settings data-wipe does not reset it); new
+  `lib/features/reviews/review_prompt_controller.dart` (pure `ReviewPolicy`
+  eligibility with injected clock + 120-day cooldown, UI-free
+  `ReviewPromptController`, providers); new
+  `lib/features/reviews/review_invitation.dart` (neutral, non-sentiment-gating
+  pre-prompt dialog + `maybeInviteReview` orchestration); wired into
+  `lib/features/calculation_flow/screens/result_screen.dart` after a *successful
+  native* text/image share only (never the clipboard fallback). `pubspec.yaml` +
+  `pubspec.lock` (add `in_app_review: ^2.0.12`, pulls `url_launcher`).
+- **Artifacts changed (l10n):** added `reviewPromptTitle` / `reviewPromptBody` /
+  `reviewPromptConfirm` / `reviewPromptDismiss` to all five ARBs
+  (en/de/es/fr/pt); regenerated `lib/l10n/app_localizations*.dart` via
+  `flutter gen-l10n` (no hand-edits to generated files).
+- **Artifacts changed (tests):** `test/helpers/fake_review_service.dart`;
+  `test/unit/reviews/review_policy_test.dart`;
+  `test/data/prefs/review_prompt_store_test.dart`;
+  `test/unit/reviews/review_prompt_controller_test.dart`;
+  `test/unit/reviews/review_strings_compliance_test.dart` (scans all ARBs for
+  5-star / rating-bait wording);
+  `test/widget/features/calculation_flow/result_review_prompt_test.dart`
+  (invite shown + native flow reached when eligible; not shown after the
+  clipboard fallback; not shown within cooldown; decline consumes cooldown;
+  image share also invites).
+- **Method:** abstraction-first with focused unit + widget tests; verified the
+  real `in_app_review` 2.0.12 API (`isAvailable`/`requestReview`) by inspecting
+  the resolved package.
+- **Verification:** `flutter gen-l10n` → ok; `dart format` → clean;
+  `flutter analyze lib test` → No issues found; focused review tests + the
+  existing `result_share_test.dart` → 32 passed (no regression); full
+  `flutter test` → 291 passed. Integration test (`integration_test/`) not run —
+  needs a device/simulator.
+- **Constraints respected:** narrow scope (no referrals/invites/IG integration/
+  analytics/accounts/paywalls/push/growth docs); existing architecture and test
+  style preserved; demo mode still makes no app network calls (the review flow is
+  an OS capability via platform channel, like S1's share sheet); no secrets.
+- **Residual risks / owner follow-ups:** review copy (de/es/fr/pt) is
+  engineer-drafted and wants a native-speaker pass; the native flow may legitimately
+  show nothing (OS quota) — there is no store-listing fallback because the app has
+  no published App Store ID yet; throttle is per-install (no cross-device/backend
+  state, by design).
+- **Limit/quota:** none hit.

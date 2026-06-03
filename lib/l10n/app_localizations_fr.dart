@@ -401,6 +401,22 @@ class AppLocalizationsFr extends AppLocalizations {
   String get resultStartNewCalculation => 'Démarrer un nouveau calcul';
 
   @override
+  String reviewPromptTitle(String brand) {
+    return 'Évaluer $brand ?';
+  }
+
+  @override
+  String reviewPromptBody(String brand) {
+    return 'Si $brand vous a été utile, un avis honnête aide d\'autres personnes à décider de l\'essayer. Cela ne prend qu\'un instant et c\'est entièrement facultatif.';
+  }
+
+  @override
+  String get reviewPromptConfirm => 'Laisser un avis';
+
+  @override
+  String get reviewPromptDismiss => 'Pas maintenant';
+
+  @override
   String get evidenceTitle => 'Indices';
 
   @override

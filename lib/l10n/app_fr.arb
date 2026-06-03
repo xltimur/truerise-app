@@ -122,6 +122,11 @@
   "resultDemoNudgeBody": "Lancez un calcul réel avec vos propres données de naissance.",
   "resultStartNewCalculation": "Démarrer un nouveau calcul",
 
+  "reviewPromptTitle": "Évaluer {brand} ?",
+  "reviewPromptBody": "Si {brand} vous a été utile, un avis honnête aide d'autres personnes à décider de l'essayer. Cela ne prend qu'un instant et c'est entièrement facultatif.",
+  "reviewPromptConfirm": "Laisser un avis",
+  "reviewPromptDismiss": "Pas maintenant",
+
   "evidenceTitle": "Indices",
   "evidenceNotFoundTitle": "Nous n'avons pas trouvé ces indices.",
   "evidenceNotFoundBody": "Le résultat associé a peut-être été supprimé. Revenez à votre historique pour choisir un autre calcul.",

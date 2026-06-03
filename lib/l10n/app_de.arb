@@ -122,6 +122,11 @@
   "resultDemoNudgeBody": "Führe eine echte Berechnung mit deinen eigenen Geburtsdaten durch.",
   "resultStartNewCalculation": "Neue Berechnung starten",
 
+  "reviewPromptTitle": "{brand} bewerten?",
+  "reviewPromptBody": "Wenn dir {brand} geholfen hat, hilft eine ehrliche Bewertung anderen bei der Entscheidung, ob sie es ausprobieren. Es dauert nur einen Moment und ist völlig freiwillig.",
+  "reviewPromptConfirm": "Bewertung abgeben",
+  "reviewPromptDismiss": "Jetzt nicht",
+
   "evidenceTitle": "Hinweise",
   "evidenceNotFoundTitle": "Wir konnten diese Hinweise nicht finden.",
   "evidenceNotFoundBody": "Das zugrunde liegende Ergebnis wurde möglicherweise gelöscht. Kehre zu deinem Verlauf zurück, um eine andere Berechnung auszuwählen.",

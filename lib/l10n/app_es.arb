@@ -122,6 +122,11 @@
   "resultDemoNudgeBody": "Ejecuta un cálculo real con tus propios datos de nacimiento.",
   "resultStartNewCalculation": "Iniciar un nuevo cálculo",
 
+  "reviewPromptTitle": "¿Reseñar {brand}?",
+  "reviewPromptBody": "Si {brand} te ha resultado útil, una reseña honesta ayuda a otras personas a decidir si probarlo. Solo lleva un momento y es totalmente opcional.",
+  "reviewPromptConfirm": "Escribir una reseña",
+  "reviewPromptDismiss": "Ahora no",
+
   "evidenceTitle": "Indicios",
   "evidenceNotFoundTitle": "No pudimos encontrar esos indicios.",
   "evidenceNotFoundBody": "Es posible que el resultado original se haya eliminado. Vuelve a tu historial para elegir otro cálculo.",

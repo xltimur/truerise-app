@@ -11,6 +11,7 @@ import 'package:rectify/core/sharing/share_service.dart';
 import 'package:rectify/core/sharing/story_card_renderer.dart';
 import 'package:rectify/data/models/saved_calculation.dart';
 import 'package:rectify/features/calculation_flow/state/result_providers.dart';
+import 'package:rectify/features/reviews/review_invitation.dart';
 import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/providers/settings_controller.dart';
 import 'package:rectify/theme/colors.dart';
@@ -231,7 +232,14 @@ class _ShareResultButton extends ConsumerWidget {
         final svc = ref.read(shareServiceProvider);
         final text = ShareCopyBuilder.build(saved);
         final usedNative = await svc.share(text);
-        if (!usedNative && context.mounted) {
+        if (!context.mounted) return;
+        if (usedNative) {
+          // Positive moment: the user just shared a result through the
+          // native sheet. Invite an (optional, throttled, OS-governed)
+          // review. Deliberately not triggered on the clipboard fallback
+          // below — a fallback is a degraded experience, not a win.
+          await maybeInviteReview(context, ref);
+        } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(l10n.resultCopiedToClipboard)),
           );
@@ -278,7 +286,11 @@ class _ShareImageButton extends ConsumerWidget {
         final bytes = await StoryCardRenderer.render(card);
         final caption = ShareCopyBuilder.build(saved);
         final usedNative = await svc.shareImagePng(bytes, text: caption);
-        if (!usedNative && context.mounted) {
+        if (!context.mounted) return;
+        if (usedNative) {
+          // Positive moment after a successful native image share.
+          await maybeInviteReview(context, ref);
+        } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(l10n.resultShareImageUnavailable)),
           );
