@@ -4309,3 +4309,75 @@ passed auth — it reached business logic, not 401/403 — so the existing
   still warrants a manual pass. (4) Translations remain `[PROPOSED]` pending
   native-speaker review (carried over from D.1).
 - **Limit/quota:** none hit.
+
+### 2026-06-03 — Tier 1 Localized Store Metadata Drafts: de / fr / es / pt-BR (Impl Run D.3)
+
+- **Model:** claude-opus-4-8. **Session id:**
+  `e51e703d-9c09-418e-911c-aa5df666f78e`.
+- **Predecessor:** continues from clean checkpoint `b740082` (Run D.2, localized
+  layout/overflow QA). Documentation only — no commit, no push.
+- **Goal:** produce a ready-to-review localized **store-metadata** package for
+  the four Tier 1 locales (de/fr/es/pt-BR), parallel to the English Tier 0
+  listing (`docs/store-listing-en.md`). Drafts only — every string is
+  `[PROPOSED]` and gated on native-speaker review before any console entry.
+- **Scope guard:** documentation only. No app code, ARB translations, ios/
+  android config, assets, screenshots, pubspec, tests, README, or privacy/data-
+  safety docs, and no generated files were touched. No secrets. Brand token
+  "TrueRise" kept verbatim in every locale; only descriptors localized.
+- **What changed:** created `docs/store-listing-tier1-localized.md` — a single
+  source covering, per locale: App Store package (app name ≤30, subtitle +
+  alternative ≤30, promotional text ≤170, full description, iOS keyword field
+  ≤100 with no comma-spaces, reviewer note) and Google Play package (title ≤30,
+  short description ≤80, full description ≤4000, category/tags, search-phrase
+  mapping, reviewer note); plus shared English canonical reviewer notes with
+  optional localized one-liners, a screenshot-caption localization plan (4
+  captions × 4 locales, no images produced), per-locale ASO query mapping
+  (compete/stretch/reach-only lanes, avoided fortune-telling terms), per-locale
+  owner/native-review checklists, a status/gates header, and a character-count
+  summary table.
+- **Terminology discipline:** honest-confidence wording per
+  `docs/l10n-strategy.md` §7/§8 — confidence renders as Wahrscheinlichkeit /
+  niveau de confiance / nivel de confianza / nível de confiança; evidence as
+  Hinweise / indices / indicios / indícios (never Beweise/preuve/pruebas/
+  provas). No horoscope/zodiac/fortune lexicon in any visible field; astrology
+  appears only as the method (transits/progressions). pt-BR uses horário /
+  compartilhar; es uses inverted ¿¡; de uses informal du.
+- **pt-BR app-name constraint:** the high-intent `TrueRise: Horário de
+  nascimento` is 31 chars (over the 30 limit) and is documented as the rejected
+  alternative; primary name uses `TrueRise: Horário natal` (23), with the full
+  "horário de nascimento" phrase carried in the subtitle / short description /
+  full description where no hard limit applies.
+- **Artifacts changed in this run:**
+  - `docs/store-listing-tier1-localized.md` (new) — the localized metadata
+    package.
+  - this `docs/claude-build-history.md` Run D.3 entry.
+- **Verification:** a throwaway counter (run from `/tmp`, **not** committed, to
+  keep the working tree doc-only) NFC-normalizes and counts code points for all
+  34 hard-limited fields — every published field is within limit (full
+  descriptions de 2376 / fr 2534 / es 2299 / pt-BR 2397 of 4000; all names ≤28;
+  all subtitles ≤29; promos ≤164; keyword fields ≤89), the one over-limit string
+  (pt-BR 31-char name) is flagged and documented as rejected, and no keyword
+  field contains a comma-space. With the doc present, the script also asserts
+  every counted string appears in it **verbatim** (in-doc = yes for all 34),
+  proving the published counts belong to the published strings. Grep checks: no
+  "guarantee/#1/best/top-rated" marketing claims (only the two honest "not
+  guaranteed" disclaimers); proof/certainty words appear only in negations and
+  terminology-guidance rows; "TrueRise" intact 32× with no broken/localized
+  variant; `[PROPOSED]` and native-review markers present. `git status` shows
+  only the two intended docs; `git diff --check` → clean (exit 0).
+- **Constraints respected:** documentation only; no commit, no push; no deferred
+  MVP scope implied (no payments/IAP/paywall/accounts/sync/charts/dark-mode/
+  export, and no share-card image — text share only); no deterministic,
+  predictive, medical, legal, or financial claims; no secrets in source/logs/
+  ARB/generated/docs; brand token kept English.
+- **Residual risk / open items:** (1) all copy is `[PROPOSED]` machine drafts —
+  native-speaker review is mandatory before publishing, German hardest (Run 2
+  W2 credibility bar). (2) Owner gates still open: legal/privacy review of the
+  localized privacy sentences, console re-count (consoles are authoritative; the
+  script is a portable proxy), trademark/store-name availability per market,
+  hosted localized privacy/support URLs, and final iOS/Play category + 18+
+  age-rating decisions. (3) Screenshot captions are drafted, not produced — they
+  need the same native review and must be baked into a future capture run. (4)
+  fr/es/pt-BR keyword fields have spare characters; if a reviewer adds long-tail
+  terms, re-count in-console.
+- **Limit/quota:** none hit.
