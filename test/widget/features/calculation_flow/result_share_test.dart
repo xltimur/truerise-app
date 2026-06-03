@@ -19,6 +19,7 @@ import 'package:rectify/providers/core_providers.dart';
 import 'package:rectify/providers/repo_providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../helpers/demo_fixtures.dart';
 import '../../../helpers/fake_history_repository.dart';
 import '../../../helpers/fake_rectification_repository.dart';
 import '../../../helpers/fake_share_service.dart';
@@ -75,7 +76,11 @@ SavedCalculation _seedDemoCalculation({String id = 'share-demo-1'}) {
     createdAt: DateTime.utc(2026, 5, 22, 10),
     label: 'Share test calc',
   );
-  final result = buildDemoResult(request, now: DateTime.utc(2026, 5, 22, 10));
+  final result = buildDemoResult(
+    request,
+    now: DateTime.utc(2026, 5, 22, 10),
+    copy: testDemoEvidenceCopy,
+  );
   return SavedCalculation(request: request, result: result);
 }
 

@@ -21,6 +21,7 @@ import 'package:rectify/widgets/chips/demo_pill.dart';
 import 'package:rectify/widgets/result/hero_result_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../helpers/demo_fixtures.dart';
 import '../../../helpers/fake_history_repository.dart';
 import '../../../helpers/fake_rectification_repository.dart';
 
@@ -91,7 +92,11 @@ SavedCalculation _seedDemoCalculation({
     createdAt: DateTime.utc(2026, 5, 20, 12),
     label: label,
   );
-  final result = buildDemoResult(request, now: DateTime.utc(2026, 5, 20, 12));
+  final result = buildDemoResult(
+    request,
+    now: DateTime.utc(2026, 5, 20, 12),
+    copy: testDemoEvidenceCopy,
+  );
   return SavedCalculation(request: request, result: result);
 }
 

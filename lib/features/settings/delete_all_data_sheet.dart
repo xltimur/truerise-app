@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:rectify/features/home/history_providers.dart';
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/providers/settings_controller.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/radius.dart';
@@ -42,12 +43,13 @@ class _DeleteAllDataSheetState extends ConsumerState<DeleteAllDataSheet> {
     setState(() => _busy = true);
     final notifier = ref.read(settingsControllerProvider.notifier);
     final messenger = ScaffoldMessenger.of(context);
+    final l10n = context.l10n;
     final outcome = await notifier.deleteAllData();
     if (!mounted) return;
     Navigator.of(context).pop();
     if (outcome.isErr) {
       messenger.showSnackBar(
-        const SnackBar(content: Text("Couldn't delete data. Try again.")),
+        SnackBar(content: Text(l10n.deleteAllFailedSnack)),
       );
     }
     // Success: router will redirect to /onboarding once onboardingDone
@@ -57,16 +59,15 @@ class _DeleteAllDataSheetState extends ConsumerState<DeleteAllDataSheet> {
   @override
   Widget build(BuildContext context) {
     final historyAsync = ref.watch(historyStreamProvider);
+    final l10n = context.l10n;
     final count = historyAsync.maybeWhen(
       data: (items) => items.length,
       orElse: () => null,
     );
 
     final copy = count == null
-        ? 'This will permanently delete every calculation, event, and '
-              'setting on this device. Cannot be undone.'
-        : 'This will permanently delete ${_pluralize(count)} and every '
-              'saved event and setting on this device. Cannot be undone.';
+        ? l10n.deleteAllBodyGeneric
+        : l10n.deleteAllBodyCount(count);
 
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(top: AppRadius.lg),
@@ -100,7 +101,7 @@ class _DeleteAllDataSheetState extends ConsumerState<DeleteAllDataSheet> {
                 ),
                 const SizedBox(height: AppSpacing.s4),
                 Text(
-                  'Delete all data?',
+                  l10n.deleteAllTitle,
                   style: AppTypography.titleMd,
                 ),
                 const SizedBox(height: AppSpacing.s2),
@@ -112,12 +113,12 @@ class _DeleteAllDataSheetState extends ConsumerState<DeleteAllDataSheet> {
                 ),
                 const SizedBox(height: AppSpacing.s5),
                 DestructiveButton(
-                  label: 'Delete',
+                  label: l10n.commonDelete,
                   onPressed: _busy ? null : _confirm,
                 ),
                 const SizedBox(height: AppSpacing.s3),
                 SecondaryButton(
-                  label: 'Cancel',
+                  label: l10n.commonCancel,
                   onPressed: _busy ? null : () => Navigator.of(context).pop(),
                 ),
               ],
@@ -127,7 +128,4 @@ class _DeleteAllDataSheetState extends ConsumerState<DeleteAllDataSheet> {
       ),
     );
   }
-
-  String _pluralize(int count) =>
-      count == 1 ? '1 calculation' : '$count calculations';
 }

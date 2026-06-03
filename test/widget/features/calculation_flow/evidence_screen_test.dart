@@ -21,6 +21,7 @@ import 'package:rectify/widgets/cards/evidence_card.dart';
 import 'package:rectify/widgets/result/match_strength_dots.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../helpers/demo_fixtures.dart';
 import '../../../helpers/fake_history_repository.dart';
 import '../../../helpers/fake_rectification_repository.dart';
 
@@ -88,7 +89,11 @@ SavedCalculation _seedDemoCalculation({String id = 'demo-evidence-1'}) {
     createdAt: DateTime.utc(2026, 5, 20, 12),
     label: 'Demo result',
   );
-  final result = buildDemoResult(request, now: DateTime.utc(2026, 5, 20, 12));
+  final result = buildDemoResult(
+    request,
+    now: DateTime.utc(2026, 5, 20, 12),
+    copy: testDemoEvidenceCopy,
+  );
   return SavedCalculation(request: request, result: result);
 }
 

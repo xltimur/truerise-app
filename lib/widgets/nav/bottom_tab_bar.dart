@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/icons.dart';
 import 'package:rectify/theme/typography.dart';
 
 /// Bottom tab destination (`docs/design-system.md` §9.16).
 enum BottomTabDestination {
-  newCalculation(AppIcons.add, 'NEW'),
-  history(AppIcons.history, 'HISTORY'),
-  settings(AppIcons.settings, 'SETTINGS');
+  newCalculation(AppIcons.add),
+  history(AppIcons.history),
+  settings(AppIcons.settings);
 
-  const BottomTabDestination(this.icon, this.label);
+  const BottomTabDestination(this.icon);
 
   final IconData icon;
-  final String label;
 }
 
 /// Bottom tab bar (`docs/design-system.md` §9.16).
@@ -80,11 +80,17 @@ class _TabSlot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = selected ? AppColors.accentClay : AppColors.inkMuted;
+    final l10n = context.l10n;
+    final label = switch (destination) {
+      BottomTabDestination.newCalculation => l10n.navNew,
+      BottomTabDestination.history => l10n.navHistory,
+      BottomTabDestination.settings => l10n.navSettings,
+    };
 
     return Semantics(
       selected: selected,
       button: true,
-      label: destination.label,
+      label: label,
       excludeSemantics: true,
       child: InkWell(
         onTap: onTap,
@@ -95,7 +101,7 @@ class _TabSlot extends StatelessWidget {
             Icon(destination.icon, size: 22, color: color),
             const SizedBox(height: 2),
             Text(
-              destination.label,
+              label,
               style: AppTypography.labelSm.copyWith(color: color, fontSize: 11),
             ),
           ],

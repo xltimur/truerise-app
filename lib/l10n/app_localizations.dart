@@ -874,6 +874,522 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete event {category}'**
   String eventCardDeleteSemantic(String category);
+
+  /// Tooltip and screen-reader label for the back-navigation chevron in the top navigation bar.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get commonBack;
+
+  /// Generic Delete label, used in the delete-confirmation dialog action and the swipe-to-delete background.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get commonDelete;
+
+  /// Spoken value for a date or time picker field that has no value selected yet.
+  ///
+  /// In en, this message translates to:
+  /// **'not set'**
+  String get commonNotSet;
+
+  /// Screen-reader label for a read-only picker field, combining its label and current value (or the 'not set' placeholder).
+  ///
+  /// In en, this message translates to:
+  /// **'{label}, {value}'**
+  String fieldValueSemantic(String label, String value);
+
+  /// Bottom tab label for the New Calculation tab.
+  ///
+  /// In en, this message translates to:
+  /// **'NEW'**
+  String get navNew;
+
+  /// Bottom tab label for the History tab.
+  ///
+  /// In en, this message translates to:
+  /// **'HISTORY'**
+  String get navHistory;
+
+  /// Bottom tab label for the Settings tab.
+  ///
+  /// In en, this message translates to:
+  /// **'SETTINGS'**
+  String get navSettings;
+
+  /// Eyebrow on the calculation-flow stepper showing the current step out of the total, e.g. STEP 2 OF 4.
+  ///
+  /// In en, this message translates to:
+  /// **'STEP {current} OF {total}'**
+  String stepperStep(int current, int total);
+
+  /// Screen-reader progress value for the stepper bar, e.g. 50 percent.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent} percent'**
+  String stepperPercent(int percent);
+
+  /// Top-navigation title shown across the stepped calculation flow (birth details, time window, life events, confirm).
+  ///
+  /// In en, this message translates to:
+  /// **'New Calculation'**
+  String get calcFlowTitle;
+
+  /// Screen-reader label for the settings (gear) button in the home screen top bar.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get homeSettingsButton;
+
+  /// Shown on the home screen when the saved-history stream fails to load. {error} is the raw error detail.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load your history.\n{error}'**
+  String homeHistoryLoadError(String error);
+
+  /// Empty-state title on the home screen when no calculations have been saved.
+  ///
+  /// In en, this message translates to:
+  /// **'No calculations yet.'**
+  String get homeEmptyTitle;
+
+  /// Empty-state body on the home screen encouraging the first calculation.
+  ///
+  /// In en, this message translates to:
+  /// **'Run your first one to see results here.'**
+  String get homeEmptyBody;
+
+  /// Call-to-action on the empty home screen that starts a new calculation.
+  ///
+  /// In en, this message translates to:
+  /// **'New Calculation'**
+  String get homeNewCalculation;
+
+  /// Section heading above the list of saved calculations on the home screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Past calculations'**
+  String get homePastCalculations;
+
+  /// Fallback name for a saved calculation that has no user-provided label.
+  ///
+  /// In en, this message translates to:
+  /// **'My calculation'**
+  String get homeDefaultLabel;
+
+  /// Title of the confirmation dialog shown before deleting a saved calculation.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this calculation?'**
+  String get historyDeleteTitle;
+
+  /// Body of the delete-confirmation dialog. {label} is the calculation's name.
+  ///
+  /// In en, this message translates to:
+  /// **'This removes \"{label}\" from your history. The original data isn\'t kept anywhere else.'**
+  String historyDeleteBody(String label);
+
+  /// Snackbar confirming a saved calculation was deleted. {label} is the calculation's name.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{label}\" deleted.'**
+  String historyDeletedSnack(String label);
+
+  /// Snackbar shown when deleting a saved calculation failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t delete this entry.'**
+  String get historyDeleteFailedSnack;
+
+  /// Primary button on recoverable error screens (timeout, no internet, server, malformed response) that retries the calculation.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get errorTryAgain;
+
+  /// Primary button on the authorization and missing-API-key error screens that opens Settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Settings'**
+  String get errorOpenSettings;
+
+  /// Primary button on the bad-request error screen that returns to the confirmation step to fix the draft.
+  ///
+  /// In en, this message translates to:
+  /// **'Review my draft'**
+  String get errorReviewDraft;
+
+  /// Title of the timeout error screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculation timed out'**
+  String get errorTimeoutTitle;
+
+  /// Body of the timeout error screen.
+  ///
+  /// In en, this message translates to:
+  /// **'The provider didn\'t respond in time. Network can be slow on public Wi-Fi — give it another try in a moment.'**
+  String get errorTimeoutBody;
+
+  /// Title of the no-internet error screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t reach the network'**
+  String get errorNoInternetTitle;
+
+  /// Body of the no-internet error screen.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re offline, or your network is blocking the request. Reconnect and try again.'**
+  String get errorNoInternetBody;
+
+  /// Title of the bad-request error screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Something looked off in the data'**
+  String get errorBadRequestTitle;
+
+  /// Body of the bad-request error screen.
+  ///
+  /// In en, this message translates to:
+  /// **'The calculation provider rejected the request. Double-check your birth date, time window, and events, then try again.'**
+  String get errorBadRequestBody;
+
+  /// Title of the unauthorized (401) error screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Authorization required'**
+  String get errorUnauthorizedTitle;
+
+  /// Body of the unauthorized (401) error screen.
+  ///
+  /// In en, this message translates to:
+  /// **'The provider didn\'t accept the API key on this device. Open Settings to enter a new key, or switch on Demo mode.'**
+  String get errorUnauthorizedBody;
+
+  /// Title of the missing-API-key error screen.
+  ///
+  /// In en, this message translates to:
+  /// **'API key required'**
+  String get errorMissingApiKeyTitle;
+
+  /// Body of the missing-API-key error screen. 'astrology-api.io' is the provider domain and must stay untranslated.
+  ///
+  /// In en, this message translates to:
+  /// **'Live mode needs your astrology-api.io API key. Open Settings to add it, or switch on Demo mode to try the app with sample data.'**
+  String get errorMissingApiKeyBody;
+
+  /// Title of the server (5xx) error screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Provider trouble on their end'**
+  String get errorServerTitle;
+
+  /// Body of the server (5xx) error screen.
+  ///
+  /// In en, this message translates to:
+  /// **'The provider returned an error. Their service may be having a rough moment — it\'s worth another try shortly.'**
+  String get errorServerBody;
+
+  /// Title of the malformed-response error screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t read the response'**
+  String get errorMalformedTitle;
+
+  /// Body of the malformed-response error screen.
+  ///
+  /// In en, this message translates to:
+  /// **'The provider\'s response didn\'t match what this build expects. Try again, or run a demo calculation while we look into it.'**
+  String get errorMalformedBody;
+
+  /// Top-navigation title of the Settings screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsTitle;
+
+  /// Settings section heading for the API-key card. Rendered in uppercase.
+  ///
+  /// In en, this message translates to:
+  /// **'API key'**
+  String get settingsSectionApiKey;
+
+  /// Settings section heading for calculation defaults. Rendered in uppercase.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculation defaults'**
+  String get settingsSectionDefaults;
+
+  /// Settings section heading for the time-format choice. Rendered in uppercase.
+  ///
+  /// In en, this message translates to:
+  /// **'Time format'**
+  String get settingsSectionTimeFormat;
+
+  /// Settings section heading for the destructive data actions. Rendered in uppercase.
+  ///
+  /// In en, this message translates to:
+  /// **'Data'**
+  String get settingsSectionData;
+
+  /// Settings section heading for the about/legal links. Rendered in uppercase.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get settingsSectionAbout;
+
+  /// Label for the API-key row in Settings and the title of the API-key editor sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'API Key (Pro / Developer)'**
+  String get settingsApiKeyRowLabel;
+
+  /// Status shown on the API-key row when a key is configured.
+  ///
+  /// In en, this message translates to:
+  /// **'Set'**
+  String get settingsApiKeySet;
+
+  /// Status shown on the API-key row when no key is configured.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get settingsApiKeyNotSet;
+
+  /// Helper text under the API-key row in Settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional. Only for users with their own provider key. Leave blank for the standard (proxied) path.'**
+  String get settingsApiKeyHelper;
+
+  /// Label for the demo-mode default toggle in Settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Demo mode'**
+  String get settingsDemoModeLabel;
+
+  /// Helper text under the demo-mode toggle in Settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Run calculations with sample data (free, no network).'**
+  String get settingsDemoModeHelper;
+
+  /// Radio option for 12-hour time format. The sample time 7:14 AM is illustrative and kept stable.
+  ///
+  /// In en, this message translates to:
+  /// **'12-hour  (7:14 AM)'**
+  String get settingsTimeFormat12;
+
+  /// Radio option for 24-hour time format. The sample time 07:14 is illustrative and kept stable.
+  ///
+  /// In en, this message translates to:
+  /// **'24-hour  (07:14)'**
+  String get settingsTimeFormat24;
+
+  /// Destructive button in Settings that opens the delete-all-data confirmation sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete all data'**
+  String get settingsDeleteAllData;
+
+  /// Helper text under the Delete all data button in Settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Removes all calculations and events from this device. Cannot be undone.'**
+  String get settingsDeleteAllHelper;
+
+  /// Label for the Privacy Policy row in the Settings about section.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get settingsPrivacyPolicy;
+
+  /// Explanatory body in the API-key editor sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste your provider key to switch off the standard proxied path. The key is stored on this device only.'**
+  String get apiKeySheetBody;
+
+  /// Label for the API-key text field in the editor sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'API key'**
+  String get apiKeyFieldLabel;
+
+  /// Hint shown in the API-key field when a key is already saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Currently set — enter a new key to replace it'**
+  String get apiKeyHintConfigured;
+
+  /// Placeholder hint shown in the API-key field when no key is saved yet.
+  ///
+  /// In en, this message translates to:
+  /// **'sk-…'**
+  String get apiKeyHintEmpty;
+
+  /// Primary button in the API-key sheet that saves the entered key.
+  ///
+  /// In en, this message translates to:
+  /// **'Save key'**
+  String get apiKeySaveButton;
+
+  /// Destructive button in the API-key sheet that removes the saved key.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove key'**
+  String get apiKeyRemoveButton;
+
+  /// Snackbar confirming the API key was saved.
+  ///
+  /// In en, this message translates to:
+  /// **'API key saved.'**
+  String get apiKeySavedSnack;
+
+  /// Snackbar confirming the API key was removed.
+  ///
+  /// In en, this message translates to:
+  /// **'API key removed.'**
+  String get apiKeyRemovedSnack;
+
+  /// Title of the delete-all-data confirmation sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete all data?'**
+  String get deleteAllTitle;
+
+  /// Body of the delete-all-data sheet shown before the saved-calculation count is known.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete every calculation, event, and setting on this device. Cannot be undone.'**
+  String get deleteAllBodyGeneric;
+
+  /// Body of the delete-all-data sheet, naming how many saved calculations will be deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{This will permanently delete 1 calculation and every saved event and setting on this device. Cannot be undone.} other{This will permanently delete {count} calculations and every saved event and setting on this device. Cannot be undone.}}'**
+  String deleteAllBodyCount(int count);
+
+  /// Snackbar shown when deleting all data failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t delete data. Try again.'**
+  String get deleteAllFailedSnack;
+
+  /// Top-navigation title of the in-app privacy policy screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy'**
+  String get privacyTitle;
+
+  /// Privacy section heading about local storage. {brand} is the product name, held constant across locales.
+  ///
+  /// In en, this message translates to:
+  /// **'What {brand} stores'**
+  String privacyStoresTitle(String brand);
+
+  /// Privacy section body about local storage. {brand} is the product name, held constant across locales.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything you enter — birth date, birth city, life events, calculation results — is stored on this device only. Nothing is uploaded to a {brand} account, because we do not run user accounts. Deleting the app removes every byte of that data.'**
+  String privacyStoresBody(String brand);
+
+  /// Privacy section heading about the optional user-supplied API key.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional API key'**
+  String get privacyApiKeyTitle;
+
+  /// Privacy section body about where the optional API key is stored.
+  ///
+  /// In en, this message translates to:
+  /// **'Power users can paste their own provider API key in Settings. When set, that key lives in the platform keychain (iOS) or Keystore (Android) — it never enters the database, preferences, logs, or crash reports, and is never displayed back to you after you save it.'**
+  String get privacyApiKeyBody;
+
+  /// Privacy section heading about demo mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Demo mode'**
+  String get privacyDemoTitle;
+
+  /// Privacy section body about offline demo calculations.
+  ///
+  /// In en, this message translates to:
+  /// **'Demo calculations run entirely on this device — no network calls are made and no key is used. Demo results are clearly labelled with a DEMO pill so they do not get mixed up with real readings.'**
+  String get privacyDemoBody;
+
+  /// Privacy section heading about live (networked) calculations.
+  ///
+  /// In en, this message translates to:
+  /// **'Live calculations'**
+  String get privacyLiveTitle;
+
+  /// Privacy section body about what a live calculation transmits. {brand} is the product name, held constant across locales.
+  ///
+  /// In en, this message translates to:
+  /// **'Running a live (non-demo) calculation sends your birth date and approximate time, your birthplace coordinates, and the descriptions of the life events you add to a third-party calculation provider over HTTPS. That data is transmitted solely to compute your rectified birth time — it is not used to build a profile and is not tied to any {brand} account, because there are none.'**
+  String privacyLiveBody(String brand);
+
+  /// Privacy section heading about deleting local data.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleting your data'**
+  String get privacyDeleteTitle;
+
+  /// Privacy section body about the Delete all data action.
+  ///
+  /// In en, this message translates to:
+  /// **'The Settings screen has a \"Delete all data\" action that wipes the local database, every preference, and the secure-storage entry holding your API key (if you\'ve set one). The wipe completes before the action returns; the app then sends you back to onboarding so you can confirm the reset.'**
+  String get privacyDeleteBody;
+
+  /// Privacy section heading about analytics and crash reporting.
+  ///
+  /// In en, this message translates to:
+  /// **'Analytics and crash reporting'**
+  String get privacyAnalyticsTitle;
+
+  /// Privacy section body about analytics and crash reporting. {brand} is the product name, held constant across locales.
+  ///
+  /// In en, this message translates to:
+  /// **'This release of {brand} ships without an analytics SDK and without crash reporting. If a future release adds either, it will be disclosed here and limited to anonymous, non-identifying data.'**
+  String privacyAnalyticsBody(String brand);
+
+  /// Demo evidence explanation, strong match (rank 1). Astrology prose shown on the evidence screen for an offline sample result. Sensitive register: use indication wording, not proof wording.
+  ///
+  /// In en, this message translates to:
+  /// **'A timed Venus return aligned with the candidate window, consistent with a partnership event.'**
+  String get demoEvidenceStrongVenus;
+
+  /// Demo evidence explanation, strong match (rank 2). Astrology prose shown on the evidence screen for an offline sample result. Sensitive register: use indication wording, not proof wording.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturn crossed the 10th-house cusp inside the window — a classic timing signature for a career pivot.'**
+  String get demoEvidenceStrongSaturn;
+
+  /// Demo evidence explanation, moderate match (rank 1). Astrology prose shown on the evidence screen for an offline sample result. Sensitive register: use indication wording, not proof wording.
+  ///
+  /// In en, this message translates to:
+  /// **'Jupiter passed near the 4th-house cusp; moderate support for a home / relocation event in this window.'**
+  String get demoEvidenceModerateJupiter;
+
+  /// Demo evidence explanation, moderate match (rank 2). Astrology prose shown on the evidence screen for an offline sample result. Sensitive register: use indication wording, not proof wording.
+  ///
+  /// In en, this message translates to:
+  /// **'A solar arc to Mars sat within tolerance of the window, plausible for the reported event but not exclusive to it.'**
+  String get demoEvidenceModerateSolarArc;
+
+  /// Demo evidence explanation, weak match. Astrology prose shown on the evidence screen for an offline sample result. Sensitive register: use indication wording, not proof wording.
+  ///
+  /// In en, this message translates to:
+  /// **'Mercury was within wide orb of the relevant cusp; insufficient to confirm timing on its own.'**
+  String get demoEvidenceWeakMercury;
+
+  /// Demo evidence explanation, no match. Astrology prose shown on the evidence screen for an offline sample result. Sensitive register: use indication wording, not proof wording.
+  ///
+  /// In en, this message translates to:
+  /// **'No primary aspect within tolerance of the candidate window. This event neither supports nor contradicts the result.'**
+  String get demoEvidenceNoMatch;
 }
 
 class _AppLocalizationsDelegate

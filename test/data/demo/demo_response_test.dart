@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rectify/data/demo/demo_response.dart';
 import 'package:rectify/data/models/match_strength.dart';
 
+import '../../helpers/demo_fixtures.dart';
 import '../fixtures/sample_calculation.dart';
 
 void main() {
@@ -24,7 +25,11 @@ void main() {
 
     test('buildDemoResult for 6 events produces 2/2/1/1 distribution', () {
       final request = sampleRequest(isDemo: true, eventCount: 6);
-      final result = buildDemoResult(request, now: DateTime.utc(2026, 5, 20));
+      final result = buildDemoResult(
+        request,
+        now: DateTime.utc(2026, 5, 20),
+        copy: testDemoEvidenceCopy,
+      );
 
       expect(result.evidence.length, 6);
       final byStrength = <MatchStrength, int>{};
@@ -40,7 +45,11 @@ void main() {
 
     test('every evidence entry has an explanation string', () {
       final request = sampleRequest(isDemo: true, eventCount: 6);
-      final result = buildDemoResult(request, now: DateTime.utc(2026, 5, 20));
+      final result = buildDemoResult(
+        request,
+        now: DateTime.utc(2026, 5, 20),
+        copy: testDemoEvidenceCopy,
+      );
       for (final item in result.evidence) {
         expect(item.explanation, isNotEmpty);
       }
@@ -48,7 +57,11 @@ void main() {
 
     test('trims distribution to the user event count when fewer than 6', () {
       final request = sampleRequest(isDemo: true, eventCount: 3);
-      final result = buildDemoResult(request, now: DateTime.utc(2026, 5, 20));
+      final result = buildDemoResult(
+        request,
+        now: DateTime.utc(2026, 5, 20),
+        copy: testDemoEvidenceCopy,
+      );
 
       expect(result.evidence.length, 3);
       // First three entries of the canonical 2/2/1/1 are
@@ -69,7 +82,11 @@ void main() {
           base.events.first.copyWith(id: 'evt-8'),
         ].cast(),
       );
-      final result = buildDemoResult(extended, now: DateTime.utc(2026, 5, 20));
+      final result = buildDemoResult(
+        extended,
+        now: DateTime.utc(2026, 5, 20),
+        copy: testDemoEvidenceCopy,
+      );
 
       expect(result.evidence.length, 8);
       for (var i = 6; i < 8; i++) {
@@ -84,6 +101,7 @@ void main() {
       final result = buildDemoResult(
         sampleRequest(isDemo: true),
         now: DateTime.utc(2026, 5, 20),
+        copy: testDemoEvidenceCopy,
       );
       expect(result.isDemo, isTrue);
       expect(result.method, 'demo_canonical');

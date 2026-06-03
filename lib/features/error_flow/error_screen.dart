@@ -10,6 +10,7 @@ import 'package:rectify/app/route_names.dart';
 import 'package:rectify/features/calculation_flow/state/calculation_flow_controller.dart';
 import 'package:rectify/features/calculation_flow/state/calculation_flow_state.dart';
 import 'package:rectify/features/error_flow/error_routing.dart';
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/theme/icons.dart';
 import 'package:rectify/widgets/buttons/buttons.dart';
 import 'package:rectify/widgets/feedback/error_scaffold.dart';
@@ -28,70 +29,57 @@ class CalculationErrorScreen extends ConsumerWidget {
 
   final ErrorScreenKind kind;
 
-  static const _copyByKind = <ErrorScreenKind, _ErrorCopy>{
-    ErrorScreenKind.timeout: _ErrorCopy(
-      icon: AppIcons.errorTimeout,
-      title: 'Calculation timed out',
-      description:
-          "The provider didn't respond in time. Network can be slow on "
-          'public Wi-Fi — give it another try in a moment.',
-      primaryLabel: 'Try again',
-    ),
-    ErrorScreenKind.noInternet: _ErrorCopy(
-      icon: AppIcons.errorNoInternet,
-      title: "Can't reach the network",
-      description:
-          "You're offline, or your network is blocking the request. "
-          'Reconnect and try again.',
-      primaryLabel: 'Try again',
-    ),
-    ErrorScreenKind.badRequest: _ErrorCopy(
-      icon: AppIcons.errorBadRequest,
-      title: 'Something looked off in the data',
-      description:
-          'The calculation provider rejected the request. Double-check '
-          'your birth date, time window, and events, then try again.',
-      primaryLabel: 'Review my draft',
-    ),
-    ErrorScreenKind.unauthorized: _ErrorCopy(
-      icon: AppIcons.errorUnauthorized,
-      title: 'Authorization required',
-      description:
-          "The provider didn't accept the API key on this device. "
-          'Open Settings to enter a new key, or switch on Demo mode.',
-      primaryLabel: 'Open Settings',
-    ),
-    ErrorScreenKind.missingApiKey: _ErrorCopy(
-      icon: AppIcons.errorUnauthorized,
-      title: 'API key required',
-      description:
-          'Live mode needs your astrology-api.io API key. Open Settings '
-          'to add it, or switch on Demo mode to try the app with sample '
-          'data.',
-      primaryLabel: 'Open Settings',
-    ),
-    ErrorScreenKind.server: _ErrorCopy(
-      icon: AppIcons.errorServer,
-      title: 'Provider trouble on their end',
-      description:
-          'The provider returned an error. Their service may be having '
-          "a rough moment — it's worth another try shortly.",
-      primaryLabel: 'Try again',
-    ),
-    ErrorScreenKind.malformed: _ErrorCopy(
-      icon: AppIcons.errorMalformed,
-      title: "Couldn't read the response",
-      description:
-          "The provider's response didn't match what this build "
-          'expects. Try again, or run a demo calculation while we look '
-          'into it.',
-      primaryLabel: 'Try again',
-    ),
-  };
+  static _ErrorCopy _copyFor(AppLocalizations l10n, ErrorScreenKind kind) {
+    return switch (kind) {
+      ErrorScreenKind.timeout => _ErrorCopy(
+        icon: AppIcons.errorTimeout,
+        title: l10n.errorTimeoutTitle,
+        description: l10n.errorTimeoutBody,
+        primaryLabel: l10n.errorTryAgain,
+      ),
+      ErrorScreenKind.noInternet => _ErrorCopy(
+        icon: AppIcons.errorNoInternet,
+        title: l10n.errorNoInternetTitle,
+        description: l10n.errorNoInternetBody,
+        primaryLabel: l10n.errorTryAgain,
+      ),
+      ErrorScreenKind.badRequest => _ErrorCopy(
+        icon: AppIcons.errorBadRequest,
+        title: l10n.errorBadRequestTitle,
+        description: l10n.errorBadRequestBody,
+        primaryLabel: l10n.errorReviewDraft,
+      ),
+      ErrorScreenKind.unauthorized => _ErrorCopy(
+        icon: AppIcons.errorUnauthorized,
+        title: l10n.errorUnauthorizedTitle,
+        description: l10n.errorUnauthorizedBody,
+        primaryLabel: l10n.errorOpenSettings,
+      ),
+      ErrorScreenKind.missingApiKey => _ErrorCopy(
+        icon: AppIcons.errorUnauthorized,
+        title: l10n.errorMissingApiKeyTitle,
+        description: l10n.errorMissingApiKeyBody,
+        primaryLabel: l10n.errorOpenSettings,
+      ),
+      ErrorScreenKind.server => _ErrorCopy(
+        icon: AppIcons.errorServer,
+        title: l10n.errorServerTitle,
+        description: l10n.errorServerBody,
+        primaryLabel: l10n.errorTryAgain,
+      ),
+      ErrorScreenKind.malformed => _ErrorCopy(
+        icon: AppIcons.errorMalformed,
+        title: l10n.errorMalformedTitle,
+        description: l10n.errorMalformedBody,
+        primaryLabel: l10n.errorTryAgain,
+      ),
+    };
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final copy = _copyByKind[kind]!;
+    final l10n = context.l10n;
+    final copy = _copyFor(l10n, kind);
     final controller = ref.read(calculationFlowControllerProvider.notifier);
     final hasDraft = ref.watch(
       calculationFlowControllerProvider.select((s) => s.readyToSubmit),
@@ -130,7 +118,7 @@ class CalculationErrorScreen extends ConsumerWidget {
         },
       ),
       secondaryAction: GhostButton(
-        label: 'Back to history',
+        label: l10n.commonBackToHistory,
         onPressed: () {
           controller.reset();
           context.go(RoutePaths.home);

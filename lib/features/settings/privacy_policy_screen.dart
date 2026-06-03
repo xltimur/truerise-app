@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/spacing.dart';
 import 'package:rectify/theme/typography.dart';
@@ -21,10 +22,11 @@ class PrivacyPolicyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
       backgroundColor: AppColors.bgApp,
       appBar: TopNav(
-        title: 'Privacy',
+        title: l10n.privacyTitle,
         onBack: context.canPop() ? () => context.pop() : null,
       ),
       body: ListView(
@@ -36,83 +38,46 @@ class PrivacyPolicyScreen extends StatelessWidget {
         ),
         children: <Widget>[
           Text(
-            'What TrueRise stores',
+            l10n.privacyStoresTitle(appBrandName),
             style: AppTypography.titleLg,
           ),
           const SizedBox(height: AppSpacing.s4),
-          const _Body(
-            'Everything you enter — birth date, birth city, life '
-            'events, calculation results — is stored on this device '
-            'only. Nothing is uploaded to a TrueRise account, because '
-            'we do not run user accounts. Deleting the app removes '
-            'every byte of that data.',
-          ),
+          _Body(l10n.privacyStoresBody(appBrandName)),
           const SizedBox(height: AppSpacing.sectionGap),
           Text(
-            'Optional API key',
+            l10n.privacyApiKeyTitle,
             style: AppTypography.titleLg,
           ),
           const SizedBox(height: AppSpacing.s4),
-          const _Body(
-            'Power users can paste their own provider API key in '
-            'Settings. When set, that key lives in the platform '
-            'keychain (iOS) or Keystore (Android) — it never enters '
-            'the database, preferences, logs, or crash reports, and '
-            'is never displayed back to you after you save it.',
-          ),
+          _Body(l10n.privacyApiKeyBody),
           const SizedBox(height: AppSpacing.sectionGap),
           Text(
-            'Demo mode',
+            l10n.privacyDemoTitle,
             style: AppTypography.titleLg,
           ),
           const SizedBox(height: AppSpacing.s4),
-          const _Body(
-            'Demo calculations run entirely on this device — no '
-            'network calls are made and no key is used. Demo results '
-            'are clearly labelled with a DEMO pill so they do not get '
-            'mixed up with real readings.',
-          ),
+          _Body(l10n.privacyDemoBody),
           const SizedBox(height: AppSpacing.sectionGap),
           Text(
-            'Live calculations',
+            l10n.privacyLiveTitle,
             style: AppTypography.titleLg,
           ),
           const SizedBox(height: AppSpacing.s4),
-          const _Body(
-            'Running a live (non-demo) calculation sends your birth date '
-            'and approximate time, your birthplace coordinates, and the '
-            'descriptions of the life events you add to a third-party '
-            'calculation provider over HTTPS. That data is transmitted '
-            'solely to compute your rectified birth time — it is not used '
-            'to build a profile and is not tied to any TrueRise account, '
-            'because there are none.',
-          ),
+          _Body(l10n.privacyLiveBody(appBrandName)),
           const SizedBox(height: AppSpacing.sectionGap),
           Text(
-            'Deleting your data',
+            l10n.privacyDeleteTitle,
             style: AppTypography.titleLg,
           ),
           const SizedBox(height: AppSpacing.s4),
-          const _Body(
-            'The Settings screen has a "Delete all data" action that '
-            'wipes the local database, every preference, and the '
-            "secure-storage entry holding your API key (if you've "
-            'set one). The wipe completes before the action returns; '
-            'the app then sends you back to onboarding so you can '
-            'confirm the reset.',
-          ),
+          _Body(l10n.privacyDeleteBody),
           const SizedBox(height: AppSpacing.sectionGap),
           Text(
-            'Analytics and crash reporting',
+            l10n.privacyAnalyticsTitle,
             style: AppTypography.titleLg,
           ),
           const SizedBox(height: AppSpacing.s4),
-          const _Body(
-            'This release of TrueRise ships without an analytics SDK '
-            'and without crash reporting. If a future release adds '
-            'either, it will be disclosed here and limited to '
-            'anonymous, non-identifying data.',
-          ),
+          _Body(l10n.privacyAnalyticsBody(appBrandName)),
         ],
       ),
     );

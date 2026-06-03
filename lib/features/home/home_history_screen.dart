@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import 'package:rectify/app/route_names.dart';
-import 'package:rectify/data/models/candidate_time.dart';
+import 'package:rectify/core/formatting/app_date_format.dart';
 import 'package:rectify/data/models/saved_calculation.dart';
-import 'package:rectify/data/models/time_format.dart';
 import 'package:rectify/features/home/history_providers.dart';
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/providers/repo_providers.dart';
 import 'package:rectify/providers/settings_controller.dart';
 import 'package:rectify/theme/colors.dart';
@@ -36,9 +35,9 @@ class HomeHistoryScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.bgApp,
       appBar: TopNav(
-        title: 'TrueRise',
+        title: appBrandName,
         trailingIcon: AppIcons.settings,
-        trailingSemanticsLabel: 'Settings',
+        trailingSemanticsLabel: context.l10n.homeSettingsButton,
         onTrailingTap: () => context.go(RoutePaths.settings),
       ),
       body: history.when(
@@ -49,7 +48,7 @@ class HomeHistoryScreen extends ConsumerWidget {
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.screenEdge),
             child: Text(
-              "We couldn't load your history.\n$error",
+              context.l10n.homeHistoryLoadError(error.toString()),
               textAlign: TextAlign.center,
               style: AppTypography.bodyMd,
             ),
@@ -72,13 +71,14 @@ class _EmptyHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return SingleChildScrollView(
       child: EmptyState(
         icon: AppIcons.history,
-        title: 'No calculations yet.',
-        body: 'Run your first one to see results here.',
+        title: l10n.homeEmptyTitle,
+        body: l10n.homeEmptyBody,
         cta: PrimaryButton(
-          label: 'New Calculation',
+          label: l10n.homeNewCalculation,
           expand: false,
           onPressed: onStart,
         ),
@@ -92,52 +92,28 @@ class _PopulatedHistory extends ConsumerWidget {
 
   final List<SavedCalculation> items;
 
-  String _formatDate(DateTime when) =>
-      DateFormat('MMMM d, y').format(when.toLocal());
-
-  ({String time, String meridiem}) _formatCandidate(
-    CandidateTime candidate,
-    TimeFormat format,
-  ) {
-    final time = candidate.time;
-    if (format == TimeFormat.h24) {
-      return (
-        time:
-            '${time.hour.toString().padLeft(2, '0')}:'
-            '${time.minute.toString().padLeft(2, '0')}',
-        meridiem: '',
-      );
-    }
-    final isPm = time.hour >= 12;
-    final hour12 = ((time.hour + 11) % 12) + 1;
-    return (
-      time: '$hour12:${time.minute.toString().padLeft(2, '0')}',
-      meridiem: isPm ? 'PM' : 'AM',
-    );
-  }
-
   Future<bool> _confirmDelete(BuildContext context, String label) async {
+    final l10n = context.l10n;
     final result = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         backgroundColor: AppColors.bgSurface,
-        title: const Text('Delete this calculation?'),
+        title: Text(l10n.historyDeleteTitle),
         content: Text(
-          'This removes "$label" from your history. The original '
-          "data isn't kept anywhere else.",
+          l10n.historyDeleteBody(label),
           style: AppTypography.bodyMd,
         ),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n.commonCancel),
           ),
           TextButton(
             style: TextButton.styleFrom(
               foregroundColor: AppColors.statusDanger,
             ),
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Delete'),
+            child: Text(l10n.commonDelete),
           ),
         ],
       ),
@@ -148,6 +124,7 @@ class _PopulatedHistory extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsControllerProvider);
+    final l10n = context.l10n;
 
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(
@@ -164,7 +141,10 @@ class _PopulatedHistory extends ConsumerWidget {
         if (listIndex == 0) {
           return Padding(
             padding: const EdgeInsets.only(bottom: AppSpacing.s4),
-            child: Text('Past calculations', style: AppTypography.titleSm),
+            child: Text(
+              l10n.homePastCalculations,
+              style: AppTypography.titleSm,
+            ),
           );
         }
 
@@ -175,15 +155,15 @@ class _PopulatedHistory extends ConsumerWidget {
             : result.candidates.first;
         final label = item.request.label?.isNotEmpty ?? false
             ? item.request.label!
-            : 'My calculation';
+            : l10n.homeDefaultLabel;
 
         final formatted = topCandidate == null
             ? (time: '—', meridiem: '')
-            : _formatCandidate(topCandidate, settings.timeFormat);
+            : AppDateFormat.clockParts(topCandidate.time, settings.timeFormat);
 
         final risingSign = topCandidate?.ascendant != null
-            ? '${topCandidate!.ascendant} Rising'
-            : (result.isDemo ? '(sample data)' : '');
+            ? l10n.resultRisingSign(topCandidate!.ascendant!)
+            : (result.isDemo ? l10n.resultSampleData : '');
 
         return Dismissible(
           key: ValueKey<String>('history-${item.request.id}'),
@@ -197,17 +177,17 @@ class _PopulatedHistory extends ConsumerWidget {
             if (!context.mounted) return;
             if (deletion.isOk) {
               messenger.showSnackBar(
-                SnackBar(content: Text('"$label" deleted.')),
+                SnackBar(content: Text(l10n.historyDeletedSnack(label))),
               );
             } else {
               messenger.showSnackBar(
-                const SnackBar(content: Text("Couldn't delete this entry.")),
+                SnackBar(content: Text(l10n.historyDeleteFailedSnack)),
               );
             }
           },
           child: HistoryCard(
             label: label,
-            date: _formatDate(result.completedAt),
+            date: AppDateFormat.longDate(result.completedAt),
             time: formatted.time,
             meridiem: formatted.meridiem,
             risingSign: risingSign,
@@ -224,6 +204,7 @@ class _PopulatedHistory extends ConsumerWidget {
 class _DismissBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Container(
       alignment: Alignment.centerRight,
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s5),
@@ -237,7 +218,7 @@ class _DismissBackground extends StatelessWidget {
           const Icon(AppIcons.trash, color: AppColors.bgSurface),
           const SizedBox(width: AppSpacing.s2),
           Text(
-            'Delete',
+            l10n.commonDelete,
             style: AppTypography.labelMd.copyWith(color: AppColors.bgSurface),
           ),
         ],

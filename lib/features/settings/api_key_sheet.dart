@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/providers/settings_controller.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/radius.dart';
@@ -71,13 +72,14 @@ class _ApiKeySheetState extends ConsumerState<ApiKeySheet> {
     setState(() => _busy = true);
     final notifier = ref.read(settingsControllerProvider.notifier);
     final messenger = ScaffoldMessenger.of(context);
+    final l10n = context.l10n;
     await notifier.setProApiKey(value);
     // Wipe the controller before popping so the secret cannot linger
     // in widget state across rebuilds.
     _controller.clear();
     if (!mounted) return;
     Navigator.of(context).pop();
-    messenger.showSnackBar(const SnackBar(content: Text('API key saved.')));
+    messenger.showSnackBar(SnackBar(content: Text(l10n.apiKeySavedSnack)));
   }
 
   Future<void> _remove() async {
@@ -85,11 +87,12 @@ class _ApiKeySheetState extends ConsumerState<ApiKeySheet> {
     setState(() => _busy = true);
     final notifier = ref.read(settingsControllerProvider.notifier);
     final messenger = ScaffoldMessenger.of(context);
+    final l10n = context.l10n;
     await notifier.clearProApiKey();
     _controller.clear();
     if (!mounted) return;
     Navigator.of(context).pop();
-    messenger.showSnackBar(const SnackBar(content: Text('API key removed.')));
+    messenger.showSnackBar(SnackBar(content: Text(l10n.apiKeyRemovedSnack)));
   }
 
   @override
@@ -97,6 +100,7 @@ class _ApiKeySheetState extends ConsumerState<ApiKeySheet> {
     final configured = ref.watch(
       settingsControllerProvider.select((s) => s.proApiKeyConfigured),
     );
+    final l10n = context.l10n;
 
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(top: AppRadius.lg),
@@ -130,24 +134,23 @@ class _ApiKeySheetState extends ConsumerState<ApiKeySheet> {
                 ),
                 const SizedBox(height: AppSpacing.s4),
                 Text(
-                  'API Key (Pro / Developer)',
+                  l10n.settingsApiKeyRowLabel,
                   style: AppTypography.titleMd,
                 ),
                 const SizedBox(height: AppSpacing.s2),
                 Text(
-                  'Paste your provider key to switch off the standard '
-                  'proxied path. The key is stored on this device only.',
+                  l10n.apiKeySheetBody,
                   style: AppTypography.bodySm.copyWith(
                     color: AppColors.inkSoft,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.s5),
                 InputField(
-                  label: 'API key',
+                  label: l10n.apiKeyFieldLabel,
                   controller: _controller,
                   hintText: configured
-                      ? 'Currently set — enter a new key to replace it'
-                      : 'sk-…',
+                      ? l10n.apiKeyHintConfigured
+                      : l10n.apiKeyHintEmpty,
                   obscureText: true,
                   autofocus: true,
                   keyboardType: TextInputType.visiblePassword,
@@ -156,18 +159,18 @@ class _ApiKeySheetState extends ConsumerState<ApiKeySheet> {
                 ),
                 const SizedBox(height: AppSpacing.s5),
                 PrimaryButton(
-                  label: 'Save key',
+                  label: l10n.apiKeySaveButton,
                   onPressed: _busy ? null : _save,
                 ),
                 const SizedBox(height: AppSpacing.s3),
                 if (configured)
                   DestructiveButton(
-                    label: 'Remove key',
+                    label: l10n.apiKeyRemoveButton,
                     onPressed: _busy ? null : _remove,
                   )
                 else
                   SecondaryButton(
-                    label: 'Cancel',
+                    label: l10n.commonCancel,
                     onPressed: _busy ? null : () => Navigator.of(context).pop(),
                   ),
               ],

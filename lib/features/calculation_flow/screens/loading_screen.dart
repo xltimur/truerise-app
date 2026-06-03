@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:rectify/app/route_names.dart';
 import 'package:rectify/core/result.dart';
+import 'package:rectify/data/demo/demo_response.dart';
 import 'package:rectify/features/calculation_flow/state/calculation_flow_controller.dart';
 import 'package:rectify/features/calculation_flow/state/calculation_flow_state.dart';
 import 'package:rectify/features/error_flow/error_routing.dart';
@@ -65,7 +66,10 @@ class _CalculationLoadingScreenState
     // Capture the draft id before submit() clears it. The id is the
     // history primary key — same value the user will see in the URL.
     final resultId = state.id;
-    final result = await controller.submit();
+    // Resolve demo evidence prose from context before the await so the
+    // offline demo path gets localized strings without a BuildContext.
+    final demoCopy = DemoEvidenceCopy.fromL10n(context.l10n);
+    final result = await controller.submit(demoCopy: demoCopy);
     if (!mounted) return;
     switch (result) {
       case Ok():

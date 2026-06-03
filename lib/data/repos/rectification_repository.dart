@@ -13,9 +13,14 @@ import 'package:rectify/data/repos/history_repository.dart';
 /// Returns a typed [Result] so the controller can `.fold(...)` without
 /// catching across layer boundaries.
 abstract class RectificationRepository {
+  /// Submit [request] for rectification.
+  ///
+  /// Demo submissions (`request.isDemo == true`) must supply [demoCopy]
+  /// with locale-resolved evidence prose; the real path ignores it.
   Future<Result<CalculationResult, AppFailure>> submit(
-    CalculationRequest request,
-  );
+    CalculationRequest request, {
+    DemoEvidenceCopy? demoCopy,
+  });
 }
 
 /// Live implementation that branches on `request.isDemo`:
@@ -54,13 +59,18 @@ class LiveRectificationRepository implements RectificationRepository {
 
   @override
   Future<Result<CalculationResult, AppFailure>> submit(
-    CalculationRequest request,
-  ) async {
+    CalculationRequest request, {
+    DemoEvidenceCopy? demoCopy,
+  }) async {
     if (request.isDemo) {
+      assert(
+        demoCopy != null,
+        'Demo submissions must supply demoCopy with localized prose.',
+      );
       if (demoDelay > Duration.zero) {
         await Future<void>.delayed(demoDelay);
       }
-      final result = buildDemoResult(request, now: now());
+      final result = buildDemoResult(request, now: now(), copy: demoCopy!);
       await history.save(request, result);
       return Result.ok(result);
     }

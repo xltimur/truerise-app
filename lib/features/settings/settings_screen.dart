@@ -6,6 +6,7 @@ import 'package:rectify/app/route_names.dart';
 import 'package:rectify/data/models/time_format.dart';
 import 'package:rectify/features/settings/api_key_sheet.dart';
 import 'package:rectify/features/settings/delete_all_data_sheet.dart';
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/providers/settings_controller.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/icons.dart';
@@ -42,10 +43,11 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsControllerProvider);
     final controller = ref.read(settingsControllerProvider.notifier);
+    final l10n = context.l10n;
 
     return Scaffold(
       backgroundColor: AppColors.bgApp,
-      appBar: const TopNav(title: 'Settings'),
+      appBar: TopNav(title: l10n.settingsTitle),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.screenEdge,
@@ -54,14 +56,16 @@ class SettingsScreen extends ConsumerWidget {
           AppSpacing.s8,
         ),
         children: <Widget>[
-          const _SectionLabel('API key'),
+          _SectionLabel(l10n.settingsSectionApiKey),
           AppCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 _ChevronRow(
-                  label: 'API Key (Pro / Developer)',
-                  value: settings.proApiKeyConfigured ? 'Set' : 'Not set',
+                  label: l10n.settingsApiKeyRowLabel,
+                  value: settings.proApiKeyConfigured
+                      ? l10n.settingsApiKeySet
+                      : l10n.settingsApiKeyNotSet,
                   valueColor: settings.proApiKeyConfigured
                       ? AppColors.accentClayDeep
                       : AppColors.inkSoft,
@@ -69,8 +73,7 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: AppSpacing.s2),
                 Text(
-                  'Optional. Only for users with their own provider key. '
-                  'Leave blank for the standard (proxied) path.',
+                  l10n.settingsApiKeyHelper,
                   style: AppTypography.bodySm.copyWith(
                     color: AppColors.inkSoft,
                   ),
@@ -79,16 +82,14 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.sectionGap),
-          const _SectionLabel('Calculation defaults'),
+          _SectionLabel(l10n.settingsSectionDefaults),
           AppCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 LabeledToggle(
-                  label: 'Demo mode',
-                  helperText:
-                      'Run calculations with sample data (free, no '
-                      'network).',
+                  label: l10n.settingsDemoModeLabel,
+                  helperText: l10n.settingsDemoModeHelper,
                   value: settings.demoModeDefault,
                   onChanged: (value) =>
                       controller.setDemoModeDefault(value: value),
@@ -97,39 +98,38 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.sectionGap),
-          const _SectionLabel('Time format'),
+          _SectionLabel(l10n.settingsSectionTimeFormat),
           AppCard(
             child: rectify.RadioGroup<TimeFormat>(
               value: settings.timeFormat,
-              options: const <rectify.RadioOption<TimeFormat>>[
+              options: <rectify.RadioOption<TimeFormat>>[
                 rectify.RadioOption<TimeFormat>(
                   value: TimeFormat.h12,
-                  label: '12-hour  (7:14 AM)',
+                  label: l10n.settingsTimeFormat12,
                 ),
                 rectify.RadioOption<TimeFormat>(
                   value: TimeFormat.h24,
-                  label: '24-hour  (07:14)',
+                  label: l10n.settingsTimeFormat24,
                 ),
               ],
               onChanged: controller.setTimeFormat,
             ),
           ),
           const SizedBox(height: AppSpacing.sectionGap),
-          const _SectionLabel('Data'),
+          _SectionLabel(l10n.settingsSectionData),
           AppCard(
             borderColor: AppColors.statusDanger.withValues(alpha: 0.4),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 DestructiveButton(
-                  label: 'Delete all data',
+                  label: l10n.settingsDeleteAllData,
                   icon: AppIcons.trash,
                   onPressed: () => _openDeleteAllSheet(context, ref),
                 ),
                 const SizedBox(height: AppSpacing.s3),
                 Text(
-                  'Removes all calculations and events from this '
-                  'device. Cannot be undone.',
+                  l10n.settingsDeleteAllHelper,
                   style: AppTypography.bodySm.copyWith(
                     color: AppColors.inkSoft,
                   ),
@@ -138,11 +138,11 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.sectionGap),
-          const _SectionLabel('About'),
+          _SectionLabel(l10n.settingsSectionAbout),
           AppCard(
             padding: EdgeInsets.zero,
             child: _ChevronRow(
-              label: 'Privacy Policy',
+              label: l10n.settingsPrivacyPolicy,
               onTap: () => _openPrivacy(context),
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.s5,
@@ -154,7 +154,7 @@ class SettingsScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.only(left: AppSpacing.s2),
             child: Text(
-              'TrueRise  v1.0.0',
+              '$appBrandName  v1.0.0',
               style: AppTypography.bodySm.copyWith(color: AppColors.inkSoft),
             ),
           ),
@@ -206,7 +206,9 @@ class _ChevronRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: value == null ? label : '$label, $value',
+      label: value == null
+          ? label
+          : context.l10n.fieldValueSemantic(label, value!),
       excludeSemantics: true,
       child: Material(
         color: Colors.transparent,

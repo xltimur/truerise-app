@@ -3700,7 +3700,7 @@ passed auth — it reached business logic, not 401/403 — so the existing
 ### 2026-06-02 — Public Brand, Age Gate, Privacy Disclosure (Impl Run A.1)
 
 - **Model:** `claude-opus-4-8` (run invoked explicitly under this model).
-- **Session id:** not surfaced to the agent this run; omitted.
+- **Session id:** `4b816090-6126-4a22-a04d-276d4595e48d`.
 - **Stage:** First implementation run cut from the Run 6 P0 set. Closes three
   store-blocking gaps without touching deferred MVP scope: public display name
   (G1), absent age gate (G6), and the privacy-copy under-disclosure of live-mode
@@ -4066,3 +4066,88 @@ passed auth — it reached business logic, not 401/403 — so the existing
   release signing, trademark clearance + App Store name availability, in-console
   character re-count, category & age-rating confirmation, Apple privacy labels +
   Play Data Safety completion, demo/review key rotation).
+
+### 2026-06-03 — P0 Localization Pipeline + English Extraction (Impl Run C.1)
+
+- **Model:** `claude-opus-4-8` (run invoked explicitly under this model).
+- **Session id:** not surfaced to the agent this run; omitted.
+- **Stage:** **G20 (localization infrastructure + English extraction)** and
+  **G21 (locale-aware date/time/month formatting)** per
+  `docs/l10n-string-audit.md`. Made the shipped UI translatable while keeping
+  English behavior byte-stable. **Translations for de/fr/es/pt are explicitly
+  out of scope** for this run and were **not** created.
+- **What changed:**
+  - **gen-l10n pipeline (G20):** `flutter_localizations` + `generate: true`
+    (`pubspec.yaml`), `l10n.yaml`, and `lib/l10n/l10n.dart` (re-exports
+    `AppLocalizations`, the `context.l10n` extension, and
+    `const appBrandName = 'TrueRise'`). Generated `app_localizations.dart` +
+    `app_localizations_en.dart` from a single **`lib/l10n/app_en.arb`** holding
+    **214 user-visible message keys** with `@`-metadata. Covers onboarding,
+    calc-flow (birth/window/events/confirm/loading), result + evidence, history
+    + home, settings cluster + privacy, error screens, navigation/stepper,
+    add-event sheet, demo labels, match-strength + event-category labels, and
+    key `Semantics` labels. ICU **plural/select** used where counts/enums vary;
+    the brand is held constant via a `{brand}` placeholder (passed
+    `appBrandName`) so **"TrueRise" is never translated**; no "Rectify" brand
+    strings reintroduced.
+  - **Locale-aware formatting (G21):** `lib/core/formatting/app_date_format.dart`
+    wraps `intl` `DateFormat` (clock time, long date `yMMMMd`, optional
+    month/year, month abbrev) and replaced hand-rolled AM/PM logic and the
+    duplicated month-name maps in the picker fields / nav widgets. **12h/24h**
+    selection preserved; canonical demo sample times stay byte-stable
+    (**7:14 AM** / **07:14**).
+  - **Demo evidence prose (G20 P1, batch C8):** the six canonical evidence
+    explanations moved out of `lib/data/demo/demo_response.dart` into ARB keys
+    (`demoEvidence{StrongVenus,StrongSaturn,ModerateJupiter,ModerateSolarArc,
+    WeakMercury,NoMatch}`, sensitive register: indication wording, not proof).
+    Because `buildDemoResult` is data-layer (no `BuildContext`) but its prose is
+    persisted like live results, a small `DemoEvidenceCopy` value object is
+    resolved once on the loading screen (`DemoEvidenceCopy.fromL10n(context.l10n)`)
+    and threaded `loading_screen → controller.submit → repository.submit →
+    buildDemoResult`. The demo path remains **offline** — no `BuildContext` and
+    no network reach the data layer.
+- **Artifacts changed in this run:** `lib/l10n/app_en.arb`
+  (+ regenerated `app_localizations.dart`, `app_localizations_en.dart`);
+  `lib/data/demo/demo_response.dart`, `lib/data/repos/rectification_repository.dart`,
+  `lib/features/calculation_flow/screens/loading_screen.dart`,
+  `lib/features/calculation_flow/state/calculation_flow_controller.dart`,
+  `lib/features/error_flow/error_screen.dart`,
+  `lib/features/home/home_history_screen.dart`, the settings cluster
+  (`settings_screen.dart`, `api_key_sheet.dart`, `delete_all_data_sheet.dart`,
+  `privacy_policy_screen.dart`), and nav/input widgets
+  (`top_nav.dart`, `stepper_header.dart`, `bottom_tab_bar.dart`,
+  `date_picker_field.dart`, `time_picker_field.dart`). Tests:
+  `test/data/demo/demo_response_test.dart`,
+  `test/data/repos/rectification_repository_test.dart`,
+  `test/helpers/fake_rectification_repository.dart`, the three calc-flow widget
+  tests, and a new `test/helpers/demo_fixtures.dart`
+  (`testDemoEvidenceCopy = DemoEvidenceCopy.fromL10n(AppLocalizationsEn())`).
+  This `docs/claude-build-history.md` Run C.1 entry. The C0–C4 foundation
+  (l10n.yaml, l10n.dart, app_date_format.dart, early-batch screens) plus store
+  assets were already committed earlier in `72d6003` (made outside this run —
+  see Notes).
+- **Verification:** `flutter pub get` OK; `flutter gen-l10n` regenerated cleanly
+  (English getters byte-identical to source copy); `dart format` on the run's
+  non-generated Dart (1 file normalized, no logic change); `flutter analyze
+  --no-pub` → **No issues found**; `flutter test --exclude-tags backend --no-pub`
+  → **250 tests passed, 0 failed** (backend-tagged live-API tests excluded by
+  design). `git diff --check` clean; `git status --short` shows only this run's
+  files; `ls lib/l10n/*.arb` → **only `app_en.arb`** (no de/fr/es/pt). The
+  existing "demo submit never calls RectificationApi.rectify" test still passes,
+  confirming the demo path stays offline after the `DemoEvidenceCopy` threading.
+- **Constraints respected:** **no commit, no push.** Only the single English
+  ARB exists — no target-locale ARBs created. No deferred MVP scope added
+  (no payments/IAP/accounts/sync/dark-mode/chart/export/Vedic toggles). No
+  secrets in source/logs/ARB/generated/docs. Demo mode unchanged and offline.
+  Generated files refreshed via gen-l10n only (no hand edits). No `ios/`,
+  `android/`, `assets/`, or `README.md` edits.
+- **Notes:** commit `72d6003 feat: prepare store assets and localization
+  groundwork` (timestamped 2026-06-02, **made outside this agent run**) bundled
+  store assets with the C0–C4 l10n groundwork; flagged here for owner
+  visibility. Internal-only failure payloads (e.g. the `BadRequestFailure`
+  string in the calc-flow controller) were intentionally **not** extracted —
+  they are never rendered; user-facing error copy comes from the ARB.
+- **Limit status:** No usage-limit stop.
+- **Open items (owner / future run):** author de/fr/es/pt ARBs and wire
+  `supportedLocales` for the target markets (deferred per this run's scope);
+  re-screenshot any locale-specific store frames once translations land.

@@ -7,6 +7,7 @@ import 'package:rectify/data/models/calculation_request.dart';
 import 'package:rectify/data/models/calculation_result.dart';
 import 'package:rectify/data/repos/history_repository.dart';
 import 'package:rectify/data/repos/rectification_repository.dart';
+import 'package:rectify/l10n/app_localizations_en.dart';
 
 /// Test double for [RectificationRepository] that completes
 /// instantaneously (no demoDelay), wires the result through
@@ -33,8 +34,9 @@ class FakeRectificationRepository implements RectificationRepository {
 
   @override
   Future<Result<CalculationResult, AppFailure>> submit(
-    CalculationRequest request,
-  ) async {
+    CalculationRequest request, {
+    DemoEvidenceCopy? demoCopy,
+  }) async {
     submissions.add(request);
     if (blocker != null) await blocker!.future;
     if (failureOverride != null) {
@@ -43,6 +45,7 @@ class FakeRectificationRepository implements RectificationRepository {
     final result = buildDemoResult(
       request,
       now: DateTime.utc(2026, 5, 20, 12),
+      copy: demoCopy ?? DemoEvidenceCopy.fromL10n(AppLocalizationsEn()),
     );
     await _history?.save(request, result);
     return Result.ok(result);

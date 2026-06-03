@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/motion.dart';
 import 'package:rectify/theme/spacing.dart';
@@ -30,11 +31,12 @@ class StepperHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final progress = currentStep / totalSteps;
-    final label = 'STEP $currentStep OF $totalSteps';
+    final l10n = context.l10n;
+    final label = l10n.stepperStep(currentStep, totalSteps);
 
     return Semantics(
       label: semanticsLabelOverride ?? label,
-      value: '${(progress * 100).round()} percent',
+      value: l10n.stepperPercent((progress * 100).round()),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,

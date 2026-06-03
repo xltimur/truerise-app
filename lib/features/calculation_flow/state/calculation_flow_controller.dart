@@ -5,6 +5,7 @@ import 'package:flutter/material.dart' show TimeOfDay;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rectify/core/failures.dart';
 import 'package:rectify/core/result.dart';
+import 'package:rectify/data/demo/demo_response.dart';
 import 'package:rectify/data/models/calculation_result.dart';
 import 'package:rectify/data/models/event_category.dart';
 import 'package:rectify/data/models/geo_place.dart';
@@ -209,7 +210,9 @@ class CalculationFlowController extends Notifier<CalculationFlowState> {
   /// watches `state.submitting` to render the [BreathRingLoader]; once
   /// this future completes, the screen routes back to history (Phase
   /// 5 will replace the redirect with `/calc/result/:id`).
-  Future<Result<CalculationResult, AppFailure>> submit() async {
+  Future<Result<CalculationResult, AppFailure>> submit({
+    DemoEvidenceCopy? demoCopy,
+  }) async {
     if (!state.readyToSubmit) {
       return const Result.err(
         BadRequestFailure('Calculation draft is incomplete.'),
@@ -224,7 +227,7 @@ class CalculationFlowController extends Notifier<CalculationFlowState> {
     );
 
     final request = state.toRequest();
-    final result = await _rectifier.submit(request);
+    final result = await _rectifier.submit(request, demoCopy: demoCopy);
 
     return result.fold<Result<CalculationResult, AppFailure>>(
       ok: (value) {

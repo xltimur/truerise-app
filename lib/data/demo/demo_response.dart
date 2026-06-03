@@ -5,6 +5,7 @@ import 'package:rectify/data/models/calculation_result.dart';
 import 'package:rectify/data/models/candidate_time.dart';
 import 'package:rectify/data/models/evidence_item.dart';
 import 'package:rectify/data/models/match_strength.dart';
+import 'package:rectify/l10n/l10n.dart';
 
 /// Canonical mock response for demo mode (`docs/mvp-scope.md` §DM2,
 /// `docs/implementation-plan.md` §10.2).
@@ -33,29 +34,53 @@ const demoCandidates = <CandidateTime>[
   ),
 ];
 
+/// Locale-resolved demo evidence prose.
+///
+/// `buildDemoResult` runs in the data layer where there is no
+/// `BuildContext`, but the explanations it emits are user-visible and
+/// must be localizable. The loading screen resolves the strings from
+/// [AppLocalizations] and threads this value object down, so the demo
+/// path stays offline and free of UI dependencies.
+class DemoEvidenceCopy {
+  const DemoEvidenceCopy({
+    required this.strongVenus,
+    required this.strongSaturn,
+    required this.moderateJupiter,
+    required this.moderateSolarArc,
+    required this.weakMercury,
+    required this.noMatch,
+  });
+
+  DemoEvidenceCopy.fromL10n(AppLocalizations l10n)
+    : strongVenus = l10n.demoEvidenceStrongVenus,
+      strongSaturn = l10n.demoEvidenceStrongSaturn,
+      moderateJupiter = l10n.demoEvidenceModerateJupiter,
+      moderateSolarArc = l10n.demoEvidenceModerateSolarArc,
+      weakMercury = l10n.demoEvidenceWeakMercury,
+      noMatch = l10n.demoEvidenceNoMatch;
+
+  final String strongVenus;
+  final String strongSaturn;
+  final String moderateJupiter;
+  final String moderateSolarArc;
+  final String weakMercury;
+  final String noMatch;
+}
+
 /// Stock explanation pool keyed by [MatchStrength]. Used to fill in
 /// evidence when the user submitted fewer than 6 events (trim) or
 /// more than 6 (pad with weak/none).
-// ignore_for_file: lines_longer_than_80_chars
-// Demo explanation copy is intentionally readable as prose; wrapping
-// it inside the 80-col gutter splinters the sentences and makes the
-// strings harder to proof-read. Suppress the rule for this file only.
-const _demoExplanations = <MatchStrength, List<String>>{
-  MatchStrength.strong: <String>[
-    'A timed Venus return aligned with the candidate window, consistent with a partnership event.',
-    'Saturn crossed the 10th-house cusp inside the window — a classic timing signature for a career pivot.',
-  ],
-  MatchStrength.moderate: <String>[
-    'Jupiter passed near the 4th-house cusp; moderate support for a home / relocation event in this window.',
-    'A solar arc to Mars sat within tolerance of the window, plausible for the reported event but not exclusive to it.',
-  ],
-  MatchStrength.weak: <String>[
-    'Mercury was within wide orb of the relevant cusp; insufficient to confirm timing on its own.',
-  ],
-  MatchStrength.none: <String>[
-    'No primary aspect within tolerance of the candidate window. This event neither supports nor contradicts the result.',
-  ],
-};
+Map<MatchStrength, List<String>> _poolsFor(DemoEvidenceCopy copy) {
+  return <MatchStrength, List<String>>{
+    MatchStrength.strong: <String>[copy.strongVenus, copy.strongSaturn],
+    MatchStrength.moderate: <String>[
+      copy.moderateJupiter,
+      copy.moderateSolarArc,
+    ],
+    MatchStrength.weak: <String>[copy.weakMercury],
+    MatchStrength.none: <String>[copy.noMatch],
+  };
+}
 
 /// Distribution per §DM2: 2 strong, 2 moderate, 1 weak, 1 no match.
 const _demoStrengthOrder = <MatchStrength>[
@@ -81,14 +106,16 @@ const _demoStrengthOrder = <MatchStrength>[
 CalculationResult buildDemoResult(
   CalculationRequest req, {
   required DateTime now,
+  required DemoEvidenceCopy copy,
 }) {
+  final pools = _poolsFor(copy);
   final evidence = <EvidenceItem>[];
   for (var i = 0; i < req.events.length; i++) {
     final event = req.events[i];
     final strength = i < _demoStrengthOrder.length
         ? _demoStrengthOrder[i]
         : (i.isEven ? MatchStrength.weak : MatchStrength.none);
-    final pool = _demoExplanations[strength]!;
+    final pool = pools[strength]!;
     final explanation = pool[i % pool.length];
     evidence.add(
       EvidenceItem(

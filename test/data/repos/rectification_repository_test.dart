@@ -11,6 +11,7 @@ import 'package:rectify/data/models/match_strength.dart';
 import 'package:rectify/data/repos/history_repository.dart';
 import 'package:rectify/data/repos/rectification_repository.dart';
 
+import '../../helpers/demo_fixtures.dart';
 import '../fixtures/sample_calculation.dart';
 
 /// Fake API that records every call. Used to assert that the demo
@@ -70,7 +71,7 @@ void main() {
       final repo = _makeRepo(api: api, history: history);
       final request = sampleRequest(isDemo: true, eventCount: 6);
 
-      final result = await repo.submit(request);
+      final result = await repo.submit(request, demoCopy: testDemoEvidenceCopy);
 
       expect(result.isOk, isTrue);
       final calc = result.valueOrNull!;
@@ -95,14 +96,17 @@ void main() {
 
     test('demo submit never calls RectificationApi.rectify', () async {
       final repo = _makeRepo(api: api, history: history);
-      await repo.submit(sampleRequest(isDemo: true));
+      await repo.submit(
+        sampleRequest(isDemo: true),
+        demoCopy: testDemoEvidenceCopy,
+      );
       expect(api.callCount, 0);
     });
 
     test('demo submit persists the result to history', () async {
       final repo = _makeRepo(api: api, history: history);
       final request = sampleRequest(isDemo: true);
-      final result = await repo.submit(request);
+      final result = await repo.submit(request, demoCopy: testDemoEvidenceCopy);
       expect(result.isOk, isTrue);
 
       final fetched = await history.findById(request.id);
@@ -110,18 +114,23 @@ void main() {
       expect(fetched.valueOrNull!.result.isDemo, isTrue);
     });
 
-    test('demo submit returns success even when apiKeyIsConfigured=false',
-        () async {
-      // Demo mode must never be blocked by missing API key.
-      final repo = _makeRepo(
-        api: api,
-        history: history,
-        apiKeyIsConfigured: false,
-      );
-      final result = await repo.submit(sampleRequest(isDemo: true));
-      expect(result.isOk, isTrue);
-      expect(api.callCount, 0);
-    });
+    test(
+      'demo submit returns success even when apiKeyIsConfigured=false',
+      () async {
+        // Demo mode must never be blocked by missing API key.
+        final repo = _makeRepo(
+          api: api,
+          history: history,
+          apiKeyIsConfigured: false,
+        );
+        final result = await repo.submit(
+          sampleRequest(isDemo: true),
+          demoCopy: testDemoEvidenceCopy,
+        );
+        expect(result.isOk, isTrue);
+        expect(api.callCount, 0);
+      },
+    );
   });
 
   group('Real path — no API key configured', () {
@@ -135,8 +144,11 @@ void main() {
 
       expect(result.isErr, isTrue);
       expect(result.failureOrNull, isA<MissingApiKeyFailure>());
-      expect(api.callCount, 0,
-          reason: 'No network call should be made when key is absent');
+      expect(
+        api.callCount,
+        0,
+        reason: 'No network call should be made when key is absent',
+      );
     });
 
     test('MissingApiKeyFailure is distinct from NoNetworkFailure', () async {

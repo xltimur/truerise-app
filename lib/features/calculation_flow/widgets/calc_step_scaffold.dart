@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:rectify/features/calculation_flow/state/calculation_flow_state.dart';
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/spacing.dart';
 import 'package:rectify/theme/typography.dart';
@@ -42,7 +43,7 @@ class CalcStepScaffold extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.bgApp,
       appBar: TopNav(
-        title: 'New Calculation',
+        title: context.l10n.calcFlowTitle,
         onBack: onBack,
       ),
       body: SafeArea(

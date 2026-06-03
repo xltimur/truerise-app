@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/icons.dart';
 import 'package:rectify/theme/spacing.dart';
@@ -52,7 +53,7 @@ class TopNav extends StatelessWidget implements PreferredSizeWidget {
                         AppIcons.back,
                         color: AppColors.inkStrong,
                       ),
-                      tooltip: 'Back',
+                      tooltip: context.l10n.commonBack,
                       iconSize: 24,
                       splashRadius: 22,
                       onPressed: onBack,

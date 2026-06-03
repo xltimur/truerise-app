@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/icons.dart';
 import 'package:rectify/theme/typography.dart';
@@ -62,7 +63,11 @@ class DatePickerField extends StatelessWidget {
       button: true,
       enabled: !disabled,
       label:
-          semanticsLabel ?? '$label, ${hasValue ? formattedValue! : 'not set'}',
+          semanticsLabel ??
+          context.l10n.fieldValueSemantic(
+            label,
+            hasValue ? formattedValue! : context.l10n.commonNotSet,
+          ),
       excludeSemantics: true,
       child: InkWell(
         onTap: disabled ? null : onTap,
