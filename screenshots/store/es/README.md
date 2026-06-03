@@ -20,11 +20,16 @@ See `manifest.json` for the machine-readable details.
 |---|---|---|---|
 | 1 | `01-result-hero.png` | Result (`/calc/result/:id`) | Spanish result chrome, 7:14 AM, Gemini Rising, 78% confidence, alternate candidates, DEMO pill, evidence CTA, `Compartir el resultado`. |
 | 2 | `02-evidence-breakdown.png` | Evidence (`/calc/result/:id/evidence`) | Spanish evidence screen with localized match cards and evidence prose. |
-| 3 | `03-privacy-demo-settings.png` | Settings (`/settings`) | Spanish settings, demo mode ON, optional API key, time format, delete-all-data row, bottom nav. |
+| 3 | `03-privacy-demo-settings.png` | Settings (`/settings`) | Spanish settings, demo mode ON, time format, delete-all-data row, bottom nav. |
 | 4 | `04-share-result.png` | Result (`/calc/result/:id`) | The shipped `Compartir el resultado` affordance in context. |
-| 5 | `05-privacy-policy.png` | Privacy (`/settings/privacy`) | Bonus privacy frame: on-device storage, optional API key, offline demo, live-mode HTTPS. |
+| 5 | `05-privacy-policy.png` | Privacy (`/settings/privacy`) | Bonus privacy frame: on-device storage, offline demo, live-mode HTTPS. |
 
 Frames 1-4 are the required set. Frame 5 is an optional bonus privacy frame.
+
+> **Frames 3 and 5 refreshed (2026-06-03).** Both PNGs were re-captured from the
+> current simplified **Settings** and in-app **Privacy** screens, using the same
+> throwaway `/tmp` widget-test harness, iPhone 6.7" geometry, and offline
+> Demo-mode capture method as the rest of the set.
 
 ## Share payload note
 

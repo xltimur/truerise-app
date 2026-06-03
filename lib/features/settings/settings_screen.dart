@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import 'package:rectify/app/route_names.dart';
 import 'package:rectify/data/models/time_format.dart';
-import 'package:rectify/features/settings/api_key_sheet.dart';
 import 'package:rectify/features/settings/delete_all_data_sheet.dart';
 import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/providers/settings_controller.dart';
@@ -24,14 +23,9 @@ import 'package:rectify/widgets/nav/top_nav.dart';
 ///
 /// Grouped list of `bg.surface` cards. Each section ends with a 24pt
 /// gap; the destructive "Delete all data" action sits in its own card
-/// with a clear danger affordance. The API-key row triggers
-/// [ApiKeySheet] and never displays the saved value — only a "Set"
-/// indicator.
+/// with a clear danger affordance.
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
-
-  Future<void> _openApiKeySheet(BuildContext context) =>
-      ApiKeySheet.show(context);
 
   Future<void> _openDeleteAllSheet(BuildContext context, WidgetRef ref) =>
       DeleteAllDataSheet.show(context);
@@ -56,32 +50,6 @@ class SettingsScreen extends ConsumerWidget {
           AppSpacing.s8,
         ),
         children: <Widget>[
-          _SectionLabel(l10n.settingsSectionApiKey),
-          AppCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                _ChevronRow(
-                  label: l10n.settingsApiKeyRowLabel,
-                  value: settings.proApiKeyConfigured
-                      ? l10n.settingsApiKeySet
-                      : l10n.settingsApiKeyNotSet,
-                  valueColor: settings.proApiKeyConfigured
-                      ? AppColors.accentClayDeep
-                      : AppColors.inkSoft,
-                  onTap: () => _openApiKeySheet(context),
-                ),
-                const SizedBox(height: AppSpacing.s2),
-                Text(
-                  l10n.settingsApiKeyHelper,
-                  style: AppTypography.bodySm.copyWith(
-                    color: AppColors.inkSoft,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: AppSpacing.sectionGap),
           _SectionLabel(l10n.settingsSectionDefaults),
           AppCard(
             child: Column(
@@ -184,31 +152,24 @@ class _SectionLabel extends StatelessWidget {
   }
 }
 
-/// Tappable row with a chevron on the right; used by the API-key card
-/// and the Privacy-Policy card. Pulled out instead of inlined so both
-/// rows render identical chrome.
+/// Tappable row with a chevron on the right; used by the Privacy-Policy
+/// card. Kept as its own widget so the row chrome stays consistent.
 class _ChevronRow extends StatelessWidget {
   const _ChevronRow({
     required this.label,
     required this.onTap,
-    this.value,
-    this.valueColor,
     this.padding = EdgeInsets.zero,
   });
 
   final String label;
   final VoidCallback onTap;
-  final String? value;
-  final Color? valueColor;
   final EdgeInsetsGeometry padding;
 
   @override
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: value == null
-          ? label
-          : context.l10n.fieldValueSemantic(label, value!),
+      label: label,
       excludeSemantics: true,
       child: Material(
         color: Colors.transparent,
@@ -224,15 +185,6 @@ class _ChevronRow extends StatelessWidget {
                   Expanded(
                     child: Text(label, style: AppTypography.bodyMd),
                   ),
-                  if (value != null) ...<Widget>[
-                    Text(
-                      value!,
-                      style: AppTypography.bodyMd.copyWith(
-                        color: valueColor ?? AppColors.inkSoft,
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.s2),
-                  ],
                   const Icon(
                     AppIcons.forward,
                     size: 18,

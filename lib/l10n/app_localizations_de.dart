@@ -600,9 +600,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get errorTryAgain => 'Erneut versuchen';
 
   @override
-  String get errorOpenSettings => 'Einstellungen öffnen';
-
-  @override
   String get errorReviewDraft => 'Meinen Entwurf prüfen';
 
   @override
@@ -610,7 +607,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get errorTimeoutBody =>
-      'Der Anbieter hat nicht rechtzeitig geantwortet. In öffentlichen WLANs kann das Netzwerk langsam sein – versuche es gleich noch einmal.';
+      'Die Berechnung wurde nicht rechtzeitig abgeschlossen. In öffentlichen WLANs kann das Netzwerk langsam sein – versuche es gleich noch einmal.';
 
   @override
   String get errorNoInternetTitle => 'Netzwerk nicht erreichbar';
@@ -624,48 +621,47 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get errorBadRequestBody =>
-      'Der Berechnungsanbieter hat die Anfrage abgelehnt. Überprüfe dein Geburtsdatum, dein Zeitfenster und deine Ereignisse und versuche es erneut.';
+      'Etwas an deinem Geburtsdatum, deinem Zeitfenster oder deinen Ereignissen konnte nicht verarbeitet werden. Überprüfe sie und versuche es dann erneut.';
 
   @override
-  String get errorUnauthorizedTitle => 'Autorisierung erforderlich';
+  String get errorUnauthorizedTitle =>
+      'Berechnung konnte nicht abgeschlossen werden';
 
   @override
   String get errorUnauthorizedBody =>
-      'Der Anbieter hat den API-Schlüssel auf diesem Gerät nicht akzeptiert. Öffne die Einstellungen, um einen neuen Schlüssel einzugeben, oder aktiviere den Demo-Modus.';
+      'Diese Berechnung konnte gerade nicht abgeschlossen werden. Versuche es gleich noch einmal oder aktiviere den Demo-Modus, um mit Beispieldaten weiter zu erkunden.';
 
   @override
-  String get errorMissingApiKeyTitle => 'API-Schlüssel erforderlich';
+  String get errorMissingApiKeyTitle =>
+      'Berechnung konnte nicht gestartet werden';
 
   @override
   String get errorMissingApiKeyBody =>
-      'Der Live-Modus benötigt deinen API-Schlüssel von astrology-api.io. Öffne die Einstellungen, um ihn hinzuzufügen, oder aktiviere den Demo-Modus, um die App mit Beispieldaten zu testen.';
+      'Eine Live-Berechnung konnte gerade nicht gestartet werden. Versuche es gleich noch einmal oder aktiviere den Demo-Modus, um die App mit Beispieldaten zu testen.';
 
   @override
-  String get errorServerTitle => 'Problem beim Anbieter';
+  String get errorServerTitle => 'Etwas ist schiefgelaufen';
 
   @override
   String get errorServerBody =>
-      'Der Anbieter hat einen Fehler zurückgegeben. Sein Dienst hat vielleicht gerade Probleme – ein erneuter Versuch in Kürze lohnt sich.';
+      'Die Berechnung konnte gerade nicht abgeschlossen werden. Vielleicht ist es nur eine vorübergehende Störung – ein erneuter Versuch in Kürze lohnt sich.';
 
   @override
   String get errorRateLimitedTitle => 'Berechnungslimit erreicht';
 
   @override
   String get errorRateLimitedBody =>
-      'Du hast das Limit des gemeinsam genutzten Berechnungsdienstes erreicht. Warte einen Moment und versuche es erneut, aktiviere den Demo-Modus, um offline weiter zu erkunden, oder füge in den Einstellungen deinen eigenen API-Schlüssel hinzu.';
+      'Du hast vorerst das Berechnungslimit erreicht. Warte einen Moment und versuche es erneut oder aktiviere den Demo-Modus, um offline weiter zu erkunden.';
 
   @override
   String get errorMalformedTitle => 'Antwort konnte nicht gelesen werden';
 
   @override
   String get errorMalformedBody =>
-      'Die Antwort des Anbieters entsprach nicht dem, was diese Version erwartet. Versuche es erneut oder führe eine Demo-Berechnung durch, während wir uns darum kümmern.';
+      'Die Antwort entsprach nicht dem, was diese Version erwartet. Versuche es erneut oder führe eine Demo-Berechnung durch, während wir uns darum kümmern.';
 
   @override
   String get settingsTitle => 'Einstellungen';
-
-  @override
-  String get settingsSectionApiKey => 'API-Schlüssel';
 
   @override
   String get settingsSectionDefaults => 'Berechnungsvorgaben';
@@ -678,19 +674,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsSectionAbout => 'Über';
-
-  @override
-  String get settingsApiKeyRowLabel => 'API-Schlüssel (Pro / Entwickler)';
-
-  @override
-  String get settingsApiKeySet => 'Festgelegt';
-
-  @override
-  String get settingsApiKeyNotSet => 'Nicht festgelegt';
-
-  @override
-  String get settingsApiKeyHelper =>
-      'Optional. Nur für Nutzer mit eigenem Anbieterschlüssel. Leer lassen für den standardmäßigen (Proxy-)Pfad.';
 
   @override
   String get settingsDemoModeLabel => 'Demo-Modus';
@@ -714,32 +697,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsPrivacyPolicy => 'Datenschutzerklärung';
-
-  @override
-  String get apiKeySheetBody =>
-      'Füge deinen Anbieterschlüssel ein, um den standardmäßigen Proxy-Pfad zu deaktivieren. Der Schlüssel wird nur auf diesem Gerät gespeichert.';
-
-  @override
-  String get apiKeyFieldLabel => 'API-Schlüssel';
-
-  @override
-  String get apiKeyHintConfigured =>
-      'Derzeit festgelegt – gib einen neuen Schlüssel ein, um ihn zu ersetzen';
-
-  @override
-  String get apiKeyHintEmpty => 'sk-…';
-
-  @override
-  String get apiKeySaveButton => 'Schlüssel speichern';
-
-  @override
-  String get apiKeyRemoveButton => 'Schlüssel entfernen';
-
-  @override
-  String get apiKeySavedSnack => 'API-Schlüssel gespeichert.';
-
-  @override
-  String get apiKeyRemovedSnack => 'API-Schlüssel entfernt.';
 
   @override
   String get deleteAllTitle => 'Alle Daten löschen?';
@@ -779,18 +736,11 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get privacyApiKeyTitle => 'Optionaler API-Schlüssel';
-
-  @override
-  String get privacyApiKeyBody =>
-      'Power-User können in den Einstellungen ihren eigenen Anbieter-API-Schlüssel einfügen. Wenn er festgelegt ist, liegt dieser Schlüssel im Schlüsselbund der Plattform (iOS) oder im Keystore (Android) – er gelangt nie in die Datenbank, die Einstellungen, die Protokolle oder Absturzberichte und wird dir nach dem Speichern nie wieder angezeigt.';
-
-  @override
   String get privacyDemoTitle => 'Demo-Modus';
 
   @override
   String get privacyDemoBody =>
-      'Demo-Berechnungen laufen vollständig auf diesem Gerät – es werden keine Netzwerkanfragen gestellt und kein Schlüssel verwendet. Demo-Ergebnisse sind deutlich mit einem DEMO-Abzeichen gekennzeichnet, damit sie nicht mit echten Auswertungen verwechselt werden.';
+      'Demo-Berechnungen laufen vollständig auf diesem Gerät – es werden keine Netzwerkanfragen gestellt. Demo-Ergebnisse sind deutlich mit einem DEMO-Abzeichen gekennzeichnet, damit sie nicht mit echten Auswertungen verwechselt werden.';
 
   @override
   String get privacyLiveTitle => 'Live-Berechnungen';
@@ -805,7 +755,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get privacyDeleteBody =>
-      'Der Einstellungsbildschirm hat eine Aktion \"Alle Daten löschen\", die die lokale Datenbank, alle Einstellungen und den sicheren Speichereintrag mit deinem API-Schlüssel (falls du einen festgelegt hast) löscht. Die Löschung ist abgeschlossen, bevor die Aktion zurückkehrt; die App bringt dich anschließend zum Onboarding zurück, damit du das Zurücksetzen bestätigen kannst.';
+      'Der Einstellungsbildschirm hat eine Aktion \"Alle Daten löschen\", die die lokale Datenbank und alle auf diesem Gerät gespeicherten Einstellungen löscht. Die Löschung ist abgeschlossen, bevor die Aktion zurückkehrt; die App bringt dich anschließend zum Onboarding zurück, damit du das Zurücksetzen bestätigen kannst.';
 
   @override
   String get privacyAnalyticsTitle => 'Analyse und Absturzberichte';

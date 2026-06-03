@@ -53,13 +53,13 @@ class CalculationErrorScreen extends ConsumerWidget {
         icon: AppIcons.errorUnauthorized,
         title: l10n.errorUnauthorizedTitle,
         description: l10n.errorUnauthorizedBody,
-        primaryLabel: l10n.errorOpenSettings,
+        primaryLabel: l10n.errorTryAgain,
       ),
       ErrorScreenKind.missingApiKey => _ErrorCopy(
         icon: AppIcons.errorUnauthorized,
         title: l10n.errorMissingApiKeyTitle,
         description: l10n.errorMissingApiKeyBody,
-        primaryLabel: l10n.errorOpenSettings,
+        primaryLabel: l10n.errorTryAgain,
       ),
       ErrorScreenKind.server => _ErrorCopy(
         icon: AppIcons.errorServer,
@@ -98,15 +98,6 @@ class CalculationErrorScreen extends ConsumerWidget {
       primaryAction: PrimaryButton(
         label: copy.primaryLabel,
         onPressed: () {
-          if (kind == ErrorScreenKind.unauthorized ||
-              kind == ErrorScreenKind.missingApiKey) {
-            // Drop the draft and route into Settings so the user can
-            // add or replace their API key — retrying the same 401 (or
-            // submitting again with no key) would just bounce back here.
-            controller.reset();
-            context.go(RoutePaths.settings);
-            return;
-          }
           if (kind == ErrorScreenKind.badRequest) {
             // Steer the user back to confirm so they can correct the
             // payload; the in-memory draft is still intact.

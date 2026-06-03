@@ -7,11 +7,8 @@ import 'package:rectify/theme/spacing.dart';
 import 'package:rectify/theme/typography.dart';
 import 'package:rectify/widgets/nav/top_nav.dart';
 
-/// In-app privacy copy (`docs/mvp-scope.md` AC4 — "the
-/// provider's shared API key is **not** present in the app binary";
-/// `docs/implementation-plan.md` §9.5 — "user-supplied Pro/Dev key
-/// stored in `flutter_secure_storage` only"; §15.3 open question:
-/// final policy URL deferred to Phase 8).
+/// In-app privacy copy (`docs/implementation-plan.md` §15.3 open
+/// question: final policy URL deferred to Phase 8).
 ///
 /// Renders a plain-language summary so the Settings row works the
 /// moment Phase 7 ships, without depending on a Legal-team URL that
@@ -43,13 +40,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.s4),
           _Body(l10n.privacyStoresBody(appBrandName)),
-          const SizedBox(height: AppSpacing.sectionGap),
-          Text(
-            l10n.privacyApiKeyTitle,
-            style: AppTypography.titleLg,
-          ),
-          const SizedBox(height: AppSpacing.s4),
-          _Body(l10n.privacyApiKeyBody),
           const SizedBox(height: AppSpacing.sectionGap),
           Text(
             l10n.privacyDemoTitle,

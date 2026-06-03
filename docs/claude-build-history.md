@@ -4548,3 +4548,91 @@ passed auth — it reached business logic, not 401/403 — so the existing
   429 `Retry-After` is not parsed, so the same screen is shown for a short rate
   limit and a daily quota (by design — no client-side counter).
 - **Limit/quota:** none hit.
+
+### 2026-06-03 — Consumer-Facing API-Key / Plumbing Removal (Impl Run G.1)
+
+- **Model:** claude-opus-4-8. **Session id:** not captured in this run. No commit,
+  no push by Claude — working tree left dirty for Codex to verify/commit.
+- **Predecessor:** continues from clean checkpoint `87c5ccf` (Run F.1, rate-limit
+  429 error screen).
+- **Goal (P0, release-facing):** ordinary consumer users must not encounter
+  API-key / BYOK / provider / proxy / proxied / shared-service / astrology-api.io /
+  Pro-Developer / `sk-…` plumbing anywhere in normal app UI, the localization
+  source ARBs, or store screenshot metadata. Preserve the demo + live-calculation
+  concepts and the legally-required "third-party calculation provider" privacy
+  disclosure; leave internal/technical docs (e.g. `docs/api-integration.md`) and
+  the developer-facing README `.env`/security-boundary content intact in substance.
+- **Artifacts changed — app code (5):** deleted
+  `lib/features/settings/api_key_sheet.dart` (the per-user key-entry sheet);
+  `lib/features/settings/settings_screen.dart` (removed the API-key Settings row
+  and, after analyze flagged them, the now-dead `value`/`valueColor` params on the
+  private `_ChevronRow`); `lib/features/settings/privacy_policy_screen.dart`
+  (removed the "Optional API key" section + its stale dartdoc);
+  `lib/features/error_flow/error_screen.dart` (the `unauthorized` and
+  `missingApiKey` screens now use `errorTryAgain` and the draft-preserving retry
+  path instead of `errorOpenSettings` + `controller.reset()` + routing into
+  Settings); `lib/features/error_flow/error_routing.dart` (comment-only — rewrote
+  the `missingApiKey` / `rateLimited` mapping comments to drop "deep-link into
+  Settings" and "shared proxy/provider … own-key" language).
+- **Artifacts changed — l10n (5 source + 6 generated):** removed the API-key string
+  sets from all five ARBs (`apiKey*` sheet keys, `settingsApiKey*` /
+  `settingsSectionApiKey` row keys, `privacyApiKeyTitle/Body`, and the now-unused
+  `errorOpenSettings`) and neutralized the visible values of retained keys
+  (`errorMissingApiKeyTitle/Body`, `errorUnauthorizedTitle/Body`, `privacyDemoBody`,
+  `privacyDeleteBody`, and other error bodies) so no key/credentials/provider
+  wording remains; internal key names required by the `ErrorScreenKind` enum
+  (`errorMissingApiKey*`) stay, with neutral copy. Generic `fieldValueSemantic`
+  was deliberately kept (still used by the date/time picker fields).
+  `lib/l10n/app_localizations*.dart` regenerated via `flutter gen-l10n` — no
+  hand-edits to generated files.
+- **Artifacts changed — store metadata (10):**
+  `screenshots/store/{en,de,fr,es,pt-BR}/manifest.json` and matching `README.md`
+  — removed "optional API key" / "no key" wording from the frame-03 (Settings) and
+  frame-05 (Privacy) descriptions and capture notes, and added an explicit
+  `regenerationRequired` / stale-frame note: frames `03-privacy-demo-settings.png`
+  and `05-privacy-policy.png` were captured before the API-key removal and must be
+  re-shot before submission (the textual `shows`/`shippedWidgets` columns already
+  describe the current API-key-free UI; no capture command is checked in).
+- **Artifacts changed — docs (3):** `docs/privacy-policy.md` (removed the "Optional
+  provider API key" section and all "no key" / "stored API key" / "backend proxy"
+  phrasing; kept every "third-party calculation provider" legal disclosure);
+  `docs/store-submission-readiness.md` (added one reconciliation header bullet under
+  the Run E.1 banner marking the body's API-key-sheet references as stale historical
+  evidence — the [VERIFIED] historical prose is preserved, not rewritten); root
+  `README.md` (3 surgical edits to the live-mode key-sourcing list, the error-screen
+  description, and the security-boundary sentence — `.env`/`sk.…`/security-boundary
+  technical content preserved per CLAUDE.md, as the developer README is out of the
+  consumer-facing audit scope).
+- **Artifacts changed — tests (2):**
+  `test/widget/features/settings/settings_screen_test.dart` and
+  `test/widget/l10n/localized_screens_test.dart` — removed the API-key-row
+  expectations that referenced UI that no longer ships.
+- **Method:** scoped cleanup driven by a repeated grep audit (the terms in the Goal)
+  over `lib/features`, the source ARBs, `screenshots/store`, `docs/privacy-policy.md`,
+  and `docs/store-submission-readiness.md`; every surviving hit re-justified rather
+  than blanket-deleted. Distinguished removed-feature references (deleted) from
+  legally-required disclosures and internal/historical technical content (kept +
+  annotated). `.env` secret values were never inspected or printed.
+- **Verification:** `dart format` on the 6 touched Dart files → 0 changed;
+  `flutter analyze --no-pub` → No issues found (after removing the `_ChevronRow`
+  `unused_element_parameter` warnings that surfaced once the API-key row's only
+  caller was gone); focused tests (settings_screen, error_routing, error_scaffold,
+  localized_screens, localized_overflow) → 29 passed; full `flutter test` →
+  261 passed. Final grep audit: `lib/features` and the ARBs retain only the internal
+  `missingApiKey` enum/route names with neutral visible copy; `docs/privacy-policy.md`
+  → no matches; the only `screenshots/store` and `store-submission-readiness.md` hits
+  are the intentional stale-frame / reconciliation notes plus one real HTTPS endpoint
+  in an ATS-compliance evidence block.
+- **Constraints respected:** changes scoped to the consumer-facing surface; no
+  unrelated refactor; demo mode untouched and still offline; live-calculation path
+  and `proApiKeyProvider` secure-storage read path left functional (only the
+  user-facing key UI removed); `docs/api-integration.md` and other technical docs
+  not rewritten; no secrets in source/logs/Drift/SharedPreferences/docs; no commit
+  or push.
+- **Residual risks / owner follow-ups:** screenshot frames `03` and `05` still need
+  re-capture before store upload (text metadata updated, PNGs are stale); the
+  neutralized de/fr/es/pt error/privacy strings remain engineer-drafted and want a
+  native-speaker pass; `store-submission-readiness.md` §2.1/§8.3/§12.2 still contain
+  superseded API-key-sheet prose (flagged by the new reconciliation bullet, not
+  excised, to preserve the historical-evidence record).
+- **Limit/quota:** none hit.

@@ -41,14 +41,14 @@ ErrorScreenKind errorScreenForFailure(AppFailure failure) {
     NoNetworkFailure() => ErrorScreenKind.noInternet,
     BadRequestFailure() => ErrorScreenKind.badRequest,
     UnauthorizedFailure() => ErrorScreenKind.unauthorized,
-    // No API key configured — distinct screen with a direct deep-link
-    // into Settings so a first-time live-mode user isn't stuck on the
-    // generic "credentials rejected" copy.
+    // Live calculation couldn't be started — distinct screen with
+    // neutral retry / Demo-mode copy, so the user isn't stuck on the
+    // generic "credentials rejected" message.
     MissingApiKeyFailure() => ErrorScreenKind.missingApiKey,
     ServerFailure() => ErrorScreenKind.server,
-    // 429 from the shared proxy/provider — distinct screen so the user
-    // gets honest "you've hit the limit" copy with the demo / own-key
-    // alternatives, rather than the generic "their service is down" one.
+    // 429 rate-limit response — distinct screen so the user gets honest
+    // "you've hit the limit" copy with the Demo-mode alternative, rather
+    // than the generic "their service is down" one.
     RateLimitedFailure() => ErrorScreenKind.rateLimited,
     MalformedResponseFailure() => ErrorScreenKind.malformed,
     StorageFailure() => ErrorScreenKind.server,

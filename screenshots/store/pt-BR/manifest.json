@@ -15,11 +15,17 @@
     "safeAreaPaddingPhysicalPx": { "top": 177, "bottom": 102 }
   },
   "source": "Shipped Flutter UI (package `rectify`) rendered from real widgets, routes, and state under the app's Brazilian Portuguese content bundle. No marketing mockups, no fabricated screens.",
-  "captureMethod": "flutter test widget harness on the host VM: RepaintBoundary.toImage(pixelRatio: 3) -> ui.ImageByteFormat.png -> File. Demo mode (offline, no network, no key) drives the canonical 6-event calculation through the real calculation_flow controller and go_router routes; the store locale is pt-BR and the app locale resolves to pt, which carries Brazilian Portuguese content.",
+  "captureMethod": "flutter test widget harness on the host VM: RepaintBoundary.toImage(pixelRatio: 3) -> ui.ImageByteFormat.png -> File. Demo mode (offline, no network) drives the canonical 6-event calculation through the real calculation_flow controller and go_router routes; the store locale is pt-BR and the app locale resolves to pt, which carries Brazilian Portuguese content.",
   "demoMode": true,
-  "network": "none (demo mode is fully offline; no API key, no HTTP)",
+  "network": "none (demo mode is fully offline; no network calls, no HTTP)",
   "captionsBakedIn": false,
   "captionPlanSource": "docs/store-listing-tier1-localized.md §3 (localized marketing captions are intended overlays to be composited by the owner after native review; they are NOT baked into these raw frames).",
+  "refresh": {
+    "date": "2026-06-03",
+    "model": "claude-opus-4-8",
+    "frames": ["03-privacy-demo-settings.png", "05-privacy-policy.png"],
+    "reason": "Re-captured from the current simplified shipped Settings and in-app Privacy screens. Same throwaway /tmp widget-test harness, iPhone 6.7\" geometry, offline Demo-mode method, and RepaintBoundary.toImage(pixelRatio: 3) as the original set; only frames 03 and 05 changed."
+  },
   "frames": [
     {
       "file": "01-result-hero.png",
@@ -40,9 +46,8 @@
     {
       "file": "03-privacy-demo-settings.png",
       "title": "Private & offline (settings)",
-      "route": "/settings",
-      "shippedWidgets": "SettingsScreen: API key row, Demo mode toggle, time format, delete all data, bottom nav, Portuguese chrome",
-      "shows": "Portuguese settings: demo-mode toggle ON (free, offline), optional API key (not set), 12h/24h time format, the destructive delete-all-data row, and localized bottom navigation.",
+      "route": "/settings",      "shippedWidgets": "SettingsScreen: Demo mode toggle, time format, delete all data, bottom nav, Portuguese chrome",
+      "shows": "Portuguese settings: demo-mode toggle ON (free, offline), 12h/24h time format, the destructive delete-all-data row, and localized bottom navigation.",
       "intendedCaption": "Privado por padrão. Experimente grátis, off-line, no modo demo."
     },
     {
@@ -57,8 +62,7 @@
       "file": "05-privacy-policy.png",
       "title": "Privacy policy (bonus)",
       "route": "/settings/privacy",
-      "shippedWidgets": "PrivacyPolicyScreen in-app content, Portuguese chrome",
-      "shows": "Portuguese in-app privacy disclosure: what TrueRise stores (on-device only), optional API key (keychain/Keystore, never in DB/logs), demo mode (entirely on-device, no network, no key), live calculations (sent over HTTPS solely to compute, not tied to any account).",
+      "shippedWidgets": "PrivacyPolicyScreen in-app content, Portuguese chrome",      "shows": "Portuguese in-app privacy disclosure: what TrueRise stores (on-device only), demo mode (entirely on-device, no network), live calculations (sent over HTTPS solely to compute, not tied to any account).",
       "intendedCaption": "(bonus / optional — not part of the required 4-frame set)"
     }
   ],

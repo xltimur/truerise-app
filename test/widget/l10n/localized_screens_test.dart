@@ -8,7 +8,6 @@ import 'package:rectify/app/router.dart';
 import 'package:rectify/data/db/database.dart';
 import 'package:rectify/data/secure/secure_key_store.dart';
 import 'package:rectify/features/onboarding/onboarding_screen.dart';
-import 'package:rectify/features/settings/api_key_sheet.dart';
 import 'package:rectify/features/settings/delete_all_data_sheet.dart';
 import 'package:rectify/features/settings/settings_screen.dart';
 import 'package:rectify/providers/core_providers.dart';
@@ -24,10 +23,9 @@ import '../../helpers/fake_history_repository.dart';
 /// under German so the surfaces that only exist inside a screen get
 /// exercised with their actual translated copy:
 ///
-///   • Settings `_ChevronRow` (API-key label "API-Schlüssel
-///     (Pro / Entwickler)" + "Nicht festgelegt" value + chevron in one
+///   • Settings `_ChevronRow` (Privacy-Policy label + chevron in one
 ///     row) — private, only reachable through `SettingsScreen`.
-///   • The API-key and delete-all bottom sheets.
+///   • The delete-all bottom sheet.
 ///   • The 3 onboarding slides + their stacked CTAs.
 ///
 /// German is forced via the platform locale so `MaterialApp` resolves it
@@ -116,9 +114,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(SettingsScreen), findsOneWidget);
-    // The long API-key row label is the tightest German row.
-    expect(find.text('API-Schlüssel (Pro / Entwickler)'), findsOneWidget);
-    expect(find.text('Nicht festgelegt'), findsOneWidget);
+    // The Privacy-Policy `_ChevronRow` is the surviving chevron row.
+    expect(find.text('Datenschutzerklärung'), findsOneWidget);
     expect(
       tester.takeException(),
       isNull,
@@ -126,25 +123,12 @@ void main() {
     );
   });
 
-  testWidgets('API-key + delete-all sheets fit under German', (tester) async {
+  testWidgets('delete-all sheet fits under German', (tester) async {
     final prefs = await _prefs(
       extra: <String, Object>{'settings.onboarding_done': true},
     );
     final container = await pumpGerman(tester, _wrap(prefs));
     container.read(routerProvider).go(RoutePaths.settings);
-    await tester.pumpAndSettle();
-
-    // API-key sheet.
-    await tester.tap(find.text('API-Schlüssel (Pro / Entwickler)'));
-    await tester.pumpAndSettle();
-    expect(find.byType(ApiKeySheet), findsOneWidget);
-    expect(
-      tester.takeException(),
-      isNull,
-      reason: 'ApiKeySheet overflowed under German.',
-    );
-    // Dismiss.
-    await tester.tap(find.text('Abbrechen'));
     await tester.pumpAndSettle();
 
     // Delete-all sheet.

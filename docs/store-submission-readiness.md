@@ -26,6 +26,13 @@
 >   **P0-11** demo-key rotation.
 > - **Still true:** the build is **not submittable today** — but the open
 >   blockers are now owner/secret/legal/console items, not engineering artifacts.
+> - **Removed since this baseline:** the optional bring-your-own
+>   provider-credential entry has been taken out — its row no longer appears in
+>   **Settings**, and the matching section was removed from the in-app **Privacy**
+>   screen and from `docs/privacy-policy.md`. Live calculations still run;
+>   provider credentials are simply no longer user-facing. The §2.1, §8.3, and
+>   §12.2 entries below have been brought in line with the simplified Settings and
+>   Privacy surfaces.
 >
 > The §6 ASO drafts are finalized in `docs/store-listing-en.md`; the §7 localized
 > plan is realized in `docs/store-listing-tier1-localized.md` + the localized
@@ -104,7 +111,7 @@ labels every claim, and ends with the owner decisions that gate submission.
 | Live calculation | Real path to third-party API; demo path fully offline | `lib/data/api/dto/rectification_request_dto.dart`, `lib/features/settings/settings_screen.dart` demo toggle **[VERIFIED]** |
 | Result UX | Hero time + rising + confidence, ≤2 alt candidates, evidence screen, demo pill, demo upgrade nudge | `lib/features/calculation_flow/screens/result_screen.dart` **[VERIFIED]** |
 | Sharing | **Text** share, PII-free by construction, OS share sheet w/ clipboard fallback | `lib/core/sharing/share_copy_builder.dart`, `share_service.dart` **[VERIFIED]** |
-| Privacy posture | On-device storage, no accounts, "Delete all data", optional user key in keychain/Keystore | `lib/features/settings/privacy_policy_screen.dart`, `settings_screen.dart` **[VERIFIED]** |
+| Privacy posture | On-device storage, no accounts, "Delete all data" | `lib/features/settings/privacy_policy_screen.dart`, `settings_screen.dart` **[VERIFIED]** |
 | Analytics / crash reporting | **None wired** (no analytics SDK, no crash reporting) | `pubspec.yaml` (no firebase/sentry/posthog/amplitude); privacy screen text **[VERIFIED]** |
 | iOS platform config | `CFBundleDisplayName=Rectify`, `CFBundleName=rectify`; no `NS*UsageDescription`; no ATS block; portrait+landscape | `ios/Runner/Info.plist` **[VERIFIED]** |
 | Android platform config | `android:label="rectify"`; only `INTERNET` permission; release = **debug-signed** | `android/app/src/main/AndroidManifest.xml`, `android/app/build.gradle.kts` **[VERIFIED]** |
@@ -461,9 +468,8 @@ Capture both paths so reviewers and screenshots reflect reality:
    **[VERIFIED flow]**
 3. Result → "See how we got this" evidence → "Share result" (text share) →
    "Save to history". **[VERIFIED flow]**
-4. Settings → API key sheet (never displays the value) → Time format 12/24h →
-   **Delete all data** (confirm wipe + return to onboarding) → Privacy screen.
-   **[VERIFIED flow]**
+4. Settings → Time format 12/24h → **Delete all data** (confirm wipe + return
+   to onboarding) → Privacy screen. **[VERIFIED flow]**
 5. Capture in **both** 12h and 24h time formats; verify no "Rectify" string is
    visible once P0-1 lands (title, Settings version, privacy copy). **[VERIFIED]**
 
@@ -569,7 +575,7 @@ Impl Run A  ──►  Privacy URL  ──►  Metadata + Screenshots  ──►
    **[PROPOSED]**
 2. **Hosted privacy policy (owner + Legal).** Stand up a reachable URL that
    accurately describes the third-party transmission, on-device storage, demo
-   mode, deletion, and the optional user key. Can proceed in parallel with
+   mode, and deletion. Can proceed in parallel with
    Run A. **[PROPOSED]**
 3. **Metadata + screenshots (owner + design).** Finalize Sec. 6 package
    (post-trademark/console re-count); capture Sec. 8 storyboard from the
@@ -688,7 +694,7 @@ closing summary.
 | Share is text-only, PII-free (time/ascendant/confidence only) | `lib/core/sharing/share_copy_builder.dart` | VERIFIED |
 | Share via OS sheet + clipboard fallback | `lib/core/sharing/share_service.dart` | VERIFIED |
 | In-app privacy screen (not hosted); "Rectify" brand leak; "on-device" framing; no analytics | `lib/features/settings/privacy_policy_screen.dart` | VERIFIED |
-| Settings: API key never shown, demo toggle, 12/24h, delete-all, privacy row, "Rectify v1.0.0" | `lib/features/settings/settings_screen.dart` (`:157`) | VERIFIED |
+| Settings: demo toggle, 12/24h, delete-all, privacy row, "Rectify v1.0.0" | `lib/features/settings/settings_screen.dart` (`:157`) | VERIFIED |
 | Result UI: hero/confidence/candidates/evidence/share/save/demo-nudge; `resultShareButtonKey` | `lib/features/calculation_flow/screens/result_screen.dart` | VERIFIED |
 | Live request sends birth date/time, **lat/long**, and **free-text** life events to provider | `lib/data/api/dto/rectification_request_dto.dart` | VERIFIED |
 | No age-gate floor (firstDate 1920, lastDate now) | `lib/features/calculation_flow/screens/birth_data_screen.dart` | VERIFIED |

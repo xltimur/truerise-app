@@ -76,19 +76,22 @@ Integration coverage of this flow lives in
 ### Running the Live mode (real astrology-api.io calculation)
 
 Live mode calls the real [astrology-api.io](https://api.astrology-api.io)
-rectification API and costs **15 credits per request**. The key can come
-from either of two sources (Settings entry wins):
+rectification API and costs **15 credits per request**. The key is
+resolved at runtime by `proApiKeyProvider`, which prefers a value in
+secure storage and otherwise falls back to the bundled `.env`:
 
 1. **Bundled `.env` (demo / review builds).** `lib/main.dart` calls
    `dotenv.load(fileName: '.env')` at startup, and `proApiKeyProvider`
-   falls back to `ASTRO_API_KEY` from that file when secure storage is
-   empty. The committed `.env` lets a reviewer install the APK and run
-   the live flow without typing a key. See `.env.example` for the
-   security caveat — anything in `.env` is baked into the binary as an
-   asset and is recoverable from the APK, so use a low-budget key only.
-2. **In-app Settings (production / per-user).** Open **Settings → API
-   Key**, paste a key. Stored exclusively in `flutter_secure_storage`;
-   never written to SharedPreferences, Drift, logs, or request bodies.
+   reads `ASTRO_API_KEY` from that file when secure storage is empty.
+   The committed `.env` lets a reviewer install the APK and run the live
+   flow without typing a key. See `.env.example` for the security
+   caveat — anything in `.env` is baked into the binary as an asset and
+   is recoverable from the APK, so use a low-budget key only.
+2. **Secure storage (read path).** When `flutter_secure_storage` holds a
+   value it wins over the `.env` fallback. The shipped MVP UI no longer
+   exposes a per-user key-entry screen, so this path is reserved for a
+   future build; a stored value is never copied to SharedPreferences,
+   Drift, logs, or request bodies.
 
 Live flow:
 
@@ -100,9 +103,10 @@ Live flow:
    data and life events, then tap **Rectify**.
 
 The app connects directly to `https://api.astrology-api.io/api/v3/rectification/search`
-with `Authorization: Bearer <key>`. If no key is configured (no `.env`
-entry, no Settings entry) the app shows a **Configuration error** screen
-that links back to Settings — not a generic network error.
+with `Authorization: Bearer <key>`. If no key is configured (empty `.env`
+and empty secure storage) the live calculation can't start and the app
+shows a dedicated error screen offering **Try again** and **Demo mode** —
+not a generic network error.
 
 See `docs/api-integration.md` for the full endpoint reference and
 `docs/implementation-plan.md` §9.5 for the security boundary.
@@ -151,9 +155,9 @@ into the released IPA/APK as a plain string and is trivially recoverable
 from the binary. Therefore none of the keys above are confidential
 secrets. The production rectification provider's API key, any Mapbox
 `sk.…` token, and any third-party billing credential live **server-side
-in the proxy** and never reach this repo. The end-user Pro/Developer API
-key is entered in the in-app Settings sheet and stored exclusively in
-`flutter_secure_storage`.
+in the proxy** and never reach this repo. Any key held in
+`flutter_secure_storage` is read only from there and is never copied to
+SharedPreferences, Drift, logs, or request bodies.
 
 ---
 

@@ -738,10 +738,6 @@
   "@errorTryAgain": {
     "description": "Primary button on recoverable error screens (timeout, no internet, server, rate limit, malformed response) that retries the calculation."
   },
-  "errorOpenSettings": "Open Settings",
-  "@errorOpenSettings": {
-    "description": "Primary button on the authorization and missing-API-key error screens that opens Settings."
-  },
   "errorReviewDraft": "Review my draft",
   "@errorReviewDraft": {
     "description": "Primary button on the bad-request error screen that returns to the confirmation step to fix the draft."
@@ -750,7 +746,7 @@
   "@errorTimeoutTitle": {
     "description": "Title of the timeout error screen."
   },
-  "errorTimeoutBody": "The provider didn't respond in time. Network can be slow on public Wi-Fi — give it another try in a moment.",
+  "errorTimeoutBody": "The calculation didn't finish in time. Networks can be slow on public Wi-Fi — give it another try in a moment.",
   "@errorTimeoutBody": {
     "description": "Body of the timeout error screen."
   },
@@ -766,47 +762,47 @@
   "@errorBadRequestTitle": {
     "description": "Title of the bad-request error screen."
   },
-  "errorBadRequestBody": "The calculation provider rejected the request. Double-check your birth date, time window, and events, then try again.",
+  "errorBadRequestBody": "Something in your birth date, time window, or events couldn't be processed. Double-check them, then try again.",
   "@errorBadRequestBody": {
     "description": "Body of the bad-request error screen."
   },
-  "errorUnauthorizedTitle": "Authorization required",
+  "errorUnauthorizedTitle": "Couldn't complete the calculation",
   "@errorUnauthorizedTitle": {
     "description": "Title of the unauthorized (401) error screen."
   },
-  "errorUnauthorizedBody": "The provider didn't accept the API key on this device. Open Settings to enter a new key, or switch on Demo mode.",
+  "errorUnauthorizedBody": "We couldn't complete this calculation right now. Try again in a moment, or switch on Demo mode to keep exploring with sample data.",
   "@errorUnauthorizedBody": {
     "description": "Body of the unauthorized (401) error screen."
   },
-  "errorMissingApiKeyTitle": "API key required",
+  "errorMissingApiKeyTitle": "Couldn't start the calculation",
   "@errorMissingApiKeyTitle": {
-    "description": "Title of the missing-API-key error screen."
+    "description": "Title of the error screen shown when a live calculation can't start."
   },
-  "errorMissingApiKeyBody": "Live mode needs your astrology-api.io API key. Open Settings to add it, or switch on Demo mode to try the app with sample data.",
+  "errorMissingApiKeyBody": "We couldn't start a live calculation right now. Try again in a moment, or switch on Demo mode to try the app with sample data.",
   "@errorMissingApiKeyBody": {
-    "description": "Body of the missing-API-key error screen. 'astrology-api.io' is the provider domain and must stay untranslated."
+    "description": "Body of the error screen shown when a live calculation can't start."
   },
-  "errorServerTitle": "Provider trouble on their end",
+  "errorServerTitle": "Something went wrong",
   "@errorServerTitle": {
     "description": "Title of the server (5xx) error screen."
   },
-  "errorServerBody": "The provider returned an error. Their service may be having a rough moment — it's worth another try shortly.",
+  "errorServerBody": "The calculation couldn't be completed just now. It may be a temporary hiccup — it's worth another try shortly.",
   "@errorServerBody": {
     "description": "Body of the server (5xx) error screen."
   },
   "errorRateLimitedTitle": "Calculation limit reached",
   "@errorRateLimitedTitle": {
-    "description": "Title of the rate-limit (HTTP 429) error screen shown when the shared/proxied calculation service is throttled."
+    "description": "Title of the rate-limit (HTTP 429) error screen."
   },
-  "errorRateLimitedBody": "You've reached the limit for the shared calculation service. Wait a little and try again, switch on Demo mode to keep exploring offline, or add your own API key in Settings.",
+  "errorRateLimitedBody": "You've reached the calculation limit for now. Wait a little and try again, or switch on Demo mode to keep exploring offline.",
   "@errorRateLimitedBody": {
-    "description": "Body of the rate-limit (HTTP 429) error screen. Offers waiting and retrying, demo mode, or adding a personal API key. 'Demo mode' and 'Settings' match their labels elsewhere in the app."
+    "description": "Body of the rate-limit (HTTP 429) error screen. Offers waiting and retrying, or switching to demo mode. 'Demo mode' matches its label elsewhere in the app."
   },
   "errorMalformedTitle": "Couldn't read the response",
   "@errorMalformedTitle": {
     "description": "Title of the malformed-response error screen."
   },
-  "errorMalformedBody": "The provider's response didn't match what this build expects. Try again, or run a demo calculation while we look into it.",
+  "errorMalformedBody": "The response didn't match what this build expects. Try again, or run a demo calculation while we look into it.",
   "@errorMalformedBody": {
     "description": "Body of the malformed-response error screen."
   },
@@ -814,10 +810,6 @@
   "settingsTitle": "Settings",
   "@settingsTitle": {
     "description": "Top-navigation title of the Settings screen."
-  },
-  "settingsSectionApiKey": "API key",
-  "@settingsSectionApiKey": {
-    "description": "Settings section heading for the API-key card. Rendered in uppercase."
   },
   "settingsSectionDefaults": "Calculation defaults",
   "@settingsSectionDefaults": {
@@ -834,22 +826,6 @@
   "settingsSectionAbout": "About",
   "@settingsSectionAbout": {
     "description": "Settings section heading for the about/legal links. Rendered in uppercase."
-  },
-  "settingsApiKeyRowLabel": "API Key (Pro / Developer)",
-  "@settingsApiKeyRowLabel": {
-    "description": "Label for the API-key row in Settings and the title of the API-key editor sheet."
-  },
-  "settingsApiKeySet": "Set",
-  "@settingsApiKeySet": {
-    "description": "Status shown on the API-key row when a key is configured."
-  },
-  "settingsApiKeyNotSet": "Not set",
-  "@settingsApiKeyNotSet": {
-    "description": "Status shown on the API-key row when no key is configured."
-  },
-  "settingsApiKeyHelper": "Optional. Only for users with their own provider key. Leave blank for the standard (proxied) path.",
-  "@settingsApiKeyHelper": {
-    "description": "Helper text under the API-key row in Settings."
   },
   "settingsDemoModeLabel": "Demo mode",
   "@settingsDemoModeLabel": {
@@ -878,39 +854,6 @@
   "settingsPrivacyPolicy": "Privacy Policy",
   "@settingsPrivacyPolicy": {
     "description": "Label for the Privacy Policy row in the Settings about section."
-  },
-
-  "apiKeySheetBody": "Paste your provider key to switch off the standard proxied path. The key is stored on this device only.",
-  "@apiKeySheetBody": {
-    "description": "Explanatory body in the API-key editor sheet."
-  },
-  "apiKeyFieldLabel": "API key",
-  "@apiKeyFieldLabel": {
-    "description": "Label for the API-key text field in the editor sheet."
-  },
-  "apiKeyHintConfigured": "Currently set — enter a new key to replace it",
-  "@apiKeyHintConfigured": {
-    "description": "Hint shown in the API-key field when a key is already saved."
-  },
-  "apiKeyHintEmpty": "sk-…",
-  "@apiKeyHintEmpty": {
-    "description": "Placeholder hint shown in the API-key field when no key is saved yet."
-  },
-  "apiKeySaveButton": "Save key",
-  "@apiKeySaveButton": {
-    "description": "Primary button in the API-key sheet that saves the entered key."
-  },
-  "apiKeyRemoveButton": "Remove key",
-  "@apiKeyRemoveButton": {
-    "description": "Destructive button in the API-key sheet that removes the saved key."
-  },
-  "apiKeySavedSnack": "API key saved.",
-  "@apiKeySavedSnack": {
-    "description": "Snackbar confirming the API key was saved."
-  },
-  "apiKeyRemovedSnack": "API key removed.",
-  "@apiKeyRemovedSnack": {
-    "description": "Snackbar confirming the API key was removed."
   },
 
   "deleteAllTitle": "Delete all data?",
@@ -951,19 +894,11 @@
       "brand": { "type": "String", "example": "TrueRise" }
     }
   },
-  "privacyApiKeyTitle": "Optional API key",
-  "@privacyApiKeyTitle": {
-    "description": "Privacy section heading about the optional user-supplied API key."
-  },
-  "privacyApiKeyBody": "Power users can paste their own provider API key in Settings. When set, that key lives in the platform keychain (iOS) or Keystore (Android) — it never enters the database, preferences, logs, or crash reports, and is never displayed back to you after you save it.",
-  "@privacyApiKeyBody": {
-    "description": "Privacy section body about where the optional API key is stored."
-  },
   "privacyDemoTitle": "Demo mode",
   "@privacyDemoTitle": {
     "description": "Privacy section heading about demo mode."
   },
-  "privacyDemoBody": "Demo calculations run entirely on this device — no network calls are made and no key is used. Demo results are clearly labelled with a DEMO pill so they do not get mixed up with real readings.",
+  "privacyDemoBody": "Demo calculations run entirely on this device — no network calls are made. Demo results are clearly labelled with a DEMO pill so they do not get mixed up with real readings.",
   "@privacyDemoBody": {
     "description": "Privacy section body about offline demo calculations."
   },
@@ -982,7 +917,7 @@
   "@privacyDeleteTitle": {
     "description": "Privacy section heading about deleting local data."
   },
-  "privacyDeleteBody": "The Settings screen has a \"Delete all data\" action that wipes the local database, every preference, and the secure-storage entry holding your API key (if you've set one). The wipe completes before the action returns; the app then sends you back to onboarding so you can confirm the reset.",
+  "privacyDeleteBody": "The Settings screen has a \"Delete all data\" action that wipes the local database and every preference stored on this device. The wipe completes before the action returns; the app then sends you back to onboarding so you can confirm the reset.",
   "@privacyDeleteBody": {
     "description": "Privacy section body about the Delete all data action."
   },

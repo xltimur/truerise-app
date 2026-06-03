@@ -597,9 +597,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get errorTryAgain => 'Intentar de nuevo';
 
   @override
-  String get errorOpenSettings => 'Abrir Ajustes';
-
-  @override
   String get errorReviewDraft => 'Revisar mi borrador';
 
   @override
@@ -607,7 +604,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get errorTimeoutBody =>
-      'El proveedor no respondió a tiempo. La red puede ser lenta en wifi públicas; vuelve a intentarlo en un momento.';
+      'El cálculo no terminó a tiempo. La red puede ser lenta en wifi públicas; vuelve a intentarlo en un momento.';
 
   @override
   String get errorNoInternetTitle => 'No se puede acceder a la red';
@@ -621,48 +618,45 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get errorBadRequestBody =>
-      'El proveedor de cálculo rechazó la solicitud. Verifica tu fecha de nacimiento, la ventana de tiempo y los eventos, y luego inténtalo de nuevo.';
+      'Algo en tu fecha de nacimiento, la ventana de tiempo o los eventos no se pudo procesar. Verifícalos y luego inténtalo de nuevo.';
 
   @override
-  String get errorUnauthorizedTitle => 'Se requiere autorización';
+  String get errorUnauthorizedTitle => 'No se pudo completar el cálculo';
 
   @override
   String get errorUnauthorizedBody =>
-      'El proveedor no aceptó la clave de API en este dispositivo. Abre Ajustes para introducir una clave nueva o activa el modo demo.';
+      'No pudimos completar este cálculo en este momento. Inténtalo de nuevo en un momento o activa el modo demo para seguir explorando con datos de muestra.';
 
   @override
-  String get errorMissingApiKeyTitle => 'Se requiere clave de API';
+  String get errorMissingApiKeyTitle => 'No se pudo iniciar el cálculo';
 
   @override
   String get errorMissingApiKeyBody =>
-      'El modo en vivo necesita tu clave de API de astrology-api.io. Abre Ajustes para añadirla, o activa el modo demo para probar la app con datos de muestra.';
+      'No pudimos iniciar un cálculo en vivo en este momento. Inténtalo de nuevo en un momento o activa el modo demo para probar la app con datos de muestra.';
 
   @override
-  String get errorServerTitle => 'Problema del proveedor en su lado';
+  String get errorServerTitle => 'Algo salió mal';
 
   @override
   String get errorServerBody =>
-      'El proveedor devolvió un error. Su servicio puede estar pasando un mal momento; vale la pena intentarlo de nuevo en breve.';
+      'El cálculo no se pudo completar ahora mismo. Puede ser un problema temporal; vale la pena intentarlo de nuevo en breve.';
 
   @override
   String get errorRateLimitedTitle => 'Límite de cálculos alcanzado';
 
   @override
   String get errorRateLimitedBody =>
-      'Has alcanzado el límite del servicio de cálculo compartido. Espera un momento e inténtalo de nuevo, activa el modo demo para seguir explorando sin conexión, o añade tu propia clave de API en Ajustes.';
+      'Has alcanzado el límite de cálculos por ahora. Espera un momento e inténtalo de nuevo, o activa el modo demo para seguir explorando sin conexión.';
 
   @override
   String get errorMalformedTitle => 'No se pudo leer la respuesta';
 
   @override
   String get errorMalformedBody =>
-      'La respuesta del proveedor no coincidió con lo que espera esta versión. Inténtalo de nuevo o ejecuta un cálculo de demostración mientras lo investigamos.';
+      'La respuesta no coincidió con lo que espera esta versión. Inténtalo de nuevo o ejecuta un cálculo de demostración mientras lo investigamos.';
 
   @override
   String get settingsTitle => 'Ajustes';
-
-  @override
-  String get settingsSectionApiKey => 'Clave de API';
 
   @override
   String get settingsSectionDefaults => 'Valores predeterminados del cálculo';
@@ -675,19 +669,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settingsSectionAbout => 'Acerca de';
-
-  @override
-  String get settingsApiKeyRowLabel => 'Clave de API (Pro / Desarrollador)';
-
-  @override
-  String get settingsApiKeySet => 'Configurada';
-
-  @override
-  String get settingsApiKeyNotSet => 'Sin configurar';
-
-  @override
-  String get settingsApiKeyHelper =>
-      'Opcional. Solo para usuarios con su propia clave de proveedor. Déjala en blanco para la ruta estándar (con proxy).';
 
   @override
   String get settingsDemoModeLabel => 'Modo demo';
@@ -711,32 +692,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settingsPrivacyPolicy => 'Política de privacidad';
-
-  @override
-  String get apiKeySheetBody =>
-      'Pega tu clave de proveedor para desactivar la ruta estándar con proxy. La clave se almacena solo en este dispositivo.';
-
-  @override
-  String get apiKeyFieldLabel => 'Clave de API';
-
-  @override
-  String get apiKeyHintConfigured =>
-      'Configurada actualmente: introduce una clave nueva para reemplazarla';
-
-  @override
-  String get apiKeyHintEmpty => 'sk-…';
-
-  @override
-  String get apiKeySaveButton => 'Guardar clave';
-
-  @override
-  String get apiKeyRemoveButton => 'Quitar clave';
-
-  @override
-  String get apiKeySavedSnack => 'Clave de API guardada.';
-
-  @override
-  String get apiKeyRemovedSnack => 'Clave de API quitada.';
 
   @override
   String get deleteAllTitle => '¿Eliminar todos los datos?';
@@ -776,18 +731,11 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get privacyApiKeyTitle => 'Clave de API opcional';
-
-  @override
-  String get privacyApiKeyBody =>
-      'Los usuarios avanzados pueden pegar su propia clave de API de proveedor en Ajustes. Cuando se configura, esa clave reside en el llavero de la plataforma (iOS) o en el Keystore (Android); nunca entra en la base de datos, las preferencias, los registros ni los informes de fallos, y nunca se vuelve a mostrar después de guardarla.';
-
-  @override
   String get privacyDemoTitle => 'Modo demo';
 
   @override
   String get privacyDemoBody =>
-      'Los cálculos de demostración se ejecutan por completo en este dispositivo: no se realizan llamadas de red ni se usa ninguna clave. Los resultados de demostración se etiquetan claramente con una insignia DEMO para que no se confundan con lecturas reales.';
+      'Los cálculos de demostración se ejecutan por completo en este dispositivo: no se realizan llamadas de red. Los resultados de demostración se etiquetan claramente con una insignia DEMO para que no se confundan con lecturas reales.';
 
   @override
   String get privacyLiveTitle => 'Cálculos en vivo';
@@ -802,7 +750,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get privacyDeleteBody =>
-      'La pantalla de Ajustes tiene una acción «Eliminar todos los datos» que borra la base de datos local, todas las preferencias y la entrada de almacenamiento seguro que contiene tu clave de API (si has configurado una). El borrado se completa antes de que la acción termine; la app te devuelve entonces al onboarding para que confirmes el restablecimiento.';
+      'La pantalla de Ajustes tiene una acción «Eliminar todos los datos» que borra la base de datos local y todas las preferencias almacenadas en este dispositivo. El borrado se completa antes de que la acción termine; la app te devuelve entonces al onboarding para que confirmes el restablecimiento.';
 
   @override
   String get privacyAnalyticsTitle => 'Analítica e informes de fallos';

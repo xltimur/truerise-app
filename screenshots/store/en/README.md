@@ -23,12 +23,17 @@ See `manifest.json` for the machine-readable version of everything below.
 |---|---|---|---|
 | 1 | `01-result-hero.png` | Result (`/calc/result/:id`) | Most probable time **7:14 AM**, **Gemini Rising**, **78%** confidence, alternate candidates, **DEMO** pill, "See how we got this" CTA. |
 | 2 | `02-evidence-breakdown.png` | Evidence (`/calc/result/:id/evidence`) | "Why 7:14 AM? 4 of 6 events strongly supported this time." Per-event **STRONG/MODERATE/WEAK** match cards. |
-| 3 | `03-privacy-demo-settings.png` | Settings (`/settings`) | **Demo mode** toggle ON ("free, no network"), API key optional, time format, **Delete all data** ("Cannot be undone"). |
+| 3 | `03-privacy-demo-settings.png` | Settings (`/settings`) | **Demo mode** toggle ON ("free, no network"), time format, **Delete all data** ("Cannot be undone"). |
 | 4 | `04-share-result.png` | Result (`/calc/result/:id`) | The shipped **Share result** button in context (see share-sheet note below). |
 | 5 | `05-privacy-policy.png` | Privacy (`/settings/privacy`) | **Bonus.** In-app privacy disclosure: on-device storage, offline demo, live-mode HTTPS, no accounts. |
 
 Frames 1–4 are the **required** set. Frame 5 is an optional bonus that
 reinforces the privacy story; it is not one of the four mandated frames.
+
+> **Frames 3 and 5 refreshed (2026-06-03).** Both PNGs were re-captured from the
+> current simplified **Settings** and in-app **Privacy** screens, using the same
+> throwaway `/tmp` widget-test harness, iPhone 6.7" geometry, and offline
+> Demo-mode capture method as the rest of the set.
 
 The marketing captions in `docs/store-listing-en.md` §5 are **intended
 overlays** to be composited by the owner — they are **not** baked into these raw
@@ -61,7 +66,7 @@ This matches the "share without oversharing" / no-share-card guardrail in
 
 A throwaway widget-test harness on the host VM rendered the real `RectifyApp`
 inside a `RepaintBoundary` and wrote `boundary.toImage(pixelRatio: 3)` to PNG via
-`dart:io`. **Demo mode** (offline — no network, no API key) drove a canonical
+`dart:io`. **Demo mode** (offline — no network) drove a canonical
 6-event calculation through the real `calculation_flow` controller, then
 `go_router` navigated to each screen. Product fonts (Inter, SourceSerif4,
 JetBrainsMono) were loaded from the bundled `FontManifest.json` so text renders

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,7 +8,6 @@ import 'package:rectify/app/router.dart';
 import 'package:rectify/data/db/database.dart';
 import 'package:rectify/data/models/time_format.dart';
 import 'package:rectify/data/secure/secure_key_store.dart';
-import 'package:rectify/features/settings/api_key_sheet.dart';
 import 'package:rectify/features/settings/delete_all_data_sheet.dart';
 import 'package:rectify/features/settings/privacy_policy_screen.dart';
 import 'package:rectify/features/settings/settings_screen.dart';
@@ -95,8 +92,6 @@ void main() {
 
     expect(find.byType(SettingsScreen), findsOneWidget);
     expect(find.text('Settings'), findsOneWidget);
-    expect(find.text('API Key (Pro / Developer)'), findsOneWidget);
-    expect(find.text('Not set'), findsOneWidget);
     expect(find.text('Demo mode'), findsOneWidget);
     expect(find.text('12-hour  (7:14 AM)'), findsOneWidget);
     expect(find.text('24-hour  (07:14)'), findsOneWidget);
@@ -157,79 +152,6 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.textContaining('07:14'), findsOneWidget);
     expect(find.textContaining('7:14 AM'), findsNothing);
-  });
-
-  testWidgets('saving an API key flips the row to "Set" without echo', (
-    tester,
-  ) async {
-    final prefs = await _prefs();
-    final secure = InMemorySecureKeyStore();
-    final container = await _pumpOnSettings(
-      tester,
-      _wrap(prefs, secure: secure),
-    );
-
-    // Open the ApiKeySheet.
-    await tester.tap(find.text('API Key (Pro / Developer)'));
-    await tester.pumpAndSettle();
-    expect(find.byType(ApiKeySheet), findsOneWidget);
-
-    // Type a key value and save.
-    const secret = 'sk-test-NOT-A-REAL-KEY-12345';
-    await tester.enterText(find.byType(TextField), secret);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Save key'));
-    await tester.pumpAndSettle();
-
-    // Sheet dismissed.
-    expect(find.byType(ApiKeySheet), findsNothing);
-
-    // Row now reports "Set" — and the secret is nowhere in the visible
-    // tree, satisfying the "never displayed after save" hard rule.
-    expect(find.text('Set'), findsOneWidget);
-    expect(find.text(secret), findsNothing);
-
-    // Backing stores: secure storage has it; prefs flag flipped; no
-    // SharedPreferences key carries the raw value.
-    expect(await secure.readProApiKey(), secret);
-    expect(prefs.getBool('settings.pro_api_key_configured'), isTrue);
-    final dump = jsonEncode(<String, Object?>{
-      for (final key in prefs.getKeys()) key: prefs.get(key),
-    });
-    expect(dump.contains(secret), isFalse);
-
-    // SettingsModel does not carry the key either.
-    final settings = container.read(settingsControllerProvider);
-    expect(settings.toString().contains(secret), isFalse);
-  });
-
-  testWidgets('removing an API key resets the flag and wipes secure', (
-    tester,
-  ) async {
-    final prefs = await _prefs(
-      extra: <String, Object>{'settings.pro_api_key_configured': true},
-    );
-    final secure = InMemorySecureKeyStore(seed: 'sk-already-set');
-    await _pumpOnSettings(tester, _wrap(prefs, secure: secure));
-
-    expect(find.text('Set'), findsOneWidget);
-
-    await tester.tap(find.text('API Key (Pro / Developer)'));
-    await tester.pumpAndSettle();
-    expect(find.byType(ApiKeySheet), findsOneWidget);
-
-    // Sheet opens with the field empty — never echoes the stored key.
-    final field = tester.widget<TextField>(find.byType(TextField));
-    expect(field.controller?.text ?? '', isEmpty);
-
-    await tester.tap(find.text('Remove key'));
-    await tester.pumpAndSettle();
-
-    expect(find.byType(ApiKeySheet), findsNothing);
-    expect(find.text('Set'), findsNothing);
-    expect(find.text('Not set'), findsOneWidget);
-    expect(await secure.readProApiKey(), isNull);
-    expect(prefs.getBool('settings.pro_api_key_configured'), isFalse);
   });
 
   testWidgets('Delete all data wipes stores and routes to onboarding', (
@@ -295,7 +217,6 @@ void main() {
 
     expect(find.byType(PrivacyPolicyScreen), findsOneWidget);
     expect(find.text('What TrueRise stores'), findsOneWidget);
-    expect(find.text('Optional API key'), findsOneWidget);
     expect(find.text('Deleting your data'), findsOneWidget);
   });
 

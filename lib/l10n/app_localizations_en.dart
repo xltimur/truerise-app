@@ -593,9 +593,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorTryAgain => 'Try again';
 
   @override
-  String get errorOpenSettings => 'Open Settings';
-
-  @override
   String get errorReviewDraft => 'Review my draft';
 
   @override
@@ -603,7 +600,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorTimeoutBody =>
-      'The provider didn\'t respond in time. Network can be slow on public Wi-Fi — give it another try in a moment.';
+      'The calculation didn\'t finish in time. Networks can be slow on public Wi-Fi — give it another try in a moment.';
 
   @override
   String get errorNoInternetTitle => 'Can\'t reach the network';
@@ -617,48 +614,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorBadRequestBody =>
-      'The calculation provider rejected the request. Double-check your birth date, time window, and events, then try again.';
+      'Something in your birth date, time window, or events couldn\'t be processed. Double-check them, then try again.';
 
   @override
-  String get errorUnauthorizedTitle => 'Authorization required';
+  String get errorUnauthorizedTitle => 'Couldn\'t complete the calculation';
 
   @override
   String get errorUnauthorizedBody =>
-      'The provider didn\'t accept the API key on this device. Open Settings to enter a new key, or switch on Demo mode.';
+      'We couldn\'t complete this calculation right now. Try again in a moment, or switch on Demo mode to keep exploring with sample data.';
 
   @override
-  String get errorMissingApiKeyTitle => 'API key required';
+  String get errorMissingApiKeyTitle => 'Couldn\'t start the calculation';
 
   @override
   String get errorMissingApiKeyBody =>
-      'Live mode needs your astrology-api.io API key. Open Settings to add it, or switch on Demo mode to try the app with sample data.';
+      'We couldn\'t start a live calculation right now. Try again in a moment, or switch on Demo mode to try the app with sample data.';
 
   @override
-  String get errorServerTitle => 'Provider trouble on their end';
+  String get errorServerTitle => 'Something went wrong';
 
   @override
   String get errorServerBody =>
-      'The provider returned an error. Their service may be having a rough moment — it\'s worth another try shortly.';
+      'The calculation couldn\'t be completed just now. It may be a temporary hiccup — it\'s worth another try shortly.';
 
   @override
   String get errorRateLimitedTitle => 'Calculation limit reached';
 
   @override
   String get errorRateLimitedBody =>
-      'You\'ve reached the limit for the shared calculation service. Wait a little and try again, switch on Demo mode to keep exploring offline, or add your own API key in Settings.';
+      'You\'ve reached the calculation limit for now. Wait a little and try again, or switch on Demo mode to keep exploring offline.';
 
   @override
   String get errorMalformedTitle => 'Couldn\'t read the response';
 
   @override
   String get errorMalformedBody =>
-      'The provider\'s response didn\'t match what this build expects. Try again, or run a demo calculation while we look into it.';
+      'The response didn\'t match what this build expects. Try again, or run a demo calculation while we look into it.';
 
   @override
   String get settingsTitle => 'Settings';
-
-  @override
-  String get settingsSectionApiKey => 'API key';
 
   @override
   String get settingsSectionDefaults => 'Calculation defaults';
@@ -671,19 +665,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsSectionAbout => 'About';
-
-  @override
-  String get settingsApiKeyRowLabel => 'API Key (Pro / Developer)';
-
-  @override
-  String get settingsApiKeySet => 'Set';
-
-  @override
-  String get settingsApiKeyNotSet => 'Not set';
-
-  @override
-  String get settingsApiKeyHelper =>
-      'Optional. Only for users with their own provider key. Leave blank for the standard (proxied) path.';
 
   @override
   String get settingsDemoModeLabel => 'Demo mode';
@@ -707,32 +688,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsPrivacyPolicy => 'Privacy Policy';
-
-  @override
-  String get apiKeySheetBody =>
-      'Paste your provider key to switch off the standard proxied path. The key is stored on this device only.';
-
-  @override
-  String get apiKeyFieldLabel => 'API key';
-
-  @override
-  String get apiKeyHintConfigured =>
-      'Currently set — enter a new key to replace it';
-
-  @override
-  String get apiKeyHintEmpty => 'sk-…';
-
-  @override
-  String get apiKeySaveButton => 'Save key';
-
-  @override
-  String get apiKeyRemoveButton => 'Remove key';
-
-  @override
-  String get apiKeySavedSnack => 'API key saved.';
-
-  @override
-  String get apiKeyRemovedSnack => 'API key removed.';
 
   @override
   String get deleteAllTitle => 'Delete all data?';
@@ -771,18 +726,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get privacyApiKeyTitle => 'Optional API key';
-
-  @override
-  String get privacyApiKeyBody =>
-      'Power users can paste their own provider API key in Settings. When set, that key lives in the platform keychain (iOS) or Keystore (Android) — it never enters the database, preferences, logs, or crash reports, and is never displayed back to you after you save it.';
-
-  @override
   String get privacyDemoTitle => 'Demo mode';
 
   @override
   String get privacyDemoBody =>
-      'Demo calculations run entirely on this device — no network calls are made and no key is used. Demo results are clearly labelled with a DEMO pill so they do not get mixed up with real readings.';
+      'Demo calculations run entirely on this device — no network calls are made. Demo results are clearly labelled with a DEMO pill so they do not get mixed up with real readings.';
 
   @override
   String get privacyLiveTitle => 'Live calculations';
@@ -797,7 +745,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyDeleteBody =>
-      'The Settings screen has a \"Delete all data\" action that wipes the local database, every preference, and the secure-storage entry holding your API key (if you\'ve set one). The wipe completes before the action returns; the app then sends you back to onboarding so you can confirm the reset.';
+      'The Settings screen has a \"Delete all data\" action that wipes the local database and every preference stored on this device. The wipe completes before the action returns; the app then sends you back to onboarding so you can confirm the reset.';
 
   @override
   String get privacyAnalyticsTitle => 'Analytics and crash reporting';

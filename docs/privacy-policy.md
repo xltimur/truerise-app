@@ -18,7 +18,7 @@
 
 - **No accounts.** TrueRise has no sign-up, login, or user profile.
 - **Your data lives on your device.** Everything you enter is stored locally.
-- **Demo mode is fully offline.** It makes no network calls and uses no key.
+- **Demo mode is fully offline.** It makes no network calls.
 - **Live calculations** send your birth and life-event details to a third-party
   calculation provider over an encrypted (HTTPS) connection, **only** to
   compute your result.
@@ -69,9 +69,9 @@ labels accordingly.]
 
 ## Demo mode is offline
 
-Demo calculations run entirely on your device. They make **no** network calls
-and use **no** API key, and demo results are clearly labelled so they are not
-confused with real readings.
+Demo calculations run entirely on your device. They make **no** network calls,
+and demo results are clearly labelled so they are not confused with real
+readings.
 
 ## Live calculations — what leaves your device
 
@@ -99,20 +99,10 @@ device Location permission and does **not** read GPS or current-device location.
 The coordinates above describe a *birthplace you select*, not where you are now.
 
 [OWNER/LEGAL: name the calculation provider and link to its privacy policy;
-confirm whether requests go directly to the provider or through a TrueRise
-backend proxy; and state the provider's data-retention period, its processing
-region(s), and whether a data-processing agreement is in place. Do not publish
-this section as final until these are confirmed.]
-
-## Optional provider API key
-
-Advanced users may paste their own provider API key in **Settings**. When set,
-that key is stored **only** in the platform secure store (iOS Keychain / Android
-Keystore). It is never written to the local database, preferences, logs, or
-crash reports, is never placed in the body of a request, and is never shown back
-to you after you save it. It is used only as the credential that authorizes your
-own live calculations. You can remove it at any time by clearing the field or
-using **Delete all data**.
+confirm whether requests go directly to the provider or through a
+TrueRise-operated backend; and state the provider's data-retention period, its
+processing region(s), and whether a data-processing agreement is in place. Do
+not publish this section as final until these are confirmed.]
 
 ## What we do not do
 
@@ -130,9 +120,8 @@ policy and the store privacy labels **before** shipping that release.]
 ## Data retention and deletion
 
 - On-device data stays on your device until you remove it.
-- **Settings → Delete all data** wipes the local database, all app preferences,
-  and the stored API key; the wipe completes before the app returns you to
-  onboarding.
+- **Settings → Delete all data** wipes the local database and all app
+  preferences; the wipe completes before the app returns you to onboarding.
 - **Uninstalling** the app removes all local data.
 - [OWNER/LEGAL: state the calculation provider's retention period and how a user
   can request deletion of anything the provider may retain, or confirm that the
@@ -147,17 +136,16 @@ matches both the in-app gate and the app-store age rating.]
 
 ## Security
 
-We use HTTPS for all live requests and store any user-supplied API key in the
-platform secure store. Because there are no accounts, there is no password to be
-breached. On-device data is protected by your device's own security (passcode,
-biometrics, and OS sandboxing). No method of transmission or storage is 100%
-secure, so we cannot guarantee absolute security.
+We use HTTPS for all live requests. Because there are no accounts, there is no
+password to be breached. On-device data is protected by your device's own
+security (passcode, biometrics, and OS sandboxing). No method of transmission or
+storage is 100% secure, so we cannot guarantee absolute security.
 
 ## International data transfers
 
 [OWNER/LEGAL: depending on where the calculation provider processes data, your
 information may be transferred across borders when you run a live calculation.
-State the regions and safeguards once the provider/proxy arrangement is
+State the regions and safeguards once the provider data-flow arrangement is
 confirmed.]
 
 ## Your privacy rights

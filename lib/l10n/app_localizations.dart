@@ -1017,12 +1017,6 @@ abstract class AppLocalizations {
   /// **'Try again'**
   String get errorTryAgain;
 
-  /// Primary button on the authorization and missing-API-key error screens that opens Settings.
-  ///
-  /// In en, this message translates to:
-  /// **'Open Settings'**
-  String get errorOpenSettings;
-
   /// Primary button on the bad-request error screen that returns to the confirmation step to fix the draft.
   ///
   /// In en, this message translates to:
@@ -1038,7 +1032,7 @@ abstract class AppLocalizations {
   /// Body of the timeout error screen.
   ///
   /// In en, this message translates to:
-  /// **'The provider didn\'t respond in time. Network can be slow on public Wi-Fi — give it another try in a moment.'**
+  /// **'The calculation didn\'t finish in time. Networks can be slow on public Wi-Fi — give it another try in a moment.'**
   String get errorTimeoutBody;
 
   /// Title of the no-internet error screen.
@@ -1062,55 +1056,55 @@ abstract class AppLocalizations {
   /// Body of the bad-request error screen.
   ///
   /// In en, this message translates to:
-  /// **'The calculation provider rejected the request. Double-check your birth date, time window, and events, then try again.'**
+  /// **'Something in your birth date, time window, or events couldn\'t be processed. Double-check them, then try again.'**
   String get errorBadRequestBody;
 
   /// Title of the unauthorized (401) error screen.
   ///
   /// In en, this message translates to:
-  /// **'Authorization required'**
+  /// **'Couldn\'t complete the calculation'**
   String get errorUnauthorizedTitle;
 
   /// Body of the unauthorized (401) error screen.
   ///
   /// In en, this message translates to:
-  /// **'The provider didn\'t accept the API key on this device. Open Settings to enter a new key, or switch on Demo mode.'**
+  /// **'We couldn\'t complete this calculation right now. Try again in a moment, or switch on Demo mode to keep exploring with sample data.'**
   String get errorUnauthorizedBody;
 
-  /// Title of the missing-API-key error screen.
+  /// Title of the error screen shown when a live calculation can't start.
   ///
   /// In en, this message translates to:
-  /// **'API key required'**
+  /// **'Couldn\'t start the calculation'**
   String get errorMissingApiKeyTitle;
 
-  /// Body of the missing-API-key error screen. 'astrology-api.io' is the provider domain and must stay untranslated.
+  /// Body of the error screen shown when a live calculation can't start.
   ///
   /// In en, this message translates to:
-  /// **'Live mode needs your astrology-api.io API key. Open Settings to add it, or switch on Demo mode to try the app with sample data.'**
+  /// **'We couldn\'t start a live calculation right now. Try again in a moment, or switch on Demo mode to try the app with sample data.'**
   String get errorMissingApiKeyBody;
 
   /// Title of the server (5xx) error screen.
   ///
   /// In en, this message translates to:
-  /// **'Provider trouble on their end'**
+  /// **'Something went wrong'**
   String get errorServerTitle;
 
   /// Body of the server (5xx) error screen.
   ///
   /// In en, this message translates to:
-  /// **'The provider returned an error. Their service may be having a rough moment — it\'s worth another try shortly.'**
+  /// **'The calculation couldn\'t be completed just now. It may be a temporary hiccup — it\'s worth another try shortly.'**
   String get errorServerBody;
 
-  /// Title of the rate-limit (HTTP 429) error screen shown when the shared/proxied calculation service is throttled.
+  /// Title of the rate-limit (HTTP 429) error screen.
   ///
   /// In en, this message translates to:
   /// **'Calculation limit reached'**
   String get errorRateLimitedTitle;
 
-  /// Body of the rate-limit (HTTP 429) error screen. Offers waiting and retrying, demo mode, or adding a personal API key. 'Demo mode' and 'Settings' match their labels elsewhere in the app.
+  /// Body of the rate-limit (HTTP 429) error screen. Offers waiting and retrying, or switching to demo mode. 'Demo mode' matches its label elsewhere in the app.
   ///
   /// In en, this message translates to:
-  /// **'You\'ve reached the limit for the shared calculation service. Wait a little and try again, switch on Demo mode to keep exploring offline, or add your own API key in Settings.'**
+  /// **'You\'ve reached the calculation limit for now. Wait a little and try again, or switch on Demo mode to keep exploring offline.'**
   String get errorRateLimitedBody;
 
   /// Title of the malformed-response error screen.
@@ -1122,7 +1116,7 @@ abstract class AppLocalizations {
   /// Body of the malformed-response error screen.
   ///
   /// In en, this message translates to:
-  /// **'The provider\'s response didn\'t match what this build expects. Try again, or run a demo calculation while we look into it.'**
+  /// **'The response didn\'t match what this build expects. Try again, or run a demo calculation while we look into it.'**
   String get errorMalformedBody;
 
   /// Top-navigation title of the Settings screen.
@@ -1130,12 +1124,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Settings'**
   String get settingsTitle;
-
-  /// Settings section heading for the API-key card. Rendered in uppercase.
-  ///
-  /// In en, this message translates to:
-  /// **'API key'**
-  String get settingsSectionApiKey;
 
   /// Settings section heading for calculation defaults. Rendered in uppercase.
   ///
@@ -1160,30 +1148,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'About'**
   String get settingsSectionAbout;
-
-  /// Label for the API-key row in Settings and the title of the API-key editor sheet.
-  ///
-  /// In en, this message translates to:
-  /// **'API Key (Pro / Developer)'**
-  String get settingsApiKeyRowLabel;
-
-  /// Status shown on the API-key row when a key is configured.
-  ///
-  /// In en, this message translates to:
-  /// **'Set'**
-  String get settingsApiKeySet;
-
-  /// Status shown on the API-key row when no key is configured.
-  ///
-  /// In en, this message translates to:
-  /// **'Not set'**
-  String get settingsApiKeyNotSet;
-
-  /// Helper text under the API-key row in Settings.
-  ///
-  /// In en, this message translates to:
-  /// **'Optional. Only for users with their own provider key. Leave blank for the standard (proxied) path.'**
-  String get settingsApiKeyHelper;
 
   /// Label for the demo-mode default toggle in Settings.
   ///
@@ -1227,54 +1191,6 @@ abstract class AppLocalizations {
   /// **'Privacy Policy'**
   String get settingsPrivacyPolicy;
 
-  /// Explanatory body in the API-key editor sheet.
-  ///
-  /// In en, this message translates to:
-  /// **'Paste your provider key to switch off the standard proxied path. The key is stored on this device only.'**
-  String get apiKeySheetBody;
-
-  /// Label for the API-key text field in the editor sheet.
-  ///
-  /// In en, this message translates to:
-  /// **'API key'**
-  String get apiKeyFieldLabel;
-
-  /// Hint shown in the API-key field when a key is already saved.
-  ///
-  /// In en, this message translates to:
-  /// **'Currently set — enter a new key to replace it'**
-  String get apiKeyHintConfigured;
-
-  /// Placeholder hint shown in the API-key field when no key is saved yet.
-  ///
-  /// In en, this message translates to:
-  /// **'sk-…'**
-  String get apiKeyHintEmpty;
-
-  /// Primary button in the API-key sheet that saves the entered key.
-  ///
-  /// In en, this message translates to:
-  /// **'Save key'**
-  String get apiKeySaveButton;
-
-  /// Destructive button in the API-key sheet that removes the saved key.
-  ///
-  /// In en, this message translates to:
-  /// **'Remove key'**
-  String get apiKeyRemoveButton;
-
-  /// Snackbar confirming the API key was saved.
-  ///
-  /// In en, this message translates to:
-  /// **'API key saved.'**
-  String get apiKeySavedSnack;
-
-  /// Snackbar confirming the API key was removed.
-  ///
-  /// In en, this message translates to:
-  /// **'API key removed.'**
-  String get apiKeyRemovedSnack;
-
   /// Title of the delete-all-data confirmation sheet.
   ///
   /// In en, this message translates to:
@@ -1317,18 +1233,6 @@ abstract class AppLocalizations {
   /// **'Everything you enter — birth date, birth city, life events, calculation results — is stored on this device only. Nothing is uploaded to a {brand} account, because we do not run user accounts. Deleting the app removes every byte of that data.'**
   String privacyStoresBody(String brand);
 
-  /// Privacy section heading about the optional user-supplied API key.
-  ///
-  /// In en, this message translates to:
-  /// **'Optional API key'**
-  String get privacyApiKeyTitle;
-
-  /// Privacy section body about where the optional API key is stored.
-  ///
-  /// In en, this message translates to:
-  /// **'Power users can paste their own provider API key in Settings. When set, that key lives in the platform keychain (iOS) or Keystore (Android) — it never enters the database, preferences, logs, or crash reports, and is never displayed back to you after you save it.'**
-  String get privacyApiKeyBody;
-
   /// Privacy section heading about demo mode.
   ///
   /// In en, this message translates to:
@@ -1338,7 +1242,7 @@ abstract class AppLocalizations {
   /// Privacy section body about offline demo calculations.
   ///
   /// In en, this message translates to:
-  /// **'Demo calculations run entirely on this device — no network calls are made and no key is used. Demo results are clearly labelled with a DEMO pill so they do not get mixed up with real readings.'**
+  /// **'Demo calculations run entirely on this device — no network calls are made. Demo results are clearly labelled with a DEMO pill so they do not get mixed up with real readings.'**
   String get privacyDemoBody;
 
   /// Privacy section heading about live (networked) calculations.
@@ -1362,7 +1266,7 @@ abstract class AppLocalizations {
   /// Privacy section body about the Delete all data action.
   ///
   /// In en, this message translates to:
-  /// **'The Settings screen has a \"Delete all data\" action that wipes the local database, every preference, and the secure-storage entry holding your API key (if you\'ve set one). The wipe completes before the action returns; the app then sends you back to onboarding so you can confirm the reset.'**
+  /// **'The Settings screen has a \"Delete all data\" action that wipes the local database and every preference stored on this device. The wipe completes before the action returns; the app then sends you back to onboarding so you can confirm the reset.'**
   String get privacyDeleteBody;
 
   /// Privacy section heading about analytics and crash reporting.
