@@ -10,16 +10,24 @@ import 'package:rectify/theme/theme.dart';
 ///
 /// Goldens that need a deterministic surface should use this harness
 /// so token-level changes flow through in a single update.
+///
+/// Pass [locale] to render a specific localization (e.g. `Locale('de')`)
+/// and [textScaler] to simulate Dynamic Type — both are used by the
+/// localized-overflow suite to flush out RenderFlex regressions on the
+/// longer German / Romance strings.
 Widget wrapInRectifyApp(
   Widget child, {
   Size size = const Size(360, 760),
   TextDirection textDirection = TextDirection.ltr,
   bool reducedMotion = false,
+  Locale? locale,
+  TextScaler textScaler = TextScaler.noScaling,
 }) {
   return MaterialApp(
     debugShowCheckedModeBanner: false,
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
+    locale: locale,
     theme: buildLightTheme(),
     home: Directionality(
       textDirection: textDirection,
@@ -27,6 +35,7 @@ Widget wrapInRectifyApp(
         data: MediaQueryData(
           size: size,
           disableAnimations: reducedMotion,
+          textScaler: textScaler,
         ),
         child: Scaffold(
           backgroundColor: buildLightTheme().scaffoldBackgroundColor,
@@ -45,9 +54,17 @@ Future<void> pumpRectifyWidget(
   Widget widget, {
   Size size = const Size(360, 760),
   bool reducedMotion = false,
+  Locale? locale,
+  TextScaler textScaler = TextScaler.noScaling,
 }) async {
   await tester.pumpWidget(
-    wrapInRectifyApp(widget, size: size, reducedMotion: reducedMotion),
+    wrapInRectifyApp(
+      widget,
+      size: size,
+      reducedMotion: reducedMotion,
+      locale: locale,
+      textScaler: textScaler,
+    ),
   );
   await tester.pump();
 }

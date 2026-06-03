@@ -100,9 +100,19 @@ class _TabSlot extends StatelessWidget {
           children: <Widget>[
             Icon(destination.icon, size: 22, color: color),
             const SizedBox(height: 2),
-            Text(
-              label,
-              style: AppTypography.labelSm.copyWith(color: color, fontSize: 11),
+            // Long localized labels (e.g. German "EINSTELLUNGEN") wrap to a
+            // second line under Dynamic Type and overflow the fixed 56pt
+            // slot. Keep one line and shrink-to-fit so the whole word stays
+            // readable instead of ellipsizing.
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                label,
+                maxLines: 1,
+                softWrap: false,
+                style: AppTypography.labelSm
+                    .copyWith(color: color, fontSize: 11),
+              ),
             ),
           ],
         ),

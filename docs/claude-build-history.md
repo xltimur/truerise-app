@@ -4237,3 +4237,75 @@ passed auth — it reached business logic, not 401/403 — so the existing
   elsewhere; pt `resultRisingSign`→"Ascendente em {sign}"; es plural-article
   assumptions in `evidenceWhyTitle`/`timeWindowRangeCopy` ("las {time}").
 - **Limit/quota:** none hit.
+
+
+### 2026-06-03 — Localized UI Layout / Overflow QA (Impl Run D.2)
+
+- **Model:** claude-opus-4-8. **Session id:**
+  `5234385b-48f9-4c13-b7e0-71780bc6bd5d`.
+- **Predecessor:** continues from clean checkpoint `25063df` (Run D.1, Tier 1
+  in-app translations de/fr/es/pt). Directly addresses Run D.1 open item #3
+  ("Per-locale layout/overflow QA … de compounds and Romance +15–20% length
+  still need checks — DEMO pill, tab labels, buttons"). No commit, no push —
+  Codex verifies/commits after this run.
+- **Goal:** confirm that text, buttons, icons and screens do not drift, overlap,
+  truncate badly, or overflow once the longer German + Romance strings render,
+  and fix only the surfaces that genuinely break. Scope limited to layout/
+  overflow QA — no marketing, store metadata, screenshots, payments, accounts,
+  sync, charts, dark mode, or export.
+- **Method:** added localized render tests (German + French at text scale 1.0
+  and Dynamic Type ×1.3) across the high-risk surfaces, relying on Flutter's
+  in-test RenderFlex/RenderConstrainedBox overflow exceptions surfaced via
+  `tester.takeException()`. Fixes applied empirically — only where a test
+  actually flagged an overflow.
+- **Finding:** the single genuine regression was the **bottom tab bar** label.
+  Under German at Dynamic Type ×1.3 "EINSTELLUNGEN"/"VERLAUF" wrapped to a
+  second line and overflowed the fixed 56pt slot by ~6px. Every other audited
+  surface (top nav, stepper, time-format radios, date/category pickers,
+  month/year row, evidence card, error scaffold, add-event sheet, settings
+  `_ChevronRow`, API-key + delete-all sheets, onboarding slides/CTAs) rendered
+  clean under de/fr — buttons were already protected (Flexible + maxLines:1 +
+  ellipsis), top nav already ellipsizes, and Expanded-based rows wrap/grow
+  without throwing.
+- **Fix (1 file, design-preserving):** `lib/widgets/nav/bottom_tab_bar.dart` —
+  wrapped the tab label in `FittedBox(fit: BoxFit.scaleDown)` with the Text set
+  to `maxLines: 1, softWrap: false`. Normal-length labels render unchanged at
+  11pt; only the rare long-label-at-large-scale case shrinks to fit, keeping
+  the whole word readable instead of ellipsizing or wrapping. No other source
+  files touched; no translation wording changed.
+- **Artifacts changed in this run:**
+  - `lib/widgets/nav/bottom_tab_bar.dart` (the only production fix).
+  - `test/helpers/widget_test_harness.dart` — `wrapInRectifyApp` /
+    `pumpRectifyWidget` gained optional `locale` + `textScaler` params.
+  - `test/widget/l10n/localized_overflow_test.dart` (new) — leaf-component
+    overflow matrix: bottom tabs (all 3 states), stepper, time-format radios,
+    date picker (long category value + month/year row), evidence card, error
+    scaffold (timeout + no-internet), add-event sheet; each under de/fr × scale
+    {1.0, 1.3}.
+  - `test/widget/l10n/localized_screens_test.dart` (new) — full-router German
+    integration: onboarding 3 slides + CTAs, settings rows/cards (asserts the
+    long "API-Schlüssel (Pro / Entwickler)" + "Nicht festgelegt" row), and the
+    API-key + delete-all sheets.
+  - this `docs/claude-build-history.md` Run D.2 entry.
+- **Verification:** `flutter gen-l10n` → exit 0 (uses `l10n.yaml`); `flutter
+  analyze --no-pub` → **No issues found**; `flutter test --exclude-tags backend
+  --no-pub` → **262 tests passed, 0 failed** (was 250 in D.1 + 12 new localized
+  cases); `git diff --check` → clean (exit 0). The bottom-tab fix was confirmed
+  by a red→green cycle (test caught the 6px overflow before the fix, passed
+  after).
+- **Constraints respected:** no commit, no push; scope confined to layout/
+  overflow QA; no deferred MVP scope added; demo mode untouched; no secrets in
+  source/logs/ARB/generated/docs; generated l10n refreshed via gen-l10n only.
+- **Residual risk / open items:** (1) Full-screen integration tests force the
+  German *locale* but run at text scale 1.0 — reliably injecting Dynamic Type
+  ×1.3 through the live `MaterialApp.router` is not straightforward, so the
+  ×1.3 dimension is covered at the component level only. The settings
+  `_ChevronRow` and demo nudge use Expanded labels that grow vertically rather
+  than overflow, so ×1.3 risk there is low but unverified end-to-end.
+  (2) The demo-upgrade nudge inside the result screen was reviewed by
+  inspection (Expanded title wraps; body full-width; CTA is a protected button)
+  rather than driven via the full demo flow. (3) On-device visual polish (exact
+  ellipsis/shrink aesthetics of the German tab label at extreme Dynamic Type)
+  still warrants a manual pass. (4) Translations remain `[PROPOSED]` pending
+  native-speaker review (carried over from D.1).
+- **Limit/quota:** none hit.
