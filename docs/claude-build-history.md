@@ -4151,3 +4151,89 @@ passed auth — it reached business logic, not 401/403 — so the existing
 - **Open items (owner / future run):** author de/fr/es/pt ARBs and wire
   `supportedLocales` for the target markets (deferred per this run's scope);
   re-screenshot any locale-specific store frames once translations land.
+
+### 2026-06-03 — Tier 1 In-App Translation: de / fr / es / pt-BR (Impl Run D.1)
+
+- **Model:** `claude-opus-4-8` (run invoked explicitly under this model).
+- **Session id:** `8f8500f3-1a90-45f8-b470-8fabfe7c3cf6`.
+- **Stage:** **G22 (Tier 1 translation)** per `docs/l10n-strategy.md` §1/§3 and
+  the §12 acceptance list. Authored target-locale ARBs for German, French,
+  Spanish, and Brazilian Portuguese on top of the English base extracted in
+  Run C.1 (`c4ae0c6`). Translation-only run: no marketing/product features,
+  store metadata, screenshots, payments, accounts, sync, dark mode, export,
+  charts, or other deferred scope touched.
+- **What changed:**
+  - **Four target-locale ARBs created** in `lib/l10n/`: `app_de.arb`,
+    `app_fr.arb`, `app_es.arb`, and `app_pt.arb`. Each holds **215 translated
+    values** plus `@@locale`, in the same key order as `app_en.arb`, with
+    **zero missing/extra keys** and **no `@`-metadata objects** (target ARBs are
+    values-only by Flutter convention; gen-l10n reads descriptions/placeholders
+    from the English template only).
+  - **Tone/terminology per `docs/l10n-strategy.md` §6–§8** honored: probabilistic
+    register preserved (no certainty words); **evidence → indication words**, never
+    proof words (de *Hinweise/Anhaltspunkte* not *Beweise*; fr *indices* not
+    *preuves*; es *indicios* not *pruebas*; pt *indícios* not *provas*);
+    **confidence → probability/level** wording (de *Wahrscheinlichkeit*; fr/es/pt
+    *niveau/nivel/nível de confiance/confianza/confiança*); privacy promises
+    translated precisely; no horoscope/fortune-telling or paywall register; de
+    uses the informal *du* throughout; es applies inverted *¿…?/¡…!*; pt uses
+    Brazilian forms (*horário*, *compartilhar*, *Excluir*, *Configurações*).
+  - **Invariants preserved across all four files:** the `{brand}` placeholder is
+    never literalized ("TrueRise" never typed as text); all ICU placeholders,
+    `plural` (`=1`/`other`), and `select` selector keywords
+    (`strong`/`moderate`/`weak`/`none`/`true`/`other`) kept byte-identical;
+    untranslated tokens held stable — `astrology-api.io`, `sk-…`, the canonical
+    sample times `7:14 AM` / `07:14`, the `DEMO` pill label, `✓`, `±`, and `\n`.
+    Demo-evidence astrology prose translated naturally, including conventional
+    localized planet names (e.g. de *Merkur*, fr *Mercure*, es *Mercurio*, pt
+    *Mercúrio*).
+  - **No app/router wiring changes needed:** `lib/app/app.dart` already consumes
+    the generated `AppLocalizations.localizationsDelegates` /
+    `AppLocalizations.supportedLocales` (added in Run C.1). Adding the ARBs and
+    regenerating auto-registered the new locales — confirmed
+    `supportedLocales = [de, en, es, fr, pt]`.
+- **Portuguese filename/locale deviation (flagged for owner/verifier):** the
+  brief named `app_pt_BR.arb` (locale `pt_BR`), but `flutter gen-l10n` on
+  Flutter 3.44 **hard-fails (exit 1)** for a region-only locale that lacks its
+  base: *"Arb file for a fallback, pt, does not exist … a base locale … should
+  exist as the fallback."* The binding strategy guide's own acceptance list
+  (`docs/l10n-strategy.md` §12) specifies **`app_pt.arb` (pt-BR)** — a base `pt`
+  file carrying Brazilian content. Resolution: the file is named **`app_pt.arb`**
+  with `@@locale: "pt"` and Brazilian Portuguese content. This passes gen-l10n
+  with no duplicate/empty files; generic `pt` and (future) `pt_BR` devices both
+  resolve to the Brazilian translation. **Net effect vs. the brief:** the
+  Portuguese ARB is `app_pt.arb` (not `app_pt_BR.arb`) and the supported locale
+  is `pt` (not `pt_BR`). `lib/l10n` therefore contains exactly five ARBs:
+  `app_en.arb`, `app_de.arb`, `app_fr.arb`, `app_es.arb`, `app_pt.arb`.
+- **Artifacts changed in this run:** new `lib/l10n/app_de.arb`,
+  `lib/l10n/app_fr.arb`, `lib/l10n/app_es.arb`, `lib/l10n/app_pt.arb`; regenerated
+  `lib/l10n/app_localizations.dart` and new generated
+  `app_localizations_{de,es,fr,pt}.dart`; this `docs/claude-build-history.md`
+  Run D.1 entry. No edits to `lib/app/app.dart`, `l10n.yaml`, `pubspec.yaml`,
+  source screens/widgets, `ios/`, `android/`, `assets/`, or `README.md`.
+- **Verification:** `flutter gen-l10n` → **exit 0**, clean (no fallback error
+  after the `app_pt.arb` resolution); `flutter analyze --no-pub` → **No issues
+  found**; `flutter test --exclude-tags backend --no-pub` → **250 tests passed,
+  0 failed**; `git diff --check` → **clean (exit 0)**; key-parity check → all
+  four target ARBs have 215 keys, 0 missing, 0 extra, valid JSON;
+  `ls lib/l10n/*.arb` → exactly `app_en`, `app_de`, `app_es`, `app_fr`,
+  `app_pt`; generated `supportedLocales` = `[de, en, es, fr, pt]`.
+- **Constraints respected:** **no commit, no push** (Codex verifies/commits
+  after this run). Translation-only; no deferred MVP scope added; no secrets in
+  source/logs/ARB/generated/docs; demo mode untranslated-token-safe and
+  unchanged. Generated files refreshed via gen-l10n only (no hand edits).
+- **Limit status:** No usage-limit stop.
+- **Open items / risks (owner / future run):** (1) **`pt` vs `pt_BR`** — confirm
+  whether a region-specific `pt_BR` listing is required; if so, keep `app_pt.arb`
+  as the base and add a thin `app_pt_BR.arb` override (Flutter region-fallback
+  pattern). (2) All terms remain **`[PROPOSED]`** pending native-speaker review
+  per `docs/l10n-strategy.md` §13 (esp. de *du/Sie* register, es neutral vs
+  es-419 split, evidence/confidence wording, privacy copy). (3) Per-locale
+  **layout/overflow QA** (strategy §11) not run here — de compounds and Romance
+  +15–20% length still need on-device checks (DEMO pill, tab labels, buttons).
+  (4) Localized store metadata + screenshots (surfaces B/C, strategy §5/§9)
+  remain out of scope. (5) A few subagent judgment calls flagged for review:
+  pt `navSettings`→"AJUSTES" (short, for the narrow tab) vs *Configurações*
+  elsewhere; pt `resultRisingSign`→"Ascendente em {sign}"; es plural-article
+  assumptions in `evidenceWhyTitle`/`timeWindowRangeCopy` ("las {time}").
+- **Limit/quota:** none hit.

@@ -1,0 +1,836 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for French (`fr`).
+class AppLocalizationsFr extends AppLocalizations {
+  AppLocalizationsFr([String locale = 'fr']) : super(locale);
+
+  @override
+  String get commonContinue => 'Continuer';
+
+  @override
+  String get commonNext => 'Suivant';
+
+  @override
+  String get commonCancel => 'Annuler';
+
+  @override
+  String get onboardingSkip => 'Passer';
+
+  @override
+  String get onboardingSlide1Title =>
+      'Votre thème natal dépend de votre heure de naissance exacte.';
+
+  @override
+  String onboardingSlide1Body(String brand) {
+    return 'La plupart des gens ne connaissent qu\'une heure approximative — ou rien du tout. $brand la précise à partir des événements de votre vie.';
+  }
+
+  @override
+  String onboardingSlide2Title(String brand) {
+    return 'Comment fonctionne $brand';
+  }
+
+  @override
+  String get onboardingSlide2Body =>
+      '1. Saisissez votre date et votre heure de naissance approximative.\n2. Ajoutez des événements de votre vie — mariage, changements professionnels, déménagements, etc.\n3. Nous calculons l\'heure de naissance la plus probable et vous expliquons pourquoi.\n\nPlus vous ajoutez d\'événements, plus le résultat est précis.';
+
+  @override
+  String get onboardingSlide3Title =>
+      'Prêt à trouver votre heure de naissance ?';
+
+  @override
+  String get onboardingSlide3Body =>
+      'Une démo vous montre d\'abord un exemple de résultat, sans aucun compte.';
+
+  @override
+  String get onboardingTryDemo => 'Essayer la démo d\'abord';
+
+  @override
+  String get onboardingStartReal => 'Lancer un calcul réel';
+
+  @override
+  String onboardingPageLabel(int page, int count) {
+    return 'Page $page sur $count';
+  }
+
+  @override
+  String get birthDataTitle => 'Détails de naissance';
+
+  @override
+  String get birthDataDateLabel => 'Date de naissance';
+
+  @override
+  String get birthDataDatePlaceholder => 'Sélectionner une date';
+
+  @override
+  String get birthDataCityLabel => 'Ville de naissance';
+
+  @override
+  String get birthDataCityHint => 'Commencez à saisir une ville';
+
+  @override
+  String get birthDataLabelLabel => 'Libellé (facultatif)';
+
+  @override
+  String get birthDataLabelHelper => 'Affiché dans votre historique.';
+
+  @override
+  String get birthDataLabelHint => 'ex. Mon heure de naissance';
+
+  @override
+  String get birthDataSearching => 'Recherche…';
+
+  @override
+  String get birthDataNoMatches =>
+      'Aucune correspondance. La démo accepte le nom saisi.';
+
+  @override
+  String get timeWindowTitle =>
+      'Connaissez-vous une heure de naissance approximative ?';
+
+  @override
+  String get timeWindowModeApprox => 'J\'ai une heure approximative';
+
+  @override
+  String get timeWindowModeUnknown => 'Je n\'en ai aucune idée';
+
+  @override
+  String get timeWindowApproxTimeLabel => 'Heure approximative';
+
+  @override
+  String get timeWindowChooseTime => 'Choisir l\'heure';
+
+  @override
+  String get timeWindowTimePickerHelp => 'Heure de naissance approximative';
+
+  @override
+  String get timeWindowSearchWindow => 'Fenêtre de recherche';
+
+  @override
+  String timeWindowDeltaMinutes(int minutes) {
+    return '± $minutes min';
+  }
+
+  @override
+  String timeWindowDeltaHours(int hours) {
+    String _temp0 = intl.Intl.pluralLogic(
+      hours,
+      locale: localeName,
+      other: '± $hours heures',
+      one: '± 1 heure',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeWindowRangeCopy(String start, String end) {
+    return 'Nous chercherons entre $start et $end.';
+  }
+
+  @override
+  String get timeWindowApproxHint =>
+      'Une fenêtre plus large donne plus de candidats mais peut réduire la précision.';
+
+  @override
+  String get timeWindowUnknownBody =>
+      'Nous chercherons sur toute la plage de 24 heures. Cela peut produire plus de candidats avec un niveau de confiance plus faible.';
+
+  @override
+  String get timeWindowUnknownHint =>
+      'Ajouter plus d\'événements de vie aidera à affiner le résultat.';
+
+  @override
+  String get lifeEventsTitle => 'Événements de vie';
+
+  @override
+  String lifeEventsTitleWithCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Événements de vie  ($count ajoutés)',
+      one: 'Événements de vie  (1 ajouté)',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get lifeEventsAddEvent => 'Ajouter un événement';
+
+  @override
+  String get lifeEventsAddFirstEvent => 'Ajouter le premier événement';
+
+  @override
+  String get lifeEventsContinueDemo => 'Continuer (démo)';
+
+  @override
+  String get lifeEventsEmptyBody =>
+      'Ajoutez des événements marquants de votre vie. Plus vous en ajoutez, mieux c\'est.';
+
+  @override
+  String get lifeEventsGuidanceEmpty =>
+      'Ajoutez au moins 5 événements pour un calcul réel. 3 pour une démo.';
+
+  @override
+  String get lifeEventsNoEvents => 'Aucun événement pour l\'instant.';
+
+  @override
+  String lifeEventsGuidanceCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count événements. Ajoutez-en 5 ou plus pour un calcul réel plus solide.',
+      one: '1 événement. Ajoutez-en 5 ou plus pour un calcul réel plus solide.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get eventCategoryMarriage => 'Mariage / Partenariat';
+
+  @override
+  String get eventCategoryDivorce => 'Divorce / Séparation';
+
+  @override
+  String get eventCategoryCareerChange => 'Changement de carrière';
+
+  @override
+  String get eventCategoryJobLoss => 'Perte d\'emploi';
+
+  @override
+  String get eventCategoryRelocation => 'Déménagement (majeur)';
+
+  @override
+  String get eventCategoryChildBirth => 'Naissance d\'un enfant';
+
+  @override
+  String get eventCategoryFamilyDeath => 'Décès d\'un proche';
+
+  @override
+  String get eventCategoryIllness => 'Maladie / opération majeure';
+
+  @override
+  String get eventCategoryAccident => 'Accident ou blessure';
+
+  @override
+  String get eventCategoryEducation => 'Étape scolaire';
+
+  @override
+  String get eventCategoryFinancial => 'Tournant financier';
+
+  @override
+  String get eventCategoryOther => 'Autre';
+
+  @override
+  String get confirmationTitle => 'Confirmez votre calcul';
+
+  @override
+  String get confirmationBackToEdit => 'Revenir à la modification';
+
+  @override
+  String get confirmationCalculate => 'Calculer';
+
+  @override
+  String get confirmationCalculateDemo => 'Calculer (démo)';
+
+  @override
+  String get confirmationDatePending => 'Date en attente';
+
+  @override
+  String get confirmationRowDate => 'Date';
+
+  @override
+  String get confirmationRowCity => 'Ville';
+
+  @override
+  String get confirmationRowLabel => 'Libellé';
+
+  @override
+  String get confirmationTimeWindow => 'Fenêtre temporelle';
+
+  @override
+  String get confirmationFullDayWindow => 'Fenêtre de 24 heures complète';
+
+  @override
+  String confirmationWindowApprox(String time, String window) {
+    return '$time ($window)';
+  }
+
+  @override
+  String confirmationLifeEventsCount(int count) {
+    return 'Événements de vie ($count)';
+  }
+
+  @override
+  String get confirmationDemoNote =>
+      'Mode démo — nous afficherons un exemple de résultat sans requête réseau.';
+
+  @override
+  String get loadingTitle => 'Calcul de votre heure de naissance probable…';
+
+  @override
+  String get loadingDemoTitle => 'Exécution du calcul de démonstration…';
+
+  @override
+  String get loadingRotating1 => 'Analyse des événements de vie…';
+
+  @override
+  String get loadingRotating2 => 'Cartographie des transits planétaires…';
+
+  @override
+  String get loadingRotating3 => 'Classement des candidats…';
+
+  @override
+  String get loadingTakesUnder =>
+      'Cela prend généralement moins de 10 secondes.';
+
+  @override
+  String get addEventAddTitle => 'Ajouter un événement de vie';
+
+  @override
+  String get addEventEditTitle => 'Modifier l\'événement de vie';
+
+  @override
+  String get addEventSelectCategory => 'Sélectionner une catégorie';
+
+  @override
+  String get addEventCategoryLabel => 'Catégorie';
+
+  @override
+  String get addEventChooseCategory => 'Choisir une catégorie';
+
+  @override
+  String get addEventMonth => 'Mois';
+
+  @override
+  String get addEventNoMonth => 'Aucun mois';
+
+  @override
+  String get addEventYear => 'Année';
+
+  @override
+  String get addEventMonthOptional => 'Le mois est facultatif.';
+
+  @override
+  String get addEventDescriptionLabel => 'Description (facultative)';
+
+  @override
+  String get addEventDescriptionHint =>
+      'Tout ce qui aide à préciser la datation';
+
+  @override
+  String addEventCharCount(int current, int max) {
+    return '$current / $max';
+  }
+
+  @override
+  String get addEventSaveChanges => 'Enregistrer les modifications';
+
+  @override
+  String get commonBackToHistory => 'Retour à l\'historique';
+
+  @override
+  String get commonDismiss => 'Fermer';
+
+  @override
+  String get resultTitle => 'Résultat';
+
+  @override
+  String get resultNotFoundTitle => 'Nous n\'avons pas trouvé ce résultat.';
+
+  @override
+  String get resultNotFoundBody =>
+      'Il a peut-être été supprimé de votre historique. Ouvrez un calcul enregistré ou démarrez-en un nouveau.';
+
+  @override
+  String resultRisingSign(String sign) {
+    return 'Ascendant $sign';
+  }
+
+  @override
+  String get resultSampleData => '(données d\'exemple)';
+
+  @override
+  String get resultOtherCandidates => 'Autres candidats';
+
+  @override
+  String get resultSeeEvidence => 'Voir comment nous y sommes parvenus';
+
+  @override
+  String get resultShare => 'Partager le résultat';
+
+  @override
+  String get resultCopiedToClipboard => 'Copié dans le presse-papiers';
+
+  @override
+  String get resultSaveToHistory => 'Enregistrer dans l\'historique';
+
+  @override
+  String get resultSaved => 'Enregistré ✓';
+
+  @override
+  String get resultDemoNudgeLabel => 'Invitation à passer de la démo';
+
+  @override
+  String get resultDemoNudgeTitle => 'C\'était une démo.';
+
+  @override
+  String get resultDemoNudgeBody =>
+      'Lancez un calcul réel avec vos propres données de naissance.';
+
+  @override
+  String get resultStartNewCalculation => 'Démarrer un nouveau calcul';
+
+  @override
+  String get evidenceTitle => 'Indices';
+
+  @override
+  String get evidenceNotFoundTitle => 'Nous n\'avons pas trouvé ces indices.';
+
+  @override
+  String get evidenceNotFoundBody =>
+      'Le résultat associé a peut-être été supprimé. Revenez à votre historique pour choisir un autre calcul.';
+
+  @override
+  String evidenceWhyTitle(String time) {
+    return 'Pourquoi $time ?';
+  }
+
+  @override
+  String get evidenceNoEvidence =>
+      'Nous n\'avons pas d\'indices au niveau des événements pour ce résultat.';
+
+  @override
+  String evidenceStrongSummary(int strong, int total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      total,
+      locale: localeName,
+      other: '$strong événements sur $total ont fortement appuyé cette heure.',
+      one: '$strong événement sur 1 a fortement appuyé cette heure.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get evidenceEventFallback => 'Événement';
+
+  @override
+  String get heroResultEyebrow => 'VOTRE HEURE DE NAISSANCE LA PLUS PROBABLE';
+
+  @override
+  String heroResultSemantic(String eyebrow, String time, String risingSign) {
+    return '$eyebrow : $time, $risingSign';
+  }
+
+  @override
+  String get confidenceBarLabel => 'Niveau de confiance';
+
+  @override
+  String confidenceBarSemantic(String label, int percent) {
+    return '$label — $percent pour cent';
+  }
+
+  @override
+  String get matchStrengthStrong => 'FORT';
+
+  @override
+  String get matchStrengthModerate => 'MODÉRÉ';
+
+  @override
+  String get matchStrengthWeak => 'FAIBLE';
+
+  @override
+  String get matchStrengthNone => 'AUCUNE CORRESPONDANCE';
+
+  @override
+  String matchStrengthSemantic(String strength) {
+    String _temp0 = intl.Intl.selectLogic(
+      strength,
+      {
+        'strong': 'Correspondance forte',
+        'moderate': 'Correspondance modérée',
+        'weak': 'Correspondance faible',
+        'none': 'Aucune correspondance',
+        'other': 'Correspondance',
+      },
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String candidateCardSemantic(String time, String risingSign, int percent) {
+    return 'Candidat $time, $risingSign, niveau de confiance $percent pour cent';
+  }
+
+  @override
+  String historyCardSemantic(
+    String isDemo,
+    String label,
+    String date,
+    String time,
+    String risingSign,
+    int percent,
+  ) {
+    String _temp0 = intl.Intl.selectLogic(
+      isDemo,
+      {
+        'true':
+            '$label, $date, $time $risingSign, niveau de confiance $percent pour cent, démo',
+        'other':
+            '$label, $date, $time $risingSign, niveau de confiance $percent pour cent',
+      },
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String evidenceCardSemantic(String category, String date, String strength) {
+    String _temp0 = intl.Intl.selectLogic(
+      strength,
+      {
+        'strong': 'correspondance forte',
+        'moderate': 'correspondance modérée',
+        'weak': 'correspondance faible',
+        'none': 'aucune correspondance',
+        'other': 'correspondance',
+      },
+    );
+    return '$category, $date, $_temp0';
+  }
+
+  @override
+  String get demoPillLabel => 'DEMO';
+
+  @override
+  String demoPillSemantic(String label) {
+    return 'Badge de calcul $label';
+  }
+
+  @override
+  String eventCardSemantic(String category, String date) {
+    return 'Événement : $category le $date';
+  }
+
+  @override
+  String eventCardDeleteSemantic(String category) {
+    return 'Supprimer l\'événement $category';
+  }
+
+  @override
+  String get commonBack => 'Retour';
+
+  @override
+  String get commonDelete => 'Supprimer';
+
+  @override
+  String get commonNotSet => 'non défini';
+
+  @override
+  String fieldValueSemantic(String label, String value) {
+    return '$label, $value';
+  }
+
+  @override
+  String get navNew => 'NOUVEAU';
+
+  @override
+  String get navHistory => 'HISTORIQUE';
+
+  @override
+  String get navSettings => 'RÉGLAGES';
+
+  @override
+  String stepperStep(int current, int total) {
+    return 'ÉTAPE $current SUR $total';
+  }
+
+  @override
+  String stepperPercent(int percent) {
+    return '$percent pour cent';
+  }
+
+  @override
+  String get calcFlowTitle => 'Nouveau calcul';
+
+  @override
+  String get homeSettingsButton => 'Réglages';
+
+  @override
+  String homeHistoryLoadError(String error) {
+    return 'Nous n\'avons pas pu charger votre historique.\n$error';
+  }
+
+  @override
+  String get homeEmptyTitle => 'Aucun calcul pour l\'instant.';
+
+  @override
+  String get homeEmptyBody =>
+      'Lancez votre premier calcul pour voir les résultats ici.';
+
+  @override
+  String get homeNewCalculation => 'Nouveau calcul';
+
+  @override
+  String get homePastCalculations => 'Calculs précédents';
+
+  @override
+  String get homeDefaultLabel => 'Mon calcul';
+
+  @override
+  String get historyDeleteTitle => 'Supprimer ce calcul ?';
+
+  @override
+  String historyDeleteBody(String label) {
+    return 'Cela retire « $label » de votre historique. Les données d\'origine ne sont conservées nulle part ailleurs.';
+  }
+
+  @override
+  String historyDeletedSnack(String label) {
+    return '« $label » supprimé.';
+  }
+
+  @override
+  String get historyDeleteFailedSnack =>
+      'Impossible de supprimer cette entrée.';
+
+  @override
+  String get errorTryAgain => 'Réessayer';
+
+  @override
+  String get errorOpenSettings => 'Ouvrir les Réglages';
+
+  @override
+  String get errorReviewDraft => 'Vérifier mon brouillon';
+
+  @override
+  String get errorTimeoutTitle => 'Délai de calcul dépassé';
+
+  @override
+  String get errorTimeoutBody =>
+      'Le fournisseur n\'a pas répondu à temps. Le réseau peut être lent sur le Wi-Fi public — réessayez dans un instant.';
+
+  @override
+  String get errorNoInternetTitle => 'Impossible d\'atteindre le réseau';
+
+  @override
+  String get errorNoInternetBody =>
+      'Vous êtes hors ligne, ou votre réseau bloque la requête. Reconnectez-vous et réessayez.';
+
+  @override
+  String get errorBadRequestTitle =>
+      'Quelque chose semblait incorrect dans les données';
+
+  @override
+  String get errorBadRequestBody =>
+      'Le fournisseur de calcul a rejeté la requête. Vérifiez votre date de naissance, votre fenêtre temporelle et vos événements, puis réessayez.';
+
+  @override
+  String get errorUnauthorizedTitle => 'Autorisation requise';
+
+  @override
+  String get errorUnauthorizedBody =>
+      'Le fournisseur n\'a pas accepté la clé API sur cet appareil. Ouvrez les Réglages pour saisir une nouvelle clé, ou activez le mode démo.';
+
+  @override
+  String get errorMissingApiKeyTitle => 'Clé API requise';
+
+  @override
+  String get errorMissingApiKeyBody =>
+      'Le mode en direct nécessite votre clé API astrology-api.io. Ouvrez les Réglages pour l\'ajouter, ou activez le mode démo pour essayer l\'application avec des données d\'exemple.';
+
+  @override
+  String get errorServerTitle => 'Problème du côté du fournisseur';
+
+  @override
+  String get errorServerBody =>
+      'Le fournisseur a renvoyé une erreur. Son service traverse peut-être un moment difficile — il vaut la peine de réessayer sous peu.';
+
+  @override
+  String get errorMalformedTitle => 'Impossible de lire la réponse';
+
+  @override
+  String get errorMalformedBody =>
+      'La réponse du fournisseur ne correspond pas à ce que cette version attend. Réessayez, ou lancez un calcul de démonstration pendant que nous examinons le problème.';
+
+  @override
+  String get settingsTitle => 'Réglages';
+
+  @override
+  String get settingsSectionApiKey => 'Clé API';
+
+  @override
+  String get settingsSectionDefaults => 'Paramètres de calcul par défaut';
+
+  @override
+  String get settingsSectionTimeFormat => 'Format de l\'heure';
+
+  @override
+  String get settingsSectionData => 'Données';
+
+  @override
+  String get settingsSectionAbout => 'À propos';
+
+  @override
+  String get settingsApiKeyRowLabel => 'Clé API (Pro / Développeur)';
+
+  @override
+  String get settingsApiKeySet => 'Définie';
+
+  @override
+  String get settingsApiKeyNotSet => 'Non définie';
+
+  @override
+  String get settingsApiKeyHelper =>
+      'Facultatif. Uniquement pour les utilisateurs ayant leur propre clé fournisseur. Laissez vide pour le chemin standard (proxy).';
+
+  @override
+  String get settingsDemoModeLabel => 'Mode démo';
+
+  @override
+  String get settingsDemoModeHelper =>
+      'Lancez des calculs avec des données d\'exemple (gratuit, sans réseau).';
+
+  @override
+  String get settingsTimeFormat12 => '12 heures  (7:14 AM)';
+
+  @override
+  String get settingsTimeFormat24 => '24 heures  (07:14)';
+
+  @override
+  String get settingsDeleteAllData => 'Supprimer toutes les données';
+
+  @override
+  String get settingsDeleteAllHelper =>
+      'Retire tous les calculs et événements de cet appareil. Action irréversible.';
+
+  @override
+  String get settingsPrivacyPolicy => 'Politique de confidentialité';
+
+  @override
+  String get apiKeySheetBody =>
+      'Collez votre clé fournisseur pour désactiver le chemin standard par proxy. La clé est stockée uniquement sur cet appareil.';
+
+  @override
+  String get apiKeyFieldLabel => 'Clé API';
+
+  @override
+  String get apiKeyHintConfigured =>
+      'Actuellement définie — saisissez une nouvelle clé pour la remplacer';
+
+  @override
+  String get apiKeyHintEmpty => 'sk-…';
+
+  @override
+  String get apiKeySaveButton => 'Enregistrer la clé';
+
+  @override
+  String get apiKeyRemoveButton => 'Supprimer la clé';
+
+  @override
+  String get apiKeySavedSnack => 'Clé API enregistrée.';
+
+  @override
+  String get apiKeyRemovedSnack => 'Clé API supprimée.';
+
+  @override
+  String get deleteAllTitle => 'Supprimer toutes les données ?';
+
+  @override
+  String get deleteAllBodyGeneric =>
+      'Cela supprimera définitivement chaque calcul, événement et réglage de cet appareil. Action irréversible.';
+
+  @override
+  String deleteAllBodyCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Cela supprimera définitivement $count calculs ainsi que chaque événement et réglage enregistré sur cet appareil. Action irréversible.',
+      one:
+          'Cela supprimera définitivement 1 calcul ainsi que chaque événement et réglage enregistré sur cet appareil. Action irréversible.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get deleteAllFailedSnack =>
+      'Impossible de supprimer les données. Réessayez.';
+
+  @override
+  String get privacyTitle => 'Confidentialité';
+
+  @override
+  String privacyStoresTitle(String brand) {
+    return 'Ce que $brand stocke';
+  }
+
+  @override
+  String privacyStoresBody(String brand) {
+    return 'Tout ce que vous saisissez — date de naissance, ville de naissance, événements de vie, résultats de calcul — est stocké uniquement sur cet appareil. Rien n\'est téléversé vers un compte $brand, car nous ne gérons pas de comptes utilisateur. Supprimer l\'application efface chaque octet de ces données.';
+  }
+
+  @override
+  String get privacyApiKeyTitle => 'Clé API facultative';
+
+  @override
+  String get privacyApiKeyBody =>
+      'Les utilisateurs avancés peuvent coller leur propre clé API fournisseur dans les Réglages. Une fois définie, cette clé réside dans le trousseau de la plateforme (iOS) ou le Keystore (Android) — elle n\'entre jamais dans la base de données, les préférences, les journaux ou les rapports de plantage, et ne vous est jamais réaffichée après l\'enregistrement.';
+
+  @override
+  String get privacyDemoTitle => 'Mode démo';
+
+  @override
+  String get privacyDemoBody =>
+      'Les calculs de démonstration s\'exécutent entièrement sur cet appareil — aucun appel réseau n\'est effectué et aucune clé n\'est utilisée. Les résultats de démo sont clairement signalés par une pastille DEMO afin de ne pas être confondus avec de vraies lectures.';
+
+  @override
+  String get privacyLiveTitle => 'Calculs en direct';
+
+  @override
+  String privacyLiveBody(String brand) {
+    return 'Lancer un calcul en direct (hors démo) envoie votre date de naissance et votre heure approximative, les coordonnées de votre lieu de naissance et les descriptions des événements de vie que vous ajoutez à un fournisseur de calcul tiers via HTTPS. Ces données sont transmises uniquement pour calculer votre heure de naissance rectifiée — elles ne servent pas à constituer un profil et ne sont liées à aucun compte $brand, car il n\'en existe aucun.';
+  }
+
+  @override
+  String get privacyDeleteTitle => 'Suppression de vos données';
+
+  @override
+  String get privacyDeleteBody =>
+      'L\'écran des Réglages comporte une action « Supprimer toutes les données » qui efface la base de données locale, chaque préférence et l\'entrée de stockage sécurisé contenant votre clé API (si vous en avez défini une). L\'effacement est terminé avant que l\'action ne se conclue ; l\'application vous renvoie ensuite à l\'introduction afin que vous puissiez confirmer la réinitialisation.';
+
+  @override
+  String get privacyAnalyticsTitle => 'Analytique et rapports de plantage';
+
+  @override
+  String privacyAnalyticsBody(String brand) {
+    return 'Cette version de $brand est livrée sans SDK d\'analytique et sans rapport de plantage. Si une future version en ajoute l\'un ou l\'autre, cela sera divulgué ici et limité à des données anonymes et non identifiantes.';
+  }
+
+  @override
+  String get demoEvidenceStrongVenus =>
+      'Un retour de Vénus daté coïncidait avec la fenêtre candidate, cohérent avec un événement de partenariat.';
+
+  @override
+  String get demoEvidenceStrongSaturn =>
+      'Saturne a franchi la cuspide de la maison 10 dans la fenêtre — une signature de datation classique pour un virage de carrière.';
+
+  @override
+  String get demoEvidenceModerateJupiter =>
+      'Jupiter est passée près de la cuspide de la maison 4 ; appui modéré pour un événement de foyer / déménagement dans cette fenêtre.';
+
+  @override
+  String get demoEvidenceModerateSolarArc =>
+      'Un arc solaire vers Mars se situait dans la tolérance de la fenêtre, plausible pour l\'événement signalé mais pas exclusif à celui-ci.';
+
+  @override
+  String get demoEvidenceWeakMercury =>
+      'Mercure se trouvait dans une large orbe de la cuspide concernée ; insuffisant pour confirmer la datation à lui seul.';
+
+  @override
+  String get demoEvidenceNoMatch =>
+      'Aucun aspect principal dans la tolérance de la fenêtre candidate. Cet événement n\'appuie ni ne contredit le résultat.';
+}
