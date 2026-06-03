@@ -1,0 +1,80 @@
+{
+  "set": "store-screenshots-pt-BR-tier1",
+  "implRun": "D.4",
+  "date": "2026-06-03",
+  "model": "claude-opus-4-8",
+  "storeLocale": "pt-BR",
+  "appLocale": "pt",
+  "device": {
+    "label": "iPhone 6.7\" / Pro Max portrait",
+    "pixelWidth": 1290,
+    "pixelHeight": 2796,
+    "logicalWidth": 430,
+    "logicalHeight": 932,
+    "devicePixelRatio": 3,
+    "safeAreaPaddingPhysicalPx": { "top": 177, "bottom": 102 }
+  },
+  "source": "Shipped Flutter UI (package `rectify`) rendered from real widgets, routes, and state under the app's Brazilian Portuguese content bundle. No marketing mockups, no fabricated screens.",
+  "captureMethod": "flutter test widget harness on the host VM: RepaintBoundary.toImage(pixelRatio: 3) -> ui.ImageByteFormat.png -> File. Demo mode (offline, no network, no key) drives the canonical 6-event calculation through the real calculation_flow controller and go_router routes; the store locale is pt-BR and the app locale resolves to pt, which carries Brazilian Portuguese content.",
+  "demoMode": true,
+  "network": "none (demo mode is fully offline; no API key, no HTTP)",
+  "captionsBakedIn": false,
+  "captionPlanSource": "docs/store-listing-tier1-localized.md §3 (localized marketing captions are intended overlays to be composited by the owner after native review; they are NOT baked into these raw frames).",
+  "frames": [
+    {
+      "file": "01-result-hero.png",
+      "title": "The answer (result hero)",
+      "route": "/calc/result/:id",
+      "shippedWidgets": "ResultScreen hero card + confidence bar + alternate candidates + DEMO pill, Portuguese chrome",
+      "shows": "Portuguese result screen: most probable time 7:14 AM, Gemini Rising, 78% confidence, alternate candidates (7:42 AM 61%, 8:03 AM 44%), DEMO badge, the evidence CTA, and the 'Compartilhar resultado' share affordance.",
+      "intendedCaption": "Encontre seu verdadeiro horário de nascimento – com um nível de confiança honesto."
+    },
+    {
+      "file": "02-evidence-breakdown.png",
+      "title": "The evidence",
+      "route": "/calc/result/:id/evidence",
+      "shippedWidgets": "EvidenceScreen per-event match cards with localized strength chips, Portuguese chrome",
+      "shows": "Portuguese evidence screen: why 7:14 AM with the 4-of-6 supporting summary, DEMO badge, per-event match cards (education, relocation, marriage/partnership, career change) and localized evidence prose.",
+      "intendedCaption": "Veja por quê – a partir dos eventos de vida que você realmente lembra."
+    },
+    {
+      "file": "03-privacy-demo-settings.png",
+      "title": "Private & offline (settings)",
+      "route": "/settings",
+      "shippedWidgets": "SettingsScreen: API key row, Demo mode toggle, time format, delete all data, bottom nav, Portuguese chrome",
+      "shows": "Portuguese settings: demo-mode toggle ON (free, offline), optional API key (not set), 12h/24h time format, the destructive delete-all-data row, and localized bottom navigation.",
+      "intendedCaption": "Privado por padrão. Experimente grátis, off-line, no modo demo."
+    },
+    {
+      "file": "04-share-result.png",
+      "title": "Share the result",
+      "route": "/calc/result/:id",
+      "shippedWidgets": "ResultScreen with the shipped Portuguese 'Compartilhar resultado' affordance scrolled into view (resultShareButtonKey)",
+      "shows": "The shipped Share affordance ('Compartilhar resultado') in context on the Portuguese result screen. The native OS share sheet itself cannot be rendered from the host test harness (see limitations); the exact text payload it emits is documented in shareTextPayload below.",
+      "intendedCaption": "Compartilhe seu resultado – nunca seus dados de nascimento."
+    },
+    {
+      "file": "05-privacy-policy.png",
+      "title": "Privacy policy (bonus)",
+      "route": "/settings/privacy",
+      "shippedWidgets": "PrivacyPolicyScreen in-app content, Portuguese chrome",
+      "shows": "Portuguese in-app privacy disclosure: what TrueRise stores (on-device only), optional API key (keychain/Keystore, never in DB/logs), demo mode (entirely on-device, no network, no key), live calculations (sent over HTTPS solely to compute, not tied to any account).",
+      "intendedCaption": "(bonus / optional — not part of the required 4-frame set)"
+    }
+  ],
+  "shareTextPayload": {
+    "builtBy": "lib/core/sharing/share_copy_builder.dart (ShareCopyBuilder.build)",
+    "buttonLabelLocalized": "Compartilhar resultado",
+    "textPayloadLocalized": false,
+    "textPayloadNote": "The in-app Share BUTTON label is localized (pt: 'Compartilhar resultado'), but the TEXT the share action emits is currently locale-invariant English: ShareCopyBuilder.build takes no AppLocalizations and hardcodes the English brand/affix strings. The dynamic values (time, ascendant, confidence) come from the result data and are not translated. This is the shipped behavior as of Run D.4; it is documented here, not changed.",
+    "privacySafe": "Contains only estimated time + rising sign + confidence + brand. No birth date, no birthplace, no life events, no PII.",
+    "exactText": "My TrueRise rectification result:\n7:14 AM · Gemini Rising · 78% confidence\n\nCalculated with TrueRise — birth-time rectification"
+  },
+  "limitations": [
+    "The native OS share sheet cannot be captured from the host `flutter test` harness (no platform share-sheet surface in the binding). Frame 04 therefore shows the shipped in-app 'Compartilhar resultado' button; the exact text payload the share action emits is recorded verbatim in shareTextPayload.exactText.",
+    "The share text payload is locale-invariant English even under the Portuguese bundle (see shareTextPayload.textPayloadNote). Localizing the shared text is a future product change outside this screenshot run.",
+    "These are raw device-resolution captures with NO marketing caption overlays or device bezels. The localized captions (captionPlanSource) are [PROPOSED] drafts pending native review and are owner-composited work.",
+    "Times/signs/percentages come from the canonical offline DEMO dataset, not a live calculation. The DEMO badge is visible in-frame on the result and evidence screens, matching the honest, probabilistic framing required for store review.",
+    "iPhone 6.7\" portrait only, matching screenshots/store/en. The same harness can emit a Play / other-size variant by changing the view geometry if a second set is later required."
+  ]
+}
