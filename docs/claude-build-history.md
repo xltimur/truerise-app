@@ -4238,71 +4238,6 @@ passed auth — it reached business logic, not 401/403 — so the existing
   assumptions in `evidenceWhyTitle`/`timeWindowRangeCopy` ("las {time}").
 - **Limit/quota:** none hit.
 
-### 2026-06-03 — Tier 1 Localized Raw Store Screenshots: de / fr / es / pt-BR (Impl Run D.4)
-
-- **Model:** claude-opus-4-8. **Session ids:** initial screenshot harness work
-  `adb58a20-d415-4a59-8fb2-0293cc2b712a`; resumed capture/documentation work
-  `bb16fc7d-5344-46bc-8bcd-6d619385f235`. No commit, no push by Claude —
-  Codex verifies/commits after this run.
-- **Predecessor:** continues from clean checkpoint `4ce66ef` (Run D.3,
-  localized store metadata drafts).
-- **Goal:** create owner-independent, localized, raw App Store / Play-ready
-  screenshot source sets for Tier 1 locales: `screenshots/store/de/`,
-  `screenshots/store/fr/`, `screenshots/store/es/`, and
-  `screenshots/store/pt-BR/`.
-- **Artifacts created:** each locale directory now contains five raw PNG frames:
-  `01-result-hero.png`, `02-evidence-breakdown.png`,
-  `03-privacy-demo-settings.png`, `04-share-result.png`, and
-  `05-privacy-policy.png`; plus `README.md` and `manifest.json`. Store locale
-  `pt-BR` maps to app locale `pt`, carrying Brazilian Portuguese content.
-- **Capture method:** a throwaway `/tmp/rectify_shotcap` widget-test harness
-  rendered the shipped `RectifyApp` from real widgets/routes/state in fully
-  offline Demo mode. It forced the target locale, drove the canonical 6-event
-  demo calculation through the real `calculation_flow` controller and router,
-  then wrote `RenderRepaintBoundary.toImage(pixelRatio: 3)` PNGs at the same
-  iPhone 6.7" / Pro Max target as the English set: **1290 x 2796 px**,
-  logical 430 x 932 @ DPR 3, safe-area padding top 177 / bottom 102. The final
-  capture pass explicitly preloaded bundled product fonts plus `MaterialIcons`
-  and `Lucide` package fonts so navigation, bottom-tab, close, and row icons
-  render as real glyphs instead of test-harness fallback squares.
-- **Toolchain workaround:** this local `flutter_tester` shell hangs/crashes
-  during teardown after a `toImage` capture. The harness captured one frame per
-  process and a wrapper waited for an atomically renamed valid 1290 x 2796 PNG,
-  then terminated only the stale tester process. No app source, tests, ARBs,
-  pubspec, platform directories, assets, icons, or product behavior were
-  changed.
-- **Share behavior documented honestly:** frame 04 shows the shipped localized
-  share affordance (`Ergebnis teilen`, `Partager le résultat`,
-  `Compartir el resultado`, `Compartilhar resultado`). The native OS share
-  sheet cannot be captured from the host Flutter test harness. The emitted
-  share **text payload is still English-only** because
-  `lib/core/sharing/share_copy_builder.dart` takes no `AppLocalizations` and
-  hardcodes the English strings. Manifests document this as shipped behavior and
-  record the exact privacy-safe payload; no share feature was changed.
-- **Verification:** all 20 generated PNGs were checked with `sips` and are
-  **1290 x 2796**; all four `manifest.json` files parse with
-  `python3 -m json.tool`; each target locale directory has exactly 5 PNG + 1
-  README + 1 manifest. Visual QA contact sheets were inspected after the final
-  icon-font capture pass: frames are non-blank, localized chrome is present,
-  key text/buttons are readable, and icons render correctly. Localized QA tests
-  were run:
-  `flutter test --exclude-tags backend --no-pub
-  test/widget/l10n/localized_overflow_test.dart
-  test/widget/l10n/localized_screens_test.dart` → pass. `git diff --check` →
-  clean. `flutter analyze --no-pub` was not required because no app/test code
-  changed.
-- **Constraints respected:** raw screenshots only; no marketing caption overlays
-  or device bezels baked in; no mocked share-card image; no live network/API
-  use; no secrets; no deferred scope added.
-- **Residual risks / owner follow-ups:** native-speaker review is still required
-  for localized captions/copy before console upload; caption overlays are
-  owner-composited work; share payload localization remains a future product
-  improvement; only the 6.7" portrait screenshot size was generated in this run.
-- **Limit/quota:** Claude CLI streams became noisy when image inspection emitted
-  inline PNG data, so Codex completed file-level documentation and verification
-  from the generated artifacts instead of relying on the final Claude prose.
-
-
 ### 2026-06-03 — Localized UI Layout / Overflow QA (Impl Run D.2)
 
 - **Model:** claude-opus-4-8. **Session id:**
@@ -4445,3 +4380,67 @@ passed auth — it reached business logic, not 401/403 — so the existing
   fr/es/pt-BR keyword fields have spare characters; if a reviewer adds long-tail
   terms, re-count in-console.
 - **Limit/quota:** none hit.
+
+### 2026-06-03 — Tier 1 Localized Raw Store Screenshots: de / fr / es / pt-BR (Impl Run D.4)
+
+- **Model:** claude-opus-4-8. **Session ids:** initial screenshot harness work
+  `adb58a20-d415-4a59-8fb2-0293cc2b712a`; resumed capture/documentation work
+  `bb16fc7d-5344-46bc-8bcd-6d619385f235`. No commit, no push by Claude —
+  Codex verifies/commits after this run.
+- **Predecessor:** continues from clean checkpoint `4ce66ef` (Run D.3,
+  localized store metadata drafts).
+- **Goal:** create owner-independent, localized, raw App Store / Play-ready
+  screenshot source sets for Tier 1 locales: `screenshots/store/de/`,
+  `screenshots/store/fr/`, `screenshots/store/es/`, and
+  `screenshots/store/pt-BR/`.
+- **Artifacts created:** each locale directory now contains five raw PNG frames:
+  `01-result-hero.png`, `02-evidence-breakdown.png`,
+  `03-privacy-demo-settings.png`, `04-share-result.png`, and
+  `05-privacy-policy.png`; plus `README.md` and `manifest.json`. Store locale
+  `pt-BR` maps to app locale `pt`, carrying Brazilian Portuguese content.
+- **Capture method:** a throwaway `/tmp/rectify_shotcap` widget-test harness
+  rendered the shipped `RectifyApp` from real widgets/routes/state in fully
+  offline Demo mode. It forced the target locale, drove the canonical 6-event
+  demo calculation through the real `calculation_flow` controller and router,
+  then wrote `RenderRepaintBoundary.toImage(pixelRatio: 3)` PNGs at the same
+  iPhone 6.7" / Pro Max target as the English set: **1290 x 2796 px**,
+  logical 430 x 932 @ DPR 3, safe-area padding top 177 / bottom 102. The final
+  capture pass explicitly preloaded bundled product fonts plus `MaterialIcons`
+  and `Lucide` package fonts so navigation, bottom-tab, close, and row icons
+  render as real glyphs instead of test-harness fallback squares.
+- **Toolchain workaround:** this local `flutter_tester` shell hangs/crashes
+  during teardown after a `toImage` capture. The harness captured one frame per
+  process and a wrapper waited for an atomically renamed valid 1290 x 2796 PNG,
+  then terminated only the stale tester process. No app source, tests, ARBs,
+  pubspec, platform directories, assets, icons, or product behavior were
+  changed.
+- **Share behavior documented honestly:** frame 04 shows the shipped localized
+  share affordance (`Ergebnis teilen`, `Partager le résultat`,
+  `Compartir el resultado`, `Compartilhar resultado`). The native OS share
+  sheet cannot be captured from the host Flutter test harness. The emitted
+  share **text payload is still English-only** because
+  `lib/core/sharing/share_copy_builder.dart` takes no `AppLocalizations` and
+  hardcodes the English strings. Manifests document this as shipped behavior and
+  record the exact privacy-safe payload; no share feature was changed.
+- **Verification:** all 20 generated PNGs were checked with `sips` and are
+  **1290 x 2796**; all four `manifest.json` files parse with
+  `python3 -m json.tool`; each target locale directory has exactly 5 PNG + 1
+  README + 1 manifest. Visual QA contact sheets were inspected after the final
+  icon-font capture pass: frames are non-blank, localized chrome is present,
+  key text/buttons are readable, and icons render correctly. Localized QA tests
+  were run:
+  `flutter test --exclude-tags backend --no-pub
+  test/widget/l10n/localized_overflow_test.dart
+  test/widget/l10n/localized_screens_test.dart` → pass. `git diff --check` →
+  clean. `flutter analyze --no-pub` was not required because no app/test code
+  changed.
+- **Constraints respected:** raw screenshots only; no marketing caption overlays
+  or device bezels baked in; no mocked share-card image; no live network/API
+  use; no secrets; no deferred scope added.
+- **Residual risks / owner follow-ups:** native-speaker review is still required
+  for localized captions/copy before console upload; caption overlays are
+  owner-composited work; share payload localization remains a future product
+  improvement; only the 6.7" portrait screenshot size was generated in this run.
+- **Limit/quota:** Claude CLI streams became noisy when image inspection emitted
+  inline PNG data, so Codex completed file-level documentation and verification
+  from the generated artifacts instead of relying on the final Claude prose.
