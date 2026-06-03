@@ -643,14 +643,6 @@ class AppLocalizationsFr extends AppLocalizations {
       'Le mode en direct nécessite votre clé API astrology-api.io. Ouvrez les Réglages pour l\'ajouter, ou activez le mode démo pour essayer l\'application avec des données d\'exemple.';
 
   @override
-  String get errorRateLimitedTitle =>
-      'Limite quotidienne des calculs en direct atteinte';
-
-  @override
-  String get errorRateLimitedBody =>
-      'La limite des calculs en direct est atteinte pour aujourd\'hui. Réessayez plus tard, ou activez le mode démo pour obtenir un résultat d\'exemple hors ligne.';
-
-  @override
   String get errorServerTitle => 'Problème du côté du fournisseur';
 
   @override

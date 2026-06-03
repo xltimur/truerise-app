@@ -190,8 +190,6 @@
   "errorUnauthorizedBody": "Der Anbieter hat den API-Schlüssel auf diesem Gerät nicht akzeptiert. Öffne die Einstellungen, um einen neuen Schlüssel einzugeben, oder aktiviere den Demo-Modus.",
   "errorMissingApiKeyTitle": "API-Schlüssel erforderlich",
   "errorMissingApiKeyBody": "Der Live-Modus benötigt deinen API-Schlüssel von astrology-api.io. Öffne die Einstellungen, um ihn hinzuzufügen, oder aktiviere den Demo-Modus, um die App mit Beispieldaten zu testen.",
-  "errorRateLimitedTitle": "Tageslimit für Live-Berechnungen erreicht",
-  "errorRateLimitedBody": "Das Limit für Live-Berechnungen ist für heute erreicht. Versuche es später erneut oder aktiviere den Demo-Modus für ein Offline-Beispielergebnis.",
   "errorServerTitle": "Problem beim Anbieter",
   "errorServerBody": "Der Anbieter hat einen Fehler zurückgegeben. Sein Dienst hat vielleicht gerade Probleme – ein erneuter Versuch in Kürze lohnt sich.",
   "errorMalformedTitle": "Antwort konnte nicht gelesen werden",

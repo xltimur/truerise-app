@@ -642,14 +642,6 @@ class AppLocalizationsPt extends AppLocalizations {
       'O modo ao vivo precisa da sua chave de API do astrology-api.io. Abra as Configurações para adicioná-la ou ative o modo de demonstração para testar o app com dados de exemplo.';
 
   @override
-  String get errorRateLimitedTitle =>
-      'Limite diário de cálculos ao vivo atingido';
-
-  @override
-  String get errorRateLimitedBody =>
-      'O limite de cálculos ao vivo de hoje foi atingido. Tente novamente mais tarde ou ative o modo de demonstração para ver um resultado de exemplo off-line.';
-
-  @override
   String get errorServerTitle => 'Problema no lado do provedor';
 
   @override

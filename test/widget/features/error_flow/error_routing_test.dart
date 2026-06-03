@@ -105,7 +105,7 @@ void main() {
       );
       expect(
         errorScreenForFailure(const RateLimitedFailure()).path,
-        RoutePaths.errorRateLimited,
+        RoutePaths.errorServer,
       );
       expect(
         errorScreenForFailure(const MalformedResponseFailure()).path,
@@ -149,11 +149,6 @@ void main() {
         label: 'server 500',
         failure: const ServerFailure(500),
         expectedPath: RoutePaths.errorServer,
-      ),
-      (
-        label: 'rate limited',
-        failure: const RateLimitedFailure(),
-        expectedPath: RoutePaths.errorRateLimited,
       ),
       (
         label: 'malformed',

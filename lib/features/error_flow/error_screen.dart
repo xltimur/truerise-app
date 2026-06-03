@@ -61,12 +61,6 @@ class CalculationErrorScreen extends ConsumerWidget {
         description: l10n.errorMissingApiKeyBody,
         primaryLabel: l10n.errorOpenSettings,
       ),
-      ErrorScreenKind.rateLimited => _ErrorCopy(
-        icon: AppIcons.errorTimeout,
-        title: l10n.errorRateLimitedTitle,
-        description: l10n.errorRateLimitedBody,
-        primaryLabel: l10n.commonBackToHistory,
-      ),
       ErrorScreenKind.server => _ErrorCopy(
         icon: AppIcons.errorServer,
         title: l10n.errorServerTitle,
@@ -114,13 +108,6 @@ class CalculationErrorScreen extends ConsumerWidget {
             context.go(RoutePaths.calcConfirm);
             return;
           }
-          if (kind == ErrorScreenKind.rateLimited) {
-            // The proxy owns quota state; avoid immediate retries that
-            // would just return another 429 for the same live request.
-            controller.reset();
-            context.go(RoutePaths.home);
-            return;
-          }
           if (!hasDraft) {
             context.go(RoutePaths.home);
             return;
@@ -130,15 +117,13 @@ class CalculationErrorScreen extends ConsumerWidget {
           context.go(RoutePaths.calcLoading);
         },
       ),
-      secondaryAction: kind == ErrorScreenKind.rateLimited
-          ? null
-          : GhostButton(
-              label: l10n.commonBackToHistory,
-              onPressed: () {
-                controller.reset();
-                context.go(RoutePaths.home);
-              },
-            ),
+      secondaryAction: GhostButton(
+        label: l10n.commonBackToHistory,
+        onPressed: () {
+          controller.reset();
+          context.go(RoutePaths.home);
+        },
+      ),
     );
   }
 }

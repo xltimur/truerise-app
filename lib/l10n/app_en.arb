@@ -786,14 +786,6 @@
   "@errorMissingApiKeyBody": {
     "description": "Body of the missing-API-key error screen. 'astrology-api.io' is the provider domain and must stay untranslated."
   },
-  "errorRateLimitedTitle": "Daily live limit reached",
-  "@errorRateLimitedTitle": {
-    "description": "Title of the rate-limit error screen shown when the server/proxy returns HTTP 429."
-  },
-  "errorRateLimitedBody": "The live calculation limit for today has been reached. Please try again later, or switch to Demo mode for an offline sample result.",
-  "@errorRateLimitedBody": {
-    "description": "Body of the rate-limit error screen. The limit is enforced by the server/proxy, not by client-side counting."
-  },
   "errorServerTitle": "Provider trouble on their end",
   "@errorServerTitle": {
     "description": "Title of the server (5xx) error screen."

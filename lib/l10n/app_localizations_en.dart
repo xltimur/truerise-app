@@ -634,13 +634,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Live mode needs your astrology-api.io API key. Open Settings to add it, or switch on Demo mode to try the app with sample data.';
 
   @override
-  String get errorRateLimitedTitle => 'Daily live limit reached';
-
-  @override
-  String get errorRateLimitedBody =>
-      'The live calculation limit for today has been reached. Please try again later, or switch to Demo mode for an offline sample result.';
-
-  @override
   String get errorServerTitle => 'Provider trouble on their end';
 
   @override
