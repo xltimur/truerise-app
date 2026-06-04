@@ -121,6 +121,9 @@
   "shareCopyHeadline": "Mein {brand}-Ergebnis zur Geburtszeit:",
   "shareCopyTagline": "Berechnet mit {brand} — Geburtszeit-Korrektur",
   "shareCopyGetApp": "Finde deine Geburtszeit: {url}",
+  "inviteCopyHeadline": "Probier {brand} — finde deine echte Geburtszeit",
+  "inviteCopyBody": "Sie schätzt eine wahrscheinliche Geburtszeit anhand einiger Lebensereignisse, an die du dich erinnerst.",
+  "inviteCopyGetApp": "Hol dir die App: {url}",
   "resultSaveToHistory": "Im Verlauf speichern",
   "resultSaved": "Gespeichert ✓",
   "resultDemoNudgeLabel": "Hinweis zum Wechsel von der Demo",
@@ -223,6 +226,7 @@
   "settingsDeleteAllData": "Alle Daten löschen",
   "settingsDeleteAllHelper": "Entfernt alle Berechnungen und Ereignisse von diesem Gerät. Kann nicht rückgängig gemacht werden.",
   "settingsPrivacyPolicy": "Datenschutzerklärung",
+  "settingsInviteFriend": "Freund einladen",
 
   "deleteAllTitle": "Alle Daten löschen?",
   "deleteAllBodyGeneric": "Dadurch werden alle Berechnungen, Ereignisse und Einstellungen auf diesem Gerät dauerhaft gelöscht. Kann nicht rückgängig gemacht werden.",

@@ -121,6 +121,9 @@
   "shareCopyHeadline": "Mon résultat d'heure de naissance avec {brand} :",
   "shareCopyTagline": "Calculé avec {brand} — rectification de l'heure de naissance",
   "shareCopyGetApp": "Trouvez votre heure de naissance : {url}",
+  "inviteCopyHeadline": "Essayez {brand} — trouvez votre vraie heure de naissance",
+  "inviteCopyBody": "Elle estime une heure de naissance probable à partir de quelques événements de votre vie dont vous vous souvenez.",
+  "inviteCopyGetApp": "Téléchargez l'appli : {url}",
   "resultSaveToHistory": "Enregistrer dans l'historique",
   "resultSaved": "Enregistré ✓",
   "resultDemoNudgeLabel": "Invitation à passer de la démo",
@@ -223,6 +226,7 @@
   "settingsDeleteAllData": "Supprimer toutes les données",
   "settingsDeleteAllHelper": "Retire tous les calculs et événements de cet appareil. Action irréversible.",
   "settingsPrivacyPolicy": "Politique de confidentialité",
+  "settingsInviteFriend": "Inviter un ami",
 
   "deleteAllTitle": "Supprimer toutes les données ?",
   "deleteAllBodyGeneric": "Cela supprimera définitivement chaque calcul, événement et réglage de cet appareil. Action irréversible.",

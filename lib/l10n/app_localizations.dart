@@ -764,6 +764,24 @@ abstract class AppLocalizations {
   /// **'Find your birth time: {url}'**
   String shareCopyGetApp(String url);
 
+  /// First line of the privacy-safe 'Invite a friend' message shared from Settings. A soft, opt-in invitation — never a referral or reward. {brand} is the product name, held constant across locales. The message reads no saved calculation and contains no birth date, city, coordinates, life events, labels, or API ids.
+  ///
+  /// In en, this message translates to:
+  /// **'Try {brand} — find your real birth time'**
+  String inviteCopyHeadline(String brand);
+
+  /// Second line of the 'Invite a friend' message, explaining honestly what the app does (a probable estimate, not a certainty). Carries no personal data and no referral/reward language.
+  ///
+  /// In en, this message translates to:
+  /// **'It estimates a probable birth time from a few life events you remember.'**
+  String get inviteCopyBody;
+
+  /// Link line of the 'Invite a friend' message. {url} is a non-secret public landing/store link with no tracking parameters or personal data; keep it verbatim.
+  ///
+  /// In en, this message translates to:
+  /// **'Get the app: {url}'**
+  String inviteCopyGetApp(String url);
+
   /// Button that confirms saving the result to history.
   ///
   /// In en, this message translates to:
@@ -1274,6 +1292,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Privacy Policy'**
   String get settingsPrivacyPolicy;
+
+  /// Label for the opt-in 'Invite a friend' row in the Settings about section. Opens the native share sheet with a privacy-safe, branded invite — no referral code, reward, contacts access, or tracking.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite a friend'**
+  String get settingsInviteFriend;
 
   /// Title of the delete-all-data confirmation sheet.
   ///

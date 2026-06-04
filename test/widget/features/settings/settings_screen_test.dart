@@ -5,9 +5,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rectify/app/app.dart';
 import 'package:rectify/app/route_names.dart';
 import 'package:rectify/app/router.dart';
+import 'package:rectify/core/app_links.dart';
+import 'package:rectify/core/reviews/review_service.dart';
+import 'package:rectify/core/sharing/share_service.dart';
 import 'package:rectify/data/db/database.dart';
 import 'package:rectify/data/models/time_format.dart';
 import 'package:rectify/data/secure/secure_key_store.dart';
+import 'package:rectify/features/reviews/review_invitation.dart';
 import 'package:rectify/features/settings/delete_all_data_sheet.dart';
 import 'package:rectify/features/settings/privacy_policy_screen.dart';
 import 'package:rectify/features/settings/settings_screen.dart';
@@ -20,6 +24,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../data/fixtures/sample_calculation.dart';
 import '../../../helpers/fake_history_repository.dart';
+import '../../../helpers/fake_review_service.dart';
+import '../../../helpers/fake_share_service.dart';
 
 Future<SharedPreferences> _prefs({
   Map<String, Object> extra = const <String, Object>{},
@@ -36,6 +42,8 @@ ProviderScope _wrap(
   SharedPreferences prefs, {
   InMemorySecureKeyStore? secure,
   FakeHistoryRepository? history,
+  FakeShareService? shareService,
+  FakeReviewService? reviewService,
 }) {
   return ProviderScope(
     overrides: [
@@ -45,6 +53,12 @@ ProviderScope _wrap(
       ),
       historyRepositoryProvider.overrideWithValue(
         history ?? FakeHistoryRepository(),
+      ),
+      shareServiceProvider.overrideWithValue(
+        shareService ?? FakeShareService(),
+      ),
+      reviewServiceProvider.overrideWithValue(
+        reviewService ?? FakeReviewService(),
       ),
       // The default `appDatabaseProvider` opens a real Drift file with
       // a platform-specific path that no `sqflite` plugin backs in
@@ -250,4 +264,93 @@ void main() {
       );
     },
   );
+
+  testWidgets('renders an opt-in "Invite a friend" row in the About section', (
+    tester,
+  ) async {
+    final prefs = await _prefs();
+    await _pumpOnSettings(tester, _wrap(prefs));
+
+    expect(find.byKey(settingsInviteButtonKey), findsOneWidget);
+    expect(find.text('Invite a friend'), findsOneWidget);
+  });
+
+  testWidgets(
+    'tapping Invite shares a localized, branded, linked, PII-free invite',
+    (tester) async {
+      final prefs = await _prefs();
+      final shareService = FakeShareService();
+      // Seed a calculation so any accidental PII leak would have a source.
+      final history = FakeHistoryRepository();
+      await history.save(sampleRequest(), sampleResult());
+
+      await _pumpOnSettings(
+        tester,
+        _wrap(prefs, history: history, shareService: shareService),
+      );
+
+      await tester.tap(find.byKey(settingsInviteButtonKey));
+      await tester.pumpAndSettle();
+
+      expect(shareService.shared, hasLength(1));
+      final invite = shareService.shared.first;
+      expect(invite, isNotEmpty);
+      expect(invite, contains('TrueRise'));
+      expect(invite, contains(AppLinks.shareUrl));
+      // None of the seeded calculation's data may ride along.
+      expect(invite, isNot(contains('Kyiv')));
+      expect(invite, isNot(contains('Ukraine')));
+      expect(invite, isNot(contains('1990')));
+      expect(invite, isNot(contains('marriage')));
+      // Not a referral / reward program.
+      expect(invite.toLowerCase(), isNot(contains('referral')));
+      expect(invite.toLowerCase(), isNot(contains('reward')));
+      expect(invite.toLowerCase(), isNot(contains('code')));
+    },
+  );
+
+  testWidgets(
+    'Invite never triggers the review prompt — even when fully eligible',
+    (tester) async {
+      // Fresh prefs (no prior prompt) + an available review service means
+      // the review flow WOULD fire on a result-screen share. The invite
+      // must still never chain it.
+      final prefs = await _prefs();
+      final shareService = FakeShareService();
+      final reviewService = FakeReviewService();
+
+      await _pumpOnSettings(
+        tester,
+        _wrap(
+          prefs,
+          shareService: shareService,
+          reviewService: reviewService,
+        ),
+      );
+
+      await tester.tap(find.byKey(settingsInviteButtonKey));
+      await tester.pumpAndSettle();
+
+      expect(shareService.shared, hasLength(1));
+      expect(find.byKey(reviewInvitationDialogKey), findsNothing);
+      expect(reviewService.requestReviewCount, 0);
+    },
+  );
+
+  testWidgets('Invite shows the clipboard SnackBar on the fallback path', (
+    tester,
+  ) async {
+    final prefs = await _prefs();
+    // returnsNative: false → clipboard fallback, not the native sheet.
+    final shareService = FakeShareService(returnsNative: false);
+
+    await _pumpOnSettings(tester, _wrap(prefs, shareService: shareService));
+
+    await tester.tap(find.byKey(settingsInviteButtonKey));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Copied to clipboard'), findsOneWidget);
+    // A fallback is a degraded path, never a positive review moment.
+    expect(find.byKey(reviewInvitationDialogKey), findsNothing);
+  });
 }

@@ -404,6 +404,20 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String inviteCopyHeadline(String brand) {
+    return 'Probier $brand — finde deine echte Geburtszeit';
+  }
+
+  @override
+  String get inviteCopyBody =>
+      'Sie schätzt eine wahrscheinliche Geburtszeit anhand einiger Lebensereignisse, an die du dich erinnerst.';
+
+  @override
+  String inviteCopyGetApp(String url) {
+    return 'Hol dir die App: $url';
+  }
+
+  @override
   String get resultSaveToHistory => 'Im Verlauf speichern';
 
   @override
@@ -752,6 +766,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsPrivacyPolicy => 'Datenschutzerklärung';
+
+  @override
+  String get settingsInviteFriend => 'Freund einladen';
 
   @override
   String get deleteAllTitle => 'Alle Daten löschen?';

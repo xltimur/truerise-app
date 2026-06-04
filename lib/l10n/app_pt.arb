@@ -121,6 +121,9 @@
   "shareCopyHeadline": "Meu resultado de horário de nascimento com {brand}:",
   "shareCopyTagline": "Calculado com {brand} — retificação do horário de nascimento",
   "shareCopyGetApp": "Descubra seu horário de nascimento: {url}",
+  "inviteCopyHeadline": "Experimente o {brand} — descubra seu horário de nascimento real",
+  "inviteCopyBody": "Ele estima um horário de nascimento provável a partir de alguns eventos da sua vida que você lembra.",
+  "inviteCopyGetApp": "Baixe o app: {url}",
   "resultSaveToHistory": "Salvar no histórico",
   "resultSaved": "Salvo ✓",
   "resultDemoNudgeLabel": "Sugestão para sair da demonstração",
@@ -223,6 +226,7 @@
   "settingsDeleteAllData": "Excluir todos os dados",
   "settingsDeleteAllHelper": "Remove todos os cálculos e eventos deste dispositivo. Não pode ser desfeito.",
   "settingsPrivacyPolicy": "Política de Privacidade",
+  "settingsInviteFriend": "Convidar um amigo",
 
   "deleteAllTitle": "Excluir todos os dados?",
   "deleteAllBodyGeneric": "Isso vai excluir permanentemente todos os cálculos, eventos e configurações deste dispositivo. Não pode ser desfeito.",

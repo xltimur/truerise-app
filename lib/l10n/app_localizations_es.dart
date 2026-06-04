@@ -403,6 +403,20 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String inviteCopyHeadline(String brand) {
+    return 'Prueba $brand: averigua tu verdadera hora de nacimiento';
+  }
+
+  @override
+  String get inviteCopyBody =>
+      'Estima una hora de nacimiento probable a partir de algunos eventos de tu vida que recuerdes.';
+
+  @override
+  String inviteCopyGetApp(String url) {
+    return 'Descarga la app: $url';
+  }
+
+  @override
   String get resultSaveToHistory => 'Guardar en el historial';
 
   @override
@@ -747,6 +761,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settingsPrivacyPolicy => 'Política de privacidad';
+
+  @override
+  String get settingsInviteFriend => 'Invitar a un amigo';
 
   @override
   String get deleteAllTitle => '¿Eliminar todos los datos?';

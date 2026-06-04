@@ -4900,3 +4900,69 @@ passed auth — it reached business logic, not 401/403 — so the existing
   share copy with store link`); **not pushed** (still local-only, per task
   workflow).
 - **Limit/quota:** none hit.
+
+### 2026-06-04 — Invite a Friend (Lite) (Impl Run S4)
+
+- **Model:** claude-opus-4-8. **Session id:**
+  `62031429-ceac-42fb-bc41-c6e90f93d092` (implementation run).
+- **Naming note:** this is the user's plan item **S4 — Invite Friend Lite**. It
+  is explicitly *not* a referral/rewards program — only a soft, opt-in
+  invitation.
+- **Predecessor:** continues from `6db0b61` (S3 localized share copy); worktree
+  clean at start (`main` ahead of origin, not pushed).
+- **Goal:** add one opt-in "Invite a friend" affordance that opens the existing
+  native share sheet with a localized, PII-free, branded invite carrying the
+  public landing/store link — without accounts, referral codes, rewards,
+  contacts access, tracking, or any new dependency.
+- **What changed:**
+  - New `lib/core/sharing/invite_copy_builder.dart` — `InviteCopyBuilder.build`
+    takes only `AppLocalizations` (no `SavedCalculation` parameter, so there is
+    structurally no path for birth data, events, labels, coordinates, or API ids
+    to reach an invite). Composes three new ARB keys; brand (`appBrandName`) and
+    `AppLinks.shareUrl` are passed as placeholders so translators cannot alter
+    them. EN shape: `Try TrueRise — find your real birth time` / `It estimates a
+    probable birth time from a few life events you remember.` / `Get the app:
+    https://truerise.app`.
+  - `lib/features/settings/settings_screen.dart` — added an opt-in "Invite a
+    friend" chevron row (`settingsInviteButtonKey`) at the top of the existing
+    About card, above Privacy Policy (separated by a hairline divider). Its
+    `_invite` handler reads `shareServiceProvider`, shares `InviteCopyBuilder`
+    text, and on the clipboard fallback surfaces the existing "Copied to
+    clipboard" SnackBar. It **deliberately does not** chain `maybeInviteReview`
+    — an invite is not the celebratory moment the review ask is reserved for.
+    `_ChevronRow` gained `super.key` to host the test key.
+  - l10n: 4 new keys per locale (`settingsInviteFriend`, `inviteCopyHeadline`,
+    `inviteCopyBody`, `inviteCopyGetApp`) across EN/DE/ES/FR/PT; regenerated
+    `app_localizations*.dart` via `flutter gen-l10n` (not hand-edited).
+- **Tests added (TDD, red→green):**
+  - `test/unit/sharing/invite_copy_builder_test.dart` (10 tests) — brand + link
+    present, bare URL with no tracking params, localized per locale, expected
+    per-locale prose, PII-free, no referral/reward/rating-bait wording.
+  - `test/unit/sharing/invite_strings_compliance_test.dart` (5 tests) — scans
+    the source `.arb` files so a future copy edit in any locale cannot turn the
+    invite into an incentivised referral or "rate us" nudge: every locale defines
+    the keys, no referral/reward/incentive language, no rating-bait, no tracking
+    params in the link line, brand/link stay placeholders.
+  - `test/widget/features/settings/settings_screen_test.dart` (+4 tests) — row
+    renders; tapping shares a localized, branded, linked, PII-free invite; the
+    invite never triggers the review prompt even when fully eligible
+    (FakeReviewService available + no prior prompt); clipboard SnackBar on the
+    fallback path.
+- **Verification — RUN AND PASSED:** `flutter gen-l10n` succeeded; `dart format`
+  on the five touched Dart files reports clean (0 changed); `flutter analyze lib
+  test` → **No issues found!**; focused tests pass (the two new unit suites + the
+  extended settings widget suite, 10/10); full `flutter test` → **333 tests, all
+  passed** (was 314); `git diff --check` clean. Flutter 3.44.0 / Dart 3.12.0.
+- **Constraints respected:** scoped change (no architecture rewrite); demo mode
+  still makes no network calls (the invite is inert text via the share sheet, not
+  a request); no accounts / referral / rewards / contacts / Instagram
+  integration / analytics / push / paywall / IAP / backend; no new dependency
+  (reuses `ShareService`/`FakeShareService`); no review-prompt chaining from the
+  invite; no secrets; no manual edits to generated sources.
+- **Residual risks / owner follow-ups:** (1) `AppLinks.shareUrl` is still the
+  `https://truerise.app` **placeholder** — same standing owner action as S3
+  (confirm/own the domain or swap for the live store link before release). (2)
+  the DE/ES/FR/PT invite strings are engineer-drafted and want a native-speaker
+  pass (standing Run D translation caveat). (3) committed locally by the S4
+  finalization run; not pushed.
+- **Limit/quota:** none hit.

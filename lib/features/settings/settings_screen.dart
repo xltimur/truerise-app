@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:rectify/app/route_names.dart';
+import 'package:rectify/core/sharing/invite_copy_builder.dart';
+import 'package:rectify/core/sharing/share_service.dart';
 import 'package:rectify/data/models/time_format.dart';
 import 'package:rectify/features/settings/delete_all_data_sheet.dart';
 import 'package:rectify/l10n/l10n.dart';
@@ -18,6 +20,9 @@ import 'package:rectify/widgets/inputs/labeled_toggle.dart';
 import 'package:rectify/widgets/inputs/radio_group.dart' as rectify;
 import 'package:rectify/widgets/nav/top_nav.dart';
 
+@visibleForTesting
+const Key settingsInviteButtonKey = ValueKey<String>('settings-invite-button');
+
 /// Settings screen (`docs/ascii-wireframes.md` Screen 9,
 /// `docs/design-system.md` §10.7, `docs/mvp-scope.md` M11).
 ///
@@ -32,6 +37,29 @@ class SettingsScreen extends ConsumerWidget {
 
   void _openPrivacy(BuildContext context) =>
       context.push(RoutePaths.settingsPrivacy);
+
+  /// Opt-in "Invite a friend" share (S4 — Invite Friend Lite). Sends a
+  /// privacy-safe, localized, branded invite via [ShareService]. The text
+  /// comes from [InviteCopyBuilder], which reads no `SavedCalculation`, so
+  /// no birth date, city, coordinates, life event, label, or API id can
+  /// leak. Deliberately does NOT chain the review invitation — an invite is
+  /// not the celebratory moment that flow is reserved for, and stacking a
+  /// rating ask on top would read as a dark pattern. A clipboard fallback
+  /// surfaces a SnackBar and is never treated as a positive moment.
+  Future<void> _invite(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+  ) async {
+    final svc = ref.read(shareServiceProvider);
+    final usedNative = await svc.share(InviteCopyBuilder.build(l10n));
+    if (!context.mounted) return;
+    if (!usedNative) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.resultCopiedToClipboard)),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -109,13 +137,32 @@ class SettingsScreen extends ConsumerWidget {
           _SectionLabel(l10n.settingsSectionAbout),
           AppCard(
             padding: EdgeInsets.zero,
-            child: _ChevronRow(
-              label: l10n.settingsPrivacyPolicy,
-              onTap: () => _openPrivacy(context),
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.s5,
-                vertical: AppSpacing.s4,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                _ChevronRow(
+                  key: settingsInviteButtonKey,
+                  label: l10n.settingsInviteFriend,
+                  onTap: () => _invite(context, ref, l10n),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.s5,
+                    vertical: AppSpacing.s4,
+                  ),
+                ),
+                const Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: AppColors.inkLine,
+                ),
+                _ChevronRow(
+                  label: l10n.settingsPrivacyPolicy,
+                  onTap: () => _openPrivacy(context),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.s5,
+                    vertical: AppSpacing.s4,
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: AppSpacing.s5),
@@ -158,6 +205,7 @@ class _ChevronRow extends StatelessWidget {
   const _ChevronRow({
     required this.label,
     required this.onTap,
+    super.key,
     this.padding = EdgeInsets.zero,
   });
 

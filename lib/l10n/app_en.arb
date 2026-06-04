@@ -505,6 +505,24 @@
       "url": { "type": "String", "example": "https://truerise.app" }
     }
   },
+  "inviteCopyHeadline": "Try {brand} — find your real birth time",
+  "@inviteCopyHeadline": {
+    "description": "First line of the privacy-safe 'Invite a friend' message shared from Settings. A soft, opt-in invitation — never a referral or reward. {brand} is the product name, held constant across locales. The message reads no saved calculation and contains no birth date, city, coordinates, life events, labels, or API ids.",
+    "placeholders": {
+      "brand": { "type": "String", "example": "TrueRise" }
+    }
+  },
+  "inviteCopyBody": "It estimates a probable birth time from a few life events you remember.",
+  "@inviteCopyBody": {
+    "description": "Second line of the 'Invite a friend' message, explaining honestly what the app does (a probable estimate, not a certainty). Carries no personal data and no referral/reward language."
+  },
+  "inviteCopyGetApp": "Get the app: {url}",
+  "@inviteCopyGetApp": {
+    "description": "Link line of the 'Invite a friend' message. {url} is a non-secret public landing/store link with no tracking parameters or personal data; keep it verbatim.",
+    "placeholders": {
+      "url": { "type": "String", "example": "https://truerise.app" }
+    }
+  },
   "resultSaveToHistory": "Save to history",
   "@resultSaveToHistory": {
     "description": "Button that confirms saving the result to history."
@@ -931,6 +949,10 @@
   "settingsPrivacyPolicy": "Privacy Policy",
   "@settingsPrivacyPolicy": {
     "description": "Label for the Privacy Policy row in the Settings about section."
+  },
+  "settingsInviteFriend": "Invite a friend",
+  "@settingsInviteFriend": {
+    "description": "Label for the opt-in 'Invite a friend' row in the Settings about section. Opens the native share sheet with a privacy-safe, branded invite — no referral code, reward, contacts access, or tracking."
   },
 
   "deleteAllTitle": "Delete all data?",

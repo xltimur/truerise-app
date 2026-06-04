@@ -400,6 +400,20 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String inviteCopyHeadline(String brand) {
+    return 'Try $brand — find your real birth time';
+  }
+
+  @override
+  String get inviteCopyBody =>
+      'It estimates a probable birth time from a few life events you remember.';
+
+  @override
+  String inviteCopyGetApp(String url) {
+    return 'Get the app: $url';
+  }
+
+  @override
   String get resultSaveToHistory => 'Save to history';
 
   @override
@@ -743,6 +757,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsPrivacyPolicy => 'Privacy Policy';
+
+  @override
+  String get settingsInviteFriend => 'Invite a friend';
 
   @override
   String get deleteAllTitle => 'Delete all data?';
