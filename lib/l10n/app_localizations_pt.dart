@@ -392,6 +392,21 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String shareCopyHeadline(String brand) {
+    return 'Meu resultado de horário de nascimento com $brand:';
+  }
+
+  @override
+  String shareCopyTagline(String brand) {
+    return 'Calculado com $brand — retificação do horário de nascimento';
+  }
+
+  @override
+  String shareCopyGetApp(String url) {
+    return 'Descubra seu horário de nascimento: $url';
+  }
+
+  @override
   String get resultSaveToHistory => 'Salvar no histórico';
 
   @override

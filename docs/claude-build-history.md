@@ -4797,3 +4797,106 @@ passed auth — it reached business logic, not 401/403 — so the existing
   were not re-captured (the new affordances are reachable from already-screenshot
   surfaces).
 - **Limit/quota:** none hit.
+
+### 2026-06-04 — Localized Share Copy + Store Link (Impl Run S3)
+
+- **Model:** claude-opus-4-8. **Session id:** `18f10063-ba7b-4928-9080-39e656050038`.
+- **Naming note:** this is the user's plan item **S3 — Localized Share Copy +
+  Store Link**. It is *not* the earlier "Impl Run S3 / G10" share-discoverability
+  entry above (`9cddb8b`), which was mislabeled S3 in build history; the names
+  collide but the work is different.
+- **Predecessor:** continues from `9cddb8b` (share discoverability); worktree
+  clean at start (`main` three local commits ahead of origin, not pushed).
+- **Goal:** close the "shipped share text is English-only" caveat flagged by the
+  previous entry. Localize the privacy-safe share text through the existing
+  ARB/`AppLocalizations` pipeline and append a public landing/store link so a
+  recipient can find the app — without leaking any private data.
+- **What changed — share copy is now localized + linked:**
+  `ShareCopyBuilder.build` gained a second parameter (`AppLocalizations l10n`)
+  and now composes the shared text from three new ARB keys plus the two existing
+  share keys it reuses (`resultRisingSign`, `shareCardConfidence`). The brand
+  token (`appBrandName`) and the URL are passed in as placeholders so translators
+  cannot alter them. Output shape (EN example):
+  `My TrueRise rectification result:` / `7:14 AM · Gemini Rising · 78% confidence`
+  / (blank) / `Calculated with TrueRise — birth-time rectification` /
+  `Find your birth time: https://truerise.app`. The 12-hour `_formatTime` helper
+  is deliberately unchanged (preserves S1 behavior and the existing time-format
+  unit tests; locale-aware time formatting stays the separate G21 concern).
+- **Store-link plumbing (placeholder, documented):** new `lib/core/app_links.dart`
+  holds `AppLinks.landing` / `AppLinks.shareUrl` — a **non-secret** public URL
+  (`https://truerise.app`), safe to ship in source/logs/shared text (contrast with
+  API keys / proxy URLs / the demo `.env`, which stay secret). It is a single
+  indirection point so shared copy never embeds a guessed or platform-wrong store
+  URL. Replacement path is documented in the file: point `landing` at the live
+  marketing page once minted, or add `appStoreUrl`/`playStoreUrl` constants and
+  update `shareUrl`. The value has no tracking params and no PII.
+- **All four share entry points covered:** the result-screen text share, the
+  result-screen image-share caption, the one-time post-demo affordance, and the
+  history-row share all pass `context.l10n` into the builder, so every surface
+  shares the same localized, linked, PII-free payload. S1/S2 behavior preserved:
+  image caption == text caption; the S2 review invite still fires only on a
+  *successful native* result-screen share, never on history/demo share or the
+  clipboard fallback.
+- **Privacy copy:** unchanged — and verified non-contradictory. The added link is
+  a static public URL with no personal data or tracking parameters, so it does
+  not change what a share transmits about the user; the existing privacy/Settings
+  copy (local-only storage, demo offline, what a *live calc* sends) still holds.
+  No birth date, city, coordinates, life events, request label, API ids, raw
+  response, or user-entered text is added to the share in any locale.
+- **Artifacts created — code (1):** `lib/core/app_links.dart`.
+- **Artifacts changed — code (3):** `lib/core/sharing/share_copy_builder.dart`
+  (localized + linked, new `l10n` param); `lib/features/calculation_flow/screens/
+  result_screen.dart` (3 call sites pass `l10n`); `lib/features/home/
+  home_history_screen.dart` (1 call site passes `l10n`).
+- **Artifacts changed — l10n (5 source):** added `shareCopyHeadline` /
+  `shareCopyTagline` / `shareCopyGetApp` to all five ARBs (en template with
+  `@`-metadata + de/fr/es/pt values, following `docs/l10n-strategy.md` §6–§8
+  terminology and per-locale register: DE informal "du", FR "vous", ES "tú", PT
+  "você"). **Generated `app_localizations*.dart` were intentionally NOT
+  hand-edited** — they must be regenerated with `flutter gen-l10n` (the first
+  verification step; `generate: true` also regenerates them at build time).
+- **Artifacts changed — tests (2):**
+  `test/unit/sharing/share_copy_builder_test.dart` (rewritten for the new
+  signature; added store-link inclusion, per-locale localization, and a
+  no-PII-across-all-five-locales sweep + a localized empty-candidate fallback
+  test); `test/widget/features/calculation_flow/result_share_test.dart` (one added
+  test asserting the end-to-end shared text contains `AppLinks.shareUrl`).
+- **Verification — RUN AND PASSED (Codex verifier session):** the original
+  implementation session could not run Bash — every invocation failed with
+  `EPERM: operation not permitted, mkdir '~/.claude/session-env/<id>'` before the
+  command ran, so verification was deferred to a follow-up session. That
+  verification has now been completed by the Codex verifier and all checks pass:
+  `flutter gen-l10n` ran successfully (regenerated the `app_localizations*.dart`
+  sources from the new ARB keys); `dart format` on the touched Dart files
+  (`lib/core/app_links.dart`, `lib/core/sharing/share_copy_builder.dart`,
+  `lib/features/calculation_flow/screens/result_screen.dart`,
+  `lib/features/home/home_history_screen.dart`,
+  `test/unit/sharing/share_copy_builder_test.dart`,
+  `test/widget/features/calculation_flow/result_share_test.dart`) reports clean
+  after a Claude lint fix; `flutter analyze lib test` is clean; the focused
+  share/review tests passed
+  (`test/unit/sharing/share_copy_builder_test.dart`,
+  `test/widget/features/calculation_flow/result_share_test.dart`,
+  `test/widget/features/home/home_history_share_test.dart`,
+  `test/widget/features/calculation_flow/result_demo_share_prompt_test.dart`,
+  `test/widget/features/calculation_flow/result_review_prompt_test.dart`); the
+  full `flutter test` suite passed with **314 tests**; and `git diff --check` is
+  clean. Flutter is installed (3.44.0/Dart 3.12.0).
+- **Constraints respected:** scoped change (no architecture rewrite); demo mode
+  still makes no app network calls (the link is inert text, not a request); no
+  accounts/referrals/rewards/contacts/IG integration/analytics/push/paywalls/IAP/
+  backend; no deferred surface added; no secrets; no `*.g.dart`/generated-l10n
+  hand-edits.
+- **Residual risks / owner follow-ups:** (1) `AppLinks.landing` =
+  `https://truerise.app` is a **placeholder** — confirm the domain is owned and
+  resolves, or replace with the live landing/store URL before release. (2) the
+  de/fr/es/pt share strings are engineer-drafted and want a native-speaker pass
+  (consistent with the standing Run D translation caveat). (3) shared time still
+  renders 12-hour AM/PM regardless of locale/user time-format setting — a
+  pre-existing G21 formatting concern, intentionally out of this scope. (4) this
+  run has been **verified** by the Codex verifier (see Verification above):
+  gen-l10n + analyze + focused tests + full suite (314 tests) + `git diff --check`
+  all pass. (5) Claude **committed the stage locally** (commit `feat: localize
+  share copy with store link`); **not pushed** (still local-only, per task
+  workflow).
+- **Limit/quota:** none hit.

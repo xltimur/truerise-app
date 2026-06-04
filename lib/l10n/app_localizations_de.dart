@@ -389,6 +389,21 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String shareCopyHeadline(String brand) {
+    return 'Mein $brand-Ergebnis zur Geburtszeit:';
+  }
+
+  @override
+  String shareCopyTagline(String brand) {
+    return 'Berechnet mit $brand — Geburtszeit-Korrektur';
+  }
+
+  @override
+  String shareCopyGetApp(String url) {
+    return 'Finde deine Geburtszeit: $url';
+  }
+
+  @override
   String get resultSaveToHistory => 'Im Verlauf speichern';
 
   @override

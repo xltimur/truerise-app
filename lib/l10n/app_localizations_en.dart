@@ -385,6 +385,21 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String shareCopyHeadline(String brand) {
+    return 'My $brand rectification result:';
+  }
+
+  @override
+  String shareCopyTagline(String brand) {
+    return 'Calculated with $brand — birth-time rectification';
+  }
+
+  @override
+  String shareCopyGetApp(String url) {
+    return 'Find your birth time: $url';
+  }
+
+  @override
   String get resultSaveToHistory => 'Save to history';
 
   @override

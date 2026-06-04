@@ -244,7 +244,7 @@ class _ShareResultButton extends ConsumerWidget {
       icon: AppIcons.share,
       onPressed: () async {
         final svc = ref.read(shareServiceProvider);
-        final text = ShareCopyBuilder.build(saved);
+        final text = ShareCopyBuilder.build(saved, l10n);
         final usedNative = await svc.share(text);
         if (!context.mounted) return;
         if (usedNative) {
@@ -299,7 +299,7 @@ class _ShareImageButton extends ConsumerWidget {
           tagline: l10n.shareCardTagline,
         );
         final bytes = await StoryCardRenderer.render(card);
-        final caption = ShareCopyBuilder.build(saved);
+        final caption = ShareCopyBuilder.build(saved, l10n);
         final usedNative = await svc.shareImagePng(bytes, text: caption);
         if (!context.mounted) return;
         if (usedNative) {
@@ -409,7 +409,9 @@ class _DemoSharePromptState extends ConsumerState<_DemoSharePrompt> {
     final l10n = context.l10n;
     final messenger = ScaffoldMessenger.of(context);
     final svc = ref.read(shareServiceProvider);
-    final usedNative = await svc.share(ShareCopyBuilder.build(widget.saved));
+    final usedNative = await svc.share(
+      ShareCopyBuilder.build(widget.saved, l10n),
+    );
     if (!context.mounted) return;
     if (!usedNative) {
       // Clipboard fallback is a degraded path, not a win — no review prompt.

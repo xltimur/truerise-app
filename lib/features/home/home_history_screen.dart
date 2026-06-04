@@ -107,7 +107,7 @@ class _PopulatedHistory extends ConsumerWidget {
     final l10n = context.l10n;
     final messenger = ScaffoldMessenger.of(context);
     final svc = ref.read(shareServiceProvider);
-    final usedNative = await svc.share(ShareCopyBuilder.build(item));
+    final usedNative = await svc.share(ShareCopyBuilder.build(item, l10n));
     if (!context.mounted) return;
     if (!usedNative) {
       messenger.showSnackBar(

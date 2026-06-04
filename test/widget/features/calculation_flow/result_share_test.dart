@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rectify/app/app.dart';
 import 'package:rectify/app/route_names.dart';
 import 'package:rectify/app/router.dart';
+import 'package:rectify/core/app_links.dart';
 import 'package:rectify/core/sharing/share_service.dart';
 import 'package:rectify/data/demo/demo_response.dart';
 import 'package:rectify/data/models/birth_data.dart';
@@ -167,6 +168,44 @@ void main() {
 
       expect(shareService.shared, hasLength(1));
       expect(shareService.shared.first, isNotEmpty);
+    },
+  );
+
+  testWidgets(
+    'shared text includes the public landing/store link',
+    (tester) async {
+      final seeded = _seedDemoCalculation();
+      final prefs = await _prefs();
+      final history = FakeHistoryRepository([seeded]);
+      final rectifier = FakeRectificationRepository(history: history);
+      final drafts = InMemoryDraftRepository();
+      final shareService = FakeShareService();
+      addTearDown(drafts.dispose);
+
+      await tester.pumpWidget(
+        _harness(
+          prefs: prefs,
+          history: history,
+          rectifier: rectifier,
+          drafts: drafts,
+          shareService: shareService,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(MaterialApp)),
+      );
+      container
+          .read(routerProvider)
+          .go(RoutePaths.calcResultFor(seeded.request.id));
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.byKey(resultShareButtonKey));
+      await tester.tap(find.byKey(resultShareButtonKey));
+      await tester.pumpAndSettle();
+
+      expect(shareService.shared.first, contains(AppLinks.shareUrl));
     },
   );
 

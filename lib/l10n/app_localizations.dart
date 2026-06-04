@@ -746,6 +746,24 @@ abstract class AppLocalizations {
   /// **'{percent}% confidence'**
   String shareCardConfidence(int percent);
 
+  /// First line of the privacy-safe text shared from a result. {brand} is the product name, held constant across locales. The shared text never includes personal birth details, life events, city, coordinates, labels, or API ids.
+  ///
+  /// In en, this message translates to:
+  /// **'My {brand} rectification result:'**
+  String shareCopyHeadline(String brand);
+
+  /// Attribution line in the privacy-safe shared text, naming the app and what it does. {brand} is the product name, held constant across locales. Honest-confidence tone: the app estimates a probable time, never a certainty — keep any hedging in translation.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculated with {brand} — birth-time rectification'**
+  String shareCopyTagline(String brand);
+
+  /// Call-to-action line appended to the privacy-safe shared text, inviting the recipient to try the app via a public landing/store link. {url} is a non-secret public URL with no tracking parameters or personal data; keep it verbatim.
+  ///
+  /// In en, this message translates to:
+  /// **'Find your birth time: {url}'**
+  String shareCopyGetApp(String url);
+
   /// Button that confirms saving the result to history.
   ///
   /// In en, this message translates to:
