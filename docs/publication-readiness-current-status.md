@@ -130,6 +130,18 @@ an owner input first. Roughly in dependency order:
    lock — `store-submission-readiness.md` §12).
 8. **Console character re-count** + **native-speaker review** of localized
    copy/captions (gates the localized listings, not the EN Tier 0 listing).
+9. **Resolvable share/invite landing URL** (added Impl Run S4.1, 2026-06-04).
+   Every share/invite surface embeds `AppLinks.shareUrl`, whose default is the
+   **placeholder** `https://truerise.app` — a `curl` against that host
+   currently does **not** resolve, so shipping as-is hands recipients a broken
+   link. The link is now owner-configurable at build time via the public,
+   non-secret `--dart-define=TRUERISE_SHARE_URL=…` (no code change needed).
+   **Owner action before publication:** either register/own `truerise.app` and
+   confirm it resolves, or build with `TRUERISE_SHARE_URL` set to the real
+   resolvable landing/store URL. The default present in source is **not** proof
+   of ownership or DNS resolution. (Whatever URL is chosen must stay a bare
+   HTTPS URL with no tracking params — enforced by
+   `AppLinks.isPrivacySafeShareUrl` and its tests.)
 
 ### 5b. Engineering-delegatable next — but each waits on a 5a input
 

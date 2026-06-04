@@ -87,6 +87,9 @@ void main() {
     test('the embedded link is a bare URL with no tracking query params', () {
       expect(AppLinks.shareUrl, startsWith('https://'));
       expect(AppLinks.shareUrl, isNot(contains('?')));
+      // The single source of truth must satisfy the privacy-safe contract,
+      // whether it is the default or an owner-supplied TRUERISE_SHARE_URL.
+      expect(AppLinks.isPrivacySafeShareUrl(AppLinks.shareUrl), isTrue);
       final copy = InviteCopyBuilder.build(_en);
       expect(copy, isNot(contains('utm')));
       expect(copy, isNot(contains('ref=')));

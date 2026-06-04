@@ -173,6 +173,9 @@ void main() {
       // that could identify the sharer.
       expect(AppLinks.shareUrl, startsWith('https://'));
       expect(AppLinks.shareUrl, isNot(contains('?')));
+      // The single source of truth must satisfy the privacy-safe contract,
+      // whether it is the default or an owner-supplied TRUERISE_SHARE_URL.
+      expect(AppLinks.isPrivacySafeShareUrl(AppLinks.shareUrl), isTrue);
     });
   });
 

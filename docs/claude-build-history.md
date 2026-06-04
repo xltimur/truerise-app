@@ -4966,3 +4966,89 @@ passed auth — it reached business logic, not 401/403 — so the existing
   pass (standing Run D translation caveat). (3) committed locally by the S4
   finalization run; not pushed.
 - **Limit/quota:** none hit.
+
+### 2026-06-04 — Share/Invite Link Hardening (Impl Run S4.1)
+
+- **Model:** claude-opus-4-8. **Session ids:** implementation
+  `0c13b6b6-05c1-4fc5-852f-3c93d1ce1eee`; metadata cleanup
+  `341c77b5-83f5-4a9c-ab83-d76379620320`.
+- **Naming note:** follow-on hardening of **S4**'s share/invite link
+  (`AppLinks.shareUrl`); labelled **S4.1**. **S5** (direct Instagram Stories)
+  remains postponed pending a Meta/Facebook App ID + real-device QA and was
+  **not** touched.
+- **Predecessor:** continues from `3ddac87` (S4 Invite Friend Lite); worktree
+  clean at start (`main` ahead of origin, not pushed).
+- **Problem:** the single share/invite link `AppLinks.shareUrl =
+  https://truerise.app` is a placeholder whose host **does not currently
+  resolve** (verified by Codex via `curl`), so shipping as-is would hand
+  recipients a broken link — and there is no owner-final landing/store URL yet.
+- **Goal:** a safe, scoped hardening that (a) makes the link owner-configurable
+  at build time without guessing a final URL, (b) preserves all current
+  share/invite behaviour from one source of truth, (c) makes the privacy
+  invariant testable, and (d) records an explicit pre-publication release gate.
+- **What changed — `lib/core/app_links.dart`:**
+  - `shareUrl` is now `String.fromEnvironment('TRUERISE_SHARE_URL',
+    defaultValue: defaultShareUrl)`, following the same public/non-secret
+    `String.fromEnvironment` build-config pattern used for the proxy/provider
+    URLs in `lib/providers/core_providers.dart`. The owner can point every
+    share/invite surface at the real URL with
+    `--dart-define=TRUERISE_SHARE_URL=https://…` — **no code change**.
+    `TRUERISE_SHARE_URL` is a **public** value (it ends up in shared text), not
+    a secret.
+  - New `defaultShareUrl` const holds the placeholder `https://truerise.app`;
+    `landing` now aliases `shareUrl` so there is exactly **one** source of
+    truth. Default value is unchanged, so all S1–S4 share/invite behaviour is
+    preserved bit-for-bit when no define is supplied.
+  - New pure validator `AppLinks.isPrivacySafeShareUrl(url)` — true only for a
+    bare **HTTPS** URL with a host and **no** userinfo / query string /
+    fragment (disallowing the query structurally rules out `utm_*` / `ref=` /
+    `fbclid`-style tracking params). This is the testable expression of the
+    invariant: both the default and any owner-supplied define can be checked
+    without mutating the compile-time environment at runtime (Dart
+    const-from-environment cannot be varied inside one test process).
+  - The class doc now documents the build-time define and an explicit
+    **⚠️ owner-confirm-before-release** gate.
+- **Unchanged:** `ShareCopyBuilder` and `InviteCopyBuilder` still read the one
+  `AppLinks.shareUrl` and still embed a bare HTTPS URL with no tracking params —
+  no signature or behaviour change.
+- **Tests (TDD, red→green):**
+  - New `test/unit/core/app_links_test.dart` (11 tests). Wrote the validator
+    tests first; verified **RED** (`Member not found:
+    'AppLinks.isPrivacySafeShareUrl'`), then minimal GREEN. Covers the default
+    invariant (HTTPS, no query/tracking, no fragment, passes the validator,
+    `landing == shareUrl`) and the owner-configurable path through the
+    validator (accepts representative custom HTTPS URLs incl. an App Store URL;
+    rejects `http`/`ftp`, query strings, fragments, userinfo, empty, and
+    scheme-less input).
+  - `test/unit/sharing/share_copy_builder_test.dart` +
+    `test/unit/sharing/invite_copy_builder_test.dart`: one assertion added to
+    each existing "store link" group — the embedded source-of-truth URL must
+    pass `AppLinks.isPrivacySafeShareUrl`.
+- **Docs:** added owner item **#9** to
+  `docs/publication-readiness-current-status.md` §5a (resolvable share/invite
+  landing URL is a pre-publication owner gate; the in-source default is not
+  proof of ownership/resolution; the `--dart-define` lever is documented); this
+  build-history entry.
+- **Verification — RUN AND PASSED:** `dart format` on the 4 touched Dart files
+  → 1 reformatted (`app_links_test.dart`), no unrelated files mutated; `flutter
+  analyze lib test` → **No issues found!** (after switching two doc-comment
+  `[Builder]` references to backticks to clear `comment_references` — no import
+  cycle introduced); focused share/invite/app_links cluster (the new unit suite
+  + both copy-builder suites + invite-strings-compliance +
+  `result_share_test.dart`) → **58 passed**; full `flutter test` → **344
+  passed** (was 333 after S4; +11 new); `git diff --check` → clean. Flutter
+  3.44.0 / Dart 3.12.0. Integration test not run (needs a device/simulator).
+- **Constraints respected:** no app-runtime network calls (the link is inert
+  text; the validator is pure, offline); no analytics/tracking params added; no
+  platform-specific store guessing; **S5 Instagram integration untouched**; no
+  new dependency; no `*.g.dart`/generated-l10n hand-edits; demo mode still makes
+  no network calls; no secrets (`TRUERISE_SHARE_URL` is public, not a secret).
+- **Residual risks / owner follow-ups:** (1) **OWNER, pre-publication:**
+  `TRUERISE_SHARE_URL` default `https://truerise.app` is still a placeholder
+  whose host does not resolve — the owner must register/own that domain and
+  confirm DNS resolution, or build with `--dart-define=TRUERISE_SHARE_URL=` set
+  to the real resolvable landing/store URL, before publishing. The default in
+  source is not proof of ownership/resolution. (2) Codex verification required
+  before local commit; **push remains not performed** unless explicitly
+  requested.
+- **Limit/quota:** none hit.
