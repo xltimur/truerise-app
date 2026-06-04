@@ -5052,3 +5052,15 @@ passed auth — it reached business logic, not 401/403 — so the existing
   before local commit; **push remains not performed** unless explicitly
   requested.
 - **Limit/quota:** none hit.
+
+### 2026-06-04 — Deterministic English locale fallback
+
+- **Artifacts created:**
+  - `lib/l10n/locale_resolution.dart` — pure `resolveAppLocale` helper (language-code matching, English fallback)
+  - `test/unit/l10n/locale_resolution_test.dart` — 7 focused unit tests
+- **Artifact changed:** `lib/app/app.dart` — added `localeListResolutionCallback: resolveAppLocale` to `MaterialApp.router`
+- **Work completed:** Flutter's default locale resolution picks the first supported locale (de) when no device language matches, causing German to appear on Japanese-only or other unsupported devices. A `localeListResolutionCallback` now iterates device-preferred locales in order, matches by language code (region tags like de-AT still resolve to de), and falls back to English when none match. The callback is wired into `MaterialApp.router`; no generated l10n files, routing, API, persistence, or product scope were touched.
+- **Verification — RUN AND PASSED:** `dart format` on 2 changed files → 0 reformatted; `flutter analyze` → **No issues found!**; focused locale suite → **7 passed**; full `flutter test` → **351 passed** (was 344; +7 new). Flutter 3.44.0 / Dart 3.12.0. Integration test not run (needs a device/simulator).
+- **Constraints respected:** no generated files edited; demo mode unchanged; no secrets; no MVP-deferred features touched; change is fully offline.
+- **Residual risks / open questions:** none — callback delegates to the existing supported-locales list, so adding a new ARB locale automatically includes it without any change to the helper.
+- **Limit/quota:** none hit.
