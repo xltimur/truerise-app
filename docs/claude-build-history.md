@@ -5064,3 +5064,59 @@ passed auth — it reached business logic, not 401/403 — so the existing
 - **Constraints respected:** no generated files edited; demo mode unchanged; no secrets; no MVP-deferred features touched; change is fully offline.
 - **Residual risks / open questions:** none — callback delegates to the existing supported-locales list, so adding a new ARB locale automatically includes it without any change to the helper.
 - **Limit/quota:** none hit.
+
+### 2026-06-11 — App update notification (soft prompt + forced-update gate)
+
+- **Session id:** not exposed in the environment (`CLAUDE_SESSION_ID` unset).
+- **Artifacts created:**
+  - `lib/core/update/app_version.dart` — `AppVersion` value type: tolerant `tryParse` for `1.2.3+45`-style versions, full ordering (semantic triple, build as tie-breaker)
+  - `lib/core/update/update_info.dart` — tolerant parser for the owner-hosted version JSON (contract documented in the dartdoc: `latestVersion`, `minimumVersion`, `storeUrl`/`appStoreUrl`/`playStoreUrl`, shared + per-platform `message`), privacy-safe per-platform store-URL/message resolution
+  - `lib/core/update/update_policy.dart` — pure `UpdatePolicy.decide` → `UpdateDecision{none|soft|force}`; force only with a valid store URL (degrades to dismissible soft otherwise — never traps the user); soft muted per advertised version once dismissed
+  - `lib/core/update/update_info_fetcher.dart` — bare Dio GET (10 s timeouts, no auth headers/interceptors, separate from the rectification Dio stack); every failure collapses to `null`
+  - `lib/core/update/store_launcher.dart` — `StoreLauncher` interface + `url_launcher`-backed impl (external mode), re-validates the URL before launch
+  - `lib/data/prefs/update_prompt_store.dart` — per-version dismissal persistence (mirrors `ReviewPromptStore`)
+  - `lib/features/app_update/update_controller.dart` — providers incl. `appUpdateDecisionProvider` (disabled-by-default URL gate → demo-default gate → fetch → policy)
+  - `lib/features/app_update/update_gate.dart` — app-level `UpdateGate`: soft banner (AppCard chrome, Not now / Update) and full-screen forced gate (ErrorScaffold layout, `PrimaryButton`), failure SnackBar
+  - tests: `test/unit/core/update/{app_version,update_info,update_policy}_test.dart`, `test/data/prefs/update_prompt_store_test.dart`, `test/widget/features/app_update/update_gate_test.dart`, `test/helpers/fake_store_launcher.dart`
+- **Artifacts changed:** `lib/core/app_links.dart` (`versionCheckUrl` via `--dart-define=TRUERISE_VERSION_CHECK_URL`, **default empty = check disabled**; `isPrivacySafeStoreUrl` allowing only the Play-Store `?id=` query); `lib/app/app.dart` (`MaterialApp.router(builder: UpdateGate(...))`); `lib/providers/core_providers.dart` (`packageInfoProvider`); `lib/features/settings/settings_screen.dart` (M11 "App version" now real: `TrueRise  v{version} ({build})` from package_info_plus); 5 ARB files + regenerated `app_localizations*.dart` (`flutter gen-l10n`; 7 new `update*` keys × en/de/es/fr/pt); `pubspec.yaml` (+`package_info_plus ^9.0.1`, +`url_launcher ^6.3.2` — smallest flutter.dev-maintained plugin for handing a public HTTPS store URL to the OS); tests for app_links/settings updated.
+- **Work completed (TDD):** runtime update notification. Owner hosts a public JSON; when `latestVersion >` installed → dismissible banner (once per advertised version); when `minimumVersion >` installed → non-dismissible full-screen gate whose only action opens the store. Check is fail-silent and structurally privacy-safe: bare GET of an owner-configured HTTPS URL, no identifiers, no tracking params (validators reject query strings except Play's `id`).
+- **Demo boundary:** per-run demo (`isDemo`) is calc-flow state, not global at startup; the globally readable signal is the Settings "Demo mode" default — when ON the check is skipped entirely, so demo-defaulted builds make no update-check call; demo calculations never touch this path. With no `TRUERISE_VERSION_CHECK_URL` define the check never runs at all (also true for the whole current test/CI fleet).
+- **Verification — RUN AND PASSED:** `flutter pub get` (via `pub add`); `dart format` on all changed Dart files → 2 reformatted; `flutter analyze` → **No issues found!**; focused suites: 54 unit (version/info/policy/store/app_links) + 10 widget (gate) — written first, watched fail, then green; full `flutter test` → **404 passed** (was 351; +53). Flutter 3.44.0 / Dart 3.12.0. `integration_test/demo_flow_test.dart` on the iPhone 17 Pro simulator (iOS 26.5) → **passed** (full offline demo flow under the new `UpdateGate`, with the new native plugins compiled in).
+- **Constraints respected:** no Firebase/Sentry/analytics/accounts/payments; no secrets (the check URL and store URLs are public values); no generated-file hand-edits (`gen-l10n` regenerated); demo mode offline; deferred MVP scope untouched.
+- **Residual risks / OWNER follow-ups:** (1) **OWNER:** host the version JSON on an owned HTTPS URL and build with `--dart-define=TRUERISE_VERSION_CHECK_URL=...` — until then the feature is dormant by design. (2) **OWNER:** fill real `appStoreUrl`/`playStoreUrl` values in that JSON once store listings exist (same release gate as `TRUERISE_SHARE_URL`). (3) Remote `message` is a single string per platform, not localized per locale — acceptable for an MVP-stage owner note; revisit if multilingual notes are needed. (4) The soft banner re-appears next cold start for a *newer* advertised version only; no time-based cooldown was added (per-version muting was judged sufficient).
+- **Limit/quota:** none hit.
+
+### 2026-06-11 — Amendment: tightened store-URL validation + update-provider tests
+
+- **Session id:** not exposed in the environment (`CLAUDE_SESSION_ID` unset).
+- **Artifacts changed:** `lib/core/app_links.dart` (`isPrivacySafeStoreUrl`
+  tightened), `test/unit/core/app_links_test.dart` (new rejection cases);
+  **created** `test/unit/features/app_update/update_controller_test.dart`.
+- **Work completed:** review follow-up, two targeted fixes. (1)
+  `AppLinks.isPrivacySafeStoreUrl` previously accepted *any* HTTPS URL whose
+  sole query parameter was `id`; the query exception is now exact to the
+  canonical Play Store web URL — host `play.google.com`, path
+  `/store/apps/details`, single non-empty `id` (checked via
+  `queryParametersAll`, so repeated `id`s are rejected too). Bare HTTPS URLs
+  with no query remain allowed; `?id=` on other hosts, wrong Play paths, empty
+  ids, extra params, userinfo, fragments, and non-HTTPS all rejected. (2)
+  Provider-level tests for `appUpdateDecisionProvider` covering the guards the
+  pure-policy tests could not see: empty/invalid `TRUERISE_VERSION_CHECK_URL`
+  → `none` with the fetcher never called; Settings demo-mode default ON →
+  `none` with the fetcher never called; valid URL + newer advertised version →
+  `soft` with store URL + prompt tag; failed fetch (null payload) → silent
+  `none`. Tests use provider overrides + a recording fake fetcher — no network.
+- **Verification — RUN AND PASSED (TDD):** new validation tests written first
+  and watched fail (3 failures), then green after tightening; the demo-boundary
+  provider test was mutation-checked (guard removed → test fails, restored →
+  green); `dart format` on 3 changed files → 0 reformatted; `flutter analyze`
+  → **No issues found!**; focused suites (app_links 19, update controller 5,
+  core/update 35, prompt store 3, update gate 10) → **72 passed**; full
+  `flutter test` → **412 passed** (was 404; +8 new). Flutter 3.44.0 / Dart
+  3.12.0. Integration test not rerun (no behavior change on the demo path).
+- **Constraints respected:** no new dependencies; no generated-file edits; demo
+  mode still performs no update-check network call (now pinned by a provider
+  test); no secrets.
+- **Residual risks:** none new — the OWNER follow-ups from the main 2026-06-11
+  entry stand unchanged.
+- **Limit/quota:** none hit.

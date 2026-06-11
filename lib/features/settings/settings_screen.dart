@@ -8,6 +8,7 @@ import 'package:rectify/core/sharing/share_service.dart';
 import 'package:rectify/data/models/time_format.dart';
 import 'package:rectify/features/settings/delete_all_data_sheet.dart';
 import 'package:rectify/l10n/l10n.dart';
+import 'package:rectify/providers/core_providers.dart';
 import 'package:rectify/providers/settings_controller.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/icons.dart';
@@ -169,7 +170,15 @@ class SettingsScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.only(left: AppSpacing.s2),
             child: Text(
-              '$appBrandName  v1.0.0',
+              // Installed version + build from the platform package info
+              // (mvp-scope M11 "App version"); brand-only while loading.
+              ref
+                  .watch(packageInfoProvider)
+                  .maybeWhen(
+                    data: (info) =>
+                        '$appBrandName  v${info.version} (${info.buildNumber})',
+                    orElse: () => appBrandName,
+                  ),
               style: AppTypography.bodySm.copyWith(color: AppColors.inkSoft),
             ),
           ),

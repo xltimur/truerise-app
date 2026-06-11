@@ -89,4 +89,47 @@ abstract final class AppLinks {
     if (uri.hasFragment) return false;
     return true;
   }
+
+  /// Public, owner-hosted JSON endpoint for the app-update check
+  /// (`UpdateInfo` documents the contract). **Disabled by default**: the
+  /// empty default means no fake or unowned endpoint is ever called — the
+  /// owner opts in at build time with
+  /// `--dart-define=TRUERISE_VERSION_CHECK_URL=https://.../version.json`.
+  ///
+  /// Like [shareUrl], this is a public, non-secret value. The fetch sends
+  /// no identifiers, headers, or personal data beyond the bare GET, and a
+  /// configured value must pass [isPrivacySafeShareUrl] (bare HTTPS, no
+  /// query/fragment/userinfo) or the check stays off.
+  static const String versionCheckUrl = String.fromEnvironment(
+    'TRUERISE_VERSION_CHECK_URL',
+  );
+
+  /// Variant of [isPrivacySafeShareUrl] for **store** URLs opened by the
+  /// update prompt. Identical rules — bare HTTPS, host present, no
+  /// userinfo, no fragment — with one structural exception: a query
+  /// string is allowed only on the canonical Play Store web URL
+  /// (`https://play.google.com/store/apps/details?id=<app id>`), whose
+  /// application id can only live in the query. The exception is exact:
+  /// the host must be `play.google.com`, the path must be
+  /// `/store/apps/details`, and the query must be a single non-empty
+  /// `id`. Any other host/path with a query, an empty or repeated `id`,
+  /// or any extra parameter (referrer, utm_*, ...) is rejected outright —
+  /// that is where tracking lives.
+  static bool isPrivacySafeStoreUrl(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return false;
+    if (uri.scheme != 'https') return false;
+    if (uri.host.isEmpty) return false;
+    if (uri.userInfo.isNotEmpty) return false;
+    if (uri.hasFragment) return false;
+    if (!uri.hasQuery) return true;
+    if (uri.host != 'play.google.com') return false;
+    if (uri.path != '/store/apps/details') return false;
+    final params = uri.queryParametersAll;
+    final ids = params['id'];
+    return params.length == 1 &&
+        ids != null &&
+        ids.length == 1 &&
+        ids.single.isNotEmpty;
+  }
 }

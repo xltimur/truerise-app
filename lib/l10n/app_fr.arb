@@ -136,6 +136,14 @@
   "reviewPromptConfirm": "Laisser un avis",
   "reviewPromptDismiss": "Pas maintenant",
 
+  "updateAvailableTitle": "Mise à jour disponible",
+  "updateAvailableBody": "Une nouvelle version de {brand} est prête à être installée.",
+  "updateRequiredTitle": "Mise à jour requise",
+  "updateRequiredBody": "Cette version de {brand} n'est plus à jour. Mettez-la à jour pour continuer.",
+  "updateAction": "Mettre à jour",
+  "updateNotNow": "Pas maintenant",
+  "updateOpenStoreFailed": "Impossible d'ouvrir la page de la boutique.",
+
   "evidenceTitle": "Indices",
   "evidenceNotFoundTitle": "Nous n'avons pas trouvé ces indices.",
   "evidenceNotFoundBody": "Le résultat associé a peut-être été supprimé. Revenez à votre historique pour choisir un autre calcul.",

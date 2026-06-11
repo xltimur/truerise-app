@@ -455,6 +455,32 @@ class AppLocalizationsFr extends AppLocalizations {
   String get reviewPromptDismiss => 'Pas maintenant';
 
   @override
+  String get updateAvailableTitle => 'Mise à jour disponible';
+
+  @override
+  String updateAvailableBody(String brand) {
+    return 'Une nouvelle version de $brand est prête à être installée.';
+  }
+
+  @override
+  String get updateRequiredTitle => 'Mise à jour requise';
+
+  @override
+  String updateRequiredBody(String brand) {
+    return 'Cette version de $brand n\'est plus à jour. Mettez-la à jour pour continuer.';
+  }
+
+  @override
+  String get updateAction => 'Mettre à jour';
+
+  @override
+  String get updateNotNow => 'Pas maintenant';
+
+  @override
+  String get updateOpenStoreFailed =>
+      'Impossible d\'ouvrir la page de la boutique.';
+
+  @override
   String get evidenceTitle => 'Indices';
 
   @override

@@ -2,6 +2,7 @@ import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rectify/app/app.dart';
 import 'package:rectify/app/route_names.dart';
 import 'package:rectify/app/router.dart';
@@ -98,6 +99,17 @@ Future<ProviderContainer> _pumpOnSettings(
 }
 
 void main() {
+  setUp(() {
+    // The version footer reads the platform package info.
+    PackageInfo.setMockInitialValues(
+      appName: 'rectify',
+      packageName: 'app.truerise',
+      version: '1.0.0',
+      buildNumber: '1',
+      buildSignature: '',
+    );
+  });
+
   testWidgets('renders every row described in design-system §10.7', (
     tester,
   ) async {
@@ -111,7 +123,8 @@ void main() {
     expect(find.text('24-hour  (07:14)'), findsOneWidget);
     expect(find.text('Delete all data'), findsOneWidget);
     expect(find.text('Privacy Policy'), findsOneWidget);
-    expect(find.text('TrueRise  v1.0.0'), findsOneWidget);
+    // Installed version + build now come from package_info_plus.
+    expect(find.text('TrueRise  v1.0.0 (1)'), findsOneWidget);
   });
 
   testWidgets('demo toggle updates settings + persists to prefs', (

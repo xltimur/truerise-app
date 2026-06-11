@@ -136,6 +136,14 @@
   "reviewPromptConfirm": "Escribir una reseña",
   "reviewPromptDismiss": "Ahora no",
 
+  "updateAvailableTitle": "Actualización disponible",
+  "updateAvailableBody": "Una nueva versión de {brand} está lista para instalar.",
+  "updateRequiredTitle": "Actualización necesaria",
+  "updateRequiredBody": "Esta versión de {brand} está desactualizada. Actualízala para continuar.",
+  "updateAction": "Actualizar",
+  "updateNotNow": "Ahora no",
+  "updateOpenStoreFailed": "No se pudo abrir la página de la tienda.",
+
   "evidenceTitle": "Indicios",
   "evidenceNotFoundTitle": "No pudimos encontrar esos indicios.",
   "evidenceNotFoundBody": "Es posible que el resultado original se haya eliminado. Vuelve a tu historial para elegir otro cálculo.",

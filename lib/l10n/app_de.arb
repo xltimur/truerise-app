@@ -136,6 +136,14 @@
   "reviewPromptConfirm": "Bewertung abgeben",
   "reviewPromptDismiss": "Jetzt nicht",
 
+  "updateAvailableTitle": "Update verfügbar",
+  "updateAvailableBody": "Eine neue Version von {brand} ist bereit zur Installation.",
+  "updateRequiredTitle": "Update erforderlich",
+  "updateRequiredBody": "Diese Version von {brand} ist veraltet. Aktualisiere sie, um weiterzumachen.",
+  "updateAction": "Aktualisieren",
+  "updateNotNow": "Jetzt nicht",
+  "updateOpenStoreFailed": "Die Store-Seite konnte nicht geöffnet werden.",
+
   "evidenceTitle": "Hinweise",
   "evidenceNotFoundTitle": "Wir konnten diese Hinweise nicht finden.",
   "evidenceNotFoundBody": "Das zugrunde liegende Ergebnis wurde möglicherweise gelöscht. Kehre zu deinem Verlauf zurück, um eine andere Berechnung auszuwählen.",

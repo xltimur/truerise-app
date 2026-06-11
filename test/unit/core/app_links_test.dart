@@ -95,4 +95,124 @@ void main() {
       expect(AppLinks.isPrivacySafeShareUrl('https:///path'), isFalse);
     });
   });
+
+  group('AppLinks.versionCheckUrl default invariant', () {
+    test('the update check ships disabled: default URL is empty', () {
+      // No fake or unowned endpoint is ever called. The owner must opt in
+      // with --dart-define=TRUERISE_VERSION_CHECK_URL=... to enable it.
+      expect(AppLinks.versionCheckUrl, isEmpty);
+    });
+  });
+
+  group('AppLinks.isPrivacySafeStoreUrl', () {
+    test('accepts bare HTTPS store URLs', () {
+      expect(
+        AppLinks.isPrivacySafeStoreUrl('https://apps.apple.com/app/id1234'),
+        isTrue,
+      );
+      expect(
+        AppLinks.isPrivacySafeStoreUrl('https://truerise.app/get'),
+        isTrue,
+      );
+    });
+
+    test('accepts the canonical Play Store web URL whose only query '
+        'param is a non-empty application id', () {
+      expect(
+        AppLinks.isPrivacySafeStoreUrl(
+          'https://play.google.com/store/apps/details?id=app.truerise',
+        ),
+        isTrue,
+      );
+    });
+
+    test('rejects an id query param on any non-Play host', () {
+      expect(
+        AppLinks.isPrivacySafeStoreUrl(
+          'https://apps.apple.com/app/id1234?id=app.truerise',
+        ),
+        isFalse,
+      );
+      expect(
+        AppLinks.isPrivacySafeStoreUrl('https://truerise.app?id=app.truerise'),
+        isFalse,
+      );
+    });
+
+    test('rejects an id query param on a non-canonical Play path', () {
+      expect(
+        AppLinks.isPrivacySafeStoreUrl(
+          'https://play.google.com/store/search?id=app.truerise',
+        ),
+        isFalse,
+      );
+      expect(
+        AppLinks.isPrivacySafeStoreUrl(
+          'https://play.google.com/store/apps/details/extra?id=app.truerise',
+        ),
+        isFalse,
+      );
+      expect(
+        AppLinks.isPrivacySafeStoreUrl(
+          'https://play.google.com?id=app.truerise',
+        ),
+        isFalse,
+      );
+    });
+
+    test('rejects an empty or repeated application id', () {
+      expect(
+        AppLinks.isPrivacySafeStoreUrl(
+          'https://play.google.com/store/apps/details?id=',
+        ),
+        isFalse,
+      );
+      expect(
+        AppLinks.isPrivacySafeStoreUrl(
+          'https://play.google.com/store/apps/details?id',
+        ),
+        isFalse,
+      );
+      expect(
+        AppLinks.isPrivacySafeStoreUrl(
+          'https://play.google.com/store/apps/details?id=a&id=b',
+        ),
+        isFalse,
+      );
+    });
+
+    test('rejects any query parameter other than id (tracking lives '
+        'in the query)', () {
+      expect(
+        AppLinks.isPrivacySafeStoreUrl(
+          'https://play.google.com/store/apps/details'
+          '?id=app.truerise&referrer=utm_source%3Dx',
+        ),
+        isFalse,
+      );
+      expect(
+        AppLinks.isPrivacySafeStoreUrl(
+          'https://apps.apple.com/app/id1234?utm_source=banner',
+        ),
+        isFalse,
+      );
+    });
+
+    test('rejects non-HTTPS, userinfo, fragments, and hostless input', () {
+      expect(
+        AppLinks.isPrivacySafeStoreUrl('http://apps.apple.com/app/id1'),
+        isFalse,
+      );
+      expect(
+        AppLinks.isPrivacySafeStoreUrl('https://user@apps.apple.com/a'),
+        isFalse,
+      );
+      expect(
+        AppLinks.isPrivacySafeStoreUrl('https://apps.apple.com/a#frag'),
+        isFalse,
+      );
+      expect(AppLinks.isPrivacySafeStoreUrl(''), isFalse);
+      expect(AppLinks.isPrivacySafeStoreUrl('market://details?id=x'), isFalse);
+    });
+  });
 }

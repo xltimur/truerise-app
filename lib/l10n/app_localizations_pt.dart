@@ -456,6 +456,32 @@ class AppLocalizationsPt extends AppLocalizations {
   String get reviewPromptDismiss => 'Agora não';
 
   @override
+  String get updateAvailableTitle => 'Atualização disponível';
+
+  @override
+  String updateAvailableBody(String brand) {
+    return 'Uma nova versão do $brand está pronta para instalar.';
+  }
+
+  @override
+  String get updateRequiredTitle => 'Atualização necessária';
+
+  @override
+  String updateRequiredBody(String brand) {
+    return 'Esta versão do $brand está desatualizada. Atualize para continuar.';
+  }
+
+  @override
+  String get updateAction => 'Atualizar';
+
+  @override
+  String get updateNotNow => 'Agora não';
+
+  @override
+  String get updateOpenStoreFailed =>
+      'Não foi possível abrir a página da loja.';
+
+  @override
   String get evidenceTitle => 'Indícios';
 
   @override

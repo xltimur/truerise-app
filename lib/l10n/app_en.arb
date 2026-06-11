@@ -571,6 +571,41 @@
     "description": "Neutral dismiss action on the review invitation. Declining simply closes the dialog — nothing is gated and no consolation feedback form is shown (no sentiment routing)."
   },
 
+  "updateAvailableTitle": "Update available",
+  "@updateAvailableTitle": {
+    "description": "Title of the dismissible banner shown when a newer app version is advertised by the owner-hosted version check."
+  },
+  "updateAvailableBody": "A new version of {brand} is ready to install.",
+  "@updateAvailableBody": {
+    "description": "Body of the soft-update banner. {brand} is the product name, held constant across locales. Used when the hosted version JSON carries no custom message.",
+    "placeholders": {
+      "brand": { "type": "String", "example": "TrueRise" }
+    }
+  },
+  "updateRequiredTitle": "Update required",
+  "@updateRequiredTitle": {
+    "description": "Title of the full-screen forced-update gate shown when the installed version is below the owner-declared minimum."
+  },
+  "updateRequiredBody": "This version of {brand} is out of date. Update it to keep going.",
+  "@updateRequiredBody": {
+    "description": "Body of the forced-update gate. {brand} is the product name, held constant across locales. Used when the hosted version JSON carries no custom message.",
+    "placeholders": {
+      "brand": { "type": "String", "example": "TrueRise" }
+    }
+  },
+  "updateAction": "Update",
+  "@updateAction": {
+    "description": "Action on the update banner/gate that opens the public store page for the app."
+  },
+  "updateNotNow": "Not now",
+  "@updateNotNow": {
+    "description": "Dismiss action on the soft-update banner. Dismissal is remembered per advertised version so the same version is not re-prompted."
+  },
+  "updateOpenStoreFailed": "Couldn't open the store page.",
+  "@updateOpenStoreFailed": {
+    "description": "Snackbar shown when the device could not open the public store URL from the update prompt."
+  },
+
   "evidenceTitle": "Evidence",
   "@evidenceTitle": {
     "description": "Top-navigation title of the evidence breakdown screen."

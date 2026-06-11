@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rectify/data/api/api_client.dart';
 import 'package:rectify/data/api/rectification_api.dart';
 import 'package:rectify/data/db/database.dart';
@@ -89,6 +90,14 @@ final sharedPreferencesProvider = Provider<SharedPreferences>(
   (ref) => throw UnimplementedError(
     'sharedPreferencesProvider must be overridden during app bootstrap.',
   ),
+);
+
+/// Platform package info (installed version + build number), read once.
+/// Feeds the Settings "App version" row and the update check. Tests
+/// either mock it with `PackageInfo.setMockInitialValues` or override
+/// this provider directly.
+final packageInfoProvider = FutureProvider<PackageInfo>(
+  (ref) => PackageInfo.fromPlatform(),
 );
 
 /// Wraps the resolved [SharedPreferences] in our typed store.

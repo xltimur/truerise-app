@@ -842,6 +842,48 @@ abstract class AppLocalizations {
   /// **'Not now'**
   String get reviewPromptDismiss;
 
+  /// Title of the dismissible banner shown when a newer app version is advertised by the owner-hosted version check.
+  ///
+  /// In en, this message translates to:
+  /// **'Update available'**
+  String get updateAvailableTitle;
+
+  /// Body of the soft-update banner. {brand} is the product name, held constant across locales. Used when the hosted version JSON carries no custom message.
+  ///
+  /// In en, this message translates to:
+  /// **'A new version of {brand} is ready to install.'**
+  String updateAvailableBody(String brand);
+
+  /// Title of the full-screen forced-update gate shown when the installed version is below the owner-declared minimum.
+  ///
+  /// In en, this message translates to:
+  /// **'Update required'**
+  String get updateRequiredTitle;
+
+  /// Body of the forced-update gate. {brand} is the product name, held constant across locales. Used when the hosted version JSON carries no custom message.
+  ///
+  /// In en, this message translates to:
+  /// **'This version of {brand} is out of date. Update it to keep going.'**
+  String updateRequiredBody(String brand);
+
+  /// Action on the update banner/gate that opens the public store page for the app.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get updateAction;
+
+  /// Dismiss action on the soft-update banner. Dismissal is remembered per advertised version so the same version is not re-prompted.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get updateNotNow;
+
+  /// Snackbar shown when the device could not open the public store URL from the update prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open the store page.'**
+  String get updateOpenStoreFailed;
+
   /// Top-navigation title of the evidence breakdown screen.
   ///
   /// In en, this message translates to:

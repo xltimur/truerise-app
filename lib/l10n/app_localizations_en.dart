@@ -449,6 +449,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reviewPromptDismiss => 'Not now';
 
   @override
+  String get updateAvailableTitle => 'Update available';
+
+  @override
+  String updateAvailableBody(String brand) {
+    return 'A new version of $brand is ready to install.';
+  }
+
+  @override
+  String get updateRequiredTitle => 'Update required';
+
+  @override
+  String updateRequiredBody(String brand) {
+    return 'This version of $brand is out of date. Update it to keep going.';
+  }
+
+  @override
+  String get updateAction => 'Update';
+
+  @override
+  String get updateNotNow => 'Not now';
+
+  @override
+  String get updateOpenStoreFailed => 'Couldn\'t open the store page.';
+
+  @override
   String get evidenceTitle => 'Evidence';
 
   @override
