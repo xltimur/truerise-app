@@ -5393,3 +5393,54 @@ passed auth — it reached business logic, not 401/403 — so the existing
   a documented manual preflight, not an Xcode build phase; the real
   embedded key remains live until the owner rotates it.
 - **Limit/quota:** none hit.
+
+### 2026-06-12 - P2 hygiene: unused deps + result_screen split
+
+- **Session:** Claude Code (id not exposed in-session).
+- **Artifacts changed:** `pubspec.yaml` + `pubspec.lock` (removed
+  `pretty_dio_logger`, `google_fonts`), `test/flutter_test_config.dart`
+  (dropped the google_fonts import + fetch-disabling line; doc comment
+  updated), `lib/features/calculation_flow/screens/result_screen.dart`
+  (630 -> ~218 lines); **created**
+  `lib/features/calculation_flow/screens/result_screen_sections.dart`
+  (`part of` file).
+- **Work completed:** (1) Dependency hygiene: `pretty_dio_logger` had
+  zero references anywhere (lib/test/integration_test/tool) - removed.
+  `google_fonts` was NOT production code: fonts ship as bundled TTF
+  assets and `AppTypography` does not use the package; the only code
+  reference was the defensive `GoogleFonts.config.allowRuntimeFetching
+  = false` line in the shared test config, kept "in case downstream
+  features regress". Removed the dependency and that line; golden/
+  widget tests still load the bundled fonts via `FontLoader`
+  (unchanged). (2) No tracked empty files or placeholder artifacts
+  exist (checked `git ls-files` for zero-byte files and
+  gitkeep/placeholder names) - nothing to delete. (3) Reduced
+  `result_screen.dart` from 630 to ~218 lines by moving the private
+  section widgets (`_ResultNotFound`, `_LowConfidenceNote`,
+  `_ShareResultButton`, `_ShareImageButton`, `_SaveToHistoryButton`,
+  `_DemoSharePrompt`, `_DemoUpgradeNudge`) verbatim into a `part of`
+  file in the same directory. Same library, so behavior, routes,
+  test keys, imports, and private visibility are unchanged by
+  construction; no UX/copy/navigation edits.
+- **Verification - RUN AND PASSED:** `flutter pub get` resolves after
+  the removals; `dart format` on touched files; `flutter analyze` ->
+  No issues found; focused result-screen suites (result_screen,
+  result_share, demo share prompt, review prompt) -> 32 passed; full
+  `flutter test` -> 441 passed, including the golden test, both after
+  the google_fonts removal and after the file split; `git diff
+  --check` clean.
+- **Docs follow-up (same point):** design/plan docs no longer claim
+  `google_fonts` is an active dependency - `docs/design-system.md`
+  (3.1 families table, textTheme note, 14.3 packages),
+  `docs/design-brief.md` (platform typography note), and
+  `docs/implementation-plan.md` (asset tree, 6.2, 6.7 marked
+  superseded, offline note, dependency list + table, stack summary)
+  now state fonts ship as bundled local TTF assets (Inter, Source
+  Serif 4, JetBrains Mono); the stale planned `pretty_dio_logger`
+  list entry was annotated as removed too.
+- **Residuals:** `lib/features/placeholders/coming_soon_screen.dart`
+  (37 lines) appears unreferenced by any route or import but is not an
+  "empty hygiene artifact", so it was left alone per scope - candidate
+  for a future cleanup; `flutter pub outdated` still lists newer
+  versions held back by constraints (out of scope here).
+- **Limit/quota:** none hit.

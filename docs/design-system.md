@@ -130,17 +130,20 @@ These values must not appear in shipped UI. Catching them in a linter or visual 
 
 ### 3.1 Font families
 
-Three families, loaded via `google_fonts` for cross-platform consistency.
+Three families, shipped as bundled local TTF assets (`assets/fonts/`,
+declared in `pubspec.yaml`) for cross-platform consistency and offline
+determinism. The app no longer depends on the `google_fonts` package
+(removed 2026-06-12).
 
 | Token | Family | Source |
 |---|---|---|
-| `font.sans` | **Inter** | `GoogleFonts.inter()` |
-| `font.serif` | **Source Serif 4** | `GoogleFonts.sourceSerif4()` |
-| `font.mono` | **JetBrains Mono** | `GoogleFonts.jetBrainsMono()` |
+| `font.sans` | **Inter** | bundled `assets/fonts/Inter-*.ttf` |
+| `font.serif` | **Source Serif 4** | bundled `assets/fonts/SourceSerif4-Regular.ttf` |
+| `font.mono` | **JetBrains Mono** | bundled `assets/fonts/JetBrainsMono-Medium.ttf` |
 
 Inter handles 95% of the product. Source Serif 4 is reserved for: onboarding hero copy, the result time, and a small number of section titles on the result/evidence screens. JetBrains Mono is reserved for the result time numerals only (it gives `7:14 AM` a measurement feel).
 
-If `google_fonts` is unavailable at runtime, fall back to the platform default (San Francisco on iOS, Roboto on Android) — but only as a degraded mode, never as the design target.
+Because the fonts are bundled assets there is no runtime fetch and no degraded platform-default mode: the product type renders identically offline on both platforms.
 
 ### 3.2 Type scale
 
@@ -673,7 +676,7 @@ lib/
 Use Material 3 (`useMaterial3: true`) as the base but override aggressively:
 
 - `colorScheme`: built from seed `accent.clay` with manual overrides for `surface`, `background`, `onSurface`, `onBackground`.
-- `textTheme`: built from `google_fonts.interTextTheme()` and overridden per role.
+- `textTheme`: built from the bundled Inter family and overridden per role.
 - `elevatedButtonTheme`, `textButtonTheme`, `outlinedButtonTheme`: each themed to our token system. Don't rely on Material defaults.
 - `inputDecorationTheme`: themed to our Input spec (radius, border, focus).
 - `appBarTheme`: zero elevation, transparent background that adopts `bg.app`.
@@ -682,7 +685,7 @@ Custom tokens that don't map to Material concepts (confidence colors, the hero r
 
 ### 14.3 Recommended packages
 
-- `google_fonts` — Inter, Source Serif 4, JetBrains Mono
+- Bundled font assets (Inter, Source Serif 4, JetBrains Mono TTFs in `assets/fonts/`) — the `google_fonts` package was removed 2026-06-12
 - `lucide_icons` *or* `phosphor_flutter` — the production icon family
 - `flutter_svg` — for the brand mark and the one or two quiet glyph illustrations
 - `intl` — date/time formatting respecting locale and the 12h/24h setting

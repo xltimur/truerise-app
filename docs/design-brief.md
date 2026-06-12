@@ -254,7 +254,7 @@ This brief is platform-agnostic. The visual language must work natively on both 
 
 - Native gestures (iOS swipe-back, Android back), native date/time pickers, native keyboards.
 - Bottom sheets follow platform-idiomatic feel (iOS sheet drag indicator on top, Android material elevation).
-- Typography is the same on both platforms (we ship Inter + the chosen serif via the `google_fonts` package — we do not fall back to San Francisco / Roboto for our product type).
+- Typography is the same on both platforms (we ship Inter + the chosen serif as bundled local font assets — no `google_fonts` dependency, and we do not fall back to San Francisco / Roboto for our product type).
 - Tab bar on Android can adapt to Android norms but the visual language (warm parchment, ink, accent) stays identical.
 - One theme, one identity, two platforms. No "iOS version" and "Android version" of the brand.
 
