@@ -21,9 +21,11 @@
 >   (`docs/privacy-policy.md`) — hosting + `url_launcher` wiring still pending;
 >   **P0-5** Apple/Play forms (`docs/apple-privacy-labels.md`,
 >   `docs/play-data-safety.md`) — console entry + legal sign-off still pending.
-> - **Unchanged / still owner-gated:** **P0-2** release signing (still
->   debug-signed), **P0-3** bundle-ID decision, **P0-10** category confirm,
->   **P0-11** demo-key rotation.
+> - **Still owner-gated:** **P0-2** release signing (Android gradle wiring
+>   done 2026-06-12: debug-signing fallback removed, release reads
+>   `android/key.properties`; owner upload keystore + Play App Signing
+>   enrollment + iOS distribution signing still pending), **P0-3** bundle-ID
+>   decision, **P0-10** category confirm, **P0-11** demo-key rotation.
 > - **Still true:** the build is **not submittable today** — but the open
 >   blockers are now owner/secret/legal/console items, not engineering artifacts.
 > - **Removed since this baseline:** the optional bring-your-own
@@ -70,9 +72,14 @@ the critical path.
    `CFBundleDisplayName=Rectify`, Android `android:label="rectify"`), and
    "Rectify" is baked into the in-app title, the Settings version row, and the
    privacy copy — while the brand, README, and share copy say *TrueRise*.
-2. **Release is debug-signed.** `android/app/build.gradle.kts` ships the
-   release build type with `signingConfig = signingConfigs.getByName("debug")`.
-   A debug-signed AAB cannot go to Play production.
+2. **Release signing.** The Android debug-signing fallback has been removed
+   (2026-06-12): `android/app/build.gradle.kts` release now requires a
+   complete `android/key.properties` + keystore and fails clearly without
+   one. The remaining blockers are owner-side: upload keystore, Play App
+   Signing enrollment, iOS distribution signing. *(Historical, original
+   audit: release shipped with `signingConfig =
+   signingConfigs.getByName("debug")`; a debug-signed AAB cannot go to Play
+   production.)*
 3. **No hosted privacy-policy URL.** The app has only an in-app privacy screen;
    there is no `url_launcher` dependency and no canonical hosted URL. Both
    stores require a reachable URL in the listing.
@@ -114,7 +121,7 @@ labels every claim, and ends with the owner decisions that gate submission.
 | Privacy posture | On-device storage, no accounts, "Delete all data" | `lib/features/settings/privacy_policy_screen.dart`, `settings_screen.dart` **[VERIFIED]** |
 | Analytics / crash reporting | **None wired** (no analytics SDK, no crash reporting) | `pubspec.yaml` (no firebase/sentry/posthog/amplitude); privacy screen text **[VERIFIED]** |
 | iOS platform config | `CFBundleDisplayName=Rectify`, `CFBundleName=rectify`; no `NS*UsageDescription`; no ATS block; portrait+landscape | `ios/Runner/Info.plist` **[VERIFIED]** |
-| Android platform config | `android:label="rectify"`; only `INTERNET` permission; release = **debug-signed** | `android/app/src/main/AndroidManifest.xml`, `android/app/build.gradle.kts` **[VERIFIED]** |
+| Android platform config | `android:label="rectify"`; only `INTERNET` permission; release signing requires owner `android/key.properties` (debug-signing fallback removed 2026-06-12; was debug-signed at original audit) | `android/app/src/main/AndroidManifest.xml`, `android/app/build.gradle.kts` **[VERIFIED]** |
 | Bundle identity | `namespace` + `applicationId` = `com.rectify.rectify`; version `1.0.0+1` | `android/app/build.gradle.kts`, `pubspec.yaml` **[VERIFIED]** |
 | App icon | Stock Flutter glyph | `docs/qa-phase8-report.md` §6 **[ASSUMED — no icon asset added since]** |
 | Localization | English-only; no `.arb`, no `l10n.yaml`, no `flutter_localizations` | Run 5 `docs/l10n-strategy.md`, `pubspec.yaml` **[VERIFIED]** |
@@ -130,7 +137,8 @@ labels every claim, and ends with the owner decisions that gate submission.
   **[VERIFIED — placeholder only]**
 - Screenshot set for any device class. **[VERIFIED absent]**
 - Release signing keystore/profile (Android) and a distribution provisioning
-  setup (iOS). **[VERIFIED — Android debug-signed; iOS signing not in repo]**
+  setup (iOS). **[Android: gradle wiring done 2026-06-12 (debug fallback
+  removed) — owner upload keystore still missing; iOS signing not in repo]**
 - Real app icon + adaptive icon. **[ASSUMED absent]**
 - Localized listings (DE/FR/ES/PT-BR). **[VERIFIED blocked on G20/G22]**
 
@@ -152,7 +160,7 @@ Each item below blocks first submission. ID maps to Run 4
 | # | Blocker | Gap | Evidence | Fix owner-track |
 | --- | --- | --- | --- | --- |
 | P0-1 | **Public display name = TrueRise** across iOS `CFBundleDisplayName`, Android `android:label`, in-app title, Settings version row, privacy copy | G1 | `Info.plist`, `AndroidManifest.xml`, `lib/features/settings/settings_screen.dart:157` ("Rectify  v1.0.0"), `privacy_policy_screen.dart` ("What Rectify stores") **[VERIFIED]** | Impl Run A (config + 4 string sites) |
-| P0-2 | **Release signing** — generate upload keystore (Android) + distribution signing (iOS); replace debug signing | G5 | `build.gradle.kts` release `signingConfig = ...debug`; `README.md` "intentionally signed with the debug keys for now" **[VERIFIED]** | Impl Run A + owner secrets |
+| P0-2 | **Release signing** — generate upload keystore (Android) + distribution signing (iOS); Android debug-signing fallback already removed | G5 | Android wiring **[DONE 2026-06-12]**: `build.gradle.kts` release reads `android/key.properties` (validates `storePassword`/`keyPassword`/`keyAlias`/`storeFile`; absolute or `android/`-relative path; no debug fallback; release tasks fail with instructions when missing). Owner upload keystore + Play App Signing + iOS distribution signing still pending | Impl Run A + owner secrets |
 | P0-3 | **Bundle-ID decision** — keep `com.rectify.rectify` or rebrand to a `com.truerise.*` ID **before first publish** (irreversible after) | G5 | `build.gradle.kts` `applicationId` **[VERIFIED]** | Owner decision (Sec. 12) → Impl Run A |
 | P0-4 | **Hosted privacy-policy URL** reachable + linked in both listings | G2 | No `url_launcher` dep; `privacy_policy_screen.dart` header comment "Phase 8 swaps this for the canonical hosted URL" **[VERIFIED]** | Owner hosting + Legal |
 | P0-5 | **Apple App Privacy labels + Play Data Safety** authored to match real data flow (incl. third-party transmission of birth data + life-event text + precise location in live mode) | G3 | `rectification_request_dto.dart` fields; `pubspec.yaml` (no analytics) **[VERIFIED]** | Owner + Legal (Sec. 4/5/9) |
@@ -239,9 +247,11 @@ labels and hosted policy to be accurate about the third-party transmission.
   **[VERIFIED gap]**
 - **Application ID.** `com.rectify.rectify`; same immutability caveat as iOS —
   decide before first upload. **[VERIFIED / owner decision]**
-- **Release signing.** Replace the debug `signingConfig` with a real upload key
-  and enroll in Play App Signing. **A debug-signed AAB will be rejected from
-  production.** **[VERIFIED P0]**
+- **Release signing.** Gradle wiring done 2026-06-12: debug-signing fallback
+  removed; release requires owner `android/key.properties` + keystore.
+  Remaining: provide the real upload key and enroll in Play App Signing.
+  **A debug-signed AAB will be rejected from production.**
+  **[VERIFIED P0 — owner half pending]**
 - **Permissions.** Only `INTERNET` is app-declared — minimal and clean. Note
   the merged release AAB adds a `DUMP` permission via
   `androidx.profileinstaller` (not app-declared) per `docs/qa-phase8-report.md`
@@ -529,8 +539,9 @@ Capture both paths so reviewers and screenshots reflect reality:
 
 ### 9.5 Release-integrity / key-handling risk
 
-- **Debug-signed release [VERIFIED]:** must be replaced (P0-2) — also a trust
-  signal in review.
+- **Release signing material [updated 2026-06-12]:** the debug-signing
+  fallback is removed in gradle; the owner upload keystore is still required
+  (P0-2) — also a trust signal in review.
 - **Bundled `.env` demo key [VERIFIED]:** recoverable from the binary
   (`README.md`). Rotate to a **low-budget, capped** key before the public build;
   confirm the exposure is acceptable for review and that the demo path

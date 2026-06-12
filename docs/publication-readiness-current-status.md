@@ -42,7 +42,7 @@ path is **almost entirely owner / secret / legal / console work** — see §5.
 | # | Blocker | Run 6 (2026-06-02) | Current (2026-06-03) | Evidence read this run | What still remains |
 | --- | --- | --- | --- | --- | --- |
 | P0-1 | Public display name = TrueRise | gap | **[DONE — VERIFIED]** | `ios/Runner/Info.plist` `CFBundleDisplayName=TrueRise`; `android/.../AndroidManifest.xml` `android:label="TrueRise"`; `lib/l10n/l10n.dart:11` `appBrandName='TrueRise'`; no user-facing "Rectify" in `lib/features/settings`. (Run A.1) | none — `CFBundleName=rectify` + `com.rectify.rectify` retained as codename **by design** |
-| P0-2 | Release signing (not debug) | debug-signed | **[OWNER]** (unchanged) | `android/app/build.gradle.kts` release `signingConfig = signingConfigs.getByName("debug")` | owner upload keystore + iOS distribution cert/profile; then a small gradle wiring step |
+| P0-2 | Release signing (not debug) | debug-signed | **[PARTIAL - wiring done, owner secrets pending]** (2026-06-12) | `android/app/build.gradle.kts` release now reads `android/key.properties` (no debug fallback); release tasks fail with an actionable error when it is missing/incomplete; debug builds unaffected | owner provides real upload keystore + Play App Signing enrollment; iOS distribution cert/profile still owner-side |
 | P0-3 | Bundle-ID decision | owner | **[OWNER]** (unchanged) | `build.gradle.kts` `applicationId = "com.rectify.rectify"` | owner decision before first publish (irreversible after) |
 | P0-4 | Hosted privacy-policy URL | absent | **[PARTIAL]** | Policy **content authored**: `docs/privacy-policy.md` (Run A.2). App still in-app only — `lib/features/settings/privacy_policy_screen.dart:18-19` notes the hosted-URL swap is pending; `url_launcher` **not** in `pubspec.yaml` | owner hosts the policy at a canonical URL → engineering wires `url_launcher` + adds the listing URL |
 | P0-5 | Apple privacy labels + Play Data Safety | not authored | **[PARTIAL — authored prep]** | `docs/apple-privacy-labels.md`, `docs/play-data-safety.md` (Run A.2) map verified data flow to each form; in-app privacy copy now discloses live transmission (Run A.1) | owner/legal sign-off + actual console entry (both docs are explicitly "guidance, not a submission, not legal advice") |
@@ -53,9 +53,9 @@ path is **almost entirely owner / secret / legal / console work** — see §5.
 | P0-10 | Category positioning | owner | **[OWNER]** | Utilities (iOS) / Tools (Play) documented in `store-listing-en.md` §1 | select/confirm in console (owner) |
 | P0-11 | Demo/review key hygiene | owner | **[OWNER]** (unchanged) | `pubspec.yaml` still bundles `.env` as an asset | rotate to a low-budget capped key before public build (owner secret) |
 
-**P0 tally:** 5 fully resolved in-repo (P0-1, P0-6, P0-7, P0-8, P0-9), 2 partial
-with the artifact done and an owner/legal/console remainder (P0-4, P0-5), 4
-purely owner/secret/decision/console (P0-2, P0-3, P0-10, P0-11).
+**P0 tally:** 5 fully resolved in-repo (P0-1, P0-6, P0-7, P0-8, P0-9), 3 partial
+with the artifact done and an owner/legal/console remainder (P0-2, P0-4, P0-5),
+3 purely owner/secret/decision/console (P0-3, P0-10, P0-11).
 
 ---
 
@@ -67,7 +67,7 @@ purely owner/secret/decision/console (P0-2, P0-3, P0-10, P0-11).
 | G2 — hosted privacy-policy URL | PARTIAL (in-app only) | **[PARTIAL]** — content authored (`privacy-policy.md`); hosting + `url_launcher` wiring still pending | A.2 |
 | G3 — Apple labels + Play Data Safety | MISSING | **[PARTIAL — authored prep]** — `apple-privacy-labels.md` + `play-data-safety.md`; console entry remains owner/legal | A.2 |
 | G4 — real app icon | MISSING | **[DONE — VERIFIED]** | A.3 |
-| G5 — bundle-id + release signing | OPEN | **[OWNER]** — bundle-id decision + signing material still pending (debug-signed) | — |
+| G5 — bundle-id + release signing | OPEN | **[OWNER]** — bundle-id decision + signing material still pending (Android gradle wiring done 2026-06-12: release requires owner `key.properties`, no debug fallback) | — |
 | G6 — COPPA / age gate | UNVERIFIED | **[DONE — VERIFIED]** — 18+ gate enforced in the date picker | A.1 |
 | G7 — store metadata | READY (doc) | **[DONE]** — finalized EN (`store-listing-en.md`) + localized drafts (`store-listing-tier1-localized.md`); `pubspec` description updated | A.4, D.3 |
 | G8 — store screenshots | MISSING | **[DONE — raw]** — EN + de/fr/es/pt-BR raw frames captured | A.5, D.4 |
@@ -118,7 +118,9 @@ an owner input first. Roughly in dependency order:
    App Store Connect / Play record creation.
 2. **Release signing material** (P0-2 / G5) — generate the Android upload
    keystore (+ enroll in Play App Signing) and the iOS distribution
-   certificate/profile. Owner secrets.
+   certificate/profile. Owner secrets. (Android gradle wiring landed
+   2026-06-12: release builds read `android/key.properties` and refuse to
+   fall back to debug signing; only the keystore itself is still missing.)
 3. **Host the privacy policy** at a canonical URL (P0-4 / G2) — owner hosting of
    `docs/privacy-policy.md`'s content; legal review of provider naming/retention.
 4. **Owner/legal sign-off + console entry** of the Apple privacy labels and Play
@@ -151,8 +153,11 @@ first, and both are small:
 
 - **Wire `url_launcher`** to open the hosted privacy URL and surface it in the
   listing — unblocked only once item 5a-3 picks the URL. Small.
-- **Apply the release `signingConfig`** in `build.gradle.kts` — unblocked only
-  once item 5a-2 produces the keystore. Small.
+- **Apply the release `signingConfig`** in `build.gradle.kts` — **[DONE
+  2026-06-12]**: release signing reads `android/key.properties` (validated:
+  `storePassword`, `keyPassword`, `keyAlias`, `storeFile`; absolute or
+  `android/`-relative `storeFile`), with no debug fallback. Only the
+  owner keystore from item 5a-2 remains.
 - **(Optional, design)** screenshot device-frame/caption compositing harness —
   but the Run D.4 spec deliberately leaves caption overlays to owner-composited
   work.

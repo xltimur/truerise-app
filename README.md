@@ -174,11 +174,16 @@ cp android/key.properties.example android/key.properties
 # edit android/key.properties: storePassword, keyPassword, keyAlias, storeFile
 ```
 
-Wiring the `signingConfig` into `android/app/build.gradle.kts` is a
-release-cut task — today the `release` build type is intentionally
-signed with the debug keys so `flutter run --release` works without a
-keystore. See `docs/qa-phase8-report.md` §6 for the full store-submission
-checklist.
+`android/app/build.gradle.kts` reads `android/key.properties` to sign
+release builds; there is no debug-signing fallback. Release tasks
+(`flutter build apk`, `flutter build appbundle`, `flutter run --release`)
+fail with an actionable error when the file is missing, incomplete
+(`storePassword`, `keyPassword`, `keyAlias`, `storeFile` are all
+required), or points at a keystore that does not exist. `storeFile`
+accepts absolute paths or paths relative to `android/`. Debug builds do
+not need `key.properties`. The real Play upload keystore is owner-held
+and not in the repo; Play App Signing enrollment is an owner step. See
+`docs/qa-phase8-report.md` §6 for the full store-submission checklist.
 
 ---
 

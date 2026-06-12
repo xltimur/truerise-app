@@ -5181,3 +5181,43 @@ passed auth — it reached business logic, not 401/403 — so the existing
 - **Limit/quota:** none hit.
 - **Open question:** owner pick + confirmations in
   `docs/bundle-id-recommendation.md` Sec. "Owner must confirm".
+
+### 2026-06-12 - Android release signing wiring (P0-2, no debug fallback)
+
+- **Session:** Claude Code (id not exposed in-session).
+- **Artifacts changed:** `android/app/build.gradle.kts`,
+  `android/key.properties.example`, `README.md` (Android signing section),
+  `docs/publication-readiness-current-status.md` (P0-2 row, tally, 5a/5b),
+  `docs/store-submission-readiness.md` (status callout, exec summary item 2,
+  P0-2 row).
+- **Work completed:** release build type no longer falls back to debug
+  signing. `build.gradle.kts` reads `android/key.properties` (template:
+  `android/key.properties.example`), validates `storePassword`,
+  `keyPassword`, `keyAlias`, `storeFile` (non-blank) plus keystore
+  existence, resolves `storeFile` absolute or relative to `android/`
+  (`rootProject.file`), and creates the `release` signing config only when
+  complete. When missing/incomplete, a task-graph guard fails any requested
+  release task with instructions (copy the example, provide the
+  owner-supplied upload keystore); debug builds never need the file. No
+  real secrets added; bundle ID / namespace untouched
+  (`com.rectify.rectify`).
+- **Verification - RUN AND PASSED:** `./gradlew :app:assembleDebug -m`
+  without `key.properties` -> BUILD SUCCESSFUL; `./gradlew
+  :app:assembleRelease -m` without it -> fails with the intended message;
+  with an incomplete file -> "missing value(s) for: keyPassword,
+  storeFile"; with a throwaway local keystore (absolute and
+  `android/`-relative `storeFile`) -> `:app:validateSigningRelease`
+  BUILD SUCCESSFUL. Throwaway keystore + `key.properties` deleted after.
+  `git diff --check` clean. Full Flutter test suite not rerun (no Dart
+  code changed).
+- **Constraints respected:** no secrets in repo; `android/.gitignore`
+  already excludes `key.properties` / `*.jks` / `*.keystore`; doc claims
+  updated honestly (engineering wiring done, owner keystore + Play App
+  Signing + iOS distribution signing still pending).
+- **Residual risks:** owner upload keystore and Play App Signing enrollment
+  remain the real-world blocker (P0-2 owner half); release-task detection
+  matches task names containing "Release" for this module - standard
+  assemble/bundle/validateSigning flows are covered, but an exotic custom
+  task name without "Release" would not trip the guard; Gradle
+  configuration cache (not enabled) would need a different guard wiring.
+- **Limit/quota:** none hit.
