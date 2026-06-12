@@ -36,9 +36,15 @@ class FakeRectificationRepository implements RectificationRepository {
   Future<Result<CalculationResult, AppFailure>> submit(
     CalculationRequest request, {
     DemoEvidenceCopy? demoCopy,
+    bool Function()? isCancelled,
   }) async {
     submissions.add(request);
     if (blocker != null) await blocker!.future;
+    // Mirror the live repository's contract: a cancellation observed
+    // after the slow part skips the history write and returns Err.
+    if (isCancelled?.call() ?? false) {
+      return const Result.err(submissionCancelledFailure);
+    }
     if (failureOverride != null) {
       return Result.err(failureOverride!);
     }

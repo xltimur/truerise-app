@@ -202,6 +202,23 @@ class CalculationFlowController extends Notifier<CalculationFlowState> {
     );
   }
 
+  /// Monotonic token identifying the latest `submit()` call. Bumped by
+  /// [cancelSubmit] so an in-flight submission can detect it was
+  /// abandoned: the repository skips its history write, and the fold in
+  /// [submit] leaves the draft (repo + state) untouched.
+  int _submitGeneration = 0;
+
+  /// Abandon the in-flight submission and return the draft to the
+  /// confirm step. The draft stays fully editable: the orphaned submit
+  /// future is ignored when it completes — it must not clear the draft,
+  /// write history, or flip any state the user is now editing.
+  void cancelSubmit() {
+    _submitGeneration += 1;
+    _set(
+      state.copyWith(step: CalculationFlowStep.confirm, submitting: false),
+    );
+  }
+
   /// Submit the current draft through the rectification repository.
   ///
   /// Demo branch only in Phase 4: the live repository short-circuits
@@ -226,8 +243,24 @@ class CalculationFlowController extends Notifier<CalculationFlowState> {
       syncDraft: false,
     );
 
+    // Each submit starts a new generation; [cancelSubmit] (or a newer
+    // submit) bumps the counter, marking this call abandoned.
+    final generation = ++_submitGeneration;
+    bool cancelled() => generation != _submitGeneration;
+
     final request = state.toRequest();
-    final result = await _rectifier.submit(request, demoCopy: demoCopy);
+    final result = await _rectifier.submit(
+      request,
+      demoCopy: demoCopy,
+      isCancelled: cancelled,
+    );
+
+    if (cancelled()) {
+      // The user already cancelled and is editing the draft again —
+      // leave the draft (repo + state) exactly as they see it. The
+      // caller (loading screen) is unmounted, so the value is unused.
+      return const Result.err(submissionCancelledFailure);
+    }
 
     return result.fold<Result<CalculationResult, AppFailure>>(
       ok: (value) {

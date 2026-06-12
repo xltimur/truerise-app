@@ -12,6 +12,7 @@ import 'package:rectify/app/router.dart';
 import 'package:rectify/data/models/event_category.dart';
 import 'package:rectify/data/repos/draft_repository.dart';
 import 'package:rectify/data/secure/secure_key_store.dart';
+import 'package:rectify/features/calculation_flow/screens/loading_screen.dart';
 import 'package:rectify/features/calculation_flow/state/calculation_flow_controller.dart';
 import 'package:rectify/providers/core_providers.dart';
 import 'package:rectify/providers/repo_providers.dart';
@@ -150,6 +151,95 @@ void main() {
       // state so no pending timers leak into the test runner.
       rectifier.blocker!.complete();
       await tester.pumpAndSettle();
+    },
+  );
+
+  testWidgets(
+    'Cancel returns to confirm; the late submit completion neither '
+    'navigates away nor clears the draft nor saves history',
+    (tester) async {
+      final prefs = await _prefs();
+      final history = FakeHistoryRepository();
+      final rectifier = FakeRectificationRepository(history: history);
+      // Hold submit() open so Cancel races a genuinely in-flight call.
+      rectifier.blocker = Completer<void>();
+      final drafts = InMemoryDraftRepository();
+      addTearDown(drafts.dispose);
+
+      await tester.pumpWidget(
+        _harness(
+          prefs: prefs,
+          history: history,
+          rectifier: rectifier,
+          drafts: drafts,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(MaterialApp)),
+      );
+      final controller = container.read(
+        calculationFlowControllerProvider.notifier,
+      );
+      controller
+        ..setBirthDate(DateTime.utc(1990, 5, 14))
+        ..setBirthCityText('Kyiv, Ukraine')
+        ..addEvent(category: EventCategory.marriage, year: 2018)
+        ..addEvent(category: EventCategory.careerChange, year: 2015)
+        ..addEvent(category: EventCategory.relocation, year: 2012);
+      final draftId = container.read(calculationFlowControllerProvider).id;
+
+      container.read(routerProvider).go(RoutePaths.calcLoading);
+      await tester.pump();
+      await tester.pump();
+      expect(rectifier.submissions, hasLength(1));
+
+      await tester.tap(find.byKey(loadingCancelButtonKey));
+      await tester.pumpAndSettle();
+
+      String location() => container
+          .read(routerProvider)
+          .routerDelegate
+          .currentConfiguration
+          .uri
+          .toString();
+      expect(location(), RoutePaths.calcConfirm);
+
+      // The in-flight submit now completes "successfully" — after a
+      // cancel this must be a no-op for the user.
+      rectifier.blocker!.complete();
+      await tester.pumpAndSettle();
+
+      expect(
+        location(),
+        RoutePaths.calcConfirm,
+        reason: 'late completion must not steal navigation',
+      );
+      final state = container.read(calculationFlowControllerProvider);
+      expect(
+        state.readyToSubmit,
+        isTrue,
+        reason: 'the editable draft must survive the cancelled submit',
+      );
+      expect(
+        drafts.read(),
+        isNotNull,
+        reason: 'the persisted draft must not be silently cleared',
+      );
+      final saved = await history.findById(draftId);
+      expect(
+        saved.isErr,
+        isTrue,
+        reason: 'a cancelled submission must not save a history row',
+      );
+
+      // The draft is still editable after the dust settles.
+      controller.setLabel('still editable');
+      expect(
+        container.read(calculationFlowControllerProvider).label,
+        'still editable',
+      );
     },
   );
 }

@@ -5297,3 +5297,54 @@ passed auth — it reached business logic, not 401/403 — so the existing
   would need draft-rehydration plumbing (new id, mode handling) if the
   owner wants it later.
 - **Limit/quota:** none hit.
+
+### 2026-06-12 - Loading Cancel + error retry hardening
+
+- **Session:** Claude Code (id not exposed in-session).
+- **Artifacts changed:**
+  `lib/features/calculation_flow/state/calculation_flow_controller.dart`
+  (submit generation token + `cancelSubmit()`),
+  `lib/data/repos/rectification_repository.dart` (optional `isCancelled`
+  poll on `submit` + `submissionCancelledFailure` marker; live impl
+  skips the history write when cancelled),
+  `lib/features/calculation_flow/screens/loading_screen.dart` (Cancel
+  now calls `cancelSubmit()`; stable `loadingCancelButtonKey`),
+  `lib/features/error_flow/error_screen.dart` (stable
+  `errorPrimaryActionKey`/`errorSecondaryActionKey`; no behavior
+  change), `test/helpers/fake_rectification_repository.dart` (honors
+  `isCancelled` like the live repo); tests:
+  `test/widget/features/calculation_flow/loading_screen_test.dart`,
+  `test/widget/features/error_flow/error_routing_test.dart`.
+- **Work completed:** tapping Cancel on /calc/loading now abandons the
+  in-flight submission instead of just leaving the route. The
+  controller bumps a monotonic submit generation; when the orphaned
+  submit future completes it (a) never navigates (pre-existing mounted
+  guard), (b) no longer clears the editable draft - the cancelled-
+  generation fold returns early leaving repo + state untouched - and
+  (c) no longer saves a history row: the repository polls
+  `isCancelled` after the slow part (demo delay / network round trip)
+  and before `history.save`. Error-screen actions unchanged (already
+  correct): retryable primary re-enters /calc/loading, badRequest
+  primary returns to confirm, no-draft primary falls home, secondary
+  resets + home; they are now pinned by tests via new stable keys.
+- **Verification - RUN AND PASSED (TDD):** 5 new widget tests written
+  first and watched fail (both files failed to load on the missing
+  keys), then green: cancel-during-blocked-submit returns to confirm,
+  and after the blocked submit completes the route stays confirm, the
+  draft stays editable (state + repo) and no history row exists;
+  retryable error fires a second submission and lands on
+  /calc/result/:id after the fake recovers; badRequest primary goes to
+  confirm without resubmitting; primary with no draft goes home with
+  no exception; secondary clears the draft and goes home. `dart
+  format` -> 0 changed; `flutter analyze` -> No issues found; focused
+  loading + error suites -> 16 passed; full `flutter test` -> 432
+  passed (was 427; +5). `git diff --check` clean.
+- **Residual cancellation limits (documented by design):** (1) a
+  cancelled real-mode submission does not abort the HTTP request - the
+  round trip completes and only its outcome is discarded (true Dio
+  cancel-token plumbing would be a broader change); (2) the
+  cancellation poll runs once before `history.save`, so a cancel that
+  lands mid-write can still persist the row (microsecond window, demo
+  path in-memory); (3) cancelling does not refund any provider API
+  usage already incurred.
+- **Limit/quota:** none hit.

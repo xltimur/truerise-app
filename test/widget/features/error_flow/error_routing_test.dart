@@ -203,4 +203,152 @@ void main() {
       );
     }
   });
+
+  group('Error screen actions (cancel/retry invariants)', () {
+    String location(ProviderContainer container) => container
+        .read(routerProvider)
+        .routerDelegate
+        .currentConfiguration
+        .uri
+        .toString();
+
+    testWidgets(
+      'retryable error: primary re-enters loading, resubmits, and lands '
+      'on the result once the repository recovers',
+      (tester) async {
+        final history = FakeHistoryRepository();
+        final rectifier = FakeRectificationRepository(history: history)
+          ..failureOverride = const TimeoutFailure();
+        final drafts = InMemoryDraftRepository();
+        addTearDown(drafts.dispose);
+
+        final container = await _bootFlow(
+          tester,
+          rectifier: rectifier,
+          history: history,
+          drafts: drafts,
+        );
+        final draftId = container.read(calculationFlowControllerProvider).id;
+
+        container.read(routerProvider).go(RoutePaths.calcLoading);
+        await tester.pumpAndSettle();
+        expect(location(container), RoutePaths.errorTimeout);
+        expect(rectifier.submissions, hasLength(1));
+
+        // The transient failure clears; the user taps "Try again".
+        rectifier.failureOverride = null;
+        await tester.tap(find.byKey(errorPrimaryActionKey));
+        await tester.pumpAndSettle();
+
+        expect(
+          rectifier.submissions,
+          hasLength(2),
+          reason: 'retry must fire a second submission',
+        );
+        expect(location(container), '/calc/result/$draftId');
+      },
+    );
+
+    testWidgets(
+      'bad request: primary returns to confirm instead of retrying',
+      (tester) async {
+        final history = FakeHistoryRepository();
+        final rectifier = FakeRectificationRepository(history: history)
+          ..failureOverride = const BadRequestFailure('Bad date');
+        final drafts = InMemoryDraftRepository();
+        addTearDown(drafts.dispose);
+
+        final container = await _bootFlow(
+          tester,
+          rectifier: rectifier,
+          history: history,
+          drafts: drafts,
+        );
+
+        container.read(routerProvider).go(RoutePaths.calcLoading);
+        await tester.pumpAndSettle();
+        expect(location(container), RoutePaths.errorBadRequest);
+
+        await tester.tap(find.byKey(errorPrimaryActionKey));
+        await tester.pumpAndSettle();
+
+        expect(location(container), RoutePaths.calcConfirm);
+        expect(
+          rectifier.submissions,
+          hasLength(1),
+          reason: 'bad request must not auto-retry the same payload',
+        );
+      },
+    );
+
+    testWidgets(
+      'primary with no usable draft falls back to home without crashing',
+      (tester) async {
+        final history = FakeHistoryRepository();
+        final rectifier = FakeRectificationRepository(history: history);
+        final drafts = InMemoryDraftRepository();
+        addTearDown(drafts.dispose);
+
+        final prefs = await _prefs();
+        await tester.pumpWidget(
+          _harness(
+            prefs: prefs,
+            history: history,
+            rectifier: rectifier,
+            drafts: drafts,
+          ),
+        );
+        await tester.pumpAndSettle();
+        final container = ProviderScope.containerOf(
+          tester.element(find.byType(MaterialApp)),
+        );
+
+        // Land on a retryable error screen with an empty draft (e.g. a
+        // stale deep link after the flow was reset).
+        container.read(routerProvider).go(RoutePaths.errorTimeout);
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byKey(errorPrimaryActionKey));
+        await tester.pumpAndSettle();
+
+        expect(location(container), RoutePaths.home);
+        expect(rectifier.submissions, isEmpty);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets(
+      'secondary resets the draft and returns home',
+      (tester) async {
+        final history = FakeHistoryRepository();
+        final rectifier = FakeRectificationRepository(history: history)
+          ..failureOverride = const TimeoutFailure();
+        final drafts = InMemoryDraftRepository();
+        addTearDown(drafts.dispose);
+
+        final container = await _bootFlow(
+          tester,
+          rectifier: rectifier,
+          history: history,
+          drafts: drafts,
+        );
+
+        container.read(routerProvider).go(RoutePaths.calcLoading);
+        await tester.pumpAndSettle();
+        expect(location(container), RoutePaths.errorTimeout);
+        expect(drafts.read(), isNotNull);
+
+        await tester.tap(find.byKey(errorSecondaryActionKey));
+        await tester.pumpAndSettle();
+
+        expect(location(container), RoutePaths.home);
+        expect(drafts.read(), isNull, reason: 'secondary abandons the draft');
+        expect(
+          container.read(calculationFlowControllerProvider).readyToSubmit,
+          isFalse,
+          reason: 'controller state resets to a fresh draft',
+        );
+      },
+    );
+  });
 }

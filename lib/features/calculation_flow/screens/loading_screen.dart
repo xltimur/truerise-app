@@ -8,7 +8,6 @@ import 'package:rectify/app/route_names.dart';
 import 'package:rectify/core/result.dart';
 import 'package:rectify/data/demo/demo_response.dart';
 import 'package:rectify/features/calculation_flow/state/calculation_flow_controller.dart';
-import 'package:rectify/features/calculation_flow/state/calculation_flow_state.dart';
 import 'package:rectify/features/error_flow/error_routing.dart';
 import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/theme/colors.dart';
@@ -17,6 +16,9 @@ import 'package:rectify/theme/typography.dart';
 import 'package:rectify/widgets/buttons/buttons.dart';
 import 'package:rectify/widgets/chips/demo_pill.dart';
 import 'package:rectify/widgets/feedback/breath_ring_loader.dart';
+
+@visibleForTesting
+const Key loadingCancelButtonKey = ValueKey<String>('loading-cancel-button');
 
 const _rotatingCopyCount = 3;
 
@@ -143,11 +145,16 @@ class _CalculationLoadingScreenState
               ),
               const Spacer(),
               GhostButton(
+                key: loadingCancelButtonKey,
                 label: l10n.commonCancel,
                 onPressed: () {
+                  // Abandon the in-flight submission (not just the route):
+                  // the controller marks the submit generation cancelled so
+                  // its late completion can't clear the draft or write
+                  // history, then we return to the editable confirm step.
                   ref
                       .read(calculationFlowControllerProvider.notifier)
-                      .goTo(CalculationFlowStep.confirm);
+                      .cancelSubmit();
                   context.go(RoutePaths.calcConfirm);
                 },
               ),

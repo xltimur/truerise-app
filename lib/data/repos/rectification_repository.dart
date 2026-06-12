@@ -17,11 +17,25 @@ abstract class RectificationRepository {
   ///
   /// Demo submissions (`request.isDemo == true`) must supply [demoCopy]
   /// with locale-resolved evidence prose; the real path ignores it.
+  ///
+  /// [isCancelled] is polled after the slow part of the submission (demo
+  /// delay / network round trip) and before any history write. When it
+  /// reports `true`, the implementation must NOT persist a history row
+  /// and must return an [Err] instead of the result — the user already
+  /// walked away from this submission via Cancel.
   Future<Result<CalculationResult, AppFailure>> submit(
     CalculationRequest request, {
     DemoEvidenceCopy? demoCopy,
+    bool Function()? isCancelled,
   });
 }
+
+/// Marker failure returned for a submission abandoned via Cancel. Never
+/// routed to an error screen: the loading screen that awaited the submit
+/// is unmounted by the time it surfaces.
+const AppFailure submissionCancelledFailure = UnknownFailure(
+  'Submission cancelled by the user.',
+);
 
 /// Live implementation that branches on `request.isDemo`:
 ///
@@ -61,6 +75,7 @@ class LiveRectificationRepository implements RectificationRepository {
   Future<Result<CalculationResult, AppFailure>> submit(
     CalculationRequest request, {
     DemoEvidenceCopy? demoCopy,
+    bool Function()? isCancelled,
   }) async {
     if (request.isDemo) {
       assert(
@@ -69,6 +84,9 @@ class LiveRectificationRepository implements RectificationRepository {
       );
       if (demoDelay > Duration.zero) {
         await Future<void>.delayed(demoDelay);
+      }
+      if (isCancelled?.call() ?? false) {
+        return const Result.err(submissionCancelledFailure);
       }
       final result = buildDemoResult(request, now: now(), copy: demoCopy!);
       await history.save(request, result);
@@ -83,6 +101,9 @@ class LiveRectificationRepository implements RectificationRepository {
     final apiResult = await api.rectify(dto);
     switch (apiResult) {
       case Ok(value: final response):
+        if (isCancelled?.call() ?? false) {
+          return const Result.err(submissionCancelledFailure);
+        }
         final result = responseToResult(
           requestId: request.id,
           dto: response.dto,

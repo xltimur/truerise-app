@@ -15,6 +15,12 @@ import 'package:rectify/theme/icons.dart';
 import 'package:rectify/widgets/buttons/buttons.dart';
 import 'package:rectify/widgets/feedback/error_scaffold.dart';
 
+@visibleForTesting
+const Key errorPrimaryActionKey = ValueKey<String>('error-primary-action');
+
+@visibleForTesting
+const Key errorSecondaryActionKey = ValueKey<String>('error-secondary-action');
+
 /// Phase 6 error landing screen
 /// (`docs/implementation-plan.md` §11.3 / §14 Phase 6).
 ///
@@ -96,6 +102,7 @@ class CalculationErrorScreen extends ConsumerWidget {
       title: copy.title,
       description: copy.description,
       primaryAction: PrimaryButton(
+        key: errorPrimaryActionKey,
         label: copy.primaryLabel,
         onPressed: () {
           if (kind == ErrorScreenKind.badRequest) {
@@ -115,6 +122,7 @@ class CalculationErrorScreen extends ConsumerWidget {
         },
       ),
       secondaryAction: GhostButton(
+        key: errorSecondaryActionKey,
         label: l10n.commonBackToHistory,
         onPressed: () {
           controller.reset();
