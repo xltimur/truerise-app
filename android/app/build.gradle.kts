@@ -89,7 +89,11 @@ android {
 if (releaseSigningProblem != null) {
     gradle.taskGraph.whenReady {
         val releaseTaskRequested = allTasks.any { task ->
-            task.project == project && task.name.contains("Release")
+            task.project == project &&
+                task.name.contains("Release") &&
+                // The bundled-env validation task must stay runnable on its
+                // own without signing secrets.
+                task.name != "validateReleaseBundledEnv"
         }
         if (releaseTaskRequested) {
             throw GradleException(
@@ -100,6 +104,63 @@ if (releaseSigningProblem != null) {
                     "Debug builds do not require android/key.properties."
             )
         }
+    }
+}
+
+// --- Bundled .env review-key release guard --------------------------------
+// The repo tracks `.env` as a Flutter asset so review/demo builds boot with
+// a live provider key (README "Security boundary"). Assets are extractable
+// from a public APK/AAB, so release builds must not silently ship that key:
+// this task fails unless the owner explicitly acknowledges the bundled key
+// as a low-budget, capped, rotatable review key. The key value itself is
+// never read into any message. Mirrors `tool/release_env_guard.dart`, which
+// is the manual preflight for iOS builds.
+val validateReleaseBundledEnv = tasks.register("validateReleaseBundledEnv") {
+    group = "verification"
+    description =
+        "Blocks release builds that bundle an unacknowledged ASTRO_API_KEY via the tracked .env."
+    doLast {
+        val envFile = rootProject.file("../.env")
+        val keyPresent = envFile.exists() && envFile.readLines().any { rawLine ->
+            val line = rawLine.trim()
+            if (line.startsWith("#")) return@any false
+            val match = Regex("^ASTRO_API_KEY\\s*=(.*)$").find(line) ?: return@any false
+            var value = match.groupValues[1].trim()
+            if (value.length >= 2 &&
+                ((value.startsWith("\"") && value.endsWith("\"")) ||
+                    (value.startsWith("'") && value.endsWith("'")))
+            ) {
+                value = value.substring(1, value.length - 1).trim()
+            }
+            value.isNotEmpty()
+        }
+        val allow = findProperty("truerise.allowBundledApiKey") == "true"
+        val purpose = findProperty("truerise.bundledApiKeyPurpose")
+        if (keyPresent && !(allow && purpose == "review-capped")) {
+            throw GradleException(
+                "Release blocked: the tracked .env bundles a non-empty ASTRO_API_KEY " +
+                    "(value redacted) as a Flutter asset, which is extractable from a " +
+                    "public APK/AAB. A public release must ship either no provider key " +
+                    "or a low-budget, capped, rotatable review key acknowledged " +
+                    "explicitly with:\n" +
+                    "  -Ptruerise.allowBundledApiKey=true " +
+                    "-Ptruerise.bundledApiKeyPurpose=review-capped\n" +
+                    "Otherwise remove ASTRO_API_KEY from .env before building. " +
+                    "See README \"Security boundary\" and docs/api-integration.md."
+            )
+        }
+    }
+}
+
+// Gate only the release artifacts; debug/profile stay untouched.
+// `preReleaseBuild` runs at the head of the release task chain so the
+// guard fails fast instead of after a full compile.
+tasks.configureEach {
+    if (name == "assembleRelease" ||
+        name == "bundleRelease" ||
+        name == "preReleaseBuild"
+    ) {
+        dependsOn(validateReleaseBundledEnv)
     }
 }
 

@@ -39,6 +39,37 @@ astrology-api.io key in Settings.
 - When no key is configured, `LiveRectificationRepository.submit()` returns
   `MissingApiKeyFailure` immediately — no network call is made.
 
+### Bundled review key + release guard (2026-06-12)
+
+The tracked `.env` is bundled as a Flutter asset (`pubspec.yaml`) so
+review/demo builds boot with a live key; the user-entered secure-storage key
+always wins over it. Bundled assets are extractable from any public
+APK/AAB/IPA, so this is acceptable **only** for a low-budget, capped,
+rotatable review key — never a production key. The currently embedded key
+must be treated as throwaway/rotatable; the owner rotates it to a capped
+review key before any public build (P0-11).
+
+Two guards enforce this locally:
+
+- **Android (automatic):** the Gradle task `validateReleaseBundledEnv`
+  (`android/app/build.gradle.kts`) gates `preReleaseBuild`,
+  `assembleRelease`, and `bundleRelease`. It fails with a redacted message
+  (the key value is never printed) when `.env` carries a non-empty
+  `ASTRO_API_KEY`, unless the build is explicitly acknowledged as a capped
+  review build with **both** properties:
+  `-Ptruerise.allowBundledApiKey=true`
+  `-Ptruerise.bundledApiKeyPurpose=review-capped`.
+  Debug/profile builds and `flutter test` are unaffected.
+- **iOS / manual preflight:** there is no Gradle hook on the iOS side; run
+  `dart run tool/release_env_guard.dart` before `flutter build ipa`. Same
+  semantics: non-zero exit on an unacknowledged bundled key;
+  `--allow-bundled-key --purpose=review-capped` acknowledges a capped
+  review key. Output is always redacted.
+
+A public build therefore needs either **no bundled key** (remove
+`ASTRO_API_KEY` from `.env`) or an **explicitly acknowledged low-budget
+capped review key**.
+
 ---
 
 ## Request payload (`RectificationSearchRequestDto`)

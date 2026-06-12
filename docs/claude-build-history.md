@@ -5348,3 +5348,48 @@ passed auth — it reached business logic, not 401/403 — so the existing
   path in-memory); (3) cancelling does not refund any provider API
   usage already incurred.
 - **Limit/quota:** none hit.
+
+### 2026-06-12 - Bundled .env review-key release guard (P0-11 hardening)
+
+- **Session:** Claude Code (id not exposed in-session).
+- **Artifacts created:** `tool/release_env_guard.dart`,
+  `test/tool/release_env_guard_test.dart`. **Changed:**
+  `android/app/build.gradle.kts` (new `validateReleaseBundledEnv` task
+  gating `preReleaseBuild`/`assembleRelease`/`bundleRelease`; signing
+  guard excludes the validate task so it runs without signing secrets),
+  `docs/api-integration.md` (bundled-key release-guard section),
+  `docs/publication-readiness-current-status.md` (P0-11 -> PARTIAL).
+- **Work completed:** local guard against accidentally shipping the
+  asset-bundled `.env` provider key in a public release. Dart script
+  (dependency-free): non-zero exit with a redacted message when the env
+  file carries a non-empty `ASTRO_API_KEY`; `--allow-bundled-key
+  --purpose=review-capped` acknowledges a capped review key (exit 0,
+  redacted); missing/empty/commented key passes; doubles as the manual
+  iOS preflight before `flutter build ipa`. Android: release tasks now
+  depend on `validateReleaseBundledEnv`, which fails fast with the same
+  redacted semantics unless BOTH `-Ptruerise.allowBundledApiKey=true`
+  and `-Ptruerise.bundledApiKeyPurpose=review-capped` are set.
+  Debug/profile builds, `flutter run`, and `flutter test` are
+  unaffected; demo mode stays offline. The tracked `.env` and its key
+  were NOT modified or rotated - the key is now documented as
+  throwaway/rotatable, with rotation to a low-budget capped review key
+  (or removal) remaining the owner half of P0-11.
+- **Verification - RUN AND PASSED:** script tests (9) green, asserting
+  redaction (fake key never appears in output), pass on missing/empty/
+  commented key, allow-mode purpose enforcement, unknown-arg usage
+  error; `dart run tool/release_env_guard.dart` against the real .env
+  -> exit 1 redacted, with ack -> exit 0 redacted (key value never
+  printed); `./gradlew :app:validateReleaseBundledEnv` -> BUILD FAILED
+  with redacted message; same task with both -P properties -> BUILD
+  SUCCESSFUL; `:app:assembleDebug -m` -> SUCCESS (debug ungated);
+  `:app:assembleRelease` with throwaway keystore and no ack -> fails in
+  2s on the env guard (fail-fast via `preReleaseBuild`), with ack the
+  dry-run graph lists `:app:validateReleaseBundledEnv` (throwaway
+  key.properties/keystore deleted after). `dart format` -> 0 changed;
+  `flutter analyze` -> No issues found; full `flutter test` -> 441
+  passed; `git diff --check` clean.
+- **Residual:** the guard is local/Gradle only - a CI pipeline should
+  also call `dart run tool/release_env_guard.dart`; iOS enforcement is
+  a documented manual preflight, not an Xcode build phase; the real
+  embedded key remains live until the owner rotates it.
+- **Limit/quota:** none hit.
