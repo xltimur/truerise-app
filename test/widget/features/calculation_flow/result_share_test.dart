@@ -5,6 +5,7 @@ import 'package:rectify/app/app.dart';
 import 'package:rectify/app/route_names.dart';
 import 'package:rectify/app/router.dart';
 import 'package:rectify/core/app_links.dart';
+import 'package:rectify/core/formatting/app_date_format.dart';
 import 'package:rectify/core/sharing/share_service.dart';
 import 'package:rectify/data/demo/demo_response.dart';
 import 'package:rectify/data/models/birth_data.dart';
@@ -12,6 +13,7 @@ import 'package:rectify/data/models/calculation_request.dart';
 import 'package:rectify/data/models/event_category.dart';
 import 'package:rectify/data/models/life_event.dart';
 import 'package:rectify/data/models/saved_calculation.dart';
+import 'package:rectify/data/models/time_format.dart';
 import 'package:rectify/data/models/time_window.dart';
 import 'package:rectify/data/repos/draft_repository.dart';
 import 'package:rectify/data/secure/secure_key_store.dart';
@@ -26,10 +28,11 @@ import '../../../helpers/fake_history_repository.dart';
 import '../../../helpers/fake_rectification_repository.dart';
 import '../../../helpers/fake_share_service.dart';
 
-Future<SharedPreferences> _prefs() async {
+Future<SharedPreferences> _prefs({String? timeFormat}) async {
   SharedPreferences.setMockInitialValues(<String, Object>{
     'settings.onboarding_done': true,
     'settings.demo_mode_default': true,
+    'settings.time_format': ?timeFormat,
   });
   return SharedPreferences.getInstance();
 }
@@ -168,6 +171,51 @@ void main() {
 
       expect(shareService.shared, hasLength(1));
       expect(shareService.shared.first, isNotEmpty);
+    },
+  );
+
+  testWidgets(
+    'with the 24-hour setting, Share result sends 24-hour copy',
+    (tester) async {
+      final seeded = _seedDemoCalculation();
+      final prefs = await _prefs(timeFormat: 'h24');
+      final history = FakeHistoryRepository([seeded]);
+      final rectifier = FakeRectificationRepository(history: history);
+      final drafts = InMemoryDraftRepository();
+      final shareService = FakeShareService();
+      addTearDown(drafts.dispose);
+
+      await tester.pumpWidget(
+        _harness(
+          prefs: prefs,
+          history: history,
+          rectifier: rectifier,
+          drafts: drafts,
+          shareService: shareService,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(MaterialApp)),
+      );
+      container
+          .read(routerProvider)
+          .go(RoutePaths.calcResultFor(seeded.request.id));
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.byKey(resultShareButtonKey));
+      await tester.tap(find.byKey(resultShareButtonKey));
+      await tester.pumpAndSettle();
+
+      final sharedText = shareService.shared.single;
+      final expected = AppDateFormat.clockTime(
+        seeded.result.candidates.first.time,
+        TimeFormat.h24,
+      );
+      expect(sharedText, contains(expected));
+      expect(sharedText, isNot(contains('AM')));
+      expect(sharedText, isNot(contains('PM')));
     },
   );
 

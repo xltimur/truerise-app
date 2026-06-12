@@ -1,6 +1,7 @@
 import 'package:rectify/core/app_links.dart';
-import 'package:rectify/data/models/candidate_time.dart';
+import 'package:rectify/core/formatting/app_date_format.dart';
 import 'package:rectify/data/models/saved_calculation.dart';
+import 'package:rectify/data/models/time_format.dart';
 import 'package:rectify/l10n/l10n.dart';
 
 /// Builds the privacy-safe, localized text shared when the user taps
@@ -20,13 +21,22 @@ abstract final class ShareCopyBuilder {
   ///
   /// [l10n] supplies the localized prose; pass the active
   /// `context.l10n` bundle so the shared copy follows the app locale.
-  static String build(SavedCalculation saved, AppLocalizations l10n) {
+  ///
+  /// [timeFormat] selects 12-hour (`2:05 PM`) or 24-hour (`14:05`) clock
+  /// rendering via [AppDateFormat.clockTime]. UI call sites must pass the
+  /// current `settings.timeFormat`; the [TimeFormat.h12] default only keeps
+  /// the original API (and its AM/PM output) for existing callers/tests.
+  static String build(
+    SavedCalculation saved,
+    AppLocalizations l10n, {
+    TimeFormat timeFormat = TimeFormat.h12,
+  }) {
     final candidates = saved.result.candidates;
     final lines = <String>[];
 
     if (candidates.isNotEmpty) {
       final top = candidates.first;
-      final timeStr = _formatTime(top);
+      final timeStr = AppDateFormat.clockTime(top.time, timeFormat);
       final confidence = l10n.shareCardConfidence(
         (top.confidence * 100).round(),
       );
@@ -46,13 +56,5 @@ abstract final class ShareCopyBuilder {
       ..add(l10n.shareCopyTagline(appBrandName))
       ..add(l10n.shareCopyGetApp(AppLinks.shareUrl));
     return lines.join('\n');
-  }
-
-  static String _formatTime(CandidateTime candidate) {
-    final t = candidate.time;
-    final isPm = t.hour >= 12;
-    final hour12 = ((t.hour + 11) % 12) + 1;
-    final minute = t.minute.toString().padLeft(2, '0');
-    return '$hour12:$minute ${isPm ? 'PM' : 'AM'}';
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rectify/core/app_links.dart';
 import 'package:rectify/core/sharing/share_copy_builder.dart';
 import 'package:rectify/data/models/saved_calculation.dart';
+import 'package:rectify/data/models/time_format.dart';
 import 'package:rectify/l10n/app_localizations.dart';
 import 'package:rectify/l10n/app_localizations_de.dart';
 import 'package:rectify/l10n/app_localizations_en.dart';
@@ -159,6 +160,58 @@ void main() {
       expect(copy, contains('2:05'));
       expect(copy, contains('PM'));
       expect(copy, isNot(contains('14:')));
+    });
+  });
+
+  group('ShareCopyBuilder.build time format', () {
+    SavedCalculation savedAt(TimeOfDay time) => SavedCalculation(
+      request: sampleRequest(),
+      result: sampleResult().copyWith(
+        candidates: [sampleResult().candidates.first.copyWith(time: time)],
+      ),
+    );
+
+    test('defaults to 12-hour with meridiem (backward compatible)', () {
+      final copy = ShareCopyBuilder.build(
+        savedAt(const TimeOfDay(hour: 14, minute: 5)),
+        _en,
+      );
+      expect(copy, contains('2:05 PM'));
+      expect(copy, isNot(contains('14:05')));
+    });
+
+    test('explicit h12 emits 12-hour time with meridiem', () {
+      final copy = ShareCopyBuilder.build(
+        savedAt(const TimeOfDay(hour: 14, minute: 5)),
+        _en,
+        // Intentionally explicit: pins the h12 argument path, not the default.
+        // ignore: avoid_redundant_argument_values
+        timeFormat: TimeFormat.h12,
+      );
+      expect(copy, contains('2:05 PM'));
+      expect(copy, isNot(contains('14:05')));
+    });
+
+    test('h24 emits 24-hour time and no meridiem', () {
+      final copy = ShareCopyBuilder.build(
+        savedAt(const TimeOfDay(hour: 14, minute: 5)),
+        _en,
+        timeFormat: TimeFormat.h24,
+      );
+      expect(copy, contains('14:05'));
+      expect(copy, isNot(contains('AM')));
+      expect(copy, isNot(contains('PM')));
+    });
+
+    test('h24 zero-pads morning hours and drops the meridiem', () {
+      final copy = ShareCopyBuilder.build(
+        savedAt(const TimeOfDay(hour: 7, minute: 14)),
+        _en,
+        timeFormat: TimeFormat.h24,
+      );
+      expect(copy, contains('07:14'));
+      expect(copy, isNot(contains('AM')));
+      expect(copy, isNot(contains('PM')));
     });
   });
 

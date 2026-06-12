@@ -244,7 +244,11 @@ class _ShareResultButton extends ConsumerWidget {
       icon: AppIcons.share,
       onPressed: () async {
         final svc = ref.read(shareServiceProvider);
-        final text = ShareCopyBuilder.build(saved, l10n);
+        final text = ShareCopyBuilder.build(
+          saved,
+          l10n,
+          timeFormat: ref.read(settingsControllerProvider).timeFormat,
+        );
         final usedNative = await svc.share(text);
         if (!context.mounted) return;
         if (usedNative) {
@@ -299,7 +303,11 @@ class _ShareImageButton extends ConsumerWidget {
           tagline: l10n.shareCardTagline,
         );
         final bytes = await StoryCardRenderer.render(card);
-        final caption = ShareCopyBuilder.build(saved, l10n);
+        final caption = ShareCopyBuilder.build(
+          saved,
+          l10n,
+          timeFormat: settings.timeFormat,
+        );
         final usedNative = await svc.shareImagePng(bytes, text: caption);
         if (!context.mounted) return;
         if (usedNative) {
@@ -410,7 +418,11 @@ class _DemoSharePromptState extends ConsumerState<_DemoSharePrompt> {
     final messenger = ScaffoldMessenger.of(context);
     final svc = ref.read(shareServiceProvider);
     final usedNative = await svc.share(
-      ShareCopyBuilder.build(widget.saved, l10n),
+      ShareCopyBuilder.build(
+        widget.saved,
+        l10n,
+        timeFormat: ref.read(settingsControllerProvider).timeFormat,
+      ),
     );
     if (!context.mounted) return;
     if (!usedNative) {

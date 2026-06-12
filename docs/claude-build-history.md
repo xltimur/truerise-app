@@ -5221,3 +5221,37 @@ passed auth — it reached business logic, not 401/403 — so the existing
   task name without "Release" would not trip the guard; Gradle
   configuration cache (not enabled) would need a different guard wiring.
 - **Limit/quota:** none hit.
+
+### 2026-06-12 - Share copy respects the 12h/24h time-format setting
+
+- **Session:** Claude Code (id not exposed in-session).
+- **Artifacts changed:** `lib/core/sharing/share_copy_builder.dart`,
+  `lib/features/calculation_flow/screens/result_screen.dart` (3 call
+  sites), `lib/features/home/home_history_screen.dart`; tests:
+  `test/unit/sharing/share_copy_builder_test.dart`,
+  `test/widget/features/calculation_flow/result_share_test.dart`.
+- **Work completed:** `ShareCopyBuilder.build` no longer hardcodes AM/PM:
+  the private `_formatTime` helper was replaced by
+  `AppDateFormat.clockTime` driven by a new backward-compatible named
+  parameter `timeFormat` (defaults to `TimeFormat.h12`, preserving the
+  original output for existing callers/tests). All four UI call sites now
+  pass the live `settings.timeFormat`: result text share, result image
+  caption share, demo share prompt, and history row share. Privacy
+  guarantees unchanged - the builder still emits only time, ascendant,
+  confidence, brand, and the public store link.
+- **Verification - RUN AND PASSED (TDD):** new tests written first and
+  watched fail (unit file failed to load on the missing parameter; the
+  h24 widget test failed), then green: unit tests pin default/explicit
+  h12 ("2:05 PM", no "14:05") and h24 ("14:05" / zero-padded "07:14", no
+  AM/PM); widget test with `settings.time_format=h24` proves tapping
+  Share result delivers 24-hour copy to the share service with no
+  meridiem. `dart format` -> 0 changed; `flutter analyze` -> No issues
+  found; focused suites (share copy unit, result share, demo share
+  prompt, history share) -> 47 passed; full `flutter test` -> 423 passed
+  (was 418; +5 new). `git diff --check` clean.
+- **Constraints respected:** no PII added to share copy (locale-sweep
+  privacy tests still green); no scope beyond time formatting.
+- **Residual risks:** meridiem text follows `intl`'s default locale (as
+  elsewhere in the app) rather than the share-copy l10n bundle - a
+  pre-existing nuance, unchanged by this fix.
+- **Limit/quota:** none hit.
