@@ -32,10 +32,23 @@ class ConfidenceBar extends StatelessWidget {
   /// the localized default when null.
   final String? label;
 
+  /// Lower bound (in percent) of the mid band. Values below render the
+  /// low-band color.
+  static const double midBandMinPercent = 40;
+
+  /// Lower bound (in percent) of the high band.
+  static const double highBandMinPercent = 70;
+
+  /// Whether [value] (0..1) falls in the low band. Single source of truth
+  /// for consumers that react to low confidence (e.g. the result screen's
+  /// refine-input guidance) so their threshold can never drift from the
+  /// bar color.
+  static bool isLowBand(double value) => value * 100 < midBandMinPercent;
+
   Color _fillColor() {
     final percent = value * 100;
-    if (percent >= 70) return AppColors.confidenceBarHigh;
-    if (percent >= 40) return AppColors.confidenceBarMid;
+    if (percent >= highBandMinPercent) return AppColors.confidenceBarHigh;
+    if (percent >= midBandMinPercent) return AppColors.confidenceBarMid;
     return AppColors.confidenceBarLow;
   }
 

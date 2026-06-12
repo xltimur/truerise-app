@@ -107,6 +107,8 @@
   "resultNotFoundBody": "Es wurde möglicherweise aus deinem Verlauf gelöscht. Öffne eine gespeicherte Berechnung oder starte eine neue.",
   "resultRisingSign": "Aszendent {sign}",
   "resultSampleData": "(Beispieldaten)",
+  "resultLowConfidenceTitle": "Ergebnis mit geringer Konfidenz",
+  "resultLowConfidenceBody": "Füge weitere datierte Lebensereignisse hinzu oder grenze das Geburtszeitfenster ein, um die Schätzung zu verbessern.",
   "resultOtherCandidates": "Weitere Kandidaten",
   "resultSeeEvidence": "Sieh, wie wir darauf gekommen sind",
   "resultShare": "Ergebnis teilen",

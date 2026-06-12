@@ -7,6 +7,7 @@ import 'package:rectify/app/router.dart';
 import 'package:rectify/data/demo/demo_response.dart';
 import 'package:rectify/data/models/birth_data.dart';
 import 'package:rectify/data/models/calculation_request.dart';
+import 'package:rectify/data/models/candidate_time.dart';
 import 'package:rectify/data/models/event_category.dart';
 import 'package:rectify/data/models/life_event.dart';
 import 'package:rectify/data/models/saved_calculation.dart';
@@ -315,4 +316,99 @@ void main() {
       expect(rectifier.submissions, isEmpty);
     },
   );
+
+  group('low-confidence guidance', () {
+    SavedCalculation seedWithTopConfidence(double confidence, {String? id}) {
+      final base = _seedDemoCalculation(id: id ?? 'demo-confidence-1');
+      final candidates = base.result.candidates;
+      return SavedCalculation(
+        request: base.request,
+        result: base.result.copyWith(
+          candidates: <CandidateTime>[
+            candidates.first.copyWith(confidence: confidence),
+            ...candidates.skip(1),
+          ],
+        ),
+      );
+    }
+
+    Future<void> pumpResult(
+      WidgetTester tester,
+      SavedCalculation seeded,
+    ) async {
+      final prefs = await _prefs();
+      final history = FakeHistoryRepository([seeded]);
+      final rectifier = FakeRectificationRepository(history: history);
+      final drafts = InMemoryDraftRepository();
+      addTearDown(drafts.dispose);
+
+      await tester.pumpWidget(
+        _harness(
+          prefs: prefs,
+          history: history,
+          rectifier: rectifier,
+          drafts: drafts,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(MaterialApp)),
+      );
+      container
+          .read(routerProvider)
+          .go(RoutePaths.calcResultFor(seeded.request.id));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets(
+      'top confidence below 40% shows the refine guidance',
+      (tester) async {
+        await pumpResult(tester, seedWithTopConfidence(0.35));
+
+        expect(find.byKey(resultLowConfidenceNoteKey), findsOneWidget);
+        expect(find.text('Low confidence result'), findsOneWidget);
+        expect(
+          find.text(
+            'Add more dated life events or narrow the birth-time window '
+            'to improve the estimate.',
+          ),
+          findsOneWidget,
+        );
+        // The rest of the result surface stays intact — this is guidance,
+        // not an error state.
+        expect(find.byType(HeroResultCard), findsOneWidget);
+        expect(find.text('See how we got this'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'top confidence just below the band boundary (39%) still shows it',
+      (tester) async {
+        await pumpResult(tester, seedWithTopConfidence(0.39));
+
+        expect(find.byKey(resultLowConfidenceNoteKey), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'top confidence at the mid band boundary (40%) does not show it',
+      (tester) async {
+        await pumpResult(tester, seedWithTopConfidence(0.40));
+
+        expect(find.byKey(resultLowConfidenceNoteKey), findsNothing);
+        expect(find.text('Low confidence result'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'high-confidence demo result (78%) does not show it',
+      (tester) async {
+        await pumpResult(tester, _seedDemoCalculation(id: 'demo-high-1'));
+
+        expect(find.byKey(resultLowConfidenceNoteKey), findsNothing);
+        expect(find.text('Low confidence result'), findsNothing);
+      },
+    );
+  });
 }

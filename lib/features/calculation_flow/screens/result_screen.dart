@@ -17,6 +17,7 @@ import 'package:rectify/providers/core_providers.dart';
 import 'package:rectify/providers/settings_controller.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/icons.dart';
+import 'package:rectify/theme/radius.dart';
 import 'package:rectify/theme/spacing.dart';
 import 'package:rectify/theme/typography.dart';
 import 'package:rectify/widgets/buttons/buttons.dart';
@@ -116,6 +117,11 @@ const Key resultShareImageButtonKey = ValueKey<String>(
 );
 
 @visibleForTesting
+const Key resultLowConfidenceNoteKey = ValueKey<String>(
+  'result-low-confidence-note',
+);
+
+@visibleForTesting
 const Key resultDemoSharePromptKey = ValueKey<String>(
   'result-demo-share-prompt',
 );
@@ -178,6 +184,10 @@ class _ResultBody extends ConsumerWidget {
           ),
           const SizedBox(height: AppSpacing.s5),
           ConfidenceBar(value: top.confidence),
+          if (ConfidenceBar.isLowBand(top.confidence)) ...<Widget>[
+            const SizedBox(height: AppSpacing.s3),
+            const _LowConfidenceNote(key: resultLowConfidenceNoteKey),
+          ],
           if (secondary.isNotEmpty) ...<Widget>[
             const SizedBox(height: AppSpacing.s6),
             Text(l10n.resultOtherCandidates, style: AppTypography.titleSm),
@@ -222,6 +232,59 @@ class _ResultBody extends ConsumerWidget {
             const _DemoUpgradeNudge(key: resultDemoNudgeKey),
           ],
         ],
+      ),
+    );
+  }
+}
+
+/// Inline guidance shown under the [ConfidenceBar] when the top
+/// candidate sits in the low band ([ConfidenceBar.isLowBand]).
+///
+/// Frames a weak estimate as "needs more input", never as a failure:
+/// the user is pointed at adding more dated life events or narrowing
+/// the birth-time window for their next calculation. Deliberately has
+/// no CTA — the submitted draft is cleared on submit, so routing back
+/// into the calc flow from here cannot rehydrate this result's input
+/// without new state plumbing (out of scope; the evidence CTA below
+/// already lets the user review what drove the estimate). Mirrors the
+/// events-step guidance banner tokens so the tone reads as a hint, not
+/// an error.
+class _LowConfidenceNote extends StatelessWidget {
+  const _LowConfidenceNote({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Semantics(
+      container: true,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.s4,
+          vertical: AppSpacing.s3,
+        ),
+        decoration: BoxDecoration(
+          color: AppColors.accentClayTint,
+          borderRadius: AppRadius.brSm,
+          border: Border.all(color: AppColors.accentClayLine),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              l10n.resultLowConfidenceTitle,
+              style: AppTypography.titleSm.copyWith(
+                color: AppColors.accentClayDeep,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.s1),
+            Text(
+              l10n.resultLowConfidenceBody,
+              style: AppTypography.bodySm.copyWith(
+                color: AppColors.accentClayDeep,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

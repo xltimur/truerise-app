@@ -107,6 +107,8 @@
   "resultNotFoundBody": "Il a peut-être été supprimé de votre historique. Ouvrez un calcul enregistré ou démarrez-en un nouveau.",
   "resultRisingSign": "Ascendant {sign}",
   "resultSampleData": "(données d'exemple)",
+  "resultLowConfidenceTitle": "Résultat à faible confiance",
+  "resultLowConfidenceBody": "Ajoutez plus d'événements de vie datés ou réduisez la fenêtre de l'heure de naissance pour améliorer l'estimation.",
   "resultOtherCandidates": "Autres candidats",
   "resultSeeEvidence": "Voir comment nous y sommes parvenus",
   "resultShare": "Partager le résultat",

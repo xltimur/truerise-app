@@ -355,6 +355,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get resultSampleData => '(données d\'exemple)';
 
   @override
+  String get resultLowConfidenceTitle => 'Résultat à faible confiance';
+
+  @override
+  String get resultLowConfidenceBody =>
+      'Ajoutez plus d\'événements de vie datés ou réduisez la fenêtre de l\'heure de naissance pour améliorer l\'estimation.';
+
+  @override
   String get resultOtherCandidates => 'Autres candidats';
 
   @override

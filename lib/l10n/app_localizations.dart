@@ -680,6 +680,18 @@ abstract class AppLocalizations {
   /// **'(sample data)'**
   String get resultSampleData;
 
+  /// Title of the inline guidance note under the confidence bar when the top candidate's confidence is in the low band (<40%). Honest, not alarming - the calculation succeeded but would benefit from better input.
+  ///
+  /// In en, this message translates to:
+  /// **'Low confidence result'**
+  String get resultLowConfidenceTitle;
+
+  /// Body of the low-confidence guidance note. Tells the user how to get a stronger estimate in their next calculation: more dated life events or a narrower birth-time window.
+  ///
+  /// In en, this message translates to:
+  /// **'Add more dated life events or narrow the birth-time window to improve the estimate.'**
+  String get resultLowConfidenceBody;
+
   /// Heading above the secondary candidate cards on the result screen.
   ///
   /// In en, this message translates to:

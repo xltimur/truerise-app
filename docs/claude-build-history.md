@@ -5255,3 +5255,45 @@ passed auth — it reached business logic, not 401/403 — so the existing
   elsewhere in the app) rather than the share-copy l10n bundle - a
   pre-existing nuance, unchanged by this fix.
 - **Limit/quota:** none hit.
+
+### 2026-06-12 - Low-confidence result guidance (refine-input note)
+
+- **Session:** Claude Code (id not exposed in-session).
+- **Artifacts changed:**
+  `lib/features/calculation_flow/screens/result_screen.dart` (new
+  `_LowConfidenceNote` + keyed conditional render under the confidence
+  bar), `lib/widgets/result/confidence_bar.dart` (named band constants +
+  `ConfidenceBar.isLowBand` so the threshold has one source of truth),
+  l10n: `app_{en,de,es,fr,pt}.arb` (+ regenerated
+  `app_localizations*.dart` via `flutter gen-l10n`); tests:
+  `test/widget/features/calculation_flow/result_screen_test.dart`.
+- **Work completed:** results whose top candidate confidence sits in the
+  ConfidenceBar low band (< 40%) now show a localized inline guidance
+  note directly under the bar: EN "Low confidence result" / "Add more
+  dated life events or narrow the birth-time window to improve the
+  estimate." (+ de/es/fr/pt following each locale's existing
+  terminology and address form). Tone is needs-more-input, not error;
+  styling mirrors the events-step guidance banner tokens (clay tint,
+  small radius) - no redesign, no nested cards. No refine CTA was
+  added: the draft is cleared on successful submit and re-entering the
+  calc flow cannot rehydrate a saved result's input without new state
+  plumbing (id reuse would also overwrite the history row), which the
+  task explicitly rules out as risky; the rationale is documented on
+  the widget.
+- **Verification - RUN AND PASSED (TDD):** 4 new widget tests written
+  first and watched fail (file failed to load on the missing test key),
+  then green: low (35%) shows note with exact EN copy while the rest of
+  the result surface stays intact; boundary 39% shows it; boundary 40%
+  does not; high (78% demo) does not. `dart format` -> 0 changed;
+  `flutter analyze` -> No issues found; result-screen suite -> 9 passed;
+  full `flutter test` -> 427 passed (was 423; +4). `git diff --check`
+  clean.
+- **Constraints respected:** generated l10n files regenerated, not
+  hand-edited; same 40% threshold as the bar color via shared helper;
+  no navigation/state plumbing added; demo/history flows untouched.
+- **Residual risks:** de/es/fr/pt strings are my translations following
+  existing in-file terminology - native-speaker review remains the
+  standing caveat for all localized copy; "refine from result" CTA
+  would need draft-rehydration plumbing (new id, mode handling) if the
+  owner wants it later.
+- **Limit/quota:** none hit.
