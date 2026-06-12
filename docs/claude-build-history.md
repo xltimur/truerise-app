@@ -5161,3 +5161,23 @@ passed auth — it reached business logic, not 401/403 — so the existing
   inline "select a city from the list" hint yet — Continue is disabled
   without explanation; `setIsDemo` still has no UI surface inside the flow.
 - **Limit/quota:** none hit.
+
+### 2026-06-12 - Bundle ID recommendation doc (P0-3, owner decision)
+
+- **Session:** Claude Code (id not exposed in-session).
+- **Artifacts created:** `docs/bundle-id-recommendation.md`.
+- **Work completed:** doc-only. Owner-facing recommendation for the bundle
+  ID / package namespace decision (P0-3): primary `app.astrolium.truerise`,
+  fallbacks `com.astrolium.truerise` and `com.truerise.app`; reasoning
+  (store-identifier lock-in before first store setup, umbrella publisher
+  namespace vs product namespace, why the proposed `app.astrolium.*` works,
+  why `com.rectify.rectify` should not ship publicly unless deliberately
+  chosen); owner-confirmation list (domain control, account naming, TrueRise
+  name/legal availability - flagged as needing owner/legal confirmation, no
+  legal assessment made); deferred implementation checklist.
+- **Verification:** `git diff --check` clean; grep confirms
+  `com.rectify.rectify` unchanged in `android/app/build.gradle.kts`,
+  `MainActivity.kt`, and `project.pbxproj`; no code/identifier changes.
+- **Limit/quota:** none hit.
+- **Open question:** owner pick + confirmations in
+  `docs/bundle-id-recommendation.md` Sec. "Owner must confirm".
