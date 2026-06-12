@@ -38,8 +38,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     super.dispose();
   }
 
-  Future<void> _finishAndGo() async {
-    await ref.read(onboardingControllerProvider.notifier).complete();
+  /// Persist the chosen calculation mode + onboarding flag, then enter
+  /// the app. Skip passes `demoMode: true` — the safe default while
+  /// geocoding is stubbed — so the mode is always explicit.
+  Future<void> _finishAndGo({required bool demoMode}) async {
+    await ref
+        .read(onboardingControllerProvider.notifier)
+        .complete(demoMode: demoMode);
     if (!mounted) return;
     context.go(RoutePaths.home);
   }
@@ -81,7 +86,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       GhostButton(
                         key: const ValueKey<String>('onboarding-skip'),
                         label: context.l10n.onboardingSkip,
-                        onPressed: _finishAndGo,
+                        onPressed: () => _finishAndGo(demoMode: true),
                       ),
                   ],
                 ),
@@ -126,12 +131,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       children: <Widget>[
                         PrimaryButton(
                           label: context.l10n.onboardingTryDemo,
-                          onPressed: _finishAndGo,
+                          onPressed: () => _finishAndGo(demoMode: true),
                         ),
                         const SizedBox(height: AppSpacing.s3),
                         SecondaryButton(
                           label: context.l10n.onboardingStartReal,
-                          onPressed: _finishAndGo,
+                          onPressed: () => _finishAndGo(demoMode: false),
                         ),
                       ],
                     )

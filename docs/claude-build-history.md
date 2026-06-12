@@ -5120,3 +5120,44 @@ passed auth — it reached business logic, not 401/403 — so the existing
 - **Residual risks:** none new — the OWNER follow-ups from the main 2026-06-11
   entry stand unchanged.
 - **Limit/quota:** none hit.
+
+### 2026-06-12 — P0: live-mode entry + coordinate correctness
+
+- **Session:** Claude Code (id not exposed in-session).
+- **Artifacts changed:** `lib/features/onboarding/onboarding_screen.dart`,
+  `lib/features/onboarding/onboarding_controller.dart`,
+  `lib/features/calculation_flow/state/calculation_flow_state.dart`;
+  tests: `test/widget/features/onboarding/onboarding_screen_test.dart`,
+  `test/features/calculation_flow/calculation_flow_controller_test.dart`.
+- **Work completed:** (1) Onboarding CTAs now set the mode they advertise:
+  `OnboardingController.complete()` takes a required `demoMode` and persists
+  `demoModeDefault` before `onboardingDone`. "Try demo first" → `true`,
+  "Start real calculation" → `false`, Skip → `true` (safe demo default while
+  geocoding is stubbed; the stored fresh-install default stays `false` — every
+  onboarding exit now writes an explicit value, so the raw default is never
+  consumed for flow entry). (2) Live submissions can no longer silently send
+  0,0: `birthStepValid` now requires resolved lat/lon when `isDemo == false`
+  (new `hasResolvedCoordinates` getter); `toRequest()` keeps the `?? 0`
+  fallback only for the demo branch and uses the non-null coords for live
+  (guaranteed by `readyToSubmit`). Typing after selecting a city clears the
+  coords (existing behavior), which now re-blocks live Continue/submit via the
+  existing button gating — no UI changes needed.
+- **Verification — RUN AND PASSED (TDD):** 5 new/extended tests written first
+  and watched fail (demo CTA, real CTA, skip-sets-demo, live-blocked-without-
+  coords, typing-clears-coords re-block), then green after the implementation;
+  plus passing guards: geocoded place unblocks live flow and submits the
+  resolved coords; demo typed-only city stays valid; demo submit asserts the
+  0,0 fallback. `dart format` → 0 changed; `flutter analyze` → **No issues
+  found!**; focused suites (onboarding + calc flow controller) → **23 passed**;
+  full `flutter test` → **418 passed** (was 412; +6 new). Flutter 3.44.0 /
+  Dart 3.12.0. Integration test not rerun (demo flow behavior unchanged;
+  needs a device).
+- **Constraints respected:** scope held to P0 item 1 — no Bundle ID, signing,
+  privacy/share URL, time format, cancel/retry, low-confidence UX, or
+  dependency work; demo mode stays offline; no secrets; no generated files.
+- **Residual risks:** live mode with the stubbed geocoder only resolves 12
+  hard-coded cities, so a live user whose city is missing is now blocked at
+  the birth step (correct but a dead end until real geocoding lands); no
+  inline "select a city from the list" hint yet — Continue is disabled
+  without explanation; `setIsDemo` still has no UI surface inside the flow.
+- **Limit/quota:** none hit.

@@ -9,9 +9,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../helpers/fake_history_repository.dart';
 
-Future<SharedPreferences> _prefs({bool onboardingDone = false}) async {
+Future<SharedPreferences> _prefs({
+  bool onboardingDone = false,
+  bool? demoModeDefault,
+}) async {
   SharedPreferences.setMockInitialValues(<String, Object>{
     if (onboardingDone) 'settings.onboarding_done': true,
+    'settings.demo_mode_default': ?demoModeDefault,
   });
   return SharedPreferences.getInstance();
 }
@@ -116,6 +120,66 @@ void main() {
       container.read(settingsControllerProvider).onboardingDone,
       isTrue,
     );
+    // Skip explicitly persists demoModeDefault = true — the safe demo
+    // default while geocoding is stubbed.
+    expect(
+      container.read(settingsControllerProvider).demoModeDefault,
+      isTrue,
+    );
+    expect(find.text('TrueRise'), findsOneWidget);
+  });
+
+  testWidgets('"Try demo first" persists demoModeDefault = true', (
+    tester,
+  ) async {
+    final prefs = await _prefs(demoModeDefault: false);
+
+    await tester.pumpWidget(_wrap(prefs));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Try demo first'));
+    await tester.pumpAndSettle();
+
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(RectifyApp)),
+    );
+    expect(
+      container.read(settingsControllerProvider).demoModeDefault,
+      isTrue,
+    );
+    // Persisted, not just mirrored into the in-memory controller state.
+    expect(prefs.getBool('settings.demo_mode_default'), isTrue);
+    expect(find.text('TrueRise'), findsOneWidget);
+  });
+
+  testWidgets('"Start real calculation" persists demoModeDefault = false', (
+    tester,
+  ) async {
+    // Seed demo=true so the assertion proves the CTA actively flipped it.
+    final prefs = await _prefs(demoModeDefault: true);
+
+    await tester.pumpWidget(_wrap(prefs));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Start real calculation'));
+    await tester.pumpAndSettle();
+
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(RectifyApp)),
+    );
+    expect(
+      container.read(settingsControllerProvider).demoModeDefault,
+      isFalse,
+    );
+    expect(prefs.getBool('settings.demo_mode_default'), isFalse);
     expect(find.text('TrueRise'), findsOneWidget);
   });
 

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart' show TimeOfDay;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rectify/data/models/event_category.dart';
+import 'package:rectify/data/models/geo_place.dart';
 import 'package:rectify/data/models/time_window_mode.dart';
 import 'package:rectify/data/repos/draft_repository.dart';
 import 'package:rectify/data/repos/rectification_repository.dart';
@@ -36,6 +37,13 @@ void _populateValidBirth(CalculationFlowController controller) {
     ..setBirthDate(DateTime.utc(1990, 5, 14))
     ..setBirthCityText('Kyiv, Ukraine');
 }
+
+const _kyiv = GeoPlace(
+  displayName: 'Kyiv, Ukraine',
+  country: 'Ukraine',
+  latitude: 50.4501,
+  longitude: 30.5234,
+);
 
 void _populateThreeEvents(CalculationFlowController controller) {
   controller
@@ -407,6 +415,10 @@ void main() {
         );
         expect(rectifier.submissions.single.isDemo, isTrue);
         expect(rectifier.submissions.single.events, hasLength(3));
+        // Demo stays offline-friendly: a typed-only city (no geocoded
+        // coords) still submits, with the documented 0,0 fallback.
+        expect(rectifier.submissions.single.birthData.birthLatitude, 0);
+        expect(rectifier.submissions.single.birthData.birthLongitude, 0);
 
         // The demo path writes the result to history.
         await Future<void>.delayed(Duration.zero);
@@ -435,6 +447,146 @@ void main() {
       final result = await controller.submit();
       expect(result.isErr, isTrue);
       expect(rectifier.submissions, isEmpty);
+    });
+  });
+
+  group('Live mode coordinates', () {
+    late SharedPreferences livePrefs;
+
+    setUp(() async {
+      SharedPreferences.setMockInitialValues(<String, Object>{
+        'settings.demo_mode_default': false,
+      });
+      livePrefs = await SharedPreferences.getInstance();
+    });
+
+    test(
+      'live birth step is invalid and submit blocked without resolved '
+      'coordinates',
+      () async {
+        final container = _container(
+          prefs: livePrefs,
+          rectifier: rectifier,
+          drafts: drafts,
+        );
+        addTearDown(container.dispose);
+        final controller = container.read(
+          calculationFlowControllerProvider.notifier,
+        );
+
+        expect(
+          container.read(calculationFlowControllerProvider).isDemo,
+          isFalse,
+          reason: 'demoModeDefault=false should seed a live draft',
+        );
+
+        // Typed city only — no geocoded place selected, so lat/lon stay
+        // null and a live request must not be sendable.
+        _populateValidBirth(controller);
+        _populateThreeEvents(controller);
+
+        final state = container.read(calculationFlowControllerProvider);
+        expect(state.birthLatitude, isNull);
+        expect(state.birthStepValid, isFalse);
+        expect(state.readyToSubmit, isFalse);
+
+        controller.next();
+        expect(
+          container.read(calculationFlowControllerProvider).step,
+          CalculationFlowStep.birth,
+          reason: 'live flow must not advance past birth without coords',
+        );
+
+        final result = await controller.submit();
+        expect(result.isErr, isTrue);
+        expect(
+          rectifier.submissions,
+          isEmpty,
+          reason: 'a live request must never go out with 0,0 fallback coords',
+        );
+      },
+    );
+
+    test('selecting a geocoded place unblocks the live flow and submits '
+        'the resolved coordinates', () async {
+      final container = _container(
+        prefs: livePrefs,
+        rectifier: rectifier,
+        drafts: drafts,
+      );
+      addTearDown(container.dispose);
+      final controller = container.read(
+        calculationFlowControllerProvider.notifier,
+      );
+
+      controller.setBirthDate(DateTime.utc(1990, 5, 14));
+      controller.selectGeoPlace(_kyiv);
+      _populateThreeEvents(controller);
+
+      final state = container.read(calculationFlowControllerProvider);
+      expect(state.birthStepValid, isTrue);
+      expect(state.readyToSubmit, isTrue);
+
+      final result = await controller.submit();
+      expect(result.isOk, isTrue);
+      expect(rectifier.submissions, hasLength(1));
+      expect(rectifier.submissions.single.isDemo, isFalse);
+      expect(
+        rectifier.submissions.single.birthData.birthLatitude,
+        _kyiv.latitude,
+      );
+      expect(
+        rectifier.submissions.single.birthData.birthLongitude,
+        _kyiv.longitude,
+      );
+    });
+
+    test('typing after selecting a place clears coords and re-blocks the '
+        'live flow', () {
+      final container = _container(
+        prefs: livePrefs,
+        rectifier: rectifier,
+        drafts: drafts,
+      );
+      addTearDown(container.dispose);
+      final controller = container.read(
+        calculationFlowControllerProvider.notifier,
+      );
+
+      controller.setBirthDate(DateTime.utc(1990, 5, 14));
+      controller.selectGeoPlace(_kyiv);
+      expect(
+        container.read(calculationFlowControllerProvider).birthStepValid,
+        isTrue,
+      );
+
+      // Editing the city text invalidates the previously resolved place.
+      controller.setBirthCityText('Kyi');
+      final state = container.read(calculationFlowControllerProvider);
+      expect(state.birthLatitude, isNull);
+      expect(state.birthLongitude, isNull);
+      expect(state.birthStepValid, isFalse);
+    });
+
+    test('demo draft with the same typed-only city stays valid', () {
+      final container = _container(
+        prefs: livePrefs,
+        rectifier: rectifier,
+        drafts: drafts,
+      );
+      addTearDown(container.dispose);
+      final controller = container.read(
+        calculationFlowControllerProvider.notifier,
+      );
+
+      controller.setIsDemo(value: true);
+      _populateValidBirth(controller);
+
+      expect(
+        container.read(calculationFlowControllerProvider).birthStepValid,
+        isTrue,
+        reason: 'demo mode keeps the offline typed-city path',
+      );
     });
   });
 }

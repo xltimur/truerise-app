@@ -12,16 +12,17 @@ class OnboardingController extends Notifier<void> {
   @override
   void build() {}
 
-  /// Persist `onboardingDone = true`. Idempotent — calling more than
-  /// once is safe (no-op once the flag is already set).
-  Future<void> complete() async {
-    final settings = ref.read(settingsControllerProvider);
-    if (settings.onboardingDone) {
-      return;
+  /// Persist the chosen mode (`demoModeDefault = demoMode`), then
+  /// `onboardingDone = true`. Every onboarding exit makes the mode
+  /// explicit: "Try demo first" and Skip pass `true` (safe default
+  /// while geocoding is stubbed), "Start real calculation" passes
+  /// `false`. Idempotent — repeat calls just rewrite the same values.
+  Future<void> complete({required bool demoMode}) async {
+    final notifier = ref.read(settingsControllerProvider.notifier);
+    await notifier.setDemoModeDefault(value: demoMode);
+    if (!ref.read(settingsControllerProvider).onboardingDone) {
+      await notifier.setOnboardingDone(value: true);
     }
-    await ref
-        .read(settingsControllerProvider.notifier)
-        .setOnboardingDone(value: true);
   }
 }
 

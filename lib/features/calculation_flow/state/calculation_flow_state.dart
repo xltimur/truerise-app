@@ -206,16 +206,24 @@ class CalculationFlowState {
     return !dateOnly.isAfter(cutoff);
   }
 
-  /// Whether the Birth Data step has the inputs required to advance.
-  /// City lat/lon may be null in MVP (geocoding is stubbed); the
-  /// repository accepts demo coords so we only gate on the user-typed
-  /// surface: a chosen date and a non-empty city string. The date must
-  /// also clear the 18+ age gate — the picker blocks under-age picks,
-  /// but a persisted draft could still carry a too-recent date.
+  /// Whether the birth place has resolved coordinates (a geocoded
+  /// [GeoPlace] was selected and not invalidated by later typing).
+  bool get hasResolvedCoordinates =>
+      birthLatitude != null && birthLongitude != null;
+
+  /// Whether the Birth Data step has the inputs required to advance:
+  /// a chosen date that clears the 18+ age gate (the picker blocks
+  /// under-age picks, but a persisted draft could still carry a
+  /// too-recent date) and a non-empty city string.
+  ///
+  /// Live mode additionally requires [hasResolvedCoordinates] — a real
+  /// request must never fall back to 0,0. Demo mode keeps the offline
+  /// typed-city path: the demo repository never sends coords anywhere.
   bool get birthStepValid =>
       birthDate != null &&
       birthCity.trim().isNotEmpty &&
-      isOldEnough(birthDate!, DateTime.now());
+      isOldEnough(birthDate!, DateTime.now()) &&
+      (isDemo || hasResolvedCoordinates);
 
   /// Whether the Time Window step is internally consistent. The radio
   /// always carries a mode and `approximateTime` defaults to noon at
@@ -261,8 +269,10 @@ class CalculationFlowState {
       birthData: BirthData(
         birthDate: birthDate!,
         birthCity: birthCity.trim(),
-        birthLatitude: birthLatitude ?? 0,
-        birthLongitude: birthLongitude ?? 0,
+        // Live requests always carry resolved coords ([birthStepValid]
+        // gates on them); only the offline demo path may fall back.
+        birthLatitude: isDemo ? (birthLatitude ?? 0) : birthLatitude!,
+        birthLongitude: isDemo ? (birthLongitude ?? 0) : birthLongitude!,
         label: label.trim().isEmpty ? null : label.trim(),
       ),
       timeWindow: timeWindow,
