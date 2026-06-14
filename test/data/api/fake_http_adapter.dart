@@ -18,6 +18,13 @@ class FakeHttpAdapter implements HttpClientAdapter {
   final List<CapturedRequest> requests = <CapturedRequest>[];
   _CannedResponse? _next;
   DioExceptionType? _nextFailure;
+  bool _hangNext = false;
+
+  /// Make the next request hang until its cancel token fires — used to
+  /// drive the user-cancel path the way a real socket would behave.
+  void enqueueHangUntilCancelled() {
+    _hangNext = true;
+  }
 
   /// Seed the next response. [body] is the verbatim response body.
   void enqueueJson(String body, {int statusCode = 200}) {
@@ -77,6 +84,23 @@ class FakeHttpAdapter implements HttpClientAdapter {
         bodyBytes: bodyBytes,
       ),
     );
+
+    if (_hangNext) {
+      _hangNext = false;
+      // Mirror the real IO adapter: park until Dio's cancel future
+      // fires, then abort with a cancel-typed DioException. A request
+      // sent without a token hangs forever — exactly the bug the
+      // cancellation tests exist to catch.
+      if (cancelFuture == null) {
+        return Completer<ResponseBody>().future;
+      }
+      await cancelFuture;
+      throw DioException(
+        requestOptions: options,
+        type: DioExceptionType.cancel,
+        error: 'cancelled by test',
+      );
+    }
 
     if (_nextFailure != null) {
       final failureType = _nextFailure!;

@@ -194,9 +194,15 @@ void main() {
       await tester.pump();
       await tester.pump();
       expect(rectifier.submissions, hasLength(1));
+      expect(rectifier.lastCancelToken, isNotNull);
+      expect(rectifier.lastCancelToken!.isCancelled, isFalse);
 
       await tester.tap(find.byKey(loadingCancelButtonKey));
       await tester.pumpAndSettle();
+
+      // Cancel must abort the in-flight HTTP request on the wire, not
+      // only ignore its late completion.
+      expect(rectifier.lastCancelToken!.isCancelled, isTrue);
 
       String location() => container
           .read(routerProvider)

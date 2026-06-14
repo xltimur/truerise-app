@@ -3,6 +3,7 @@ import 'package:rectify/core/result.dart';
 import 'package:rectify/data/db/database.dart';
 import 'package:rectify/data/models/settings_model.dart';
 import 'package:rectify/data/models/time_format.dart';
+import 'package:rectify/data/prefs/result_feedback_store.dart';
 import 'package:rectify/data/prefs/settings_store.dart';
 import 'package:rectify/data/secure/secure_key_store.dart';
 
@@ -30,11 +31,13 @@ class DefaultSettingsRepository implements SettingsRepository {
     required this.prefs,
     required this.secure,
     required this.db,
+    required this.resultFeedback,
   });
 
   final SettingsStore prefs;
   final SecureKeyStore secure;
   final AppDatabase db;
+  final ResultFeedbackStore resultFeedback;
 
   @override
   Future<SettingsModel> read() => prefs.read();
@@ -67,6 +70,7 @@ class DefaultSettingsRepository implements SettingsRepository {
     try {
       await db.calculationsDao.deleteAll();
       await prefs.deleteAll();
+      await resultFeedback.deleteAll();
       await secure.deleteAll();
       return const Result<void, AppFailure>.ok(null);
     } on Object catch (cause) {

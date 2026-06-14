@@ -12,6 +12,7 @@ import 'package:rectify/data/models/event_category.dart';
 import 'package:rectify/data/models/life_event.dart';
 import 'package:rectify/data/models/saved_calculation.dart';
 import 'package:rectify/data/models/time_window.dart';
+import 'package:rectify/data/prefs/result_feedback_store.dart';
 import 'package:rectify/data/repos/draft_repository.dart';
 import 'package:rectify/data/secure/secure_key_store.dart';
 import 'package:rectify/features/calculation_flow/screens/result_screen.dart';
@@ -368,11 +369,19 @@ void main() {
 
         expect(find.byKey(resultLowConfidenceNoteKey), findsOneWidget);
         expect(find.text('Low confidence result'), findsOneWidget);
+        // The note must spell out concrete next steps, not a generic body.
+        expect(
+          find.text('Add more dated life events.'),
+          findsOneWidget,
+        );
         expect(
           find.text(
-            'Add more dated life events or narrow the birth-time window '
-            'to improve the estimate.',
+            'Review your birth date, city, and approximate time.',
           ),
+          findsOneWidget,
+        );
+        expect(
+          find.text('Try a wider birth-time window.'),
           findsOneWidget,
         );
         // The rest of the result surface stays intact — this is guidance,
@@ -408,6 +417,213 @@ void main() {
 
         expect(find.byKey(resultLowConfidenceNoteKey), findsNothing);
         expect(find.text('Low confidence result'), findsNothing);
+      },
+    );
+  });
+
+  group('confidence explainer', () {
+    Future<void> pumpResult(
+      WidgetTester tester,
+      SavedCalculation seeded,
+    ) async {
+      final prefs = await _prefs();
+      final history = FakeHistoryRepository([seeded]);
+      final rectifier = FakeRectificationRepository(history: history);
+      final drafts = InMemoryDraftRepository();
+      addTearDown(drafts.dispose);
+
+      await tester.pumpWidget(
+        _harness(
+          prefs: prefs,
+          history: history,
+          rectifier: rectifier,
+          drafts: drafts,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(MaterialApp)),
+      );
+      container
+          .read(routerProvider)
+          .go(RoutePaths.calcResultFor(seeded.request.id));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets(
+      'shows the confidence explanation under the confidence bar for the '
+      'seeded demo result without hiding feedback or evidence CTAs',
+      (tester) async {
+        await pumpResult(tester, _seedDemoCalculation(id: 'demo-explain-1'));
+
+        expect(find.byKey(resultConfidenceExplainerKey), findsOneWidget);
+        expect(find.byKey(resultConfidenceExplainerTitleKey), findsOneWidget);
+        expect(find.byKey(resultConfidenceExplainerBodyKey), findsOneWidget);
+        expect(find.byKey(resultConfidenceExplainerMethodKey), findsOneWidget);
+        expect(
+          find.text('What does this percent mean?'),
+          findsOneWidget,
+        );
+        // Wording stays probabilistic: estimate, relative support across
+        // candidate times in the selected window — no absolute outcome
+        // claims.
+        final body = tester
+            .widget<Text>(find.byKey(resultConfidenceExplainerBodyKey))
+            .data!;
+        expect(body, contains('estimate'));
+        expect(body, contains('dated life events'));
+        expect(body, contains('birth-time window'));
+        final method = tester
+            .widget<Text>(find.byKey(resultConfidenceExplainerMethodKey))
+            .data!;
+        expect(method, contains('transits'));
+        expect(method, contains('progressions'));
+
+        // Existing surfaces stay intact alongside the explainer.
+        await tester.ensureVisible(find.byKey(resultFeedbackPromptKey));
+        expect(find.byKey(resultFeedbackPromptKey), findsOneWidget);
+        await tester.ensureVisible(find.byKey(resultEvidenceButtonKey));
+        expect(find.byKey(resultEvidenceButtonKey), findsOneWidget);
+        expect(find.byKey(resultShareButtonKey), findsOneWidget);
+        expect(find.byKey(resultShareImageButtonKey), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'renders below the low-confidence note when that note is present',
+      (tester) async {
+        final base = _seedDemoCalculation(id: 'demo-explain-2');
+        final candidates = base.result.candidates;
+        final lowConfidence = SavedCalculation(
+          request: base.request,
+          result: base.result.copyWith(
+            candidates: <CandidateTime>[
+              candidates.first.copyWith(confidence: 0.35),
+              ...candidates.skip(1),
+            ],
+          ),
+        );
+        await pumpResult(tester, lowConfidence);
+
+        expect(find.byKey(resultLowConfidenceNoteKey), findsOneWidget);
+        expect(find.byKey(resultConfidenceExplainerKey), findsOneWidget);
+        // The explainer sits below the low-confidence note.
+        expect(
+          tester.getTopLeft(find.byKey(resultConfidenceExplainerKey)).dy,
+          greaterThan(
+            tester.getBottomLeft(find.byKey(resultLowConfidenceNoteKey)).dy,
+          ),
+        );
+      },
+    );
+  });
+
+  group('plausibility feedback prompt', () {
+    Future<ProviderContainer> pumpResult(
+      WidgetTester tester,
+      SavedCalculation seeded, {
+      ResultFeedbackAnswer? storedAnswer,
+    }) async {
+      final prefs = await _prefs();
+      if (storedAnswer != null) {
+        // Seed through the store's public API so the test doesn't
+        // couple to the on-disk key format.
+        await ResultFeedbackStore(
+          prefs,
+        ).write(seeded.request.id, storedAnswer);
+      }
+      final history = FakeHistoryRepository([seeded]);
+      final rectifier = FakeRectificationRepository(history: history);
+      final drafts = InMemoryDraftRepository();
+      addTearDown(drafts.dispose);
+
+      await tester.pumpWidget(
+        _harness(
+          prefs: prefs,
+          history: history,
+          rectifier: rectifier,
+          drafts: drafts,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(MaterialApp)),
+      );
+      container
+          .read(routerProvider)
+          .go(RoutePaths.calcResultFor(seeded.request.id));
+      await tester.pumpAndSettle();
+      return container;
+    }
+
+    testWidgets(
+      'renders on a loaded result with no stored answer and no '
+      'saved confirmation',
+      (tester) async {
+        final seeded = _seedDemoCalculation(id: 'demo-feedback-1');
+        final container = await pumpResult(tester, seeded);
+
+        await tester.ensureVisible(find.byKey(resultFeedbackPromptKey));
+        expect(find.byKey(resultFeedbackPromptKey), findsOneWidget);
+        expect(find.text('Does this time feel plausible?'), findsOneWidget);
+        expect(find.byKey(resultFeedbackYesKey), findsOneWidget);
+        expect(find.byKey(resultFeedbackNotSureKey), findsOneWidget);
+        expect(find.byKey(resultFeedbackNoKey), findsOneWidget);
+        // Choices keep an accessible >= 44px hit target.
+        expect(
+          tester.getSize(find.byKey(resultFeedbackYesKey)).height,
+          greaterThanOrEqualTo(44),
+        );
+        // Nothing answered yet: no confirmation, nothing persisted.
+        expect(find.byKey(resultFeedbackSavedKey), findsNothing);
+        expect(find.text('Thanks, saved.'), findsNothing);
+        expect(
+          container.read(resultFeedbackStoreProvider).read(seeded.request.id),
+          isNull,
+        );
+      },
+    );
+
+    testWidgets(
+      'tapping Not sure persists the answer and shows the confirmation',
+      (tester) async {
+        final seeded = _seedDemoCalculation(id: 'demo-feedback-2');
+        final container = await pumpResult(tester, seeded);
+
+        await tester.ensureVisible(find.byKey(resultFeedbackNotSureKey));
+        await tester.tap(find.byKey(resultFeedbackNotSureKey));
+        await tester.pumpAndSettle();
+
+        expect(
+          container.read(resultFeedbackStoreProvider).read(seeded.request.id),
+          ResultFeedbackAnswer.notSure,
+        );
+        expect(find.byKey(resultFeedbackSavedKey), findsOneWidget);
+        expect(find.text('Thanks, saved.'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'a previously saved No answer restores the confirmation on '
+      'initial render',
+      (tester) async {
+        final seeded = _seedDemoCalculation(id: 'demo-feedback-3');
+        final container = await pumpResult(
+          tester,
+          seeded,
+          storedAnswer: ResultFeedbackAnswer.no,
+        );
+
+        await tester.ensureVisible(find.byKey(resultFeedbackPromptKey));
+        expect(find.byKey(resultFeedbackSavedKey), findsOneWidget);
+        expect(find.text('Thanks, saved.'), findsOneWidget);
+        // The stored answer is untouched by merely rendering the prompt.
+        expect(
+          container.read(resultFeedbackStoreProvider).read(seeded.request.id),
+          ResultFeedbackAnswer.no,
+        );
       },
     );
   });

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart' show CancelToken;
 import 'package:rectify/core/failures.dart';
 import 'package:rectify/core/result.dart';
 import 'package:rectify/data/demo/demo_response.dart';
@@ -32,17 +33,25 @@ class FakeRectificationRepository implements RectificationRepository {
   /// loading-screen rendering without racing the post-frame callback.
   Completer<void>? blocker;
 
+  /// Token the controller handed to the most recent submission, so
+  /// tests can assert Cancel actually cancelled the live HTTP token
+  /// rather than only ignoring the late completion.
+  CancelToken? lastCancelToken;
+
   @override
   Future<Result<CalculationResult, AppFailure>> submit(
     CalculationRequest request, {
     DemoEvidenceCopy? demoCopy,
     bool Function()? isCancelled,
+    CancelToken? cancelToken,
   }) async {
     submissions.add(request);
+    lastCancelToken = cancelToken;
     if (blocker != null) await blocker!.future;
     // Mirror the live repository's contract: a cancellation observed
-    // after the slow part skips the history write and returns Err.
-    if (isCancelled?.call() ?? false) {
+    // after the slow part (or an aborted HTTP token) skips the history
+    // write and returns Err.
+    if ((isCancelled?.call() ?? false) || (cancelToken?.isCancelled ?? false)) {
       return const Result.err(submissionCancelledFailure);
     }
     if (failureOverride != null) {

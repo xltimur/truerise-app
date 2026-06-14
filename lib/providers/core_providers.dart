@@ -5,6 +5,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rectify/data/api/api_client.dart';
 import 'package:rectify/data/api/rectification_api.dart';
 import 'package:rectify/data/db/database.dart';
+import 'package:rectify/data/prefs/live_quota_store.dart';
+import 'package:rectify/data/prefs/result_feedback_store.dart';
 import 'package:rectify/data/prefs/settings_store.dart';
 import 'package:rectify/data/prefs/share_prompt_store.dart';
 import 'package:rectify/data/secure/secure_key_store.dart';
@@ -111,6 +113,18 @@ final sharePromptStoreProvider = Provider<SharePromptStore>(
   (ref) => SharePromptStore(ref.watch(sharedPreferencesProvider)),
 );
 
+/// Wraps the resolved [SharedPreferences] in the proxy-backed live
+/// attempt quota store (3 attempts per 24h window).
+final liveQuotaStoreProvider = Provider<LiveQuotaStore>(
+  (ref) => LiveQuotaStore(ref.watch(sharedPreferencesProvider)),
+);
+
+/// Wraps the resolved [SharedPreferences] in the local-only post-result
+/// "Does this time feel plausible?" feedback store (S1 / G18).
+final resultFeedbackStoreProvider = Provider<ResultFeedbackStore>(
+  (ref) => ResultFeedbackStore(ref.watch(sharedPreferencesProvider)),
+);
+
 /// Secure-storage handle for the end-user-supplied Pro / Developer key.
 final secureKeyStoreProvider = Provider<SecureKeyStore>(
   (ref) => SecureKeyStore(),
@@ -140,11 +154,23 @@ final envApiKeyProvider = Provider<String?>((ref) {
   return trimmed.isEmpty ? null : trimmed;
 });
 
+/// End-user-supplied key from `flutter_secure_storage` (Settings),
+/// normalised: `null` / empty / whitespace-only reads all surface as
+/// `null`. No fallback here — see [proApiKeyProvider] for resolution.
+final storedProApiKeyProvider = FutureProvider<String?>((ref) async {
+  final store = ref.watch(secureKeyStoreProvider);
+  final stored = await store.readProApiKey();
+  if (stored == null) return null;
+  final trimmed = stored.trim();
+  return trimmed.isEmpty ? null : trimmed;
+});
+
 /// Reactively-read snapshot of the active provider key
 /// (`docs/implementation-plan.md` §9.5).
 ///
 /// Priority order:
-///   1. End-user-supplied key in `flutter_secure_storage` (Settings).
+///   1. End-user-supplied key in `flutter_secure_storage`
+///      ([storedProApiKeyProvider]).
 ///   2. Demo-build fallback from the bundled `.env` (ASTRO_API_KEY).
 ///   3. `null` → proxy mode.
 ///
@@ -153,9 +179,8 @@ final envApiKeyProvider = Provider<String?>((ref) {
 /// makes [dioProvider] rebuild on key rotation without leaking the
 /// value past the data layer.
 final proApiKeyProvider = FutureProvider<String?>((ref) async {
-  final store = ref.watch(secureKeyStoreProvider);
-  final stored = await store.readProApiKey();
-  if (stored != null && stored.isNotEmpty) return stored;
+  final stored = await ref.watch(storedProApiKeyProvider.future);
+  if (stored != null) return stored;
   return ref.watch(envApiKeyProvider);
 });
 

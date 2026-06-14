@@ -132,8 +132,43 @@ set -a; source .env; set +a
 flutter run \
   --dart-define=RECTIFY_ENV="$RECTIFY_ENV" \
   --dart-define=RECTIFY_PROXY_BASE_URL="$RECTIFY_PROXY_BASE_URL" \
-  --dart-define=RECTIFY_PROXY_APP_ID="$RECTIFY_PROXY_APP_ID"
+  --dart-define=RECTIFY_PROXY_PATH="$RECTIFY_PROXY_PATH" \
+  --dart-define=RECTIFY_PROXY_APP_ID="$RECTIFY_PROXY_APP_ID" \
+  --dart-define=TRUERISE_SHARE_URL="$TRUERISE_SHARE_URL" \
+  --dart-define=TRUERISE_PRIVACY_POLICY_URL="$TRUERISE_PRIVACY_POLICY_URL"
 ```
+
+Public release build (same keys, release mode). First run the guard
+preflight — it covers both iOS and Android and must pass with the real
+proxy and share URLs (the default placeholders block a public release):
+
+```bash
+# Manual preflight (iOS and Android)
+dart run tool/release_env_guard.dart \
+  --share-url "$TRUERISE_SHARE_URL" \
+  --proxy-base-url "$RECTIFY_PROXY_BASE_URL" \
+  --allow-bundled-key --purpose=review-capped
+```
+
+```bash
+flutter build appbundle --release \
+  --dart-define=RECTIFY_ENV=prod \
+  --dart-define=RECTIFY_PROXY_BASE_URL="$RECTIFY_PROXY_BASE_URL" \
+  --dart-define=RECTIFY_PROXY_PATH="$RECTIFY_PROXY_PATH" \
+  --dart-define=RECTIFY_PROXY_APP_ID="$RECTIFY_PROXY_APP_ID" \
+  --dart-define=TRUERISE_SHARE_URL="$TRUERISE_SHARE_URL" \
+  --dart-define=TRUERISE_PRIVACY_POLICY_URL="$TRUERISE_PRIVACY_POLICY_URL" \
+  --android-project-arg=truerise.allowBundledApiKey=true \
+  --android-project-arg=truerise.bundledApiKeyPurpose=review-capped
+```
+
+The two `--android-project-arg=truerise.*` lines exist only to
+acknowledge the bundled capped review key to the Android Gradle guard.
+If `ASTRO_API_KEY` has been removed from `.env`, omit them — and omit
+`--allow-bundled-key --purpose=review-capped` from the preflight. The
+Gradle release guards also require real signing
+(`android/key.properties`, see "Android signing" below) and read the
+share/proxy values from the build's `--dart-define`s.
 
 Public configuration keys (full reference: `docs/implementation-plan.md`
 **Appendix B**):
@@ -144,6 +179,8 @@ Public configuration keys (full reference: `docs/implementation-plan.md`
 | `RECTIFY_PROXY_BASE_URL` | Base URL of the backend rectification proxy. |
 | `RECTIFY_PROXY_PATH` | Optional path prefix appended to the proxy. |
 | `RECTIFY_PROXY_APP_ID` | Public app identifier (NOT a secret; see Appendix B). |
+| `TRUERISE_SHARE_URL` | Public share-link base for shared copy (bare HTTPS, no tracking params). |
+| `TRUERISE_PRIVACY_POLICY_URL` | Optional public (non-secret) hosted privacy-policy page opened from Settings. Must be a bare HTTPS URL (no query/fragment/userinfo). Default is empty = disabled: the Settings row keeps the bundled in-app `PrivacyPolicyScreen`, which is also the fallback for unsafe values or launch failures. |
 | `RECTIFY_PROVIDER_BASE_URL` | Provider-direct base URL (default: `https://api.astrology-api.io`). |
 | `RECTIFY_PROVIDER_PATH` | Provider-direct endpoint path (default: `/api/v3/rectification/search`). |
 | `RECTIFY_GEOCODING_BASE_URL` | Public geocoding provider URL. |

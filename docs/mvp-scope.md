@@ -113,18 +113,18 @@ These ship with MVP or MVP does not ship.
 
 These are desirable for MVP quality but will not block ship if time-constrained. Include if build timeline allows; otherwise defer to V1.5.
 
-### S1 — Post-result feedback prompt
-- Single-question prompt after result: "Does this time feel plausible?" (Yes / Not sure / No)
-- Answers stored locally for internal analysis
-- No backend required — local CSV or SQLite row
+### S1 — Post-result feedback prompt — IMPLEMENTED (local-only)
+- Single-question prompt after result: "Does this time feel plausible?" (Yes / Not sure / No) — shipped in `lib/features/calculation_flow/screens/result_screen.dart` / `result_screen_sections.dart`
+- Answers stored locally (result id -> answer) via `lib/data/prefs/result_feedback_store.dart`; "Delete all data" wipes them via `SettingsRepository`
+- No backend, no network, no analytics — on-device only
 
 ### S2 — Event entry suggestions
 - Prompt "Add another event?" with category chips after the user adds their first event
 - Not a full suggestion engine — just a UI nudge to add more
 
-### S3 — Retry flow with preserved inputs
-- If calculation fails, user can retry with same inputs without re-entering everything
-- Inputs persisted as a draft calculation
+### S3 — Retry flow with preserved inputs — IMPLEMENTED (in-session retry)
+- If calculation fails, user can retry with same inputs without re-entering everything (verified 2026-06-12: error-screen retry re-enters loading and succeeds; Cancel on `CalculationLoadingScreen` calls `CalculationFlowController.cancelSubmit()`, which aborts the in-flight Dio `CancelToken`, keeps the draft editable, and guards a late completion from clearing the draft, writing history, or stealing navigation; tests: `test/widget/features/calculation_flow/loading_screen_test.dart`, `test/widget/features/error_flow/error_routing_test.dart`)
+- Inputs persisted as a draft calculation; a true persistent "save and retry later" entry point remains deferred/hidden
 
 ### S4 — Pull-to-refresh on history
 - Cosmetic UX improvement on the History screen
@@ -137,7 +137,7 @@ These are not permitted in MVP under any circumstances. Log any implementation a
 
 | Feature | Why Deferred |
 |---------|-------------|
-| PDF / image export | V1.5; requires design of shareable card format |
+| PDF / full report export | V1.5; the privacy-safe image share card has since shipped in-repo (`share_plus`, `StoryCardRenderer`, `ShareService.shareImagePng`, `resultShareImageButtonKey`), so image export is no longer deferred. PDF / full report export remains deferred; direct Instagram Stories posting stays optional until a Meta/Facebook App ID exists |
 | Vedic / KP method toggle | V1.5; API method support unconfirmed; India market is secondary |
 | Hindi language localization | V1.5; requires translation pipeline |
 | Multiple candidate comparison view | V1.5; results UI can show 3 candidates as a list for now |
@@ -151,7 +151,7 @@ These are not permitted in MVP under any circumstances. Log any implementation a
 | Social sharing / community | V2; requires user accounts |
 | Multi-device sync | V2; requires server-side storage and accounts |
 | User accounts / authentication | V2; local-only storage is sufficient for MVP |
-| In-app review prompt | Post-MVP; add after 30-day stability period |
+| In-app review prompt | Originally post-MVP; since implemented in-repo as a neutral, OS-owned prompt (`in_app_review`) with eligibility/throttle logic and unit + widget tests. Rating metrics remain App Store Connect / Play Console scope; no rating impact is claimed |
 | Apple Watch / widget | V2+ |
 | Astrological interpretation beyond rising sign | V1.5 at earliest |
 
@@ -162,32 +162,32 @@ These are not permitted in MVP under any circumstances. Log any implementation a
 The following conditions must all be true before MVP is considered complete.
 
 ### AC1 — Core flow works end-to-end
-- [ ] A new user can complete onboarding in under 90 seconds
+- [x] A new user can complete onboarding in under 90 seconds (verified 2026-06-12: 3 short screens, skippable from slide 1, and the final CTAs both persist settings and exit in one tap — "Try demo first"/"Skip" persist `demoModeDefault=true`, "Start real calculation" persists `demoModeDefault=false`; tests: `test/widget/features/onboarding/onboarding_screen_test.dart`)
 - [ ] A user can enter birth data, time window, and ≥5 life events without UI errors
-- [ ] Demo mode completes the full loop (input → load → result → evidence) with no API key and no payment
-- [ ] Real calculation completes the full loop via configured API access (backend proxy or user-supplied key) with no payment step
+- [x] Demo mode completes the full loop (input → load → result → evidence) with no API key and no payment (verified 2026-06-12: offline demo loop covered by `integration_test/demo_flow_test.dart`; demo submit never reaches the network — `test/data/repos/rectification_repository_test.dart` "demo submit never calls RectificationApi.rectify")
+- [ ] Real calculation completes the full loop via configured API access (backend proxy or user-supplied key) with no payment step (local routing and error mapping are tested — `test/providers/api_endpoint_routing_test.dart`, `test/data/api/rectification_api_test.dart` — but the live end-to-end loop stays unchecked until the owner-gated production proxy host exists)
 
 ### AC2 — Results are intelligible
-- [ ] The result screen displays a birth time, confidence score, and rising sign name without astrology jargon
-- [ ] Evidence breakdown lists each submitted event with a match strength and explanation
-- [ ] Demo results are clearly marked as demo
+- [x] The result screen displays a birth time, confidence score, and rising sign name without astrology jargon (confidence + method explainer shipped 2026-06-12: `_ConfidenceExplainer` in `result_screen_sections.dart`; low-confidence results also show next-step guidance shipped 2026-06-12: `_LowConfidenceNote` suggests adding dated events, rechecking birth data, or widening the time window; widget tests in `test/widget/features/calculation_flow/result_screen_test.dart`; framing guarded by `test/security/probabilistic_framing_test.dart`)
+- [x] Evidence breakdown lists each submitted event with a match strength and explanation (verified 2026-06-12: `EvidenceCard` shows match strength and expandable explanation, `evidence_screen.dart` renders one card per event; tests: `test/widget/cards/cards_test.dart`, `test/widget/features/calculation_flow/evidence_screen_test.dart`)
+- [x] Demo results are clearly marked as demo (verified 2026-06-12: `DemoPill` on the result hero and on history rows; tests: `test/widget/features/calculation_flow/result_screen_test.dart` "DEMO pill rendered for a demo result", `test/widget/cards/cards_test.dart` history-card demo pill)
 
 ### AC3 — No monetization in MVP
-- [ ] No IAP SDK is integrated; no purchase, price gate, or paywall is reachable in any flow
-- [ ] A real calculation can be run without any payment
-- [ ] No "credit", "refund", or "purchase history" surface exists in the app
+- [x] No IAP SDK is integrated; no purchase, price gate, or paywall is reachable in any flow (verified 2026-06-12: no `in_app_purchase` in `pubspec.yaml`; guarded by `test/security/no_payment_or_secret_strings_test.dart`)
+- [x] A real calculation can be run without any payment (verified 2026-06-12: submit is gated only by configured API access — proxy or user key — with no payment surface; guarded by `test/security/no_payment_or_secret_strings_test.dart`)
+- [x] No "credit", "refund", or "purchase history" surface exists in the app (verified 2026-06-12: guarded by `test/security/no_payment_or_secret_strings_test.dart`)
 
 ### AC4 — Data privacy & key handling
-- [ ] The provider's shared API key is **not** present in the app binary, `--dart-define`, or bundle
-- [ ] Production path calls a backend proxy; dev/pro path uses a user-supplied key stored in the device keychain (not SQLite or preferences)
-- [ ] Demo mode performs zero network calls and uses no key
-- [ ] "Delete all data" removes all local SQLite records and cached responses
-- [ ] Privacy policy is accessible before any data submission
+- [ ] The provider's shared API key is **not** present in the app binary, `--dart-define`, or bundle (release-guarded but still owner/release-build gated: the bundled review `.env` key remains until owner rotation/removal — P0-11; `tool/release_env_guard.dart` blocks unacknowledged release builds, tested by `test/tool/release_env_guard_test.dart`; final confirmation requires inspecting a release binary)
+- [x] Production path calls a backend proxy; dev/pro path uses a user-supplied key stored in the device keychain (not SQLite or preferences) (verified 2026-06-12: no-key submissions fall back to the proxy path and a Settings-entered key overrides it — `test/providers/api_endpoint_routing_test.dart`; keychain isolation — `test/data/secure/api_key_isolation_test.dart`)
+- [x] Demo mode performs zero network calls and uses no key (verified 2026-06-12: `test/data/repos/rectification_repository_test.dart` "demo submit never calls RectificationApi.rectify"; offline loop in `integration_test/demo_flow_test.dart`)
+- [x] "Delete all data" removes all local SQLite records and cached responses (verified 2026-06-12: `test/data/repos/settings_repository_test.dart` "deleteAllData clears prefs, secure storage, and DB tables")
+- [x] Privacy policy is accessible before any data submission (verified 2026-06-12: Settings privacy link opens the hosted URL when configured and always falls back to the in-app `PrivacyPolicyScreen`; tests: `test/widget/features/settings/settings_screen_test.dart`)
 
 ### AC5 — Error handling
-- [ ] Every API error state has user-facing copy and an actionable path
-- [ ] Timeout at 30 seconds with retry option
-- [ ] No error state leads to a dead end or blank screen
+- [x] Every API error state has user-facing copy and an actionable path (verified 2026-06-12: timeout / no-internet / bad-request / unauthorized / missing-key / server / rate-limited / malformed each route to a dedicated error screen; tests: `test/widget/features/error_flow/error_routing_test.dart`)
+- [x] Timeout at 30 seconds with retry option (verified 2026-06-12: 30s default in `lib/data/api/api_client.dart`; retry re-enters loading with preserved inputs and succeeds)
+- [x] No error state leads to a dead end or blank screen (verified 2026-06-12: primary actions tested — retry re-enters loading, rate-limit switches to demo or opens Settings, bad request returns to confirm; secondary actions reset to home where appropriate)
 
 ### AC6 — History
 - [ ] Past calculations persist across app restarts
@@ -200,9 +200,9 @@ The following conditions must all be true before MVP is considered complete.
 - [ ] Passes App Store and Google Play technical review requirements
 
 ### AC8 — Settings
-- [ ] Optional API key override (Pro/Dev) works and, when set, is used instead of the backend-proxy path; blank by default
-- [ ] Time format preference (12h/24h) applies across all result screens
-- [ ] Demo mode toggle persists across restarts
+- [x] Optional API key override (Pro/Dev) works and, when set, is used instead of the backend-proxy path; blank by default (verified 2026-06-12: a Settings-entered key overrides and no-key submissions fall back to proxy mode — `test/providers/api_endpoint_routing_test.dart`; stored in keychain — `test/data/secure/api_key_isolation_test.dart`)
+- [x] Time format preference (12h/24h) applies across all result screens (verified 2026-06-12: `AppDateFormat`, `ShareCopyBuilder`; result/history/settings tests)
+- [x] Demo mode toggle persists across restarts (verified 2026-06-12: `test/widget/features/settings/settings_screen_test.dart` "demo toggle updates settings + persists to prefs"; onboarding CTAs persist the default — `test/widget/features/onboarding/onboarding_screen_test.dart`)
 
 ---
 

@@ -14,17 +14,29 @@ final historyRepositoryProvider = Provider<HistoryRepository>((ref) {
 /// Live rectification repository — short-circuits demo, delegates
 /// real submissions to `RectificationApi`.
 ///
-/// Passes apiKeyIsConfigured from [activeApiKeyProvider] so the
-/// repository can return MissingApiKeyFailure before making any network
-/// call when no key (bundled `.env` or Settings-entered) is available.
-final rectificationRepositoryProvider =
-    Provider<RectificationRepository>((ref) {
-  final key = ref.watch(activeApiKeyProvider);
-  final hasKey = key != null && key.isNotEmpty;
+/// No provider key means the API layer is already wired for proxy mode
+/// (`dioProvider` / `rectificationApiProvider` target the proxy with no
+/// Authorization header), so the repository submits regardless — never
+/// a missing-key failure.
+///
+/// The local free-attempt quota applies to proxy mode and to the bundled
+/// `.env` / env key; only a Settings-entered key
+/// ([storedProApiKeyProvider]) bypasses it. While the secure-storage
+/// read is loading (or errored) we treat it as "no user key yet" and
+/// keep the quota enforced.
+final rectificationRepositoryProvider = Provider<RectificationRepository>((
+  ref,
+) {
+  final storedKey = ref.watch(storedProApiKeyProvider);
+  final hasUserKey = storedKey.maybeWhen(
+    data: (value) => value != null && value.isNotEmpty,
+    orElse: () => false,
+  );
   return LiveRectificationRepository(
     api: ref.watch(rectificationApiProvider),
     history: ref.watch(historyRepositoryProvider),
-    apiKeyIsConfigured: hasKey,
+    liveQuotaStore: ref.watch(liveQuotaStoreProvider),
+    bypassLiveQuota: hasUserKey,
   );
 });
 
@@ -34,6 +46,7 @@ final settingsRepositoryProvider = Provider<SettingsRepository>(
     prefs: ref.watch(settingsStoreProvider),
     secure: ref.watch(secureKeyStoreProvider),
     db: ref.watch(appDatabaseProvider),
+    resultFeedback: ref.watch(resultFeedbackStoreProvider),
   ),
 );
 

@@ -32,8 +32,12 @@ Console at submission (Section 11).
 **Recommended public app name: `TrueRise`** (one word, English, retained
 globally), presented with a descriptive functional tail that carries the search
 weight - e.g. App Store title "TrueRise: Birth Time Finder" and subtitle
-"Rectify your birth time." Keep `rectify` / `com.rectify.rectify` as the internal
-codename, project name, and bundle ID (no change).
+"Rectify your birth time." Keep `rectify` as the internal codename and project
+name (no change). (Bundle-ID guidance superseded 2026-06-12: recommended
+first-publish ID is `app.astrolium.truerise`, fallbacks
+`com.astrolium.truerise` / `com.truerise.app` - see
+`docs/bundle-id-recommendation.md`; code stays `com.rectify.rectify` until
+owner approval.)
 
 **Why.**
 
@@ -59,29 +63,33 @@ codename, project name, and bundle ID (no change).
    Finder", "Rectify your birth time") capture the long-tail intent that Run 1
    §7.2 and Run 2 §6 validated as low-competition.
 
-**Material delta the leadership must note (corrects Run 1 §9.1).** Run 1 asserted
-"the shipped binary ... uses TrueRise as the public/display name." That is only
-half true. Verified 2026-06-02:
+**Material delta the leadership must note (corrects Run 1 §9.1; updated
+2026-06-12).** Run 1 asserted "the shipped binary ... uses TrueRise as the
+public/display name." At Run 3 time (2026-06-02) that was only half true: the
+display/launcher labels still read "Rectify"/"rectify". That finding is now
+**superseded** - the display-name alignment has shipped. Re-verified
+2026-06-12:
 
 | Surface | Current value | Says |
 |---|---|---|
 | README title | `# TrueRise` | TrueRise |
 | Commit messages | "TrueRise MVP demo" etc. | TrueRise |
 | In-app share copy | "Calculated with TrueRise ..." | TrueRise |
-| iOS `CFBundleDisplayName` (home-screen icon label) | `Rectify` | **Rectify** |
-| Android `android:label` (launcher label) | `rectify` | **rectify** |
+| iOS `CFBundleDisplayName` (home-screen icon label) | `TrueRise` | **TrueRise** |
+| Android `android:label` (launcher label) | `TrueRise` | **TrueRise** |
 | iOS `CFBundleName` / project / bundle ID | `rectify` / `com.rectify.rectify` | rectify |
 
-So the **installed app icon currently reads "Rectify" on iOS and "rectify" on
-Android**, while the brand/marketing surface reads "TrueRise." Choosing TrueRise
-as the public name therefore implies a one-line config change to
-`CFBundleDisplayName` and `android:label` before store submission. That change is
-**not made in this run** (code/config is out of scope) - it is logged as a
-blocking validation item in Section 11. Bundle ID and codename stay `rectify`.
+So the **installed app icon now reads "TrueRise" on both iOS and Android**,
+matching the brand/marketing surface. The remaining gap is internal-only:
+`CFBundleName`, the project codename, and the shipped bundle ID stay
+`rectify` / `com.rectify.rectify`. The bundle-ID migration (recommended
+`app.astrolium.truerise`, see `docs/bundle-id-recommendation.md`) remains
+**pending owner approval** and is intentionally not made here.
 
 **Decision asked of leadership:** confirm `TrueRise` as the public store name
-(pending the clearance + display-name alignment in Section 11), or instruct a
-clearance run on both `TrueRise` and `Rectify` before deciding.
+(pending the clearance items in Section 11; the display-name alignment is
+done), or instruct a clearance run on both `TrueRise` and `Rectify` before
+deciding.
 
 ---
 
@@ -119,13 +127,15 @@ the descriptor line, not as the brand** (Section 3).
   English default "Birth Time Finder" (title tail) and "Rectify your birth time"
   (subtitle). This is the line that carries long-tail keywords and that gets
   translated for Tier 1 locales (Section 9).
-- **Internal codename / project / bundle ID (do not change):** `rectify`,
-  `com.rectify.rectify`, `CFBundleName=rectify`. Already in place; keeps git
-  history, CI, and the keychain service name stable.
-- **Home-screen display name (to align before launch):** set
-  `CFBundleDisplayName` (iOS) and `android:label` (Android) to `TrueRise`.
-  Currently "Rectify" / "rectify" - see Section 1 and Section 11. Config change,
-  not done here.
+- **Internal codename / project (do not change):** `rectify`,
+  `CFBundleName=rectify`. Already in place; keeps git history, CI, and the
+  keychain service name stable.
+- **Shipped bundle ID (owner decision pending):** currently
+  `com.rectify.rectify`; recommended first-publish rebrand is
+  `app.astrolium.truerise`, fallbacks in `docs/bundle-id-recommendation.md`.
+- **Home-screen display name (aligned as of 2026-06-12):**
+  `CFBundleDisplayName` (iOS) and `android:label` (Android) are set to
+  `TrueRise` - see Section 1 and Section 11.
 
 **What NOT to use:**
 
@@ -406,11 +416,15 @@ in this run; this is direction for the later asset run.
    is shipped: `ShareCopyBuilder` (`lib/core/sharing/share_copy_builder.dart`),
    the `resultShareButtonKey` button on the result screen, and the
    `rectify/share` platform channel (build-history 2026-05-22; Run 1 §6.4/H3).
-   The share text already exposes only time + rising + confidence + the "TrueRise
-   - birth-time rectification" tagline, never PII. Message: "Share your result -
-   without sharing your private data." Safe to feature; do not imply any *new*
-   share-card/image work is done (a branded share-card image is V1.5, PRD §17 -
-   not built).
+   The privacy-safe image share is also shipped in-repo (as of 2026-06-12) via
+   `share_plus`: `lib/core/sharing/story_card_renderer.dart`,
+   `ShareService.shareImagePng`, and the `resultShareImageButtonKey` button on
+   the result screen. Both text and image share expose only the rectified time,
+   the rising sign when present, the confidence score, the brand, and the
+   public URL/caption - never birth date, city, life events, coordinates, or
+   API identifiers. Message: "Share your result - without sharing your private
+   data." Safe to feature both text and image share; do not claim direct
+   Instagram Stories integration.
 
 Do not lead any screenshot with zodiac wheels, horoscope feeds, or mystic
 imagery - that reintroduces the 4.3 surface the rest of the strategy removes.
@@ -453,13 +467,14 @@ imagery - that reintroduces the 4.3 surface the rest of the strategy removes.
 | **A2** "Maya" ICP first | **Honored** - keyword bank, copy, and screenshots target the English consumer enthusiast; "kundli" deliberately excluded from Tier 0/1 (Run 1 §4.3). |
 | **A3** Tier 0 -> Tier 1 (DE/FR/PT-BR/ES) -> Tier 2 Hindi (gated) | **Honored** - Section 6.3 / Section 9 give Tier 1 descriptor direction only; no Hindi/India ASO proposed. |
 | **A4** North-star RRC/wk | **Honored** - top-10 ambition framed only on realistic long-tail; head terms explicitly not success criteria. |
-| **A5 / D1** Public name TrueRise vs Rectify | **Resolved: recommend TrueRise**, consistent with Run 2 §13 (D1). **Delta vs Run 1 §9.1:** the binary's *display name* is still "Rectify"/"rectify" (Section 1) - a config alignment + clearance step is required, logged in Section 11. |
+| **A5 / D1** Public name TrueRise vs Rectify | **Resolved: recommend TrueRise**, consistent with Run 2 §13 (D1). **Delta vs Run 1 §9.1 (superseded 2026-06-12):** at Run 3 time the binary's *display name* read "Rectify"/"rectify"; the alignment has since shipped and `CFBundleDisplayName` / `android:label` now read "TrueRise" (Section 1). Clearance steps remain open in Section 11. |
 | **W1** Pricing calibration for V1.5 IAP | **Out of scope** for this run (no pricing here); carried to V1.5 gate per Run 2 §13. No price appears in any proposed metadata. |
 | **W2** EU credibility copy (DE especially) | **Honored** - Section 9 makes German the most sober copy locale; probabilistic wording made non-negotiable (Section 7.2). |
 | Run 2 §12.4 open verification items | **Carried** into Section 11 (in-store rankings, store ratings/installs, Play policy specifics, structured review sample). |
 
-No A-level decision is re-opened. The only correction is factual: the display
-name is not yet "TrueRise" in the binary (Section 1).
+No A-level decision is re-opened. The factual correction Run 3 logged here
+(display name not yet aligned in the binary) is superseded as of 2026-06-12:
+the binary display/launcher name now reads "TrueRise" (Section 1).
 
 ---
 
@@ -474,8 +489,8 @@ Decisions above are proposals; the following must be verified by a human / conso
 2. [ ] App Store name availability for "TrueRise" in each Tier 0 front (App Store
    Connect).
 3. [ ] Domain availability check (`.com` + locale TLDs) for the brand.
-4. [ ] Align `CFBundleDisplayName` (iOS) and `android:label` (Android) to
-   "TrueRise" - currently "Rectify"/"rectify" (config change, separate task).
+4. [x] Align `CFBundleDisplayName` (iOS) and `android:label` (Android) to
+   "TrueRise" - done; verified 2026-06-12 (both read "TrueRise" in the binary).
 
 **Metadata / ASO (blocking for submission):**
 5. [ ] Re-count every title/subtitle/short-description candidate in App Store
@@ -561,7 +576,9 @@ measurable branded installs (Run 1 H3). Use **Option C** verbatim for the German
   W1/W2 + §12.4 open items.
 - `docs/prd.md` - §2 app name working title + alternatives, §6 value prop /
   differentiation table, §8 non-goals, §13 privacy, §16 risks (App Store
-  category row), §17 phases (V1.5 share card / Hindi / KP).
+  category row), §17 phases (share card shipped as privacy-safe story-card
+  image share; future: Hindi, KP/Vedic, direct Instagram Stories pending
+  Meta/Facebook App ID).
 - `docs/marketing-research.md` - reused only for competitor pricing / ICP context
   already cited by Run 1/Run 2; no new external figure introduced here.
 - `docs/qa-phase8-report.md` - deferred items (hosted privacy policy, app-icon
@@ -572,8 +589,11 @@ measurable branded installs (Run 1 H3). Use **Option C** verbatim for the German
   birth-time rectification"; PII-free (time + rising + confidence only).
 - `lib/core/sharing/share_service.dart` - share feature present (build-history
   2026-05-22).
-- `ios/Runner/Info.plist` - `CFBundleDisplayName=Rectify`, `CFBundleName=rectify`.
-- `android/app/src/main/AndroidManifest.xml` - `android:label="rectify"`.
+- `ios/Runner/Info.plist` - `CFBundleDisplayName=Rectify` at Run 3 time; since
+  updated to `TrueRise` (re-verified 2026-06-12). `CFBundleName=rectify`
+  (unchanged).
+- `android/app/src/main/AndroidManifest.xml` - `android:label="rectify"` at
+  Run 3 time; since updated to `TrueRise` (re-verified 2026-06-12).
 - `android/app/build.gradle.kts` - `applicationId = "com.rectify.rectify"`.
 - `README.md` - title "TrueRise (codename `rectify`)".
 

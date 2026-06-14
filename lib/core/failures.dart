@@ -56,15 +56,45 @@ final class UnauthorizedFailure extends AppFailure {
   String toString() => 'UnauthorizedFailure';
 }
 
-/// 429 — proxy / provider quota throttled.
+/// Where a rate limit was enforced.
+enum RateLimitSource {
+  /// Local on-device quota exhausted before any network call.
+  local,
+
+  /// 429 returned by the proxy / provider.
+  server,
+}
+
+/// Rate limit hit — either local quota or a server/proxy 429.
 final class RateLimitedFailure extends AppFailure {
-  const RateLimitedFailure();
+  const RateLimitedFailure({
+    this.source = RateLimitSource.server,
+    this.resetAt,
+    this.retryAfter,
+  });
+
+  /// Whether the limit came from the local quota or the server.
+  final RateLimitSource source;
+
+  /// When the quota resets, if known.
+  final DateTime? resetAt;
+
+  /// How long to wait before retrying, if known.
+  final Duration? retryAfter;
+
   @override
-  bool operator ==(Object other) => other is RateLimitedFailure;
+  bool operator ==(Object other) =>
+      other is RateLimitedFailure &&
+      other.source == source &&
+      other.resetAt == resetAt &&
+      other.retryAfter == retryAfter;
   @override
-  int get hashCode => (RateLimitedFailure).hashCode;
+  int get hashCode =>
+      Object.hash(RateLimitedFailure, source, resetAt, retryAfter);
   @override
-  String toString() => 'RateLimitedFailure';
+  String toString() =>
+      'RateLimitedFailure(source: $source, resetAt: $resetAt, '
+      'retryAfter: $retryAfter)';
 }
 
 /// 5xx — generic upstream error.

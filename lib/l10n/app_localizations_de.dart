@@ -356,8 +356,28 @@ class AppLocalizationsDe extends AppLocalizations {
   String get resultLowConfidenceTitle => 'Ergebnis mit geringer Konfidenz';
 
   @override
-  String get resultLowConfidenceBody =>
-      'Füge weitere datierte Lebensereignisse hinzu oder grenze das Geburtszeitfenster ein, um die Schätzung zu verbessern.';
+  String get resultLowConfidenceTipEvents =>
+      'Füge weitere datierte Lebensereignisse hinzu.';
+
+  @override
+  String get resultLowConfidenceTipReviewInput =>
+      'Überprüfe Geburtsdatum, Stadt und ungefähre Uhrzeit.';
+
+  @override
+  String get resultLowConfidenceTipWiderWindow =>
+      'Versuche ein breiteres Geburtszeitfenster.';
+
+  @override
+  String get resultConfidenceExplainerTitle =>
+      'Was bedeutet dieser Prozentwert?';
+
+  @override
+  String get resultConfidenceExplainerBody =>
+      'Die Konfidenz ist eine Schätzung. Sie zeigt, wie stark deine datierten Lebensereignisse diese Kandidatenzeit im Vergleich zu den anderen Kandidatenzeiten in deinem gewählten Geburtszeitfenster stützen.';
+
+  @override
+  String get resultConfidenceExplainerMethod =>
+      'Methode: Jede Kandidatenzeit wird anhand deiner Ereignisse mit Transiten und Progressionen bewertet; höhere Werte bedeuten eine wahrscheinlichere Übereinstimmung.';
 
   @override
   String get resultOtherCandidates => 'Weitere Kandidaten';
@@ -386,6 +406,24 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get resultDemoShareButton => 'Beispiel teilen';
+
+  @override
+  String get resultFeedbackLabel => 'Ergebnis-Feedback';
+
+  @override
+  String get resultFeedbackTitle => 'Wirkt diese Uhrzeit plausibel?';
+
+  @override
+  String get resultFeedbackYes => 'Ja';
+
+  @override
+  String get resultFeedbackNotSure => 'Nicht sicher';
+
+  @override
+  String get resultFeedbackNo => 'Nein';
+
+  @override
+  String get resultFeedbackSaved => 'Danke, gespeichert.';
 
   @override
   String get shareCardTagline => 'Geburtszeit-Korrektur';
@@ -756,6 +794,49 @@ class AppLocalizationsDe extends AppLocalizations {
       'Du hast vorerst das Berechnungslimit erreicht. Warte einen Moment und versuche es erneut oder aktiviere den Demo-Modus, um offline weiter zu erkunden.';
 
   @override
+  String get errorRateLimitedUseDemo => 'Demo-Modus verwenden';
+
+  @override
+  String get errorRateLimitedEnterKey => 'Meinen API-Schlüssel eingeben';
+
+  @override
+  String errorRateLimitedLocalQuotaBody(String resetDetail) {
+    return 'Dein kostenloses Live-Kontingent ist aufgebraucht.$resetDetail Wechsle in den Demo-Modus, um weiter zu erkunden, oder füge deinen eigenen API-Schlüssel in den Einstellungen hinzu.';
+  }
+
+  @override
+  String errorRateLimitedResetAt(String resetTime) {
+    return 'Wird am $resetTime UTC zurückgesetzt.';
+  }
+
+  @override
+  String errorRateLimitedRetryAfter(String duration) {
+    return 'Du kannst es in etwa $duration erneut versuchen.';
+  }
+
+  @override
+  String errorRateLimitedRetryMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Minuten',
+      one: '1 Minute',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String errorRateLimitedRetryHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Stunden',
+      one: '1 Stunde',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get errorMalformedTitle => 'Antwort konnte nicht gelesen werden';
 
   @override
@@ -770,6 +851,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsSectionTimeFormat => 'Zeitformat';
+
+  @override
+  String get settingsSectionApiKey => 'API-Schlüssel';
 
   @override
   String get settingsSectionData => 'Daten';
@@ -789,6 +873,25 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsTimeFormat24 => '24-Stunden  (07:14)';
+
+  @override
+  String get settingsApiKeyHelper =>
+      'Hast du bereits einen Astrology-API-Schlüssel? Füge ihn hier hinzu.';
+
+  @override
+  String get settingsApiKeyConfigured => 'API-Schlüssel hinzugefügt';
+
+  @override
+  String get settingsApiKeyAdd => 'Schlüssel hinzufügen';
+
+  @override
+  String get settingsApiKeyRemove => 'Schlüssel entfernen';
+
+  @override
+  String get settingsApiKeyFieldLabel => 'Astrology-API-Schlüssel';
+
+  @override
+  String get settingsApiKeySave => 'Schlüssel speichern';
 
   @override
   String get settingsDeleteAllData => 'Alle Daten löschen';

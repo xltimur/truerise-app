@@ -358,8 +358,27 @@ class AppLocalizationsFr extends AppLocalizations {
   String get resultLowConfidenceTitle => 'Résultat à faible confiance';
 
   @override
-  String get resultLowConfidenceBody =>
-      'Ajoutez plus d\'événements de vie datés ou réduisez la fenêtre de l\'heure de naissance pour améliorer l\'estimation.';
+  String get resultLowConfidenceTipEvents =>
+      'Ajoutez plus d\'événements de vie datés.';
+
+  @override
+  String get resultLowConfidenceTipReviewInput =>
+      'Vérifiez votre date de naissance, votre ville et l\'heure approximative.';
+
+  @override
+  String get resultLowConfidenceTipWiderWindow =>
+      'Essayez une fenêtre d\'heure de naissance plus large.';
+
+  @override
+  String get resultConfidenceExplainerTitle => 'Que signifie ce pourcentage ?';
+
+  @override
+  String get resultConfidenceExplainerBody =>
+      'La confiance est une estimation. Elle indique à quel point vos événements de vie datés soutiennent cette heure candidate par rapport aux autres heures candidates de la fenêtre de naissance sélectionnée.';
+
+  @override
+  String get resultConfidenceExplainerMethod =>
+      'Méthode : chaque heure candidate est évaluée à partir de vos événements au moyen des transits et des progressions ; un score plus élevé indique une correspondance plus probable.';
 
   @override
   String get resultOtherCandidates => 'Autres candidats';
@@ -388,6 +407,25 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get resultDemoShareButton => 'Partager l\'exemple';
+
+  @override
+  String get resultFeedbackLabel => 'Retour sur le résultat';
+
+  @override
+  String get resultFeedbackTitle =>
+      'Cette heure vous semble-t-elle plausible ?';
+
+  @override
+  String get resultFeedbackYes => 'Oui';
+
+  @override
+  String get resultFeedbackNotSure => 'Pas sûr';
+
+  @override
+  String get resultFeedbackNo => 'Non';
+
+  @override
+  String get resultFeedbackSaved => 'Merci, enregistré.';
 
   @override
   String get shareCardTagline => 'Rectification de l\'heure de naissance';
@@ -756,6 +794,49 @@ class AppLocalizationsFr extends AppLocalizations {
       'Vous avez atteint la limite de calculs pour le moment. Patientez un instant et réessayez, ou activez le mode démo pour continuer à explorer hors ligne.';
 
   @override
+  String get errorRateLimitedUseDemo => 'Utiliser le mode démo';
+
+  @override
+  String get errorRateLimitedEnterKey => 'Saisir ma clé API';
+
+  @override
+  String errorRateLimitedLocalQuotaBody(String resetDetail) {
+    return 'Votre quota gratuit de calculs en direct est épuisé.$resetDetail Passez en mode démo pour continuer à explorer, ou ajoutez votre propre clé API dans les Réglages.';
+  }
+
+  @override
+  String errorRateLimitedResetAt(String resetTime) {
+    return 'Réinitialisation le $resetTime UTC.';
+  }
+
+  @override
+  String errorRateLimitedRetryAfter(String duration) {
+    return 'Vous pourrez réessayer dans environ $duration.';
+  }
+
+  @override
+  String errorRateLimitedRetryMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count minutes',
+      one: '1 minute',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String errorRateLimitedRetryHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count heures',
+      one: '1 heure',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get errorMalformedTitle => 'Impossible de lire la réponse';
 
   @override
@@ -770,6 +851,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settingsSectionTimeFormat => 'Format de l\'heure';
+
+  @override
+  String get settingsSectionApiKey => 'Clé API';
 
   @override
   String get settingsSectionData => 'Données';
@@ -789,6 +873,25 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settingsTimeFormat24 => '24 heures  (07:14)';
+
+  @override
+  String get settingsApiKeyHelper =>
+      'Vous avez déjà une clé Astrology API ? Ajoutez-la ici.';
+
+  @override
+  String get settingsApiKeyConfigured => 'Clé API ajoutée';
+
+  @override
+  String get settingsApiKeyAdd => 'Ajouter une clé';
+
+  @override
+  String get settingsApiKeyRemove => 'Supprimer la clé';
+
+  @override
+  String get settingsApiKeyFieldLabel => 'Clé Astrology API';
+
+  @override
+  String get settingsApiKeySave => 'Enregistrer la clé';
 
   @override
   String get settingsDeleteAllData => 'Supprimer toutes les données';

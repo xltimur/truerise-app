@@ -36,8 +36,12 @@ astrology-api.io key in Settings.
 - When the key is present, `dioProvider` sets `baseUrl = config.providerBaseUrl` and
   `AuthInterceptor` adds `Authorization: Bearer <key>` to every request header.
 - The key **never** appears in: SharedPreferences, Drift columns, log lines, or the POST body.
-- When no key is configured, `LiveRectificationRepository.submit()` returns
-  `MissingApiKeyFailure` immediately — no network call is made.
+- When no key is configured, the app runs in **proxy** auth mode:
+  `dioProvider` targets `RECTIFY_PROXY_BASE_URL` + `RECTIFY_PROXY_PATH`
+  with no `Authorization` header (the proxy holds the provider credential
+  server-side), and `LiveRectificationRepository.submit()` still submits,
+  gated by the local free-attempt quota. No-key users are never blocked
+  with `MissingApiKeyFailure`.
 
 ### Bundled review key + release guard (2026-06-12)
 
@@ -56,15 +60,27 @@ Two guards enforce this locally:
   `assembleRelease`, and `bundleRelease`. It fails with a redacted message
   (the key value is never printed) when `.env` carries a non-empty
   `ASTRO_API_KEY`, unless the build is explicitly acknowledged as a capped
-  review build with **both** properties:
-  `-Ptruerise.allowBundledApiKey=true`
-  `-Ptruerise.bundledApiKeyPurpose=review-capped`.
-  Debug/profile builds and `flutter test` are unaffected.
+  review build with **both** Gradle project properties, passed through the
+  Flutter CLI as
+  `--android-project-arg=truerise.allowBundledApiKey=true`
+  `--android-project-arg=truerise.bundledApiKeyPurpose=review-capped`.
+  The same task decodes the build's `--dart-define`s and also blocks the
+  placeholder share/proxy URLs. Debug/profile builds and `flutter test`
+  are unaffected.
 - **iOS / manual preflight:** there is no Gradle hook on the iOS side; run
-  `dart run tool/release_env_guard.dart` before `flutter build ipa`. Same
-  semantics: non-zero exit on an unacknowledged bundled key;
+
+  ```bash
+  dart run tool/release_env_guard.dart \
+    --share-url "$TRUERISE_SHARE_URL" \
+    --proxy-base-url "$RECTIFY_PROXY_BASE_URL" \
+    --allow-bundled-key --purpose=review-capped
+  ```
+
+  before `flutter build ipa`. Same semantics: non-zero exit on an
+  unacknowledged bundled key or placeholder share/proxy URL;
   `--allow-bundled-key --purpose=review-capped` acknowledges a capped
-  review key. Output is always redacted.
+  review key (omit both once `ASTRO_API_KEY` is removed from `.env`).
+  Output is always redacted.
 
 A public build therefore needs either **no bundled key** (remove
 `ASTRO_API_KEY` from `.env`) or an **explicitly acknowledged low-budget

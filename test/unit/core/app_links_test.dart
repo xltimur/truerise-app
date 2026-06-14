@@ -104,6 +104,23 @@ void main() {
     });
   });
 
+  group('AppLinks.privacyPolicyUrl default invariant', () {
+    test('the hosted privacy policy ships disabled: default URL is empty', () {
+      // The Settings row keeps pushing the bundled in-app screen. The
+      // owner must opt in with
+      // --dart-define=TRUERISE_PRIVACY_POLICY_URL=... to enable it.
+      expect(AppLinks.privacyPolicyUrl, isEmpty);
+    });
+
+    test('an empty value never passes the bare-HTTPS validator', () {
+      // The same validator gates the hosted path, so empty == disabled.
+      expect(
+        AppLinks.isPrivacySafeShareUrl(AppLinks.privacyPolicyUrl),
+        isFalse,
+      );
+    });
+  });
+
   group('AppLinks.isPrivacySafeStoreUrl', () {
     test('accepts bare HTTPS store URLs', () {
       expect(

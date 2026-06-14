@@ -1,0 +1,138 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter_test/flutter_test.dart';
+
+import 'screenshot_compositor.dart';
+import 'store_screenshot_compositor_plan.dart';
+
+/// Raw screenshot file names every locale manifest ships, in manifest order.
+const List<String> _expectedFrameFiles = <String>[
+  '01-result-hero.png',
+  '02-evidence-breakdown.png',
+  '03-privacy-demo-settings.png',
+  '04-share-result.png',
+  '05-privacy-policy.png',
+];
+
+/// Reads and decodes the on-disk manifest for [locale] as a JSON object.
+Map<String, dynamic> _readManifest(String locale) =>
+    jsonDecode(File(storeManifestPath(locale)).readAsStringSync())
+        as Map<String, dynamic>;
+
+/// Fails if any `composited/` directory exists under a supported locale.
+void _expectNoCompositedDirs() {
+  for (final locale in supportedStoreLocales) {
+    final dir = Directory(
+      '$kStoreScreenshotsRoot/$locale/$kCompositedDirName',
+    );
+    expect(dir.existsSync(), isFalse, reason: dir.path);
+  }
+}
+
+/// A single-frame manifest map shaped like a decoded `manifest.json`.
+Map<String, dynamic> _manifestWithFrame({
+  required Object? file,
+  required Object? caption,
+}) => <String, dynamic>{
+  'frames': <dynamic>[
+    <String, dynamic>{'file': file, 'intendedCaption': caption},
+  ],
+};
+
+void main() {
+  group('buildAllCompositeJobs (on-disk plan)', () {
+    test('produces one job per manifest frame, grouped by locale', () {
+      _expectNoCompositedDirs();
+
+      final jobs = buildAllCompositeJobs();
+
+      expect(jobs.length, supportedStoreLocales.length * 5);
+      expect(jobs.length, 25);
+
+      // Locales appear as contiguous blocks, in supportedStoreLocales order.
+      final localeBlocks = <String>[];
+      for (final job in jobs) {
+        if (localeBlocks.isEmpty || localeBlocks.last != job.locale) {
+          localeBlocks.add(job.locale);
+        }
+      }
+      expect(localeBlocks, orderedEquals(supportedStoreLocales));
+
+      for (final job in jobs) {
+        expect(isSupportedStoreLocale(job.locale), isTrue, reason: job.locale);
+        expect(job.caption.trim(), isNotEmpty, reason: job.fileName);
+        expect(File(job.rawPath).existsSync(), isTrue, reason: job.rawPath);
+        expect(job.outputPath, contains('/composited/'));
+        expect(job.outputPath, isNot(job.rawPath));
+      }
+
+      // Reading the plan must never have created any output directories.
+      _expectNoCompositedDirs();
+    });
+  });
+
+  group('buildLocaleCompositeJobs (decoded manifest map)', () {
+    test('builds en jobs in manifest frame order', () {
+      final jobs = buildLocaleCompositeJobs('en', _readManifest('en'));
+
+      expect(
+        jobs.map((job) => job.fileName).toList(),
+        orderedEquals(_expectedFrameFiles),
+      );
+      expect(jobs.first.fileName, '01-result-hero.png');
+      expect(jobs.last.fileName, '05-privacy-policy.png');
+      expect(jobs.every((job) => job.locale == 'en'), isTrue);
+      expect(jobs.every((job) => job.caption.trim().isNotEmpty), isTrue);
+    });
+
+    test('rejects unsafe or malformed frame file names', () {
+      const badNames = <String>[
+        '01-bad name.png',
+        '1-result.png',
+        '01-result.jpg',
+        '01-result-hero',
+        '../01-result-hero.png',
+        'sub/01-result-hero.png',
+        '01--double.png',
+      ];
+      for (final bad in badNames) {
+        expect(
+          () => buildLocaleCompositeJobs(
+            'en',
+            _manifestWithFrame(file: bad, caption: 'A valid caption'),
+          ),
+          throwsArgumentError,
+          reason: bad,
+        );
+      }
+    });
+
+    test('rejects empty, blank, missing, or non-string captions', () {
+      final badCaptions = <Object?>['', '   ', null, 42];
+      for (final caption in badCaptions) {
+        expect(
+          () => buildLocaleCompositeJobs(
+            'en',
+            _manifestWithFrame(file: '01-result-hero.png', caption: caption),
+          ),
+          throwsArgumentError,
+          reason: '$caption',
+        );
+      }
+    });
+
+    test('rejects an unknown locale', () {
+      expect(
+        () => buildLocaleCompositeJobs(
+          'zz',
+          _manifestWithFrame(
+            file: '01-result-hero.png',
+            caption: 'A valid caption',
+          ),
+        ),
+        throwsArgumentError,
+      );
+    });
+  });
+}

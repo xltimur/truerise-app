@@ -30,9 +30,13 @@ class RectificationApiResponse {
 /// fake-server tests, and a future provider swap don't ripple past
 /// the data layer.
 abstract class RectificationApi {
+  /// [cancelToken], when supplied, aborts the in-flight HTTP request
+  /// the moment the user taps Cancel — implementations must wire it
+  /// into the transport rather than only observing it afterwards.
   Future<Result<RectificationApiResponse, AppFailure>> rectify(
-    RectificationSearchRequestDto request,
-  );
+    RectificationSearchRequestDto request, {
+    CancelToken? cancelToken,
+  });
 }
 
 /// Default HTTP implementation: POSTs to [path] on the configured
@@ -49,8 +53,9 @@ class HttpRectificationApi implements RectificationApi {
 
   @override
   Future<Result<RectificationApiResponse, AppFailure>> rectify(
-    RectificationSearchRequestDto request,
-  ) async {
+    RectificationSearchRequestDto request, {
+    CancelToken? cancelToken,
+  }) async {
     try {
       // Force a string body so we can keep the exact wire bytes for
       // `rawResponseJson` without round-tripping through Dart maps.
@@ -58,6 +63,7 @@ class HttpRectificationApi implements RectificationApi {
         path,
         data: request.toJson(),
         options: Options(responseType: ResponseType.plain),
+        cancelToken: cancelToken,
       );
       final raw = response.data;
       if (raw == null || raw.isEmpty) {

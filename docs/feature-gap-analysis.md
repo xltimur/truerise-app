@@ -29,14 +29,41 @@
 > - G20 l10n pipeline: DONE [VERIFIED] (C.1) - `flutter_localizations`,
 >   `generate: true`, `l10n.yaml`, `lib/l10n/app_en.arb` + extraction.
 > - G22 translated UI + ASO metadata (de/fr/es/pt-BR): DONE in-repo (D.1/D.3/D.4);
->   native-speaker review + per-locale console re-count still remain. NOTE: the
->   shipped share TEXT payload is still English-only
->   (`share_copy_builder.dart`) - not a blocker, a localized-listing caveat.
-> - Still OPEN / owner-gated: G2 (privacy URL - content authored, hosting +
->   `url_launcher` wiring pending), G3 (Apple/Play forms authored, console entry
->   pending), G5 (bundle-id decision + release signing - still debug-signed).
-> - OUT-OF-SCOPE, unchanged: G9 share-card image (V1.5), G13 analytics (P1),
->   G14 crash reporting (P1), G23 PDF (V1.5), G24 IAP (V1.5).
+>   native-speaker review + per-locale console re-count still remain. UPDATE
+>   2026-06-12: the shipped share TEXT payload is now localized in-repo for
+>   EN/DE/ES/FR/PT - `share_copy_builder.dart` takes `AppLocalizations` and
+>   follows the active locale, superseding the earlier "English-only" caveat
+>   (and the baseline G11/Section 6 descriptions of a single English string
+>   below). Still privacy-safe: time + rising + confidence + brand + share URL
+>   only; no birth data, events, coordinates, or API ids. Native-speaker review
+>   of the share copy remains owner scope; not a P0 blocker.
+> - Still OPEN / owner-gated: G2 (privacy URL - content authored; app wiring
+>   done 2026-06-12, config-gated via the public
+>   `--dart-define=TRUERISE_PRIVACY_POLICY_URL` with in-app fallback; the
+>   owner-hosted public URL itself remains), G3 (Apple/Play forms authored,
+>   console entry pending), G5 (bundle-id decision pending; Android release
+>   signing wiring DONE 2026-06-12 - `build.gradle.kts` reads the git-ignored
+>   `android/key.properties`, has no debug fallback, and fails requested release
+>   tasks when signing material is missing; owner upload keystore + Play App
+>   Signing enrollment + iOS distribution signing remain).
+> - G9 privacy-safe share-card image: DONE in-repo as of 2026-06-12. This
+>   SUPERSEDES every baseline statement below that calls the share-card image
+>   MISSING, unbuilt, V1.5-only, or "VERIFIED ABSENT (no `share_plus` /
+>   render-to-image package)" - i.e. the Section 1/2/4/6.2 rows, the
+>   Section 11-13 deferral language, and the Section 14 `pubspec.yaml`
+>   absence check. `share_plus` is now a dependency;
+>   `lib/core/sharing/story_card_renderer.dart` renders the PNG story card
+>   and `ShareService.shareImagePng` shares it from the result screen
+>   (`_ShareImageButton`, `resultShareImageButtonKey`). Text and image share
+>   both emit only the privacy-safe allow-list (time, rising when present,
+>   confidence, brand, public share URL/caption) - the Section 6.3 guardrails
+>   hold for both surfaces. Tests:
+>   `test/widget/features/calculation_flow/result_share_test.dart`,
+>   `test/unit/sharing/story_card_renderer_test.dart`. Direct Instagram
+>   Stories posting remains optional / out of scope until a Meta/Facebook
+>   App ID exists; the card shares via the OS share sheet.
+> - OUT-OF-SCOPE, unchanged: G13 analytics (P1), G14 crash reporting (P1),
+>   G23 PDF (V1.5), G24 IAP (V1.5).
 
 **Scope discipline.** This run is strategy- and documentation-only. It does not
 edit app code, config, store metadata, assets, screenshots, or localization
@@ -55,49 +82,52 @@ per the Run 4 brief, even though sibling docs use em-dashes.
 
 ## 1. Executive Summary
 
-**What the product already has [VERIFIED].** TrueRise ships a complete, offline
-demo loop and a real-calculation loop: onboarding -> birth data + geocoding ->
-time window -> life events (12 categories, soft 5-event warning) -> loading ->
-ranked result (time + rising + confidence) -> per-event evidence -> history with
-swipe-delete -> full data wipe. A three-mode API path (proxy / user-key /
-demo-`.env`) keeps the provider secret off-device. Critically for the leadership
-question, a **privacy-safe text share is already shipped**: `ShareCopyBuilder`
-emits only time + rising + confidence + a "Calculated with TrueRise" tagline,
-with **zero PII** (no birth city/date, no events, no labels, no API ids).
+**What the product already has [VERIFIED; updated 2026-06-12].** TrueRise ships
+a complete, offline demo loop and a real-calculation loop: onboarding -> birth
+data + geocoding -> time window -> life events (12 categories, soft 5-event
+warning) -> loading -> ranked result (time + rising + confidence) -> per-event
+evidence -> history with swipe-delete -> full data wipe. A three-mode API path
+(proxy / user-key / demo-`.env`) keeps the provider secret off-device.
+Critically for the leadership question, a **privacy-safe share is already
+shipped in both text and image form**: `ShareCopyBuilder` emits only time +
+rising + confidence + a "Calculated with TrueRise" tagline, and the story-card
+renderer draws the same allow-list onto the PNG share card, with **zero PII**
+(no birth city/date, no events, no labels, no API ids).
 
-**What is missing [VERIFIED gaps].** Three things stand out. (1) The home-screen
-app name is still **"Rectify"/"rectify"**, not "TrueRise" - a publication-blocking
-config mismatch. (2) The shipped share is **text only**; there is no
-privacy-safe **share-card image**, which is the actual unit of distribution on
-Instagram/TikTok (visual platforms do not spread plain text). (3) There is **no
-analytics or telemetry of any kind** wired, so the north-star (RRC/wk) and the
-share-loop hypothesis (Run 1 H3) are currently **unmeasurable**. A fourth gap
-corrects a strategy-doc assumption: the localization pipeline was *planned*
-("ARB from day one", implementation-plan line 1282) but **was never built** - no
-ARB files, no `flutter_localizations`, strings are hardcoded English. DE/FR/PT/ES
-therefore need a real string-extraction refactor, not just translation.
+**What remains open [updated 2026-06-12; see status note].** The Run 4 baseline
+gaps have largely been closed in-repo: the display name is TrueRise (G1), the
+l10n pipeline plus DE/FR/ES/PT-BR translations exist (G20/G22), and the
+privacy-safe share-card image ships alongside the text share (G9). What still
+gates publication is owner/store work, not app code: the **hosted
+privacy-policy URL** (content authored, app wiring config-gated; the public
+page itself must be published), the **Apple privacy labels / Play Data Safety
+forms** (authored; console entry pending), the **bundle-id decision plus
+signing secrets** (upload keystore, Play App Signing enrollment, iOS
+distribution signing), and **console entry plus native-speaker review** of the
+localized metadata, screenshots, and share copy. Separately, there is still
+**no analytics or telemetry** wired (P1 by design), so the north-star (RRC/wk)
+and the share-loop hypothesis (Run 1 H3) remain unmeasured at launch.
 
-**Top 3 feature priorities.**
+**Top 3 priorities (current).**
 
-1. **P0 - Pre-publication config gate** (display-name alignment to TrueRise,
-   hosted privacy-policy URL, store privacy/data-safety labels, real app icon,
-   bundle-ID confirmation). Pure store-policy blockers; no new product surface.
-   Unblocks the Tier 0 English launch the whole growth plan depends on.
-2. **P1 (highest growth leverage, V1.5) - Privacy-safe share-card IMAGE.** The
-   one feature that converts the shipped (text) share loop into something that
-   can actually spread on Instagram/TikTok. Explicitly V1.5 per PRD Section 17;
-   gated on a pixel-level privacy review. Ranked #1 of growth features but *not*
-   pulled into pre-publication.
-3. **P1 - Privacy-safe funnel + share-loop analytics.** Cheap, high
+1. **P0 - Owner/store publication gate.** Hosted privacy-policy URL, Apple/Play
+   privacy and data-safety forms, bundle-id decision + signing secrets, and
+   console entry. Pure store-policy blockers with no app-code work remaining;
+   unblocks the Tier 0 English launch the whole growth plan depends on.
+2. **P1 - Privacy-safe funnel + share-loop analytics.** Cheap, high
    decision-value: without it, RRC/wk, demo->real conversion, and H3 cannot be
    measured, and every later growth bet is blind. Must exclude birth data and
    event content (PRD Section 13).
+3. **Publication/review follow-through on shipped l10n + share card.**
+   Native-speaker review of translated UI/ASO/share copy, per-locale console
+   re-counts, screenshot compositing/upload, and the pixel-level privacy review
+   of the rendered card. Review and console work, not feature development.
 
 **Honest framing (no virality overclaim).** A text share does not make an app go
-viral, and neither will a share card by itself. The share card is ranked first
-among growth features because it is the *precondition* for any visual-platform
-distribution, not because it guarantees it. Rank everything below by leverage x
-verification cost, and measure before scaling.
+viral, and neither does a share card by itself. The share card (now shipped
+in-repo) is the *precondition* for any visual-platform distribution, not a
+guarantee of it. Rank everything below by leverage x verification cost, and
+measure before scaling.
 
 ---
 
@@ -118,18 +148,18 @@ All rows read directly from code/config this run unless marked otherwise.
 | Evidence breakdown (per-event Strong/Moderate/Weak/None + explanation, summary line) | SHIPPED | `screens/evidence_screen.dart`, `widgets/cards/evidence_card.dart`, `match_strength_dots.dart`, `data/models/evidence_item.dart`, `match_strength.dart`; PRD F7 / M9 |
 | History (newest-first, tap = cached result, swipe-to-delete) | SHIPPED | `features/home/home_history_screen.dart`, `history_providers.dart`, `data/repos/history_repository.dart`, `widgets/cards/history_card.dart`; PRD F8 / M10 |
 | Delete-all-data (wipes Drift + prefs + secure storage, count-aware copy, confirm) | SHIPPED | `features/settings/delete_all_data_sheet.dart` -> `SettingsController.deleteAllData()`; PRD F9.6 / M13 / AC4 |
-| Draft persistence / retry-with-inputs primitive | SHIPPED (partial) | `data/repos/draft_repository.dart`; scope S3 (full "save and retry later" still open per qa-phase8 Section 6) |
+| Draft persistence / retry-with-inputs primitive | SHIPPED (partial) | `data/repos/draft_repository.dart`; scope S3 (full "save and retry later" still open per qa-phase8 Section 6). Verified 2026-06-12: `CalculationFlowController.cancelSubmit()` aborts the in-flight Dio `CancelToken` and a submit-generation guard blocks late completion from clearing the draft / writing history / stealing navigation; error-route retry re-enters loading with preserved inputs; tests: `test/widget/features/calculation_flow/loading_screen_test.dart`, `test/data/api/rectification_api_test.dart`, `test/data/repos/rectification_repository_test.dart`, `test/widget/features/error_flow/error_routing_test.dart` |
 | API path: 3 modes (proxy default, provider-direct via user key, demo `.env` fallback); fail-fast `proxy.invalid.example` default | SHIPPED | `lib/providers/core_providers.dart`, `data/api/api_client.dart` (`buildDio`, `mapDioException`), `rectification_api.dart`, `mappers.dart`; PRD Section 11 / M6 |
 | Pro/Dev API key in device keychain (never SQLite/prefs) | SHIPPED | `data/secure/secure_key_store.dart`, `proApiKeyProvider`; PRD F9.1 / AC4 |
 | Settings (time format 12/24h, demo toggle, version, privacy link, delete-all) | SHIPPED | `features/settings/*`; PRD F9 / M11 |
 | In-app privacy policy screen | SHIPPED | `features/settings/privacy_policy_screen.dart`, `app/router.dart` (hosted URL still missing - see Section 5) |
-| **Privacy-safe result share - TEXT ONLY** | SHIPPED | `lib/core/sharing/share_copy_builder.dart` (PII-free: time + rising + confidence + tagline), `share_service.dart` (`rectify/share` channel + clipboard fallback), `result_screen.dart` `_ShareResultButton` / `resultShareButtonKey` |
+| **Privacy-safe result share - text + image** (UPDATE 2026-06-12; was TEXT ONLY at the Run 4 baseline) | SHIPPED | `lib/core/sharing/share_copy_builder.dart` (PII-free: time + rising + confidence + tagline), `share_service.dart` (`rectify/share` channel + clipboard fallback; `shareImagePng`), `story_card_renderer.dart` (PNG story card), `result_screen.dart` `resultShareButtonKey` / `resultShareImageButtonKey`; tests: `test/widget/features/calculation_flow/result_share_test.dart`, `test/unit/sharing/story_card_renderer_test.dart` |
 | No payment / IAP surface anywhere | VERIFIED ABSENT (by design) | no `in_app_purchase` in `pubspec.yaml`; `test/security/no_payment_or_secret_strings_test.dart`; PRD F10 / scope AC3 |
 | No analytics / crash-reporting SDK | VERIFIED ABSENT | no `firebase*`, `sentry`, `posthog`, `amplitude` in `pubspec.yaml` or `lib/`; growth-thesis Section 6.5 |
-| No share-card image / screenshot-render package | VERIFIED ABSENT | no `share_plus`, no `screenshot`/render-to-image package in `pubspec.yaml`; share is a custom MethodChannel |
-| No localization pipeline (ARB / `flutter_localizations`) | VERIFIED ABSENT | no `*.arb`, no `l10n.yaml`, no `AppLocalizations`/`localizationsDelegates`/`generate: true`; only `intl` for formatting. Corrects implementation-plan line 1282 ("ARB from day one") which was never built |
-| Post-result feedback prompt (S1 "does this feel plausible?") | NOT BUILT | no feedback-prompt widget in `lib/` (only demo copy contains "plausible"); scope S1 (Should-Have); growth-thesis H6 depends on it |
-| COPPA age gate (born before 2008) | UNVERIFIED | required by PRD Section 13; not confirmed in code this run - flag for P0 verification |
+| Share-card image (story-card PNG via `share_plus`) | SHIPPED (UPDATE 2026-06-12; VERIFIED ABSENT at the Run 4 baseline) | `share_plus` in `pubspec.yaml`; `lib/core/sharing/story_card_renderer.dart`, `ShareService.shareImagePng`; tests: `test/widget/features/calculation_flow/result_share_test.dart`, `test/unit/sharing/story_card_renderer_test.dart` |
+| l10n pipeline (ARB / `flutter_localizations`) | SHIPPED (UPDATE: DONE C.1; VERIFIED ABSENT at the Run 4 baseline) | `l10n.yaml`, `generate: true`, `lib/l10n/app_{en,de,es,fr,pt}.arb` + generated `AppLocalizations`. The baseline absence finding corrected implementation-plan line 1282 ("ARB from day one"), which has since been implemented |
+| Post-result feedback prompt (S1 "does this time feel plausible?") | SHIPPED | `features/calculation_flow/screens/result_screen.dart` + `result_screen_sections.dart` (Yes / Not sure / No); persists result id -> answer via `lib/data/prefs/result_feedback_store.dart`; wiped by delete-all-data (`SettingsRepository`); no network/PII; tests: `test/data/prefs/result_feedback_store_test.dart`, `test/widget/features/calculation_flow/result_screen_test.dart`; scope S1; growth-thesis H6 |
+| COPPA age gate (born before 2008) | UNVERIFIED at Run 4 *(since DONE - see status note: 18+ floor in `birth_data_screen.dart`, A.1)* | required by PRD Section 13; not confirmed in code this run - flag for P0 verification |
 
 ---
 
@@ -168,9 +198,10 @@ review themes are qualitative, not a structured sample).
 
 **Net read.** The category's table-stakes are: a guided multi-category event
 wizard (HAVE), honest confidence (HAVE), show-your-work evidence (HAVE, a
-strength), and a **shareable artefact** (PARTIAL - text only; image/PDF MISSING).
-The shareable artefact is the single most consistent competitor feature TrueRise
-has not yet matched, and it is also the growth lever - see Sections 6 and 11.
+strength), and a **shareable artefact** (UPDATE 2026-06-12: text + image
+share card now SHIPPED; PDF still MISSING/V1.5).
+The image artefact has since been matched in-repo (see status note / G9);
+PDF remains the open competitor table-stake - see Sections 6 and 11.
 
 ---
 
@@ -182,28 +213,28 @@ V1.5 (gated on the V1.5 cut), P2 (later). "Owner" is the lead function.
 
 | # | Feature / gap | Evidence source | Current status | Growth | ASO/store | Policy risk | Complexity | Phase | Owner notes |
 |---|---|---|---|---|---|---|---|---|---|
-| G1 | Display-name -> "TrueRise" (`CFBundleDisplayName`, `android:label`) | Run 3 Section 1; `ios/Runner/Info.plist`, `android/.../AndroidManifest.xml` [VERIFIED still "Rectify"/"rectify"] | MISSING | Med | High | Low | Low (config) | P0 | Config only, not a code edit. Bundle id stays `com.rectify.rectify` |
-| G2 | Hosted privacy-policy URL (replace/augment in-app screen) | PRD Section 13; qa-phase8 Section 6; Run 3 Section 11 #12 | PARTIAL (in-app screen exists) | Low | High (both stores require) | High if absent | Low (Legal + 1-line `url_launcher`) | P0 | Legal publishes canonical URL |
+| G1 | Display-name -> "TrueRise" (`CFBundleDisplayName`, `android:label`) | Run 3 Section 1; `ios/Runner/Info.plist`, `android/.../AndroidManifest.xml` [VERIFIED still "Rectify"/"rectify" at Run 4 baseline; TrueRise applied since - see status note] | MISSING (Run 4) -> DONE (A.1) | Med | High | Low | Low (config) | P0 | Config only, not a code edit. Bundle id stays `com.rectify.rectify` |
+| G2 | Hosted privacy-policy URL (replace/augment in-app screen) | PRD Section 13; qa-phase8 Section 6; Run 3 Section 11 #12 | PARTIAL (in-app screen exists; app wiring done 2026-06-12, config-gated `TRUERISE_PRIVACY_POLICY_URL`) | Low | High (both stores require) | High if absent | Low (Legal publishes URL; no code left) | P0 | Legal publishes canonical URL; same URL goes in build define + listings |
 | G3 | App Store privacy labels + Play Data Safety form | PRD Section 13; store policy | MISSING | Low | High | High if wrong | Low-Med (form, no code) | P0 | Must match actual data flow (on-device + proxy/provider) |
-| G4 | Real app icon (not default Flutter glyph) | qa-phase8 Section 6 | MISSING | Low | High (listing quality) | Low | Low-Med (design + `flutter_launcher_icons`) | P0 | Blocks store, not demo |
-| G5 | Bundle-id + release-signing lock | qa-phase8 Section 5.3 / Section 6 | OPEN | Low | High (submission) | Low | Low | P0 | Confirm `com.rectify.rectify`; provision signing |
-| G6 | COPPA age gate (born before 2008) | PRD Section 13 | UNVERIFIED | Low | Med | High if missing | Low | P0 | Verify in date picker; add if absent |
+| G4 | Real app icon (not default Flutter glyph) | qa-phase8 Section 6 (Run 4 baseline; icon assets landed since - see status note) | MISSING (Run 4) -> DONE (A.3) | Low | High (listing quality) | Low | Low-Med (design + `flutter_launcher_icons`) | P0 | Blocks store, not demo |
+| G5 | Bundle-id + release-signing lock | qa-phase8 Section 5.3 / Section 6 | OPEN (Android signing wiring done 2026-06-12; owner keystore + bundle-id confirm remain) | Low | High (submission) | Low | Low | P0 | Decide bundle id per `docs/bundle-id-recommendation.md` (recommended `app.astrolium.truerise`; `com.rectify.rectify` stays until owner approval); owner provisions upload keystore + iOS distribution signing |
+| G6 | COPPA age gate (born before 2008) | PRD Section 13 | UNVERIFIED (Run 4) -> DONE (A.1) | Low | Med | High if missing | Low | P0 | Implemented: 18+ floor via `CalculationFlowState.latestAllowedBirthDate` / `lastDate` in `birth_data_screen.dart`; tests in `test/features/calculation_flow/calculation_flow_controller_test.dart` |
 | G7 | Store metadata (category Utilities/Tools, title/subtitle/keywords) | Run 3 Sections 4-6, 12 | READY (doc) | Med | High | Med (4.3(b)) | Low (console, no code) | P0 | Copy from Run 3 Option H (DE uses Option C) |
-| G8 | Store screenshots (hero -> evidence -> demo -> share) | Run 3 Section 8 | MISSING | Med | High | Low | Med (design) | P0 | Lead with the tool, not zodiac art |
-| G9 | **Privacy-safe share-card IMAGE** (Stories/feed) | PRD Section 17; Run 1 H3; Run 3 Section 8 | MISSING | **High** | Med | **Med-High (PII in pixels)** | Med-High | **V1.5** | The Instagram lever; pixel-level privacy review mandatory |
-| G10 | Share discoverability (prominent CTA, share from history, post-demo share prompt) | `result_screen.dart` (share only on result); Run 1 H3 | PARTIAL | Med | Low | Low (reuse PII-free builder) | Low | P1 | Cheap multiplier on the existing loop |
+| G8 | Store screenshots (hero -> evidence -> demo -> share) | Run 3 Section 8 | DONE, raw (A.5 EN + D.4 localized; was MISSING at Run 4) | Med | High | Low | Med (design) | P0 | Raw captures in `screenshots/store/{en,de,fr,es,pt-BR}/` (5 frames per locale); remaining: device-frame/caption compositing, other device sizes if required, console upload, owner/design review. Lead with the tool, not zodiac art |
+| G9 | **Privacy-safe share-card IMAGE** (Stories/feed) | PRD Section 17; Run 1 H3; Run 3 Section 8 | DONE in-repo (2026-06-12; was MISSING) - `story_card_renderer.dart`, `ShareService.shareImagePng`, `resultShareImageButtonKey`; tests `result_share_test.dart` + `story_card_renderer_test.dart` | **High** | Med | **Med-High (PII in pixels)** | Med-High | **V1.5 (shipped early)** | The Instagram lever; pixel-level privacy review of the rendered card remains owner scope |
+| G10 | Share discoverability (prominent CTA, share from history, post-demo share prompt) | `result_screen.dart` / `result_screen_sections.dart` (`resultShareButtonKey`, `resultShareImageButtonKey`); `home_history_screen.dart` (history-row share); `result_screen_sections.dart` + `share_prompt_store.dart` (`resultDemoSharePromptKey` / `resultDemoSharePromptShareKey`); Run 1 H3 | SHIPPED, VERIFIED (2026-06-12) | Med | Low | Low (reuse PII-free builder) | Low | P1 | Cheap multiplier on the existing loop. Verified by `test/widget/features/calculation_flow/result_share_test.dart`, `test/widget/features/calculation_flow/result_demo_share_prompt_test.dart`, `test/widget/features/home/home_history_share_test.dart` (22 tests) |
 | G11 | Share copy variants / light A-B | `share_copy_builder.dart` (single string) | MISSING | Low-Med | Low | Low | Low | P1 | Only meaningful once analytics exist (G13) |
 | G12 | Referral / install attribution | no accounts (PRD Section 8) | MISSING | Low-Med | Low | Med (privacy) | Med | P2 | Limited pre-account; rely on store referrer + tagline first |
 | G13 | **Privacy-safe funnel + share-loop analytics** | growth-thesis Section 6; [VERIFIED no SDK] | MISSING | **High (enables measurement)** | Med | **High (must exclude PII/events)** | Med | P1 | Without it RRC/wk + H3 are blind; explicit privacy decision (PRD Section 13) |
 | G14 | Crash reporting (Crashlytics/Sentry) | qa-phase8 Section 6 | DEFERRED | Low | Med (quality) | Med (PII in payloads) | Med | P1 | Pairs with G13 SDK decision |
-| G15 | Confidence explanation ("what 78% means") | PRD F6; Run 2 Section 7 | MISSING | Med | Low | Low | Low (content) | P1 | Anti-commodity trust surface |
-| G16 | Method explanation ("transits + progressions") | PRD F6.5; Run 3 Section 7.4 | PARTIAL | Med | Low | Low-Med (keep "method" not "fortune") | Low (content) | P1 | Reads as a tool, supports 4.3(b) |
-| G17 | Probabilistic-framing audit on result + share | Run 1 Section 2.2; design-system Section 9.7 | LIKELY-PRESENT, verify | Low | Low | High if violated | Low | P1 | Confirm no certainty language anywhere |
-| G18 | Post-result feedback prompt (S1) | scope S1; growth-thesis H6 | NOT BUILT | Med (enables H6) | Low | Low (local only, no PII) | Low | P1 | One local question; no backend |
-| G19 | Expandable evidence detail | PRD F7.5 | VERIFY | Low | Med (screenshot depth) | Low | Low | P2 | Confirm vs PRD F7.5 |
-| G20 | **l10n extraction pipeline** (`flutter_localizations` + gen-l10n + ARB + wiring) | [VERIFIED absent]; corrects impl-plan line 1282 | MISSING | Med (unlocks Tier 1) | High (locale ASO) | Low | Med-High (refactor) | P1 (pre-Tier-1) | Precondition for DE/FR/PT/ES; locale-agnostic |
-| G21 | Locale-aware formatting audit (date/time/percent) | `intl` present; impl-plan line 1282 | PARTIAL | Low | Med | Low | Low | P1 | Verify `intl` formatters used, not hand-rolled |
-| G22 | Translated ASO metadata + UI strings (DE/FR/PT/ES) | Run 1 Section 4.2; Run 3 Section 9 | BLOCKED on G20 | Med | High | Med (DE credibility) | Med (translation) | V1.5 | After pipeline + Run 5 strategy |
+| G15 | Confidence explanation ("what 78% means") | PRD F6; Run 2 Section 7 | SHIPPED (2026-06-12) | Med | Low | Low | Low (content) | P1 | Anti-commodity trust surface. Explainer under the confidence bar (`resultConfidenceExplainerKey` in `result_screen.dart`; `_ConfidenceExplainer` in `result_screen_sections.dart`); l10n en/de/es/fr/pt; widget tests: `result_screen_test.dart` group "confidence explainer" |
+| G16 | Method explanation ("transits + progressions") | PRD F6.5; Run 3 Section 7.4 | SHIPPED, GUARDED (test) | Med | Low | Low-Med (keep "method" not "fortune") | Low (content) | P1 | Reads as a tool, supports 4.3(b). Method copy (`resultConfidenceExplainerMethod`) ships in the same `_ConfidenceExplainer`; framing locked by `test/security/probabilistic_framing_test.dart` |
+| G17 | Probabilistic-framing audit on result + share | Run 1 Section 2.2; design-system Section 9.7 | VERIFIED, GUARDED (test) | Low | Low | High if violated | Low | P1 | No certainty/medical/legal/financial language in result/share/demo copy; locked by `test/security/probabilistic_framing_test.dart` |
+| G18 | Post-result feedback prompt (S1) | scope S1; growth-thesis H6 | SHIPPED (local-only) | Med (enables H6) | Low | Low (local only, no PII) | Low | P1 | One local question; no backend/network; `result_screen_sections.dart` + `result_feedback_store.dart`; delete-all wipes answers |
+| G19 | Expandable evidence detail | PRD F7.5 | SHIPPED, VERIFIED (2026-06-12) | Low | Med (screenshot depth) | Low | Low | P2 | `widgets/cards/evidence_card.dart` (tap toggles collapsed/expanded explanation; semantics include match strength); `screens/evidence_screen.dart` passes `explanation`, strong/moderate default expanded via `_defaultExpandedFor`; tests: `test/widget/cards/cards_test.dart` + `test/widget/features/calculation_flow/evidence_screen_test.dart` (11 tests) |
+| G20 | **l10n extraction pipeline** (`flutter_localizations` + gen-l10n + ARB + wiring) | [VERIFIED absent at Run 4]; corrects impl-plan line 1282 | DONE (C.1; was MISSING) - `l10n.yaml`, `generate: true`, `lib/l10n/app_en.arb` + extraction | Med (unlocks Tier 1) | High (locale ASO) | Low | Med-High (refactor) | P1 (pre-Tier-1) | Precondition for DE/FR/PT/ES; locale-agnostic - now satisfied |
+| G21 | Locale-aware formatting audit (date/time/percent) | `core/formatting/app_date_format.dart`, `share_copy_builder.dart` | SHIPPED, VERIFIED (2026-06-12) | Low | Med | Low | Low | P1 | Date/time verified: `AppDateFormat` uses `intl` `DateFormat` for 12h/24h clock, long dates, month/year; `ShareCopyBuilder` accepts `TimeFormat`; result/history/evidence/time-window call sites honor `settings.timeFormat` in both 12h and 24h; tests: `app_date_format_test.dart`, `share_copy_builder_test.dart`, result-share/settings/history widget tests (64 tests). Percent formatting remains a separate copy/locale review |
+| G22 | Translated ASO metadata + UI strings (DE/FR/PT/ES) | Run 1 Section 4.2; Run 3 Section 9 | DONE in-repo (D.1/D.3/D.4; was BLOCKED on G20) - localized ARBs + `docs/store-listing-tier1-localized.md`; native-speaker review + per-locale console re-count remain owner scope | Med | High | Med (DE credibility) | Med (translation) | V1.5 | Pipeline + translations landed; owner review gates publication |
 | G23 | PDF / full-report export | PRD Section 17; Run 2 Section 3.1/4.2 | DEFERRED | Med | Med | Med (PII) | High | V1.5 | Competitor table-stake; not MVP |
 | G24 | IAP / credits / paywall | PRD F10 / Section 17 | DEFERRED (by design) | n/a | n/a | n/a | High | V1.5 | Do NOT pre-empt; out of growth phase (Run 1 Section 10) |
 
@@ -221,23 +252,39 @@ Run 1 D4 P0 criterion (c) "required by store policy."
   the in-app share tagline say "TrueRise" [VERIFIED `ios/Runner/Info.plist`,
   `android/app/src/main/AndroidManifest.xml`]. Keep `com.rectify.rectify` and
   `CFBundleName=rectify`. This is the single highest-confusion-risk pre-launch
-  item and the cheapest to fix.
+  item and the cheapest to fix. *(Current state: DONE - `CFBundleDisplayName`
+  and `android:label` are "TrueRise" since Impl Run A.1; final public-name /
+  trademark approval remains an owner item.)*
 - **G2 - Hosted privacy policy URL.** An in-app `PrivacyPolicyScreen` exists, but
   both stores require a publicly reachable URL on the listing and in the
-  data-safety forms. Legal publishes the canonical page; swap/augment the in-app
-  screen with `url_launcher`.
+  data-safety forms. App wiring is done and config-gated (2026-06-12): a valid
+  bare-HTTPS `--dart-define=TRUERISE_PRIVACY_POLICY_URL` opens from Settings via
+  `url_launcher`, with the in-app screen as default and fallback. What remains
+  is owner-side: Legal publishes the canonical page and the same URL goes into
+  the build define and store listings.
 - **G3 - Privacy labels / Data Safety.** Apple privacy "nutrition" labels and
   the Play Data Safety form, accurate to the real flow: birth data + events are
   PII/sensitive, stored on-device, transmitted only on explicit submit to the
   proxy/provider; demo is fully offline; the share surface is PII-free.
 - **G4 - App icon.** Replace the default Flutter glyph with the design-system
-  clock-quadrant mark before submission.
-- **G5 - Bundle id + signing.** Confirm `com.rectify.rectify`; provision release
+  clock-quadrant mark before submission. *(Current state: DONE - iOS
+  appiconset + Android adaptive icon assets are in the repo since Impl Run A.3;
+  store icon/screenshot review remains owner scope.)*
+- **G5 - Bundle id + signing.** Decide the bundle id per
+  `docs/bundle-id-recommendation.md` (recommended `app.astrolium.truerise`;
+  `com.rectify.rectify` stays in code until owner approval); provision release
   signing (store-submission scope per qa-phase8 Section 5.3).
-- **G6 - COPPA age gate [UNVERIFIED].** PRD Section 13 requires a born-before-2008
-  gate on the date picker; not confirmed in code this run. Verify; add if absent.
+- **G6 - COPPA age gate.** PRD Section 13 requires a born-before-2008 gate on
+  the date picker. *(Current state: DONE since Impl Run A.1 - the 18+ floor is
+  enforced via `CalculationFlowState.latestAllowedBirthDate` / `lastDate` in
+  `birth_data_screen.dart`; covered by
+  `test/features/calculation_flow/calculation_flow_controller_test.dart`.)*
 - **G7/G8 - Metadata + screenshots.** Already specified by Run 3 (category,
-  title/subtitle/keywords, screenshot order). No code; console + design work.
+  title/subtitle/keywords, screenshot order). *(Current state: metadata is
+  authored - `docs/store-listing-en.md` + localized variants; raw screenshots
+  are captured in `screenshots/store/{en,de,fr,es,pt-BR}/`, 5 frames per
+  locale. Remaining owner/design work: device-frame/caption compositing, other
+  device sizes if required, console upload, owner/design review.)*
 
 **Display-name note for leadership.** G1 is logged here because it is a
 publication blocker, but it remains a *config* task. This run does not change it
@@ -263,8 +310,8 @@ this exactly as-is; it is the safety model every richer share surface must match
 
 | Rank | Feature | Why it is the lever | Leverage | Verification cost | Phase |
 |---|---|---|---|---|---|
-| 1 | **Privacy-safe share-card IMAGE** (square + 9:16 Story) rendering the same PII-free fields as text | Instagram/TikTok are visual; plain text does not post or spread there. The card is the *unit of distribution* on those platforms | High | High (must privacy-review rendered pixels; needs a render-to-image dependency) | V1.5 |
-| 2 | **Share discoverability** (G10): share CTA on the result hero, share from a history row, a post-demo "share this sample" prompt | Multiplies use of the loop that already exists, at near-zero risk (reuses the PII-free builder) | Med | Low | P1 |
+| 1 | **Privacy-safe share-card IMAGE** (square + 9:16 Story) rendering the same PII-free fields as text | SHIPPED in-repo 2026-06-12 (`StoryCardRenderer` + `shareImagePng`; see status note / G9). Instagram/TikTok are visual; the card is the *unit of distribution* on those platforms | High | High (pixel-level privacy review of the rendered card remains owner scope) | V1.5 (shipped early) |
+| 2 | **Share discoverability** (G10): share CTA on the result hero, share from a history row, a post-demo "share this sample" prompt | SHIPPED, VERIFIED (2026-06-12) - no longer missing. Text + image share CTAs on the result (`resultShareButtonKey` / `resultShareImageButtonKey`), history-row share in `home_history_screen.dart`, one-time post-demo prompt (`resultDemoSharePromptKey`, `share_prompt_store.dart`) | Med | Low (done) | P1 (done) |
 | 3 | **Analytics on the share loop** (subset of G13): share-tap count, share->return, store referrer | You cannot tell if any of this spreads without it; decides whether to invest in the card | Med-High (decision value) | Med (privacy-bound) | P1 |
 | 4 | **Share copy variants** (G11): 2-3 tagline/wording variants | Marginal lift; only meaningful once #3 can measure it | Low-Med | Low | P1 |
 | 5 | **Referral / attribution** (G12) | Real referral needs identity/accounts (a V2 non-goal); pre-account, lean on store referrer + the tagline | Low-Med | Med | P2 |
@@ -303,20 +350,44 @@ category wins on "is it accurate, can you show me why?").
 
 - **Evidence transparency (HAVE - protect it).** Per-event Strong/Moderate/Weak/
   None + explanation + summary line is already the product's strongest
-  differentiator. Confirm expandable detail (G19, PRD F7.5).
-- **Confidence explanation (G15, P1).** A short, tappable "what does 78% mean?"
-  that frames confidence as probability, not a guarantee. Low effort, directly
-  answers the category's #1 doubt.
-- **Method explanation (G16, P1).** A plain-language "how we calculate this"
-  (transits + progressions scoring candidate times) framed as *method*, not
-  *fortune-telling* - this both builds trust and reinforces the Apple 4.3(b)
-  utility posture (Run 3 Section 7.4).
-- **Probabilistic-framing audit (G17, P1).** Sweep result + share + demo copy to
-  confirm zero certainty/medical/legal language (design-system Section 9.7, PRD
-  Section 13). Likely already clean; verify and lock with a test.
-- **Post-result feedback prompt (G18, P1).** Local-only "Does this feel
-  plausible?" (Yes/Not sure/No), stored on device. Enables Run 1 H6 (event-count
-  vs believability) at zero backend and zero PII cost. NOT built today.
+  differentiator. Expandable detail (G19, PRD F7.5) is verified/shipped:
+  `evidence_card.dart` toggles the explanation on tap and
+  `evidence_screen.dart` defaults strong/moderate evidence to expanded
+  (covered by `cards_test.dart` and `evidence_screen_test.dart`).
+- **Confidence explanation (G15, P1 - SHIPPED).** A short "what does 78%
+  mean?" explainer that frames confidence as probability, not a guarantee, now
+  renders under the confidence bar (`resultConfidenceExplainerKey` in
+  `result_screen.dart`; `_ConfidenceExplainer` in `result_screen_sections.dart`;
+  l10n keys `resultConfidenceExplainerTitle`/`Body`/`Method` in en/de/es/fr/pt).
+  Covered by the "confidence explainer" group in
+  `test/widget/features/calculation_flow/result_screen_test.dart`.
+- **Low-confidence next steps (G15 companion - SHIPPED, verified 2026-06-12).**
+  When the top candidate lands in the low confidence band
+  (`ConfidenceBar.isLowBand`), a guidance note (`_LowConfidenceNote` in
+  `result_screen_sections.dart`, keyed by `resultLowConfidenceNoteKey`) gives
+  concrete next steps: add more dated life events, review birth
+  date/city/approximate time, or try a wider birth-time window. l10n in
+  en/de/es/fr/pt. Covered by
+  `test/widget/features/calculation_flow/result_screen_test.dart`,
+  `test/security/probabilistic_framing_test.dart`, and
+  `test/widget/l10n/localized_screens_test.dart`.
+- **Method explanation (G16, P1 - SHIPPED, GUARDED).** The same explainer gives
+  the plain-language "how we calculate this" (transits + progressions scoring
+  candidate times) framed as *method*, not *fortune-telling* - building trust
+  and reinforcing the Apple 4.3(b) utility posture (Run 3 Section 7.4). The
+  three explainer strings are locked into the probabilistic-framing guard
+  (`test/security/probabilistic_framing_test.dart`).
+- **Probabilistic-framing audit (G17, P1 - DONE).** Result + share + demo
+  user-visible English copy verified clean of certainty/medical/legal/financial
+  claim language and required to carry a probabilistic marker (design-system
+  Section 9.7, PRD Section 13). Locked by
+  `test/security/probabilistic_framing_test.dart` (does not cover onboarding or
+  ARB metadata).
+- **Post-result feedback prompt (G18, P1 - SHIPPED).** Local-only "Does this
+  time feel plausible?" (Yes/Not sure/No), stored on device
+  (`result_screen_sections.dart` + `lib/data/prefs/result_feedback_store.dart`;
+  delete-all-data wipes it; no network, no PII). Enables Run 1 H6 (event-count
+  vs believability) at zero backend and zero PII cost.
 - **Demo/sample result (HAVE - protect it).** The offline demo is the unique
   pre-sale trust lever no competitor offers (Run 2 Section 4.1). Do not dilute it;
   keep it offline (CLAUDE.md).
@@ -340,9 +411,10 @@ separate design run; this is the code/content readiness behind them).
 - **Demo data quality (HAVE).** The canonical demo (78/61/44%, Gemini Rising,
   mixed evidence) is realistic-not-idealized per DM5 - good for a screenshot.
   Optional P2: a second demo persona for locale screenshots.
-- **Localization-ready copy (BLOCKED on G20).** Store metadata can be localized in
-  console now, but **in-app** screenshots in DE/FR/PT/ES require the l10n pipeline
-  first (Section 9). This is the main asset-readiness dependency.
+- **Localization-ready copy (UNBLOCKED - G20 done, C.1).** The l10n pipeline and
+  DE/FR/ES/PT translations are in-repo, and raw localized in-app screenshots
+  exist (`screenshots/store/{de,fr,es,pt-BR}/`). Remaining work is
+  native-speaker review + console entry, not a pipeline dependency (Section 9).
 - **Store metadata support (READY).** Category, title/subtitle, keyword field, and
   long-description outline are specified in Run 3; no app code needed.
 - **Privacy policy / data-safety readiness (P0, G2/G3).** Required before the
@@ -352,48 +424,68 @@ separate design run; this is the code/content readiness behind them).
 
 ## 9. Localization Feature Gaps (DE / FR / PT-BR / ES)
 
-**Headline correction [VERIFIED].** Run 1 Section 4.2 and Run 3 Section 9 assume
-localization is "ASO text + ~250 strings, no product code change" because
-implementation-plan line 1282 planned "all strings extracted into ARB from day
-one." **That extraction was never implemented.** This run verified: no `*.arb`
-files, no `l10n.yaml`, no `flutter_localizations` dependency, no `AppLocalizations`
-/ `localizationsDelegates` / `supportedLocales` / `generate: true` anywhere in
-`lib/`; UI strings are hardcoded English literals (e.g. `result_screen.dart`
-"Result", "Share result", "See how we got this"; `delete_all_data_sheet.dart`
-"Delete all data?"). Only `intl` (formatting) is present.
+*(UPDATE 2026-06-12: the Run 4 absence finding below is historical - the l10n
+pipeline and DE/FR/ES/PT translations have since landed via Impl Runs C.1 and
+D.1-D.4; see the status note and the G20/G22 matrix rows.)*
 
-### 9.1 Must exist in code/content BEFORE translation begins
+**Headline correction [historical - VERIFIED at the Run 4 baseline,
+2026-06-02].** Run 1 Section 4.2 and Run 3 Section 9 assumed localization was
+"ASO text + ~250 strings, no product code change" because implementation-plan
+line 1282 planned "all strings extracted into ARB from day one." At the Run 4
+baseline that extraction had not been implemented: the read-only run verified
+no `*.arb` files, no `l10n.yaml`, no `flutter_localizations` dependency, no
+`AppLocalizations` / `localizationsDelegates` / `supportedLocales` /
+`generate: true` anywhere in `lib/`; UI strings were hardcoded English literals
+(e.g. `result_screen.dart` "Result", "Share result", "See how we got this";
+`delete_all_data_sheet.dart` "Delete all data?"). Only `intl` (formatting) was
+present.
 
-- **G20 - l10n pipeline (the precondition, locale-agnostic).** Add
-  `flutter_localizations`, set up gen-l10n (`l10n.yaml` + `generate: true`),
-  create the base `app_en.arb`, wire `MaterialApp.localizationsDelegates` +
-  `supportedLocales`, and extract every user-facing literal in `lib/` into ARB
-  keys. This is a real refactor (Med-High), not a translation task, and it is
-  independent of *which* locales ship - so it can start as soon as it is
-  greenlit, ahead of the Run 5 locale-set decision.
-- **Demo + result + evidence + error copy** must all move into ARB, including the
-  demo explanation strings in `lib/data/demo/demo_response.dart` (these are
+**Current status (2026-06-12).** G20 is DONE in-repo (Impl Run C.1):
+`flutter_localizations` is a dependency, `l10n.yaml` and `generate: true` are
+in place, and `lib/l10n/app_{en,de,es,fr,pt}.arb` plus the generated
+`AppLocalizations` exist and are wired. G22 translations (DE/FR/ES/PT) landed
+via D.1-D.4. Still owner-gated, not app-code work: native-speaker review,
+per-locale console keyword re-count, public privacy-policy URL, store console
+forms, and proxy/signing.
+
+### 9.1 Preconditions before translation could begin (now satisfied, C.1)
+
+- **G20 - l10n pipeline (the precondition, locale-agnostic) - DONE (C.1).**
+  `flutter_localizations` and gen-l10n (`l10n.yaml` + `generate: true`) are set
+  up, `lib/l10n/app_en.arb` is the base, `MaterialApp.localizationsDelegates` +
+  `supportedLocales` are wired, and user-facing literals in `lib/` are extracted
+  into ARB keys. This was a real refactor (Med-High), not a translation task,
+  and it landed ahead of the Run 5 locale-set decision as the baseline analysis
+  recommended.
+- **Demo + result + evidence + error copy** moved into ARB, including the demo
+  explanation strings in `lib/data/demo/demo_response.dart` (these are
   user-visible in the demo result).
 - **Pluralization + interpolation** (e.g. "X of Y events", the delete-sheet count
-  copy) must use ICU plural/placeholder forms in ARB, not string concatenation.
+  copy) use ICU plural/placeholder forms in ARB, not string concatenation.
 
-### 9.2 What can wait
+### 9.2 What landed after the baseline, and what still waits on the owner
 
-- **Actual DE/FR/PT/ES translations (G22)** wait on both G20 and the Run 5
-  Localization Strategy (locale order, register, the DE credibility bar W2,
-  PT-BR "10+ events" framing).
-- **Locale-aware formatting (G21)** is a smaller follow-on: confirm date/time/
-  percent render via `intl` for the target locales (24h default in DE/FR, decimal
-  comma, etc.). Audit, not rebuild.
+- **Actual DE/FR/PT/ES translations (G22) - DONE in-repo (D.1-D.4).** These
+  waited on G20 and the Run 5 Localization Strategy inputs (locale order,
+  register, the DE credibility bar W2, PT-BR "10+ events" framing); both are
+  now resolved and localized ARBs exist for de/es/fr/pt. Native-speaker review
+  and the per-locale console keyword re-count remain owner scope before
+  publication.
+- **Locale-aware formatting (G21)** - audit verified/shipped (2026-06-12):
+  date/time render via `intl` (`AppDateFormat`) across share/result/history in
+  both 12h and 24h. Any remaining native-speaker review or per-locale copy
+  tuning (e.g. decimal comma in percent copy) is owner scope if needed.
 - **Brand token "TrueRise" stays English** in all locales (Run 3 Section 9) - do
   not add it to any ARB for translation.
 
 ### 9.3 Implication for sequencing
 
-The localization cost is higher than the strategy docs assumed: it is
-**pipeline refactor (G20) + translation (G22)**, not translation alone. The Tier 1
-bet (Run 1 H4) is still sound, but its cost line must include G20. Run 5 should
-plan around this corrected baseline.
+The localization cost was higher than the strategy docs assumed: it was
+**pipeline refactor (G20) + translation (G22)**, not translation alone. Both
+have since landed in-repo (C.1, D.1-D.4), so the correction is now historical.
+The Tier 1 bet (Run 1 H4) is still sound; remaining sequencing cost is
+owner-side only (native-speaker review, per-locale console re-counts, store
+forms), not app code.
 
 ---
 
@@ -401,14 +493,14 @@ plan around this corrected baseline.
 
 | Area | Gap | Status | Action |
 |---|---|---|---|
-| App name config | Display name "Rectify" not "TrueRise" (G1) | MISSING | Config change pre-submission |
+| App name config | Display name "Rectify" not "TrueRise" (G1) | DONE (A.1 - display name is TrueRise; trademark/name approval owner-pending) | Owner confirms store name |
 | Category | Utilities (iOS) / Tools (Play) | READY (Run 3 Section 4.1/5) | Select in console |
 | Metadata | Title/subtitle/keywords/short+long desc | READY (Run 3 Section 12) | Console; DE uses Option C |
-| Privacy policy | Hosted URL (G2) | PARTIAL | Legal publishes; wire `url_launcher` |
+| Privacy policy | Hosted URL (G2) | PARTIAL (app wiring done, config-gated) | Legal publishes; build with `TRUERISE_PRIVACY_POLICY_URL` + add URL to listings |
 | Data safety | Apple labels + Play Data Safety (G3) | MISSING | Fill to match real flow |
-| App icon | Default Flutter glyph (G4) | MISSING | Design + generate |
-| Bundle id / signing | Lock + provision (G5) | OPEN | Confirm + sign |
-| Age gate | COPPA born-before-2008 (G6) | UNVERIFIED | Verify/add |
+| App icon | Default Flutter glyph (G4) | DONE (A.3 - iOS appiconset + Android adaptive icon in repo) | Store icon review at submission |
+| Bundle id / signing | Lock + provision (G5) | OPEN (Android gradle wiring done 2026-06-12 - no debug fallback, reads `android/key.properties`; owner keystore + bundle-id confirm + iOS signing remain) | Owner: keystore + Play App Signing + iOS distribution signing; decide bundle id (`docs/bundle-id-recommendation.md`) |
+| Age gate | COPPA born-before-2008 (G6) | DONE (A.1 - 18+ floor in the date picker, `birth_data_screen.dart`) | None in app; keep store age-rating answers consistent with the 18+ gate |
 | Analytics / attribution | None wired (G13/G14) | MISSING | Privacy-bound decision; can launch without, but launch blind |
 | Review-risk: 4.3(b) | Utility framing, no fortune lexicon | MITIGATED (Run 3 Section 7) | Hold metadata + screenshot discipline |
 | Review-risk: payment surface | None present | VERIFIED CLEAN | Keep (scope AC3 test guards) |
@@ -438,9 +530,11 @@ non-goals (no IAP, no accounts, no social graph, demo stays offline).
 ### Impl Run B - Privacy-safe analytics + share-loop instrumentation + share reach
 - Scope: G13 single privacy-respecting analytics SDK (no PII, no event content),
   instrument the Section 6.2 funnel events + share-tap/return; G10 share
-  discoverability (result CTA emphasis, share-from-history, post-demo share
-  prompt); optional G18 local feedback prompt; optionally G14 crash reporting if
-  the same SDK choice covers it.
+  discoverability (since shipped + verified 2026-06-12: result CTA emphasis,
+  share-from-history, post-demo share prompt); G18 local feedback prompt (since
+  shipped); optionally G14 crash reporting if the same SDK choice covers it.
+  Remaining Run B scope is the analytics/share-loop measurement (G13), which
+  stays future P1.
 - Why second: turns the launch from blind to measured and strengthens the
   *existing* (text) loop at low risk - before any expensive card work.
 - Out of scope: the share-card image (depends on this baseline).
@@ -485,11 +579,16 @@ us the loop is worth the investment, and (c) a pixel-level privacy review.
   date, city, lat/lon, life-event text/category, label, or API id (PRD Section 13).
 - [ ] Demo path remains network-free (extend the offline assertion to cover the
   analytics SDK in demo - no calls).
-- [ ] Share CTA reachable from a result AND a history row; post-demo share prompt
-  appears once per demo result (widget tests).
+- [x] (G10 - done, verified 2026-06-12) Share CTA reachable from a result AND a
+  history row; post-demo share prompt appears once per demo result
+  (`test/widget/features/calculation_flow/result_share_test.dart`,
+  `test/widget/features/calculation_flow/result_demo_share_prompt_test.dart`,
+  `test/widget/features/home/home_history_share_test.dart` - 22 tests).
 - [ ] Share still emits the PII-free string unchanged (existing share test holds).
-- [ ] (If G18) feedback answer persists locally, no network (widget + storage
-  test).
+- [x] (G18 - done) feedback answer persists locally, no network
+  (`test/data/prefs/result_feedback_store_test.dart`,
+  `test/data/repos/settings_repository_test.dart`,
+  `test/widget/features/calculation_flow/result_screen_test.dart`).
 - [ ] `flutter analyze` + `flutter test` green.
 
 ### Impl Run C - acceptance
@@ -500,8 +599,11 @@ us the loop is worth the investment, and (c) a pixel-level privacy review.
 - [ ] English UI is byte-for-byte unchanged to the user (golden tests green).
 - [ ] Plurals/counts ("X of Y events", delete-sheet count) use ICU forms, verified
   at count = 0/1/many (widget test).
-- [ ] `intl` formatters drive date/time/percent (no hand-rolled formatting on
-  user-visible numbers) - audit.
+- [x] (G21 - date/time done, verified 2026-06-12) `intl` formatters drive
+  date/time (12h/24h) on share/result/history via `AppDateFormat` +
+  `ShareCopyBuilder` (`app_date_format_test.dart`, `share_copy_builder_test.dart`,
+  result-share/settings/history widget tests - 64 tests); percent formatting
+  remains a separate copy/locale review.
 - [ ] `flutter analyze` + `flutter test` (incl. goldens) green.
 
 ### Share-card image (future V1.5) - acceptance (recorded now, not for the first 3)
@@ -531,8 +633,11 @@ us the loop is worth the investment, and (c) a pixel-level privacy review.
   Section 4.3); a "wrong method" review risk if marketed early.
 - **Head-term ASO** (astrology/horoscope/zodiac) and **fortune-telling lexicon.**
   Burns relevance and invites Apple 4.3(b) (Run 3 Section 7).
-- **Chart rendering, push notifications, in-app review prompt, Apple Watch/widget.**
-  V2 / post-MVP (PRD Section 8 / Section 17).
+- **Chart rendering, push notifications, Apple Watch/widget.**
+  V2 / post-MVP (PRD Section 8 / Section 17). The in-app review prompt,
+  originally deferred here, is since implemented in-repo as a neutral
+  OS-owned prompt with tests; rating metrics remain App Store Connect /
+  Play Console scope, and no rating impact is claimed.
 - **Diluting the offline demo.** It is the unique conversion + trust lever; keep
   it offline and network-free (CLAUDE.md).
 
@@ -566,12 +671,15 @@ the share card and V1.5.
 - `docs/qa-phase8-report.md` - Section 4 security/permissions, Section 5 build,
   Section 6 deferred blockers (Crashlytics, hosted privacy URL, bundle id, app
   icon, on-device smoke).
-- `docs/implementation-plan.md` - line 1282 (planned "ARB from day one",
-  not implemented - see Section 9), Section 9.5 API modes.
+- `docs/implementation-plan.md` - line 1282 (planned "ARB from day one"; not
+  implemented at the Run 4 baseline, since implemented via C.1 - see Section 9),
+  Section 9.5 API modes.
 - `docs/marketing-research.md` - reused only via Run 1/Run 2 citations; no new
   external figure introduced.
 
-**Code / config verified in this run (2026-06-02, read-only):**
+**Code / config verified at the Run 4 baseline (2026-06-02, read-only) -
+historical snapshot, not current truth; superseded items are listed in the
+current-status block immediately below:**
 - `lib/core/sharing/share_copy_builder.dart`, `share_service.dart` - PII-free
   text share + `rectify/share` channel + clipboard fallback.
 - `lib/features/calculation_flow/screens/result_screen.dart` - share button
@@ -584,14 +692,28 @@ the share card and V1.5.
 - `lib/features/onboarding/onboarding_controller.dart` - onboarding persistence.
 - `lib/providers/core_providers.dart`, `lib/data/api/*` - proxy/provider/demo API
   modes, `proxy.invalid.example` fail-fast.
-- `pubspec.yaml` - confirms NO `in_app_purchase`, `firebase*`, `sentry`,
-  `posthog`, `share_plus`, screenshot/render-to-image, or `flutter_localizations`;
-  `intl` present.
+- `pubspec.yaml` - at the Run 4 baseline showed NO `in_app_purchase`,
+  `firebase*`, `sentry`, `posthog`, `share_plus`, screenshot/render-to-image,
+  or `flutter_localizations`; `intl` present. (Historical: `share_plus` and
+  `flutter_localizations` have since been added - see the current-status block
+  below.)
 - `ios/Runner/Info.plist` (`CFBundleDisplayName=Rectify`),
   `android/app/src/main/AndroidManifest.xml` (`android:label="rectify"`) -
   display-name mismatch (G1).
-- Absence checks: no `*.arb`, no `l10n.yaml`, no `AppLocalizations`/
+- Absence checks (historical, Run 4 baseline): at 2026-06-02 there were no
+  `*.arb` files, no `l10n.yaml`, and no `AppLocalizations`/
   `localizationsDelegates`/`supportedLocales`/`generate: true` in `lib/` (G20).
+
+**Current repo status (2026-06-12), superseding the Run 4 baseline where
+noted:**
+- `pubspec.yaml` now includes `share_plus` and `flutter_localizations`;
+  `in_app_purchase`, `firebase*`, `sentry`, and `posthog` remain absent.
+- `lib/core/sharing/story_card_renderer.dart` exists (share-card PNG, G18).
+- `l10n.yaml` and `generate: true` exist; `lib/l10n/app_{en,de,es,fr,pt}.arb`
+  and the generated `AppLocalizations` are in the repo (G20/G22 in-repo done).
+- Still owner-gated, not app-code done: native-speaker review of DE/FR/ES/PT,
+  per-locale console keyword re-count, public privacy-policy URL, store console
+  forms, and proxy/signing.
 
 No live ranking, rating, install count, review count, or trademark clearance is
 asserted in this document; all such items remain in the Run 3 Section 11

@@ -687,7 +687,7 @@ Custom tokens that don't map to Material concepts (confidence colors, the hero r
 
 - Bundled font assets (Inter, Source Serif 4, JetBrains Mono TTFs in `assets/fonts/`) — the `google_fonts` package was removed 2026-06-12
 - `lucide_icons` *or* `phosphor_flutter` — the production icon family
-- `flutter_svg` — for the brand mark and the one or two quiet glyph illustrations
+- (no SVG package — the unused `flutter_svg` dependency was removed 2026-06-12; add SVG support later only if brand/glyph SVG assets actually land)
 - `intl` — date/time formatting respecting locale and the 12h/24h setting
 
 ### 14.4 Localization-ready (V1.5, not MVP)

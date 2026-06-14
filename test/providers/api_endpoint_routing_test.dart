@@ -1,11 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:rectify/data/api/rectification_api.dart';
 import 'package:rectify/data/repos/rectification_repository.dart';
 import 'package:rectify/data/secure/secure_key_store.dart';
 import 'package:rectify/providers/core_providers.dart';
 import 'package:rectify/providers/repo_providers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../helpers/fake_history_repository.dart';
 
@@ -19,16 +19,23 @@ import '../helpers/fake_history_repository.dart';
 /// data layer must reach the live endpoint
 /// `https://api.astrology-api.io/api/v3/rectification/search` instead —
 /// synchronously, without waiting on the async secure-storage read.
-ProviderContainer _container({
+///
+/// Async only to resolve the mock [SharedPreferences] instance backing
+/// `liveQuotaStoreProvider`; no provider inside the container is read
+/// here, so the secure-storage race window stays open for the caller.
+Future<ProviderContainer> _container({
   required String? envKey,
   String? storedKey,
-}) {
+}) async {
+  SharedPreferences.setMockInitialValues(<String, Object>{});
+  final prefs = await SharedPreferences.getInstance();
   final container = ProviderContainer(
     overrides: [
       envApiKeyProvider.overrideWithValue(envKey),
       secureKeyStoreProvider.overrideWithValue(
         InMemorySecureKeyStore(seed: storedKey),
       ),
+      sharedPreferencesProvider.overrideWithValue(prefs),
       historyRepositoryProvider.overrideWithValue(FakeHistoryRepository()),
     ],
   );
@@ -41,8 +48,8 @@ void main() {
     test(
       'rectificationApiProvider targets /api/v3/rectification/search '
       'synchronously, before the secure-storage read settles',
-      () {
-        final container = _container(envKey: 'ask_test_env_key');
+      () async {
+        final container = await _container(envKey: 'ask_test_env_key');
 
         // Precondition: the async secure read is genuinely still in
         // flight — this is the race window the bug used to fail in.
@@ -62,22 +69,30 @@ void main() {
       },
     );
 
-    test('dioProvider targets the live provider base URL synchronously', () {
-      final container = _container(envKey: 'ask_test_env_key');
-      final dio = container.read(dioProvider);
-      expect(dio.options.baseUrl, 'https://api.astrology-api.io');
-    });
+    test(
+      'dioProvider targets the live provider base URL synchronously',
+      () async {
+        final container = await _container(envKey: 'ask_test_env_key');
+        final dio = container.read(dioProvider);
+        expect(dio.options.baseUrl, 'https://api.astrology-api.io');
+      },
+    );
 
     test(
-      'repository reports the key as configured so submit() reaches the '
-      'network instead of returning MissingApiKeyFailure',
-      () {
-        final container = _container(envKey: 'ask_test_env_key');
+      'repository keeps the local quota enforced for the bundled .env key',
+      () async {
+        final container = await _container(envKey: 'ask_test_env_key');
         final repo = container.read(rectificationRepositoryProvider);
         expect(repo, isA<LiveRectificationRepository>());
         expect(
-          (repo as LiveRectificationRepository).apiKeyIsConfigured,
-          isTrue,
+          (repo as LiveRectificationRepository).liveQuotaStore,
+          isNotNull,
+          reason: 'quota store must be wired so live attempts are counted',
+        );
+        expect(
+          repo.bypassLiveQuota,
+          isFalse,
+          reason: 'the bundled .env key alone must not bypass the quota',
         );
       },
     );
@@ -86,7 +101,7 @@ void main() {
       'routing still resolves to the live endpoint once the secure '
       'read settles',
       () async {
-        final container = _container(envKey: 'ask_test_env_key');
+        final container = await _container(envKey: 'ask_test_env_key');
         await container.read(proApiKeyProvider.future);
 
         expect(container.read(activeApiKeyProvider), 'ask_test_env_key');
@@ -103,16 +118,24 @@ void main() {
 
   group('auth-mode precedence', () {
     test('a Settings-entered key overrides the bundled .env key', () async {
-      final container = _container(
+      final container = await _container(
         envKey: 'ask_env_key',
         storedKey: 'ask_user_entered_key',
       );
       await container.read(proApiKeyProvider.future);
       expect(container.read(activeApiKeyProvider), 'ask_user_entered_key');
+      final repo =
+          container.read(rectificationRepositoryProvider)
+              as LiveRectificationRepository;
+      expect(
+        repo.bypassLiveQuota,
+        isTrue,
+        reason: 'a user-entered key must bypass the local live quota',
+      );
     });
 
     test('with no key anywhere the API falls back to proxy mode', () async {
-      final container = _container(envKey: null);
+      final container = await _container(envKey: null);
       await container.read(proApiKeyProvider.future);
 
       expect(container.read(activeApiKeyProvider), isNull);
@@ -123,11 +146,16 @@ void main() {
         container.read(dioProvider).options.baseUrl,
         'https://proxy.invalid.example',
       );
+      // No-key submissions go through the proxy (which holds the provider
+      // credential server-side); the repository must keep the local
+      // free-attempt quota enforced and never bypass it.
       final repo = container.read(rectificationRepositoryProvider);
       expect(
-        (repo as LiveRectificationRepository).apiKeyIsConfigured,
-        isFalse,
+        (repo as LiveRectificationRepository).liveQuotaStore,
+        isNotNull,
+        reason: 'proxy-mode attempts must be counted against the free quota',
       );
+      expect(repo.bypassLiveQuota, isFalse);
     });
   });
 }

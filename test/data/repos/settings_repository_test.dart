@@ -2,6 +2,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rectify/data/db/database.dart';
 import 'package:rectify/data/models/time_format.dart';
+import 'package:rectify/data/prefs/result_feedback_store.dart';
 import 'package:rectify/data/prefs/settings_store.dart';
 import 'package:rectify/data/repos/settings_repository.dart';
 import 'package:rectify/data/secure/secure_key_store.dart';
@@ -11,6 +12,7 @@ void main() {
   late AppDatabase db;
   late SettingsStore prefs;
   late InMemorySecureKeyStore secure;
+  late ResultFeedbackStore resultFeedback;
   late DefaultSettingsRepository repo;
 
   setUp(() async {
@@ -19,7 +21,13 @@ void main() {
     db = AppDatabase.forTesting(NativeDatabase.memory());
     prefs = SettingsStore(sharedPrefs);
     secure = InMemorySecureKeyStore();
-    repo = DefaultSettingsRepository(prefs: prefs, secure: secure, db: db);
+    resultFeedback = ResultFeedbackStore(sharedPrefs);
+    repo = DefaultSettingsRepository(
+      prefs: prefs,
+      secure: secure,
+      db: db,
+      resultFeedback: resultFeedback,
+    );
   });
 
   tearDown(() async {
@@ -57,6 +65,8 @@ void main() {
       await repo.setProApiKey('user-key');
       await repo.setOnboardingDone(value: true);
       await repo.setDemoModeDefault(value: true);
+      await resultFeedback.write('result-1', ResultFeedbackAnswer.yes);
+      await resultFeedback.write('result-2', ResultFeedbackAnswer.no);
 
       final wipe = await repo.deleteAllData();
       expect(wipe.isOk, isTrue);
@@ -66,6 +76,8 @@ void main() {
       expect(settings.proApiKeyConfigured, isFalse);
       expect(settings.onboardingDone, isFalse);
       expect(settings.demoModeDefault, isFalse);
+      expect(resultFeedback.read('result-1'), isNull);
+      expect(resultFeedback.read('result-2'), isNull);
     });
   });
 }

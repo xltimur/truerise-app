@@ -6,7 +6,9 @@ import 'package:rectify/data/secure/secure_key_store.dart';
 import 'package:rectify/features/home/home_history_screen.dart';
 import 'package:rectify/providers/core_providers.dart';
 import 'package:rectify/providers/repo_providers.dart';
+import 'package:rectify/theme/icons.dart';
 import 'package:rectify/widgets/cards/history_card.dart';
+import 'package:rectify/widgets/nav/nav.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../data/fixtures/sample_calculation.dart';
@@ -51,6 +53,35 @@ void main() {
     expect(find.text('New Calculation'), findsWidgets);
     expect(find.byType(HistoryCard), findsNothing);
   });
+
+  testWidgets(
+    'top nav shows no settings icon; bottom tab Settings remains',
+    (tester) async {
+      final prefs = await _prefs();
+      final history = FakeHistoryRepository();
+
+      await tester.pumpWidget(_wrap(prefs, history));
+      await tester.pumpAndSettle();
+
+      // Settings lives in the bottom tab bar only — no duplicate gear
+      // in the top nav.
+      expect(
+        find.descendant(
+          of: find.byType(TopNav),
+          matching: find.byIcon(AppIcons.settings),
+        ),
+        findsNothing,
+      );
+      expect(
+        find.descendant(
+          of: find.byType(BottomTabBar),
+          matching: find.byIcon(AppIcons.settings),
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('SETTINGS'), findsOneWidget);
+    },
+  );
 
   testWidgets('populated state renders one HistoryCard per saved row', (
     tester,

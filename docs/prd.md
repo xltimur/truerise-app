@@ -146,19 +146,30 @@ No mainstream, mobile-native, consumer-grade BTR app exists.
 
 The following are explicitly out of scope for MVP. Any request to add these during MVP development should be deferred to V1.5 or V2.
 
-- PDF or image export of results
+- PDF export / full report export of results. (A privacy-safe shareable result
+  image is now implemented in-repo via `share_plus`, `StoryCardRenderer`,
+  `ShareService.shareImagePng`, and `resultShareImageButtonKey`, so image
+  sharing of the result card is no longer a non-goal. Direct Instagram Stories
+  posting remains optional/out of scope until a Meta/Facebook App ID exists.)
 - Vedic / KP method toggle (MVP uses API default method)
 - Birth chart rendering or visualization
 - Live astrologer consultation booking
 - Social sharing or community features
 - Push notifications or personalized reminders
 - In-app purchase, subscription billing, restore purchase, purchase history, or refund/credit restoration (MVP has no real monetization — only a pricing assumption for future phases; see Section 17)
-- Hindi or any non-English language UI
+- Hindi language UI (remains deferred to the V1.5 decision). DE/FR/ES/PT UI
+  localization is now implemented in-repo via ARB/AppLocalizations and localized
+  store listing drafts, but publication of these locales remains gated on
+  native-speaker review and store console recount/upload.
 - Multiple user profiles on one account
 - Offline calculation (API dependency is acceptable for MVP)
 - Syncing across devices
 - Apple Watch or widget extensions
-- In-app review request flows (defer to after V1 launch)
+
+*Note: a neutral, optional, OS-owned in-app review prompt (via `in_app_review`,
+with throttle/eligibility rules covered by tests) is now implemented in-repo and
+is no longer a non-goal. Store rating metrics and any rating impact remain App
+Store Connect / Play Console scope; no rating improvement is claimed.*
 
 ---
 
@@ -583,13 +594,18 @@ event_matches    : JSON blob (array of per-event match details from API)
 
 Features to add:
 - **Real monetization:** in-app purchase ("1 Calculation Credit"), restore purchase, purchase history, and refund / credit-restoration flows. This is the phase that validates true willingness-to-pay.
-- PDF / image export of result for sharing (shareable card + full report)
+- PDF export of result (full report). The shareable result image card is
+  already shipped in-repo (`share_plus` + `StoryCardRenderer` +
+  `ShareService.shareImagePng`); only the PDF / full-report export remains
+  in V1.5.
 - Multiple candidate times comparison view (side-by-side)
 - Hindi language localization
 - Vedic/KP method framing (if API supports it)
 - Onboarding improvement based on drop-off data
 - Event templates ("suggest events based on age")
-- Astrology creator-friendly share card (branded screenshot)
+- Astrology creator-friendly share card (branded screenshot) - shipped
+  in-repo as the privacy-safe story-card image share. Remaining V1.5 work is
+  optional direct Instagram Stories posting, gated on a Meta/Facebook App ID.
 
 Monetization consideration: After per-calculation IAP is proven, evaluate a subscription model ($7.99/month for unlimited calculations) based on repeat usage data.
 

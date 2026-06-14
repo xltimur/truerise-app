@@ -686,11 +686,41 @@ abstract class AppLocalizations {
   /// **'Low confidence result'**
   String get resultLowConfidenceTitle;
 
-  /// Body of the low-confidence guidance note. Tells the user how to get a stronger estimate in their next calculation: more dated life events or a narrower birth-time window.
+  /// First next-step line in the low-confidence guidance note: add more dated life events in the next calculation.
   ///
   /// In en, this message translates to:
-  /// **'Add more dated life events or narrow the birth-time window to improve the estimate.'**
-  String get resultLowConfidenceBody;
+  /// **'Add more dated life events.'**
+  String get resultLowConfidenceTipEvents;
+
+  /// Second next-step line in the low-confidence guidance note: double-check the birth data entered.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your birth date, city, and approximate time.'**
+  String get resultLowConfidenceTipReviewInput;
+
+  /// Third next-step line in the low-confidence guidance note: widen the birth-time window in the next calculation.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a wider birth-time window.'**
+  String get resultLowConfidenceTipWiderWindow;
+
+  /// Title of the compact explanation block under the confidence bar that explains what the confidence percent means.
+  ///
+  /// In en, this message translates to:
+  /// **'What does this percent mean?'**
+  String get resultConfidenceExplainerTitle;
+
+  /// Body of the confidence explanation block. Must stay probabilistic (estimate/probable) and avoid absolute outcome claims. Explains that confidence is relative support across candidate times in the selected birth-time window.
+  ///
+  /// In en, this message translates to:
+  /// **'Confidence is an estimate. It shows how strongly your dated life events support this candidate time compared with the other candidate times in your selected birth-time window.'**
+  String get resultConfidenceExplainerBody;
+
+  /// Method line of the confidence explanation block. High-level description of the scoring method (transits + progressions), framed as method/tooling rather than fortune-telling, and kept probabilistic.
+  ///
+  /// In en, this message translates to:
+  /// **'Method: each candidate time is scored against your events using transits and progressions; higher scores mean a more probable match.'**
+  String get resultConfidenceExplainerMethod;
 
   /// Heading above the secondary candidate cards on the result screen.
   ///
@@ -745,6 +775,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Share sample'**
   String get resultDemoShareButton;
+
+  /// Screen-reader label for the post-result plausibility feedback prompt container.
+  ///
+  /// In en, this message translates to:
+  /// **'Result feedback'**
+  String get resultFeedbackLabel;
+
+  /// Title of the post-result plausibility feedback prompt asking whether the rectified birth time feels plausible to the user.
+  ///
+  /// In en, this message translates to:
+  /// **'Does this time feel plausible?'**
+  String get resultFeedbackTitle;
+
+  /// Affirmative answer button in the post-result plausibility feedback prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get resultFeedbackYes;
+
+  /// Undecided answer button in the post-result plausibility feedback prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Not sure'**
+  String get resultFeedbackNotSure;
+
+  /// Negative answer button in the post-result plausibility feedback prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get resultFeedbackNo;
+
+  /// Confirmation shown after the user's plausibility feedback answer has been recorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks, saved.'**
+  String get resultFeedbackSaved;
 
   /// Short tagline printed at the bottom of the shareable result image card.
   ///
@@ -1263,6 +1329,48 @@ abstract class AppLocalizations {
   /// **'You\'ve reached the calculation limit for now. Wait a little and try again, or switch on Demo mode to keep exploring offline.'**
   String get errorRateLimitedBody;
 
+  /// Primary button on the rate-limit error screen. Switches the draft and the persisted default to Demo mode and re-enters the flow offline.
+  ///
+  /// In en, this message translates to:
+  /// **'Use Demo Mode'**
+  String get errorRateLimitedUseDemo;
+
+  /// Secondary button on the rate-limit error screen. Opens Settings so the user can add their own Astrology API key. Must not read as a purchase or signup prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter My API Key'**
+  String get errorRateLimitedEnterKey;
+
+  /// Body of the rate-limit error screen when the device-local free quota is exhausted. {resetDetail} is either an empty string or a leading space followed by the localized errorRateLimitedResetAt sentence. No purchase or signup wording.
+  ///
+  /// In en, this message translates to:
+  /// **'Your free live quota is used up.{resetDetail} Switch to Demo Mode to keep exploring, or add your own API key in Settings.'**
+  String errorRateLimitedLocalQuotaBody(String resetDetail);
+
+  /// Sentence naming when a rate limit resets. {resetTime} is a locale-independent UTC stamp formatted as yyyy-MM-dd HH:mm; the trailing 'UTC' label stays with the sentence.
+  ///
+  /// In en, this message translates to:
+  /// **'Resets at {resetTime} UTC.'**
+  String errorRateLimitedResetAt(String resetTime);
+
+  /// Sentence appended to the rate-limit body when the server reported a retry-after delay. {duration} is the localized coarse wait from errorRateLimitedRetryMinutes or errorRateLimitedRetryHours.
+  ///
+  /// In en, this message translates to:
+  /// **'You can try again in about {duration}.'**
+  String errorRateLimitedRetryAfter(String duration);
+
+  /// Coarse wait estimate in minutes used inside errorRateLimitedRetryAfter. Sub-minute waits are rounded up to 1 before formatting.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 minute} other{{count} minutes}}'**
+  String errorRateLimitedRetryMinutes(int count);
+
+  /// Coarse wait estimate in hours used inside errorRateLimitedRetryAfter. Minutes are rounded up to whole hours before formatting.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 hour} other{{count} hours}}'**
+  String errorRateLimitedRetryHours(int count);
+
   /// Title of the malformed-response error screen.
   ///
   /// In en, this message translates to:
@@ -1292,6 +1400,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Time format'**
   String get settingsSectionTimeFormat;
+
+  /// Settings section heading for the user-entered Astrology API key. Rendered in uppercase.
+  ///
+  /// In en, this message translates to:
+  /// **'API key'**
+  String get settingsSectionApiKey;
 
   /// Settings section heading for the destructive data actions. Rendered in uppercase.
   ///
@@ -1328,6 +1442,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'24-hour  (07:14)'**
   String get settingsTimeFormat24;
+
+  /// Helper text in the Settings API-key card for users who already hold an Astrology API key. Must not read as a purchase or signup prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an Astrology API key? Add it here.'**
+  String get settingsApiKeyHelper;
+
+  /// Status line in the Settings API-key card when a key is stored. The key itself is never echoed back into the UI.
+  ///
+  /// In en, this message translates to:
+  /// **'API key added'**
+  String get settingsApiKeyConfigured;
+
+  /// Button in the Settings API-key card that opens the add-key dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Add key'**
+  String get settingsApiKeyAdd;
+
+  /// Button in the Settings API-key card that deletes the stored key.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove key'**
+  String get settingsApiKeyRemove;
+
+  /// Label of the obscured text field in the add-key dialog. 'Astrology API' is the external provider name, held constant across locales.
+  ///
+  /// In en, this message translates to:
+  /// **'Astrology API key'**
+  String get settingsApiKeyFieldLabel;
+
+  /// Confirm button in the add-key dialog that stores the entered key.
+  ///
+  /// In en, this message translates to:
+  /// **'Save key'**
+  String get settingsApiKeySave;
 
   /// Destructive button in Settings that opens the delete-all-data confirmation sheet.
   ///

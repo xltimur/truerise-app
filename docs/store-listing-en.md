@@ -43,10 +43,13 @@ decision remain owner work (see the checklist at the end).
     for consistency.)
 - **Growth angle baked into the copy:** the listing emphasizes **privacy-safe,
   shareable insight** — a result you can share as a short line (time + rising +
-  confidence) **without** sharing any birth data — because that shipped text
-  share is the product's only organic spread loop today
-  (`docs/feature-gap-analysis.md` §6.1). It does **not** imply an image/“share
-  card,” which is an unbuilt V1.5 feature.
+  confidence) **without** sharing any birth data
+  (`docs/feature-gap-analysis.md` §6.1). *(Updated 2026-06-12: the privacy-safe
+  share-card IMAGE — Run 4 G9 — has since shipped in-repo alongside the text
+  share; both carry only time, rising when present, confidence, brand, and the
+  public share link. Listing copy may now reference the shipped share card,
+  but must not imply direct Instagram Stories posting, which stays out of
+  scope until a Meta/Facebook App ID exists.)*
 - **Already true in the build (verified via Impl Run A.1/A.2/A.3):** display name
   is **TrueRise**; an in-app **18+ birth-date gate** is enforced; the privacy
   screen discloses live-mode transmission; the app icon is the production
@@ -57,12 +60,19 @@ decision remain owner work (see the checklist at the end).
   1. **Hosted privacy-policy URL** (publish `docs/privacy-policy.md`, fill its
      `[OWNER/LEGAL]` blanks) — required in both listings.
   2. **Support URL** (and Play's required support email / contact).
-  3. **Bundle/package-ID decision** — keep `com.rectify.rectify` or rebrand to a
-     `com.truerise.*` ID *before* the first store record (immutable after).
+  3. **Bundle/package-ID decision** — recommended first-publish rebrand is
+     `app.astrolium.truerise` (fallbacks `com.astrolium.truerise` and
+     `com.truerise.app`; see `docs/bundle-id-recommendation.md`), decided
+     *before* the first store record (immutable after). Code stays
+     `com.rectify.rectify` until explicit owner approval.
   4. **Release signing** — Android upload keystore + Play App Signing; iOS
      distribution profile.
-  5. **Screenshots** — capture in the next run from the post-A.1/A.3 build (copy
-     plan in §6); none are created here.
+  5. **Screenshots** — raw captures are already in the repo
+     (`screenshots/store/{en,de,fr,es,pt-BR}/`, 5 frames per locale, plus
+     manifest/README), taken per the §5 copy plan from the post-A.1/A.3 build.
+     Remaining owner/design work: device-frame + caption compositing, any
+     additional device sizes the consoles require, console upload, and
+     owner/design review.
   6. **Trademark clearance + App Store name availability** for “TrueRise.”
   7. **Console character re-count**, **category confirmation**, **age rating**
      consistent with the 18+ gate, **Apple privacy labels + Play Data Safety**
@@ -296,7 +306,7 @@ Apple 4.3(b) and misleading-claim risk and pull the wrong audience
 
 ---
 
-## 5. Screenshot copy plan (for the next capture run — no files created here)
+## 5. Screenshot copy plan *(executed since: raw captures live in `screenshots/store/{en,de,fr,es,pt-BR}/`; compositing + console upload remain)*
 
 Capture from a **post-A.1/A.3 build** (TrueRise name + production icon, no
 “Rectify” leak). Four frames, ordered answer → trust → privacy → spread; every
@@ -310,10 +320,15 @@ Capture in both 12h and 24h time formats.
 | 3 | **Private & offline** — Demo pill + Settings privacy posture (on-device, Delete all data, demo = no network) | `Private by default. Try it free, offline, in Demo mode.` |
 | 4 | **Share the result** — the Share button + OS share sheet carrying the privacy-safe **text** | `Share your result — never your birth data.` |
 
-> **Frame 4 must show the TEXT share** (the shipped `ShareCopyBuilder` line:
-> time + rising + confidence + “Calculated with TrueRise”). Do **not** mock up an
-> image/“share card” — that feature is unbuilt (V1.5). Do not lead any frame with
-> zodiac wheels, horoscopes, or mystic imagery.
+> **Frame 4 may show either shipped share surface** — the text share (the
+> `ShareCopyBuilder` line: time + rising + confidence + "Calculated with
+> TrueRise" + the public link) or the shipped privacy-safe **share-card image**
+> (the `StoryCardRenderer` PNG: brand, time, rising when present, confidence,
+> tagline; shared via `share_plus`, updated 2026-06-12). Show only real,
+> shipped UI: do not mock up direct Instagram Stories posting (out of scope
+> until a Meta/Facebook App ID exists) or any content beyond the privacy-safe
+> allow-list. Do not lead any frame with zodiac wheels, horoscopes, or mystic
+> imagery.
 
 Optional later: a Play **feature graphic** (1024×500) using the same
 answer-first message; not required to submit.
@@ -337,9 +352,12 @@ answer-first message; not required to submit.
 - **Astrology as method, not category.** Reference transits/progressions as the
   calculation *method*; keep astrology/horoscope/zodiac out of the visible
   title/subtitle and the first screenshot (Apple 4.3(b)).
-- **Privacy-safe sharing only.** Any sharing copy must match the shipped text
-  share: time + rising + confidence + brand, **no PII**. Do not depict an
-  image/share-card (unbuilt).
+- **Privacy-safe sharing only.** Any sharing copy must match the shipped share
+  surfaces — text and the share-card image (both shipped as of 2026-06-12):
+  time + rising (when present) + confidence + brand + the public share link,
+  **no PII**. Depict only the shipped share UI; do not depict direct Instagram
+  Stories posting (not built — requires a Meta/Facebook App ID) or any field
+  beyond that allow-list.
 - **Age gate 18+.** Listing tone, target-audience declaration (adults), and store
   age rating must all match the in-app 18+ birth-date gate.
 - **Honest expectation-setting.** “More events = stronger estimate”;
@@ -353,10 +371,14 @@ answer-first message; not required to submit.
       all `[OWNER/LEGAL]` blanks) and entered in both consoles.
 - [ ] **Support URL** (+ Play support email/contact) provided.
 - [ ] **Bundle/package-ID decision** made and applied *before* the first store
-      record (`com.rectify.rectify` vs `com.truerise.*` — immutable after).
+      record (recommended `app.astrolium.truerise`, fallbacks in
+      `docs/bundle-id-recommendation.md` — immutable after).
 - [ ] **Release signing** configured (Android upload keystore + Play App Signing;
       iOS distribution profile); release no longer debug-signed.
-- [ ] **Screenshots** captured per §5 from a post-A.1/A.3 build (next run).
+- [ ] **Screenshots** — raw captures done per §5
+      (`screenshots/store/{en,de,fr,es,pt-BR}/`, 5 frames per locale).
+      Remaining: device-frame/caption compositing, other device sizes if the
+      consoles require them, console upload, owner/design review.
 - [ ] **Trademark clearance + App Store name availability** for “TrueRise”
       confirmed.
 - [ ] **Character re-count** of Name/Subtitle/keywords/Title/short description in
@@ -385,7 +407,10 @@ answer-first message; not required to submit.
 - `docs/competitor-aso-research.md` (Run 2) — Vedic Samay = Utilities precedent;
   Apple 4.3(b) risk; “is it accurate, can you show me why?” axis. **Preserved.**
 - `docs/feature-gap-analysis.md` (Run 4) — text share is PII-free and shipped;
-  image/share-card is unbuilt V1.5; demo is offline. **Preserved.**
+  demo is offline. **Preserved.** *(The Run 4 "image/share-card is unbuilt
+  V1.5" conclusion is superseded as of 2026-06-12: the privacy-safe share-card
+  image has shipped in-repo — see the §5/§6 notes above and the status note in
+  `docs/feature-gap-analysis.md`.)*
 - `docs/privacy-policy.md`, `docs/apple-privacy-labels.md`,
   `docs/play-data-safety.md` (Run A.2) — authoritative data posture used in the
   reviewer notes (on-device storage; offline demo; live HTTPS transmission of

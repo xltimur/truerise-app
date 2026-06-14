@@ -10,6 +10,7 @@ import 'package:rectify/core/sharing/share_copy_builder.dart';
 import 'package:rectify/core/sharing/share_service.dart';
 import 'package:rectify/core/sharing/story_card_renderer.dart';
 import 'package:rectify/data/models/saved_calculation.dart';
+import 'package:rectify/data/prefs/result_feedback_store.dart';
 import 'package:rectify/features/calculation_flow/state/result_providers.dart';
 import 'package:rectify/features/reviews/review_invitation.dart';
 import 'package:rectify/l10n/l10n.dart';
@@ -101,6 +102,26 @@ const Key resultLowConfidenceNoteKey = ValueKey<String>(
 );
 
 @visibleForTesting
+const Key resultConfidenceExplainerKey = ValueKey<String>(
+  'result-confidence-explainer',
+);
+
+@visibleForTesting
+const Key resultConfidenceExplainerTitleKey = ValueKey<String>(
+  'result-confidence-explainer-title',
+);
+
+@visibleForTesting
+const Key resultConfidenceExplainerBodyKey = ValueKey<String>(
+  'result-confidence-explainer-body',
+);
+
+@visibleForTesting
+const Key resultConfidenceExplainerMethodKey = ValueKey<String>(
+  'result-confidence-explainer-method',
+);
+
+@visibleForTesting
 const Key resultDemoSharePromptKey = ValueKey<String>(
   'result-demo-share-prompt',
 );
@@ -109,6 +130,23 @@ const Key resultDemoSharePromptKey = ValueKey<String>(
 const Key resultDemoSharePromptShareKey = ValueKey<String>(
   'result-demo-share-prompt-share',
 );
+
+@visibleForTesting
+const Key resultFeedbackPromptKey = ValueKey<String>('result-feedback-prompt');
+
+@visibleForTesting
+const Key resultFeedbackYesKey = ValueKey<String>('result-feedback-yes');
+
+@visibleForTesting
+const Key resultFeedbackNotSureKey = ValueKey<String>(
+  'result-feedback-not-sure',
+);
+
+@visibleForTesting
+const Key resultFeedbackNoKey = ValueKey<String>('result-feedback-no');
+
+@visibleForTesting
+const Key resultFeedbackSavedKey = ValueKey<String>('result-feedback-saved');
 
 class _ResultBody extends ConsumerWidget {
   const _ResultBody({required this.saved});
@@ -167,6 +205,8 @@ class _ResultBody extends ConsumerWidget {
             const SizedBox(height: AppSpacing.s3),
             const _LowConfidenceNote(key: resultLowConfidenceNoteKey),
           ],
+          const SizedBox(height: AppSpacing.s3),
+          const _ConfidenceExplainer(key: resultConfidenceExplainerKey),
           if (secondary.isNotEmpty) ...<Widget>[
             const SizedBox(height: AppSpacing.s6),
             Text(l10n.resultOtherCandidates, style: AppTypography.titleSm),
@@ -191,6 +231,11 @@ class _ResultBody extends ConsumerWidget {
               const SizedBox(height: AppSpacing.s3),
             ],
           ],
+          const SizedBox(height: AppSpacing.s6),
+          _ResultFeedbackPrompt(
+            key: resultFeedbackPromptKey,
+            resultId: saved.request.id,
+          ),
           const SizedBox(height: AppSpacing.s6),
           PrimaryButton(
             key: resultEvidenceButtonKey,

@@ -104,6 +104,20 @@ abstract final class AppLinks {
     'TRUERISE_VERSION_CHECK_URL',
   );
 
+  /// Public, owner-hosted privacy-policy page opened from the Settings
+  /// privacy row. **Disabled by default**: the empty default means the row
+  /// keeps pushing the bundled in-app `PrivacyPolicyScreen`; the owner opts
+  /// in at build time with
+  /// `--dart-define=TRUERISE_PRIVACY_POLICY_URL=https://.../privacy`.
+  ///
+  /// Like [shareUrl], this is a public, non-secret value. A configured
+  /// value must pass [isPrivacySafeShareUrl] (bare HTTPS, host present, no
+  /// userinfo, no query, no fragment) or the row falls back to the in-app
+  /// screen — no unsafe URL is ever handed to the OS.
+  static const String privacyPolicyUrl = String.fromEnvironment(
+    'TRUERISE_PRIVACY_POLICY_URL',
+  );
+
   /// Variant of [isPrivacySafeShareUrl] for **store** URLs opened by the
   /// update prompt. Identical rules — bare HTTPS, host present, no
   /// userinfo, no fragment — with one structural exception: a query

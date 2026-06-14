@@ -217,7 +217,7 @@ AppFailure mapDioException(DioException error) {
       }
       if (status == 401 || status == 403) return const UnauthorizedFailure();
       if (status == 408) return const TimeoutFailure();
-      if (status == 429) return const RateLimitedFailure();
+      if (status == 429) return _rateLimitedFailure(error.response?.data);
       if (status >= 500 && status < 600) return ServerFailure(status);
       return UnknownFailure(error);
   }
@@ -239,6 +239,30 @@ Map<String, dynamic>? _asJsonMap(Object? body) {
     }
   }
   return null;
+}
+
+/// Build a [RateLimitedFailure] from a 429 body, carrying the proxy's
+/// `retryAfter` (seconds) / `resetAt` (ISO-8601) metadata when present
+/// so the UI can show when the server-side quota window reopens.
+/// Accepts snake_case variants; absent or unparseable fields stay null.
+RateLimitedFailure _rateLimitedFailure(Object? body) {
+  final json = _asJsonMap(body);
+  if (json == null) return const RateLimitedFailure();
+
+  Duration? retryAfter;
+  final rawRetry = json['retryAfter'] ?? json['retry_after'];
+  final seconds = rawRetry is num
+      ? rawRetry.toInt()
+      : (rawRetry is String ? int.tryParse(rawRetry.trim()) : null);
+  if (seconds != null && seconds >= 0) {
+    retryAfter = Duration(seconds: seconds);
+  }
+
+  DateTime? resetAt;
+  final rawReset = json['resetAt'] ?? json['reset_at'];
+  if (rawReset is String) resetAt = DateTime.tryParse(rawReset)?.toUtc();
+
+  return RateLimitedFailure(resetAt: resetAt, retryAfter: retryAfter);
 }
 
 /// Pull a human-readable error message out of a provider error body.

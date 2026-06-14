@@ -1,6 +1,7 @@
 // Dartdoc anchors reference `BreathRingLoader` from another library,
 // which the analyzer can't resolve from doc context alone.
 // ignore_for_file: comment_references
+import 'package:dio/dio.dart' show CancelToken;
 import 'package:flutter/material.dart' show TimeOfDay;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rectify/core/failures.dart';
@@ -208,12 +209,20 @@ class CalculationFlowController extends Notifier<CalculationFlowState> {
   /// [submit] leaves the draft (repo + state) untouched.
   int _submitGeneration = 0;
 
+  /// Dio token for the in-flight submit's HTTP request. [cancelSubmit]
+  /// cancels it so a live request is aborted on the wire, not merely
+  /// ignored when it eventually completes.
+  CancelToken? _submitCancelToken;
+
   /// Abandon the in-flight submission and return the draft to the
-  /// confirm step. The draft stays fully editable: the orphaned submit
+  /// confirm step. The draft stays fully editable: the live HTTP request
+  /// (if any) is aborted via its [CancelToken], and the orphaned submit
   /// future is ignored when it completes — it must not clear the draft,
   /// write history, or flip any state the user is now editing.
   void cancelSubmit() {
     _submitGeneration += 1;
+    _submitCancelToken?.cancel('Submission cancelled by the user.');
+    _submitCancelToken = null;
     _set(
       state.copyWith(step: CalculationFlowStep.confirm, submitting: false),
     );
@@ -248,12 +257,19 @@ class CalculationFlowController extends Notifier<CalculationFlowState> {
     final generation = ++_submitGeneration;
     bool cancelled() => generation != _submitGeneration;
 
+    final cancelToken = CancelToken();
+    _submitCancelToken = cancelToken;
+
     final request = state.toRequest();
     final result = await _rectifier.submit(
       request,
       demoCopy: demoCopy,
       isCancelled: cancelled,
+      cancelToken: cancelToken,
     );
+    if (identical(_submitCancelToken, cancelToken)) {
+      _submitCancelToken = null;
+    }
 
     if (cancelled()) {
       // The user already cancelled and is editing the draft again —

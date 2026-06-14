@@ -18,7 +18,12 @@
 >   `pubspec` description); **P0-9** screenshots
 >   (`screenshots/store/{en,de,fr,es,pt-BR}/`, raw).
 > - **Authored, owner remainder:** **P0-4** privacy-policy content
->   (`docs/privacy-policy.md`) — hosting + `url_launcher` wiring still pending;
+>   (`docs/privacy-policy.md`) + app wiring **[DONE 2026-06-12]**: the
+>   `TRUERISE_PRIVACY_POLICY_URL` public dart-define opens from Settings via
+>   `url_launcher` (`LaunchMode.inAppBrowserView`), with fallback to the
+>   in-app `PrivacyPolicyScreen` on empty default, unsafe URL, or launch
+>   failure — owner hosting of the canonical public URL + legal sign-off
+>   still pending;
 >   **P0-5** Apple/Play forms (`docs/apple-privacy-labels.md`,
 >   `docs/play-data-safety.md`) — console entry + legal sign-off still pending.
 > - **Still owner-gated:** **P0-2** release signing (Android gradle wiring
@@ -26,6 +31,16 @@
 >   `android/key.properties`; owner upload keystore + Play App Signing
 >   enrollment + iOS distribution signing still pending), **P0-3** bundle-ID
 >   decision, **P0-10** category confirm, **P0-11** demo-key rotation.
+> - **Shipped since this baseline (2026-06-12):** the privacy-safe
+>   **share-card image** (Run 4 G9). This supersedes the baseline's "text
+>   only / G9 not built / no `share_plus`" statements in §1, §2.3, §3, §8.2,
+>   §10.3, and the §13 evidence rows: `share_plus` is now a dependency,
+>   `lib/core/sharing/story_card_renderer.dart` renders the PNG story card,
+>   and `ShareService.shareImagePng` shares it from the result screen
+>   (`resultShareImageButtonKey`). Text and image share both carry only the
+>   privacy-safe allow-list (time, rising when present, confidence, brand,
+>   public share URL/caption). Direct Instagram Stories posting remains
+>   optional / out of scope until a Meta/Facebook App ID exists.
 > - **Still true:** the build is **not submittable today** — but the open
 >   blockers are now owner/secret/legal/console items, not engineering artifacts.
 > - **Removed since this baseline:** the optional bring-your-own
@@ -68,10 +83,14 @@ the critical path.
 
 **The P0 blocker set (all [VERIFIED] this run):**
 
-1. **Public-name mismatch.** The binary still shows *Rectify* (iOS
-   `CFBundleDisplayName=Rectify`, Android `android:label="rectify"`), and
-   "Rectify" is baked into the in-app title, the Settings version row, and the
-   privacy copy — while the brand, README, and share copy say *TrueRise*.
+1. **Public-name mismatch — resolved in-repo (2026-06).** The display name is
+   now **TrueRise** on both platforms (iOS `CFBundleDisplayName`, Android
+   `android:label`) and in the in-app strings; store-name/trademark
+   confirmation remains owner scope. *(Historical, original audit: the binary
+   showed *Rectify* — iOS `CFBundleDisplayName=Rectify`, Android
+   `android:label="rectify"` — and "Rectify" was baked into the in-app title,
+   the Settings version row, and the privacy copy, while the brand, README,
+   and share copy said TrueRise.)*
 2. **Release signing.** The Android debug-signing fallback has been removed
    (2026-06-12): `android/app/build.gradle.kts` release now requires a
    complete `android/key.properties` + keystore and fails clearly without
@@ -80,31 +99,52 @@ the critical path.
    audit: release shipped with `signingConfig =
    signingConfigs.getByName("debug")`; a debug-signed AAB cannot go to Play
    production.)*
-3. **No hosted privacy-policy URL.** The app has only an in-app privacy screen;
-   there is no `url_launcher` dependency and no canonical hosted URL. Both
-   stores require a reachable URL in the listing.
-4. **Privacy/data-safety disclosures are not authored — and the in-app copy
-   under-discloses.** In live mode the app transmits birth date, a birth-time
+3. **No owner-hosted privacy-policy URL.** App wiring is done (2026-06-12):
+   the `TRUERISE_PRIVACY_POLICY_URL` public dart-define opens from Settings
+   via `url_launcher` (`LaunchMode.inAppBrowserView`), falling back to the
+   in-app `PrivacyPolicyScreen` on empty default, unsafe URL, or launch
+   failure. The owner-hosted canonical public URL is still absent; both
+   stores require a reachable URL in the listing, and the same URL must be
+   used in the build define and the store listings.
+4. **Store privacy/data-safety form drafts are authored
+   (`docs/apple-privacy-labels.md`, `docs/play-data-safety.md`); in-app copy
+   is accurate.** In live mode the app transmits birth date, a birth-time
    estimate, precise birthplace latitude/longitude, and free-text life-event
-   descriptions to a third-party API; the in-app screen emphasizes "on-device
-   only" and does not surface that transmission. Apple privacy labels and the
-   Play Data Safety form must both be filled in to match real behavior.
-5. **No age gate.** The birth-date picker accepts any date from 1920 to today
-   with no minimum-age floor, despite the PRD's COPPA age-gate requirement.
-6. **Default app icon.** The build still uses the stock Flutter glyph.
-7. **Store metadata + screenshots do not exist.** `pubspec.yaml` description is
-   the placeholder "A new Flutter project."; no listing copy or screenshots are
-   captured. ASO drafts exist (Run 3) but are unbuilt.
-8. **Localized listings are blocked on an unbuilt l10n pipeline** (Run 4 G20 /
-   Run 5). English Tier 0 can ship now; DE/FR/ES/PT-BR listings cannot.
+   descriptions to a third-party API; demo mode stays offline, and no
+   analytics/tracking SDKs are bundled. The in-app privacy copy discloses
+   this live transmission in-repo (`privacy_policy_screen.dart` renders
+   `privacyLiveTitle`/`privacyLiveBody` across EN/DE/ES/FR/PT). Owner/legal
+   must still review/sign off on the drafts and enter the Apple privacy
+   labels and Play Data Safety form in App Store Connect / Play Console.
+5. **Age gate — resolved in-repo (2026-06).** The birth-date picker enforces an
+   18+ floor (`lastDate: CalculationFlowState.latestAllowedBirthDate(now)`);
+   the store age-rating questionnaire remains owner/console. *(Historical,
+   original audit: the picker accepted any date from 1920 to today with no
+   minimum-age floor.)*
+6. **Default app icon — resolved in-repo (2026-06).** Real icon assets landed
+   (iOS appiconset + Android adaptive icon). *(Historical, original audit: the
+   build used the stock Flutter glyph.)*
+7. **Store metadata + screenshots exist in-repo; console work remains.**
+   Listing copy exists (`docs/store-listing-en.md`,
+   `docs/store-listing-tier1-localized.md`) and raw screenshots are captured
+   (`screenshots/store/{en,de,fr,es,pt-BR}/`); console entry, screenshot
+   compositing, and upload remain owner scope.
+8. **Localized listings are prepared in-repo** (l10n pipeline + localized ARBs
+   + `docs/store-listing-tier1-localized.md`); native-speaker review and
+   per-locale console character recount/upload remain. First submission can
+   still be English Tier 0 if the owner prefers.
 
-**Recommendation:** sequence a single config-and-compliance gate run (Impl Run A
-— name, bundle-ID decision, release signing, icon, age gate), stand up the
-hosted privacy policy, finalize the English-only listing from the Run 3 ASO
-package, capture screenshots, then submit **English Tier 0 first** under
-**iOS Utilities / Play Tools** positioning (Apple 4.3(b) survival). Localized
-listings follow only after Impl Run C/D. This document specifies each step,
-labels every claim, and ends with the owner decisions that gate submission.
+**Recommendation:** the repo-side work is prepared — config and compliance
+changes (name, release signing guard, icon, age gate), English and localized
+listing copy (`docs/store-listing-en.md`, `docs/store-listing-tier1-localized.md`),
+and raw 6.7" screenshots for all five locales (`screenshots/store/`). Submission
+is now gated by owner/secret/legal/console work: bundle-ID/name approval,
+production proxy + share/privacy URLs, signing material, store forms, and
+console upload. If the owner prefers, submit **English Tier 0 first** under
+**iOS Utilities / Play Tools** positioning (Apple 4.3(b) survival), with
+localized publication following native-speaker review and per-locale console
+recount/upload. This document specifies each step, labels every claim, and ends
+with the owner decisions that gate submission.
 
 ---
 
@@ -117,38 +157,51 @@ labels every claim, and ends with the owner decisions that gate submission.
 | App completeness | MVP feature-complete; 177 tests + 1 integration green | `docs/qa-phase8-report.md` (2026-05-20) **[ASSUMED — not re-run this run]** |
 | Live calculation | Real path to third-party API; demo path fully offline | `lib/data/api/dto/rectification_request_dto.dart`, `lib/features/settings/settings_screen.dart` demo toggle **[VERIFIED]** |
 | Result UX | Hero time + rising + confidence, ≤2 alt candidates, evidence screen, demo pill, demo upgrade nudge | `lib/features/calculation_flow/screens/result_screen.dart` **[VERIFIED]** |
-| Sharing | **Text** share, PII-free by construction, OS share sheet w/ clipboard fallback | `lib/core/sharing/share_copy_builder.dart`, `share_service.dart` **[VERIFIED]** |
+| Sharing | **Text** share and **image (story-card PNG)** share via `share_plus`, both PII-free by construction; OS share sheet w/ clipboard fallback for text | `lib/core/sharing/share_copy_builder.dart`, `lib/core/sharing/story_card_renderer.dart`, `lib/core/sharing/share_service.dart` (`shareImagePng`), result screen `resultShareImageButtonKey` **[VERIFIED]** |
 | Privacy posture | On-device storage, no accounts, "Delete all data" | `lib/features/settings/privacy_policy_screen.dart`, `settings_screen.dart` **[VERIFIED]** |
 | Analytics / crash reporting | **None wired** (no analytics SDK, no crash reporting) | `pubspec.yaml` (no firebase/sentry/posthog/amplitude); privacy screen text **[VERIFIED]** |
-| iOS platform config | `CFBundleDisplayName=Rectify`, `CFBundleName=rectify`; no `NS*UsageDescription`; no ATS block; portrait+landscape | `ios/Runner/Info.plist` **[VERIFIED]** |
-| Android platform config | `android:label="rectify"`; only `INTERNET` permission; release signing requires owner `android/key.properties` (debug-signing fallback removed 2026-06-12; was debug-signed at original audit) | `android/app/src/main/AndroidManifest.xml`, `android/app/build.gradle.kts` **[VERIFIED]** |
+| iOS platform config | `CFBundleDisplayName=TrueRise` (2026-06; was `Rectify` at original audit), `CFBundleName=rectify`; no `NS*UsageDescription`; no ATS block; portrait+landscape | `ios/Runner/Info.plist` **[VERIFIED]** |
+| Android platform config | `android:label="TrueRise"` (2026-06; was `rectify` at original audit); only `INTERNET` permission; release signing requires owner `android/key.properties` (debug-signing fallback removed 2026-06-12; was debug-signed at original audit) | `android/app/src/main/AndroidManifest.xml`, `android/app/build.gradle.kts` **[VERIFIED]** |
 | Bundle identity | `namespace` + `applicationId` = `com.rectify.rectify`; version `1.0.0+1` | `android/app/build.gradle.kts`, `pubspec.yaml` **[VERIFIED]** |
-| App icon | Stock Flutter glyph | `docs/qa-phase8-report.md` §6 **[ASSUMED — no icon asset added since]** |
-| Localization | English-only; no `.arb`, no `l10n.yaml`, no `flutter_localizations` | Run 5 `docs/l10n-strategy.md`, `pubspec.yaml` **[VERIFIED]** |
+| App icon | Real icon assets in repo (2026-06): iOS appiconset incl. 1024² + Android adaptive icon; was stock Flutter glyph at original audit | `ios/Runner/Assets.xcassets/AppIcon.appiconset/`, `android/app/src/main/res/mipmap-*` **[VERIFIED]** |
+| Localization | l10n pipeline in repo (`l10n.yaml`, `flutter gen-l10n` via `pubspec.yaml`) with EN/DE/ES/FR/PT ARBs + generated `AppLocalizations`; native-speaker review and per-locale console character recount remain owner scope | `l10n.yaml`, `pubspec.yaml`, `lib/l10n/app_{en,de,es,fr,pt}.arb` **[VERIFIED 2026-06]** |
 | Demo/review key | `.env` bundled as an asset; key recoverable from the binary | `pubspec.yaml` assets, `README.md` **[VERIFIED]** |
 | Build pin | `dependency_overrides: objective_c: 9.3.0` (build-hook regression workaround) | `pubspec.yaml` **[VERIFIED]** |
 
 ### 2.2 What does NOT exist yet (store-facing)
 
-- Hosted privacy-policy URL. **[VERIFIED absent]**
+- Owner-hosted public privacy-policy URL. **[absent — owner hosting pending;
+  app wiring done 2026-06-12 via `TRUERISE_PRIVACY_POLICY_URL` +
+  `url_launcher`, with in-app `PrivacyPolicyScreen` fallback]**
 - Apple App Privacy ("nutrition label") answers and Play Data Safety form.
   **[VERIFIED — not authored]**
-- App Store / Play listing metadata (title, subtitle, descriptions, keywords).
-  **[VERIFIED — placeholder only]**
-- Screenshot set for any device class. **[VERIFIED absent]**
+- Final listing metadata in the consoles. **[Updated 2026-06 — EN listing
+  (`docs/store-listing-en.md`) + localized listings
+  (`docs/store-listing-tier1-localized.md`) exist in repo; console character
+  recount, trademark confirmation, and native-speaker review remain]**
+- Final screenshot assets. **[Updated 2026-06 — raw screenshots exist in
+  `screenshots/store/{en,de,fr,es,pt-BR}/` (five 6.7" frames per locale);
+  device-frame/caption compositing, other device sizes, and console upload
+  remain]**
 - Release signing keystore/profile (Android) and a distribution provisioning
   setup (iOS). **[Android: gradle wiring done 2026-06-12 (debug fallback
   removed) — owner upload keystore still missing; iOS signing not in repo]**
-- Real app icon + adaptive icon. **[ASSUMED absent]**
-- Localized listings (DE/FR/ES/PT-BR). **[VERIFIED blocked on G20/G22]**
+- Real app icon + adaptive icon. **[Resolved 2026-06 — iOS appiconset +
+  Android adaptive icon in repo]**
+- Localized listings (DE/FR/ES/PT-BR) in the consoles. **[Updated 2026-06 —
+  in-repo via `docs/store-listing-tier1-localized.md`; native-speaker review
+  and per-locale console character recount remain]**
 
 ### 2.3 What is explicitly out of scope for first submission
 
 Per `docs/mvp-scope.md` and `CLAUDE.md`: payments/IAP/paywalls, accounts/sync,
-dark mode, chart rendering, PDF/image export, Vedic/KP toggles, the privacy-safe
-share **card image** (Run 4 G9, a V1.5 growth lever), and any analytics SDK.
-None of these are submission blockers; do **not** pull them forward to unblock
-the store. **[VERIFIED scope]**
+dark mode, chart rendering, PDF/report export, Vedic/KP toggles, and any
+analytics SDK. None of these are submission blockers; do **not** pull them
+forward to unblock the store. **[VERIFIED scope]** **[Updated 2026-06-12 —
+the privacy-safe share-card image (Run 4 G9), listed here at baseline as a
+deferred V1.5 growth lever, has since shipped in-repo (`share_plus` +
+`StoryCardRenderer` + `shareImagePng`); it is no longer deferred and needs no
+store-side action. See the status note at the top of this document.]**
 
 ---
 
@@ -159,21 +212,25 @@ Each item below blocks first submission. ID maps to Run 4
 
 | # | Blocker | Gap | Evidence | Fix owner-track |
 | --- | --- | --- | --- | --- |
-| P0-1 | **Public display name = TrueRise** across iOS `CFBundleDisplayName`, Android `android:label`, in-app title, Settings version row, privacy copy | G1 | `Info.plist`, `AndroidManifest.xml`, `lib/features/settings/settings_screen.dart:157` ("Rectify  v1.0.0"), `privacy_policy_screen.dart` ("What Rectify stores") **[VERIFIED]** | Impl Run A (config + 4 string sites) |
+| P0-1 | **Public display name = TrueRise** across iOS `CFBundleDisplayName`, Android `android:label`, in-app title, Settings version row, privacy copy | G1 | **[DONE 2026-06]**: `Info.plist` and `AndroidManifest.xml` now carry TrueRise; in-app strings brand via `l10n.dart appBrandName`. *(Original audit: "Rectify  v1.0.0" at `settings_screen.dart:157`, "What Rectify stores" in `privacy_policy_screen.dart`.)* Store-name/trademark confirmation remains owner scope | Impl Run A **[done]** + owner name confirm |
 | P0-2 | **Release signing** — generate upload keystore (Android) + distribution signing (iOS); Android debug-signing fallback already removed | G5 | Android wiring **[DONE 2026-06-12]**: `build.gradle.kts` release reads `android/key.properties` (validates `storePassword`/`keyPassword`/`keyAlias`/`storeFile`; absolute or `android/`-relative path; no debug fallback; release tasks fail with instructions when missing). Owner upload keystore + Play App Signing + iOS distribution signing still pending | Impl Run A + owner secrets |
-| P0-3 | **Bundle-ID decision** — keep `com.rectify.rectify` or rebrand to a `com.truerise.*` ID **before first publish** (irreversible after) | G5 | `build.gradle.kts` `applicationId` **[VERIFIED]** | Owner decision (Sec. 12) → Impl Run A |
-| P0-4 | **Hosted privacy-policy URL** reachable + linked in both listings | G2 | No `url_launcher` dep; `privacy_policy_screen.dart` header comment "Phase 8 swaps this for the canonical hosted URL" **[VERIFIED]** | Owner hosting + Legal |
+| P0-3 | **Bundle-ID decision** — current ID is `com.rectify.rectify`; recommendation is `app.astrolium.truerise` (primary, `docs/bundle-id-recommendation.md`), to be decided **before first publish** (irreversible after) | G5 | `build.gradle.kts` `applicationId` **[VERIFIED]** | Owner decision (Sec. 12) → Impl Run A |
+| P0-4 | **Hosted privacy-policy URL** reachable + linked in both listings | G2 | App wiring **[DONE 2026-06-12]**: `TRUERISE_PRIVACY_POLICY_URL` public dart-define; valid bare HTTPS URL opens from Settings via `url_launcher` (`LaunchMode.inAppBrowserView`); empty default / unsafe URL / launch failure falls back to in-app `PrivacyPolicyScreen`. Owner-hosted canonical public URL still pending; same URL must go into build define + store listings | Owner hosting + Legal |
 | P0-5 | **Apple App Privacy labels + Play Data Safety** authored to match real data flow (incl. third-party transmission of birth data + life-event text + precise location in live mode) | G3 | `rectification_request_dto.dart` fields; `pubspec.yaml` (no analytics) **[VERIFIED]** | Owner + Legal (Sec. 4/5/9) |
-| P0-6 | **Age gate / age rating** — add a minimum-age floor on the birth-date picker per PRD COPPA note, and set the store age rating consistently | G6 | `lib/features/calculation_flow/screens/birth_data_screen.dart` `firstDate: DateTime(1920), lastDate: now`, **no** born-before floor; `docs/prd.md` §13 "age gate (born before 2008)" **[VERIFIED absent]** | Owner decision (cutoff) → Impl Run A |
-| P0-7 | **Real app icon** (iOS + Android adaptive) | G4 | `docs/qa-phase8-report.md` §6 default glyph **[ASSUMED]** | Design asset → Impl Run A |
-| P0-8 | **Store metadata finalized** (title/subtitle/keywords/descriptions); replace `pubspec` placeholder description | G7 | `pubspec.yaml` "A new Flutter project." **[VERIFIED]** | Sec. 6 package → owner |
-| P0-9 | **Screenshot set** captured for required device classes | G8 | none in repo **[VERIFIED absent]** | Sec. 8 storyboard → capture |
+| P0-6 | **Age gate / age rating** — in-app 18+ gate **[DONE 2026-06]**: birth-date picker `lastDate` uses `CalculationFlowState.latestAllowedBirthDate(now)` (`birth_data_screen.dart`; logic in `calculation_flow_state.dart`). Remaining owner action: complete the store age-rating questionnaire consistent with the 18+ gate | G6 | Picker floor wired in `birth_data_screen.dart`; age-gate (18+) tests in `test/features/calculation_flow/calculation_flow_controller_test.dart` **[VERIFIED present]** | Owner store age-rating questionnaire |
+| P0-7 | **Real app icon** (iOS + Android adaptive) | G4 | **[DONE 2026-06]**: `ios/Runner/Assets.xcassets/AppIcon.appiconset/` + Android adaptive icon (`mipmap-*`) in repo. *(Original audit assumed the default glyph per `docs/qa-phase8-report.md` §6.)* Store icon review at submission remains | Impl Run A **[done]** |
+| P0-8 | **Store metadata finalized** (title/subtitle/keywords/descriptions) | G7 | **[DONE in-repo 2026-06]**: `docs/store-listing-en.md` + `docs/store-listing-tier1-localized.md`; real `pubspec` description. Remaining owner scope: console character recount, trademark confirmation, native-speaker review | Owner console entry |
+| P0-9 | **Screenshot set** captured for required device classes | G8 | **[DONE in-repo 2026-06 — raw]**: `screenshots/store/{en,de,fr,es,pt-BR}/`, five 6.7" frames per locale. Remaining design/owner scope: device-frame/caption compositing, other device sizes, console upload | Design compositing + owner upload |
 | P0-10 | **Category positioning** confirmed: iOS **Utilities**, Play **Tools** (4.3(b) survival) | — | Run 2/3; Vedic Samay precedent **[ASSUMED]** | Owner confirm (Sec. 9) |
 | P0-11 | **Demo/review key hygiene** — rotate to a low-budget capped key before public build; confirm `.env` exposure is acceptable for review | — | `README.md`, `pubspec.yaml` `.env` asset **[VERIFIED]** | Owner key rotation |
 
-**Not P0 (do not block on these):** privacy-safe share **card image** (G9,
-V1.5), analytics SDK (G13, greenfield), localized listings (G20/G22 — English
-Tier 0 ships without them).
+**Not P0 (do not block on these):** analytics SDK (G13, greenfield), localized
+publication/review/upload
+(G20/G22 artifacts are prepared in repo — localized ARBs, listing copy, raw
+screenshots — so only native-speaker review and console work remain, and none
+of it blocks an English Tier 0 submission). The privacy-safe share-card image
+(G9), listed here at baseline as deferred V1.5, has since shipped in-repo
+(2026-06-12) and needs no store-side action.
 
 ---
 
@@ -181,12 +238,14 @@ Tier 0 ships without them).
 
 ### 4.1 Binary / Xcode configuration
 
-- **Display name.** `CFBundleDisplayName` must become **TrueRise**
-  (currently `Rectify`). `CFBundleName` (`rectify`) is the short internal name
-  and is less user-visible, but align it for consistency. **[VERIFIED gap]**
-- **Bundle identifier.** Decide `com.rectify.rectify` vs a `com.truerise.*`
-  rebrand **before** the first App Store Connect record exists — the bundle ID
-  is immutable post-creation. **[VERIFIED / owner decision]**
+- **Display name.** `CFBundleDisplayName` is now **TrueRise** (2026-06; was
+  `Rectify` at original audit). `CFBundleName` is still `rectify` — the short
+  internal name, less user-visible; align it for consistency if desired.
+  **[VERIFIED — resolved]**
+- **Bundle identifier.** Currently `com.rectify.rectify`; recommended rebrand
+  is `app.astrolium.truerise` (`docs/bundle-id-recommendation.md`). Decide
+  **before** the first App Store Connect record exists — the bundle ID is
+  immutable post-creation. **[VERIFIED / owner decision]**
 - **Version / build.** `1.0.0 (1)` is fine for a first submission; bump the
   build number on each upload. **[VERIFIED]**
 - **Privacy usage strings.** `Info.plist` has **no** `NS*UsageDescription`
@@ -222,7 +281,10 @@ Tier 0 ships without them).
     store; on-device data stays on device. The third-party provider's handling
     of submitted data is governed by **its** policy and must be named in the
     hosted privacy policy. **[VERIFIED / Legal]**
-- **Privacy policy URL.** Required field — blocked on P0-4. **[VERIFIED]**
+- **Privacy policy URL.** Required field — still blocked on the owner-hosted
+  canonical URL (P0-4); app wiring is done (`TRUERISE_PRIVACY_POLICY_URL` +
+  in-app fallback, 2026-06-12). Use the same URL here as in the build define.
+  **[VERIFIED]**
 - **Demo account / review notes.** Provide reviewer instructions: how to run
   **Demo mode** (offline, no key) so review does not consume live API credits,
   and disclose that demo results are labeled with a DEMO pill. **[PROPOSED]**
@@ -243,8 +305,8 @@ labels and hosted policy to be accurate about the third-party transmission.
 
 ### 5.1 Binary / Gradle configuration
 
-- **Application label.** `android:label="rectify"` must become **TrueRise**.
-  **[VERIFIED gap]**
+- **Application label.** `android:label` is now **TrueRise** (2026-06; was
+  `rectify` at original audit). **[VERIFIED — resolved]**
 - **Application ID.** `com.rectify.rectify`; same immutability caveat as iOS —
   decide before first upload. **[VERIFIED / owner decision]**
 - **Release signing.** Gradle wiring done 2026-06-12: debug-signing fallback
@@ -278,7 +340,10 @@ labels and hosted policy to be accurate about the third-party transmission.
   - **No analytics/ads/tracking SDKs.** Declare none. **[VERIFIED]**
   - The form must not claim "no data shared" — live mode shares birth data with
     the provider. Under-declaring is a Data Safety violation. **[VERIFIED risk]**
-- **Privacy policy URL.** Required — blocked on P0-4. **[VERIFIED]**
+- **Privacy policy URL.** Required — still blocked on the owner-hosted
+  canonical URL (P0-4); app wiring is done (`TRUERISE_PRIVACY_POLICY_URL` +
+  in-app fallback, 2026-06-12). Use the same URL here as in the build define.
+  **[VERIFIED]**
 - **Content rating (IARC) questionnaire.** Complete consistently with the age
   gate; astrology content + user-entered free text should be answered honestly.
   **[PROPOSED]**
@@ -385,15 +450,16 @@ Title/keyword finalization depends on the **bundle-ID/name decision** (P0-1/3),
 
 ---
 
-## 7. Localized publication package plan (DE, FR, PT-BR, ES) — direction only
+## 7. Localized publication package plan (DE, FR, PT-BR, ES)
 
-> **Status: blocked, direction-only.** Localized **listings** depend on the
-> product l10n pipeline (Run 4 **G20**) and the Tier 1 translation pass (Run 5
-> **G22**), neither of which is built. Sequencing is **Impl Run C** (extract
-> base `app_en.arb` + formatting debt G21) → **Impl Run D** (translate
-> DE/FR/ES/PT-BR). Do **not** publish a localized listing whose in-app UI is
-> still English — that mismatch invites rejection and 1-star "not localized"
-> reviews. **[VERIFIED dependency — `docs/l10n-strategy.md`, Run 5]**
+> **Status: prepared in-repo, draft-ready.** The localized publication package
+> exists: localized listing copy in `docs/store-listing-tier1-localized.md`
+> and a working l10n pipeline with DE/FR/ES/PT ARBs
+> (`lib/l10n/app_{de,es,fr,pt}.arb`). Do **not** publish locales until
+> native-speaker review, the per-locale console character recount, and
+> UI/listing consistency are verified — a localized listing over a mismatched
+> in-app UI invites rejection and 1-star "not localized" reviews.
+> **[VERIFIED 2026-06]**
 
 ### 7.1 Locale priority and brand rule
 
@@ -432,10 +498,10 @@ Full terminology table (recommended vs avoid forms) lives in
 
 | Asset | Requirement | Status |
 | --- | --- | --- |
-| App icon (iOS) | 1024² + all sizes, no alpha | **[ASSUMED missing]** |
-| App icon (Android) | Adaptive (fore/background) + legacy | **[ASSUMED missing]** |
-| iOS screenshots | 6.7" (required) + 6.5"; 5.5" optional; iPad if iPad-enabled | **[VERIFIED missing]** |
-| Play screenshots | ≥2 phone (min 320px); 7"/10" tablet if tablet-enabled | **[VERIFIED missing]** |
+| App icon (iOS) | 1024² + all sizes, no alpha | **[in repo 2026-06 — `AppIcon.appiconset` incl. 1024²; verify no-alpha at submission]** |
+| App icon (Android) | Adaptive (fore/background) + legacy | **[in repo 2026-06 — adaptive `mipmap-anydpi-v26` + fore/background + legacy `ic_launcher.png`]** |
+| iOS screenshots | 6.7" (required) + 6.5"; 5.5" optional; iPad if iPad-enabled | **[raw 6.7" captures in repo 2026-06 — `screenshots/store/{en,de,fr,es,pt-BR}/`; device-frame/caption compositing, 6.5" set, and console upload remain]** |
+| Play screenshots | ≥2 phone (min 320px); 7"/10" tablet if tablet-enabled | **[raw phone captures in repo 2026-06 — same 6.7" set; compositing, tablet sizes (if tablet-enabled), and console upload remain]** |
 | Play feature graphic | 1024×500 | **[ASSUMED missing]** |
 | Promo/preview video | Optional; skip for v1 | n/a |
 
@@ -461,11 +527,16 @@ Ordering follows Run 3 §8. Each frame must depict **real, shipped UI**.
    the product spreads today. **[VERIFIED — `share_copy_builder.dart`,
    `result_screen.dart` `resultShareButtonKey`]**
 
-> **Do not over-claim sharing.** The shipped share is **text only** via the OS
-> share sheet (with a clipboard fallback). The privacy-safe **share-card image**
-> (Run 4 **G9**) is **not built** (no `share_plus`/screenshot package in
-> `pubspec.yaml`). Screenshots and copy must show the **text** share — never
-> mock up an Instagram-style image card as if it ships. **[VERIFIED]**
+> **Sharing status (updated 2026-06-12).** The app now ships **both** share
+> surfaces: the privacy-safe **text** share (OS share sheet, clipboard
+> fallback) **and** the privacy-safe **share-card image** (Run 4 **G9**) —
+> `share_plus` + `StoryCardRenderer` render a PNG story card shared from the
+> result screen (`resultShareImageButtonKey`). Both surfaces carry only the
+> allow-list: time, rising when present, confidence, brand, and the public
+> share URL/caption. Screenshots and copy may show either surface, but must
+> depict only real, shipped UI — do not mock up direct Instagram Stories
+> posting (optional, out of scope until a Meta/Facebook App ID exists) or any
+> share content beyond the allow-list. **[VERIFIED in-repo]**
 
 ### 8.3 QA storyboard (end-to-end walkthrough to capture)
 
@@ -480,8 +551,9 @@ Capture both paths so reviewers and screenshots reflect reality:
    "Save to history". **[VERIFIED flow]**
 4. Settings → Time format 12/24h → **Delete all data** (confirm wipe + return
    to onboarding) → Privacy screen. **[VERIFIED flow]**
-5. Capture in **both** 12h and 24h time formats; verify no "Rectify" string is
-   visible once P0-1 lands (title, Settings version, privacy copy). **[VERIFIED]**
+5. Capture in **both** 12h and 24h time formats; P0-1 (TrueRise rename) has
+   **landed** — verify no legacy "Rectify" string remains in any captured
+   surface (title, Settings version, privacy copy). **[VERIFIED]**
 
 ---
 
@@ -521,10 +593,11 @@ Capture both paths so reviewers and screenshots reflect reality:
   1. **Disclose third-party transmission** in the hosted policy, the Apple
      privacy labels, and the Play Data Safety form. Name the provider and its
      data handling. **[VERIFIED requirement]**
-  2. **Update the in-app privacy copy** so it does not read as "everything
-     stays on device" without also stating that a **live** calculation sends
-     birth data + events to the provider (demo does not). Today's copy
-     under-discloses this. **[VERIFIED gap — `privacy_policy_screen.dart`]**
+  2. **In-app privacy copy is updated** — `privacyLiveBody` (EN/DE/ES/FR/PT
+     ARBs, rendered by `privacy_policy_screen.dart`) states that a **live**
+     calculation sends birth data + events to the provider over HTTPS (demo
+     does not). Remaining: hosted policy, store forms, and owner/legal
+     confirmation of provider handling/retention. **[VERIFIED in-repo]**
   3. **Treat life-event free text + precise location as sensitive** in both
      stores' forms. **[VERIFIED]**
   4. **No tracking** declaration is honest today (no analytics SDK) — keep it
@@ -532,10 +605,12 @@ Capture both paths so reviewers and screenshots reflect reality:
 
 ### 9.4 Children / age (COPPA + store age policies)
 
-- **Gap [VERIFIED]:** no minimum-age floor on the birth-date picker
-  (`birth_data_screen.dart`), despite PRD's COPPA age-gate requirement.
-- **Mitigation:** add the age gate (P0-6), declare an **adult** target audience
-  on Play, and answer Apple's age rating consistently. **[PROPOSED]**
+- **Resolved in-repo [VERIFIED, 2026-06]:** the birth-date picker enforces an
+  18+ floor via `CalculationFlowState.latestAllowedBirthDate(now)`
+  (`birth_data_screen.dart`), with age-gate tests (P0-6).
+- **Remaining owner action:** confirm the store age rating is consistent with
+  the 18+ gate — declare an **adult** target audience on Play, and answer
+  Apple's age-rating questionnaire consistently. **[PROPOSED]**
 
 ### 9.5 Release-integrity / key-handling risk
 
@@ -569,28 +644,36 @@ Capture both paths so reviewers and screenshots reflect reality:
 
 ### 10.1 Critical path
 
+In-repo engineering is landed (display name, age gate, icon, metadata drafts,
+raw screenshots, privacy copy, release-signing wiring). The remaining critical
+path is owner/secret/legal/console work:
+
 ```
-Impl Run A  ──►  Privacy URL  ──►  Metadata + Screenshots  ──►  Internal test  ──►  Submit EN Tier 0
-(config gate)    (hosting)        (Sec. 6 + Sec. 8)            (both stores)       (Utilities/Tools)
-     │
-     └─ depends on owner decisions: bundle-ID, age cutoff, demo-key rotation
+Owner gates                  ──►  Console finalization        ──►  Internal test  ──►  Submit EN Tier 0
+(bundle-ID approval,              (final metadata re-count,        (both stores)       (Utilities/Tools)
+ signing material,                 screenshot compositing +
+ hosted privacy URL,               upload, demo/review key)
+ Apple/Play privacy forms,
+ category)
 ```
 
 ### 10.2 Stage detail
 
-1. **Impl Run A — Config & compliance gate (engineering).** Display name →
-   TrueRise (Info.plist, AndroidManifest, in-app title, Settings version,
-   privacy copy); **bundle-ID decision** applied; **release signing**
-   (keystore + iOS distribution); **age gate**; **app icon**; update in-app
-   privacy copy to disclose live transmission (Sec. 9.3). *Gates everything.*
-   **[PROPOSED]**
+1. **Config & compliance (engineering) — mostly done in-repo.** Display name
+   → TrueRise, age gate, app icon, in-app privacy-copy disclosure (Sec. 9.3),
+   and release-signing **wiring** are landed. Remaining engineering depends
+   only on owner inputs: bundle-ID approval, signing material (upload
+   keystore + iOS distribution), and the hosted privacy URL. **[VERIFIED
+   in-repo / owner-gated remainder]**
 2. **Hosted privacy policy (owner + Legal).** Stand up a reachable URL that
    accurately describes the third-party transmission, on-device storage, demo
    mode, and deletion. Can proceed in parallel with
    Run A. **[PROPOSED]**
-3. **Metadata + screenshots (owner + design).** Finalize Sec. 6 package
-   (post-trademark/console re-count); capture Sec. 8 storyboard from the
-   **post-Run-A** build (so no "Rectify" leaks). **[PROPOSED]**
+3. **Metadata + screenshots (owner + design).** The Sec. 6 metadata package
+   and raw Sec. 8 storyboard screenshots are **prepared in-repo**. Remaining:
+   console char re-count (post-trademark), screenshot compositing, other
+   device sizes, and console upload. **[VERIFIED in-repo / console
+   remainder]**
 4. **Privacy/Data-Safety forms (owner + Legal).** Author Apple labels + Play
    Data Safety to match Sec. 9.3. **[PROPOSED]**
 5. **Internal testing (engineering).** TestFlight internal + Play
@@ -599,17 +682,26 @@ Impl Run A  ──►  Privacy URL  ──►  Metadata + Screenshots  ──►
    **[PROPOSED]**
 6. **Submit English Tier 0** under Utilities/Tools with the reviewer notes from
    Sec. 9.6. **[PROPOSED]**
-7. **Localized listings (later).** Only after **Impl Run C → Run D**
-   (`docs/l10n-strategy.md`). Not on the first-submission critical path.
-   **[VERIFIED gate]**
+7. **Localized listings (prepared, review-gated).** The l10n pipeline,
+   in-app translations, listing drafts, and raw localized screenshots are
+   **done in-repo** (G20/G22). Publication waits on native-speaker review,
+   per-locale console re-count/upload, and a UI/listing consistency check.
+   Not on the first-submission (EN Tier 0) critical path. **[VERIFIED
+   in-repo / review-gated]**
 
 ### 10.3 Parallelizable vs blocking
 
-- **Blocking (must precede submit):** Impl Run A, hosted privacy URL,
-  privacy/Data-Safety forms, metadata, screenshots, real-device smoke.
-- **Parallel with Run A:** privacy-URL hosting, icon design, copy drafting.
-- **Off critical path:** share-card image (G9, V1.5), analytics (G13),
-  localized listings (G20/G22).
+- **Blocking (must precede submit):** bundle-ID approval, signing material
+  (upload keystore + iOS distribution), hosted privacy URL, privacy/
+  Data-Safety forms, console metadata re-count, screenshot compositing +
+  upload, demo/review key, real-device smoke.
+- **Parallel (independent owner tracks):** privacy-URL hosting,
+  privacy/Data-Safety forms, demo-key rotation, screenshot compositing.
+- **Off critical path:** analytics (G13). The share-card image (G9) has
+  since shipped in-repo (2026-06-12), so it is no longer pending work.
+  Localized **publication** is owner/review gated (native-speaker review +
+  per-locale console work), not local engineering gated — the in-repo l10n
+  work (G20/G22) is done.
 
 ---
 
@@ -631,24 +723,59 @@ flutter test integration_test/demo_flow_test.dart
 # Confirm release is NOT debug-signed (Android)
 #   android/app/build.gradle.kts release buildType must use a real upload key
 
-# Build the shippable artifacts
-flutter build ipa            # iOS (with distribution signing configured)
-flutter build appbundle      # Android AAB (with upload keystore configured)
+# Release guard preflight (iOS and Android) — must pass with the real
+# proxy/share URLs; placeholders block a public release. Omit the two
+# --allow-bundled-key flags if ASTRO_API_KEY was removed from .env.
+dart run tool/release_env_guard.dart \
+  --share-url "$TRUERISE_SHARE_URL" \
+  --proxy-base-url "$RECTIFY_PROXY_BASE_URL" \
+  --allow-bundled-key --purpose=review-capped
+
+# Build the shippable artifacts (release env defines per README
+# "Environment configuration"; iOS needs distribution signing, Android
+# the upload keystore in android/key.properties)
+flutter build ipa --release \
+  --dart-define=RECTIFY_ENV=prod \
+  --dart-define=RECTIFY_PROXY_BASE_URL="$RECTIFY_PROXY_BASE_URL" \
+  --dart-define=RECTIFY_PROXY_PATH="$RECTIFY_PROXY_PATH" \
+  --dart-define=RECTIFY_PROXY_APP_ID="$RECTIFY_PROXY_APP_ID" \
+  --dart-define=TRUERISE_SHARE_URL="$TRUERISE_SHARE_URL" \
+  --dart-define=TRUERISE_PRIVACY_POLICY_URL="$TRUERISE_PRIVACY_POLICY_URL"
+flutter build appbundle --release \
+  --dart-define=RECTIFY_ENV=prod \
+  --dart-define=RECTIFY_PROXY_BASE_URL="$RECTIFY_PROXY_BASE_URL" \
+  --dart-define=RECTIFY_PROXY_PATH="$RECTIFY_PROXY_PATH" \
+  --dart-define=RECTIFY_PROXY_APP_ID="$RECTIFY_PROXY_APP_ID" \
+  --dart-define=TRUERISE_SHARE_URL="$TRUERISE_SHARE_URL" \
+  --dart-define=TRUERISE_PRIVACY_POLICY_URL="$TRUERISE_PRIVACY_POLICY_URL" \
+  --android-project-arg=truerise.allowBundledApiKey=true \
+  --android-project-arg=truerise.bundledApiKeyPurpose=review-capped
+# The --android-project-arg=truerise.* pair is only the capped-review-key
+# acknowledgement; omit it when ASTRO_API_KEY is removed from .env.
 ```
 
 ### 11.2 Listing/compliance verification (manual, in-console)
 
 - [ ] Hosted privacy-policy URL returns 200 and matches in-app + Data-Safety
-      claims (incl. third-party transmission). **[P0-4/P0-5]**
+      claims (incl. third-party transmission). **[P0-4/P0-5]** (app wiring done
+      in-repo 2026-06-12 — `TRUERISE_PRIVACY_POLICY_URL` + in-app fallback;
+      owner hosting remains)
 - [ ] Apple App Privacy labels authored; Play Data Safety form authored; both
       declare location + sensitive free-text + birth data **shared** with the
-      provider in live mode; both declare **no tracking**. **[P0-5]**
+      provider in live mode; both declare **no tracking**. **[P0-5]** (drafts
+      authored in-repo — `docs/apple-privacy-labels.md`,
+      `docs/play-data-safety.md`; console entry + legal sign-off remain)
 - [ ] Age gate present in build; store age ratings consistent. **[P0-6]**
-- [ ] App icon present (no default glyph). **[P0-7]**
+      (in-app 18+ gate done in-repo with tests; owner store age-rating
+      questionnaire remains)
+- [ ] App icon present (no default glyph). **[P0-7]** (icon assets in repo —
+      iOS appiconset + Android adaptive; store icon review at submission
+      remains)
 - [ ] Title/subtitle/keyword/description char counts re-counted in console.
-      **[P0-8]**
-- [ ] Screenshots captured for required device classes from a **post-Run-A**
-      build. **[P0-9]**
+      **[P0-8]** (listing copy in repo — `docs/store-listing-en.md` +
+      localized variants; console re-count remains)
+- [ ] Raw 6.7" screenshots are **in-repo** (P0-9); remaining submission work
+      is compositing, other device sizes, and console upload. **[P0-9]**
 - [ ] Category = Utilities (iOS) / Tools (Play). **[P0-10]**
 - [ ] Demo/review key rotated to a low-budget capped key; reviewer notes point
       to offline Demo mode. **[P0-11]**
@@ -675,8 +802,11 @@ closing summary.
 
 ### 12.1 Owner decisions (gate submission — not decidable from code)
 
-1. **Bundle ID:** keep `com.rectify.rectify` or rebrand to `com.truerise.*`?
-   *Irreversible after first publish.* **[decision]**
+1. **Bundle ID:** current ID stays `com.rectify.rectify` until explicit owner
+   approval. Recommendation is in `docs/bundle-id-recommendation.md`: primary
+   `app.astrolium.truerise`; fallbacks `com.astrolium.truerise` (if only
+   `astrolium.com` is controlled) or `com.truerise.app`. *Irreversible after
+   first publish.* **[decision — awaiting owner]**
 2. **Age-gate cutoff & store age rating:** PRD says "born before 2008"; confirm
    the exact floor and the resulting iOS/Play age rating. **[decision]**
 3. **Hosted privacy-policy ownership + content:** who hosts, and confirm it
@@ -688,12 +818,30 @@ closing summary.
 6. **Category confirmation:** Utilities (iOS) / Tools (Play). **[decision]**
 7. **Device matrix:** is iPad / Android tablet a target (affects screenshot
    sets + landscape QA)? **[decision]**
-8. **Localized-listing go/no-go + sequencing** after Impl Run C/D, and PT-BR-only
+8. **Localized-listing go/no-go + launch sequencing** — artifacts are prepared
+   in repo; native-speaker review and per-locale console character
+   recount/upload remain. Locale voice choices also needed: PT-BR-only
    vs PT-PT fallback, German du/Sie, ES neutral vs es-419. **[decision — Run 5]**
-9. **In-app privacy-copy update scope:** confirm Impl Run A also revises the
-   privacy screen to disclose live transmission (Sec. 9.3). **[decision]**
+9. **Hosted-policy/provider wording:** the in-app privacy screen already
+   discloses live transmission (Sec. 9.3); owner/legal must confirm the hosted
+   policy and store forms use matching provider handling/retention wording.
+   **[decision/Legal]**
 
 ### 12.2 Source evidence appendix (read this run, read-only)
+
+> **Baseline as read on 2026-06-02 — preserved unchanged.** Current state has
+> since moved for four rows: display name = **TrueRise** (iOS + Android), real
+> icon assets landed, Android release signing now reads the git-ignored
+> `android/key.properties` with **no debug fallback**, and privacy-URL app
+> wiring landed 2026-06-12 — the "no url_launcher" claim in the `pubspec.yaml`
+> row below is historical; `url_launcher` is now a dependency and
+> `TRUERISE_PRIVACY_POLICY_URL` opens from Settings with an in-app fallback.
+> Likewise historical (superseded 2026-06-12): the `pubspec.yaml` row's "no
+> share_plus" claim and the Run 4 row's "share-card image = V1.5" — `share_plus`
+> is now a dependency and the privacy-safe share-card image (G9) is shipped
+> in-repo; the share rows below describe the text surface only, which still
+> exists alongside the image surface.
+> See the status note at the top of this document.
 
 | Claim | Source | Label |
 | --- | --- | --- |

@@ -36,13 +36,20 @@ Ship a stable, mobile-native Flutter app (iOS 15+, Android 10+) that takes birth
 These are out of MVP by product decision (see `docs/prd.md` §8 and `docs/mvp-scope.md` "Explicitly Deferred Features"). The plan must produce **no** code, models, screens, or scaffolding for any of them:
 
 - In-app purchase, restore purchase, purchase history, credit ledger, paywall, price gate.
-- PDF / image export, share sheets for results.
+- PDF / full report export. (Image export and share sheets were originally
+  deferred here; a privacy-safe text share and a privacy-safe PNG share card
+  are since implemented in-repo. Direct Instagram Stories posting stays out
+  of scope until a Meta/Facebook App ID exists.)
 - Vedic / KP method toggle.
 - Birth chart rendering.
-- Hindi / any non-English locale (but the code is locale-aware — see §6.6).
+- Hindi locale. (All non-English locales were originally deferred here;
+  DE, ES, FR, and PT localizations are since shipped in-repo. The code is
+  locale-aware — see §6.6.)
 - Live astrologer consultation, social, community.
 - User accounts, login, server-side sync.
-- Push notifications, in-app review prompts.
+- Push notifications. (In-app review prompts were originally deferred
+  here; a neutral OS-owned review prompt is since implemented in-repo
+  with tests.)
 - Apple Watch, widgets, App Clips, instant apps.
 - Dark mode (token scaffolding only — see §13).
 
@@ -1098,7 +1105,7 @@ Deliverables:
   - `shared_preferences`
   - (fonts: bundled TTF assets — the planned `google_fonts` dependency was removed 2026-06-12)
   - `lucide_icons_flutter` (or chosen Lucide package)
-  - `flutter_svg`
+  - (`flutter_svg` was planned here but never used; removed 2026-06-12 — add SVG support later only if brand/glyph SVG assets actually land)
   - `intl`
   - `uuid`
   - dev: `very_good_analysis`, `mocktail` (or `mockito`), `alchemist`, `integration_test`
@@ -1288,7 +1295,7 @@ Definition of done:
 - **Icon family** is Lucide.
 - **Crash reporting** is Firebase Crashlytics (Sentry acceptable swap).
 - **No analytics SDK in MVP.** If marketing pushes back, we can add a single privacy-respecting product analytics SDK (e.g., PostHog with local-first config) in V1.5.
-- **Single locale (en-US) in MVP.** All strings are extracted into `arb` files from day one (via `flutter_localizations` + `intl`) so localization in V1.5 is a translation job, not a refactor.
+- **Single locale (en-US) at MVP launch.** All strings are extracted into `arb` files from day one (via `flutter_localizations` + `intl`) so later localization is a translation job, not a refactor. (This paid off: DE, ES, FR, and PT are since shipped in-repo; Hindi remains deferred.)
 - **Birth date floor 1920**, ceiling today minus the COPPA age-gate (born before 2008).
 - **All times are local to the birth city.** No UTC math, no Olson DB lookup in MVP. If the API requires UTC, the mapper does that conversion; the UI displays local.
 
@@ -1387,7 +1394,7 @@ When AC-Demo-1 through AC-Demo-9 are green, we are demo-ready and ready to begin
 | `freezed` + `freezed_annotation` + `json_annotation` + `json_serializable` | Immutable models | Codegen heavy but worth it. |
 | (bundled font assets) | Type | Inter, Source Serif 4, JetBrains Mono shipped as local TTFs; planned `google_fonts` dependency removed 2026-06-12. |
 | `lucide_icons_flutter` | Icons | Single source per design-system §7. |
-| `flutter_svg` | SVG assets | Brand mark + quiet glyphs. |
+| (no SVG package) | SVG assets | Unused `flutter_svg` removed 2026-06-12; add SVG support later only if brand/glyph SVG assets actually land. |
 | `intl` | Formatting | Times, dates, percentages; locale-aware from day one. |
 | `uuid` | Local IDs | v4. |
 | `url_launcher` | Privacy policy in-app browser | One use. |

@@ -1,5 +1,25 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rectify/app/route_names.dart';
 import 'package:rectify/core/failures.dart';
+
+/// In-memory handoff of the last typed [AppFailure] from
+/// `CalculationLoadingScreen` to `CalculationErrorScreen`, for failure
+/// details that can't be serialized into the route (e.g.
+/// `RateLimitedFailure.resetAt` / `retryAfter`).
+final NotifierProvider<LastCalculationFailureNotifier, AppFailure?>
+lastCalculationFailureProvider =
+    NotifierProvider<LastCalculationFailureNotifier, AppFailure?>(
+      LastCalculationFailureNotifier.new,
+    );
+
+class LastCalculationFailureNotifier extends Notifier<AppFailure?> {
+  @override
+  AppFailure? build() => null;
+
+  AppFailure? get rememberedFailure => state;
+
+  set rememberedFailure(AppFailure? failure) => state = failure;
+}
 
 /// Identifies which of the error screens to render.
 ///

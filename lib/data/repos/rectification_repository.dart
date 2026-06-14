@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart' show CancelToken;
+
 import 'package:rectify/core/failures.dart';
 import 'package:rectify/core/result.dart';
 import 'package:rectify/data/api/mappers.dart';
@@ -5,6 +7,7 @@ import 'package:rectify/data/api/rectification_api.dart';
 import 'package:rectify/data/demo/demo_response.dart';
 import 'package:rectify/data/models/calculation_request.dart';
 import 'package:rectify/data/models/calculation_result.dart';
+import 'package:rectify/data/prefs/live_quota_store.dart';
 import 'package:rectify/data/repos/history_repository.dart';
 
 /// Repository contract for rectification submissions
@@ -23,10 +26,17 @@ abstract class RectificationRepository {
   /// reports `true`, the implementation must NOT persist a history row
   /// and must return an [Err] instead of the result — the user already
   /// walked away from this submission via Cancel.
+  ///
+  /// [cancelToken], when supplied, is threaded into the live HTTP call
+  /// so Cancel aborts the in-flight request itself instead of letting
+  /// it run to completion and discarding the answer. The demo path
+  /// ignores it (the delay is short and [isCancelled] already guards
+  /// the write).
   Future<Result<CalculationResult, AppFailure>> submit(
     CalculationRequest request, {
     DemoEvidenceCopy? demoCopy,
     bool Function()? isCancelled,
+    CancelToken? cancelToken,
   });
 }
 
@@ -42,18 +52,19 @@ const AppFailure submissionCancelledFailure = UnknownFailure(
 ///   - **Demo path:** sleeps for [demoDelay] (3s in production, zero
 ///     in tests) and returns `buildDemoResult(request)` — no HTTP
 ///     client constructed, per §9.5 / §10.4.
-///   - **Real path (no key):** returns [MissingApiKeyFailure] immediately,
-///     so the UI can route the user to Settings instead of showing a
-///     misleading connectivity error.
-///   - **Real path (key present):** maps to a request DTO, calls
+///   - **Real path:** gates on the local free-attempt quota (unless
+///     [bypassLiveQuota]), maps to a request DTO, calls
 ///     `RectificationApi.rectify`, maps the response back, persists
 ///     the aggregate via `HistoryRepository.save`, and returns the
-///     domain result.
+///     domain result. With no provider key configured the API layer is
+///     wired for proxy mode (the proxy holds the credential
+///     server-side), so submission proceeds the same way.
 class LiveRectificationRepository implements RectificationRepository {
   LiveRectificationRepository({
     required this.api,
     required this.history,
-    this.apiKeyIsConfigured = false,
+    this.liveQuotaStore,
+    this.bypassLiveQuota = false,
     this.now = DateTime.now,
     this.demoDelay = const Duration(seconds: 3),
   });
@@ -61,12 +72,16 @@ class LiveRectificationRepository implements RectificationRepository {
   final RectificationApi api;
   final HistoryRepository history;
 
-  /// Whether the user has entered a provider API key in Settings.
-  ///
-  /// Injected from proApiKeyProvider via rectificationRepositoryProvider.
-  /// When false and `request.isDemo == false`, submit returns
-  /// MissingApiKeyFailure before making any network call.
-  final bool apiKeyIsConfigured;
+  /// Local quota for proxy-backed live attempts. When non-null (and
+  /// [bypassLiveQuota] is false), real submissions are gated on it
+  /// before any network call: exhausted quota returns a local
+  /// [RateLimitedFailure], otherwise the attempt is recorded first.
+  final LiveQuotaStore? liveQuotaStore;
+
+  /// Skip the local quota entirely (Settings-entered own-key users):
+  /// neither read nor record attempts. Proxy mode and the bundled
+  /// review key keep this false so the quota stays enforced.
+  final bool bypassLiveQuota;
 
   final DateTime Function() now;
   final Duration demoDelay;
@@ -76,6 +91,7 @@ class LiveRectificationRepository implements RectificationRepository {
     CalculationRequest request, {
     DemoEvidenceCopy? demoCopy,
     bool Function()? isCancelled,
+    CancelToken? cancelToken,
   }) async {
     if (request.isDemo) {
       assert(
@@ -93,12 +109,24 @@ class LiveRectificationRepository implements RectificationRepository {
       return Result.ok(result);
     }
 
-    if (!apiKeyIsConfigured) {
-      return const Result.err(MissingApiKeyFailure());
+    final quota = liveQuotaStore;
+    if (quota != null && !bypassLiveQuota) {
+      final quotaNow = now();
+      final snapshot = await quota.read(quotaNow);
+      if (snapshot.exhausted) {
+        return Result.err(
+          RateLimitedFailure(
+            source: RateLimitSource.local,
+            resetAt: snapshot.resetAt,
+            retryAfter: snapshot.retryAfter,
+          ),
+        );
+      }
+      await quota.recordAttempt(quotaNow);
     }
 
     final dto = requestToDto(request);
-    final apiResult = await api.rectify(dto);
+    final apiResult = await api.rectify(dto, cancelToken: cancelToken);
     switch (apiResult) {
       case Ok(value: final response):
         if (isCancelled?.call() ?? false) {
@@ -119,6 +147,13 @@ class LiveRectificationRepository implements RectificationRepository {
         }
         return Result<CalculationResult, AppFailure>.ok(result);
       case Err(:final failure):
+        // A user cancel aborts the Dio call mid-flight, which surfaces
+        // here as a transport failure — return the cancellation marker
+        // instead so the orphaned submit can never look like an Unknown
+        // error to anything still listening.
+        if (isCancelled?.call() ?? false) {
+          return const Result.err(submissionCancelledFailure);
+        }
         return Result<CalculationResult, AppFailure>.err(failure);
     }
   }

@@ -75,6 +75,8 @@ class _CalculationLoadingScreenState
     if (!mounted) return;
     switch (result) {
       case Ok():
+        ref.read(lastCalculationFailureProvider.notifier).rememberedFailure =
+            null;
         controller.reset();
         context.go(RoutePaths.calcResultFor(resultId));
       case Err(:final failure):
@@ -82,6 +84,8 @@ class _CalculationLoadingScreenState
         // parking the user on the loader with prose; the draft stays
         // in [DraftRepository] so a retry re-enters /calc/loading
         // against the same submission.
+        ref.read(lastCalculationFailureProvider.notifier).rememberedFailure =
+            failure;
         context.go(errorScreenForFailure(failure).path);
     }
   }

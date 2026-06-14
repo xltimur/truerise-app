@@ -59,7 +59,8 @@ const _validResponseJson = '''
 /// the live POST /api/v3/rectification/search response — every
 /// successful call carries the envelope and the DTO models only the
 /// inner business shape.
-const _envelopedResponseJson = '''
+const _envelopedResponseJson =
+    '''
 {
   "success": true,
   "data": $_validResponseJson,
@@ -160,8 +161,35 @@ void main() {
         await api.rectify(_request);
 
         final body = adapter.requests.single.bodyString;
-        expect(body.contains('secret-key-xyz'), isFalse,
-            reason: 'API key must not appear in the POST body');
+        expect(
+          body.contains('secret-key-xyz'),
+          isFalse,
+          reason: 'API key must not appear in the POST body',
+        );
+      },
+    );
+
+    test(
+      'cancelling the token aborts an in-flight request with an Err',
+      () async {
+        final adapter = FakeHttpAdapter()..enqueueHangUntilCancelled();
+        final api = HttpRectificationApi(_wiredDio(adapter));
+        final cancelToken = CancelToken();
+
+        final pending = api.rectify(_request, cancelToken: cancelToken);
+        // Let the POST reach the (hanging) adapter before cancelling —
+        // this is the user tapping Cancel mid-flight. Without the token
+        // wired into dio.post the request would never complete and this
+        // test would time out.
+        while (adapter.requests.isEmpty) {
+          await Future<void>.delayed(Duration.zero);
+        }
+        cancelToken.cancel('user tapped Cancel');
+
+        final result = await pending;
+        expect(result.isErr, isTrue);
+        expect(adapter.requests, hasLength(1));
+        expect(cancelToken.isCancelled, isTrue);
       },
     );
 
@@ -274,6 +302,25 @@ void main() {
 
       final result = await api.rectify(_request);
       expect(result.failureOrNull, isA<RateLimitedFailure>());
+    });
+
+    test('429 with proxy metadata maps source/resetAt/retryAfter', () async {
+      // The proxy contract returns 429 with retryAfter/resetAt so the
+      // app can show when the server-side quota window reopens.
+      final adapter = FakeHttpAdapter()
+        ..enqueueJson(
+          '{"retryAfter":3600,"resetAt":"2026-06-13T10:00:00Z"}',
+          statusCode: 429,
+        );
+      final api = HttpRectificationApi(_wiredDio(adapter));
+
+      final result = await api.rectify(_request);
+      final failure = result.failureOrNull;
+      expect(failure, isA<RateLimitedFailure>());
+      final rateLimited = failure! as RateLimitedFailure;
+      expect(rateLimited.source, RateLimitSource.server);
+      expect(rateLimited.retryAfter, const Duration(seconds: 3600));
+      expect(rateLimited.resetAt, DateTime.utc(2026, 6, 13, 10));
     });
 
     test('500 maps to ServerFailure(500)', () async {

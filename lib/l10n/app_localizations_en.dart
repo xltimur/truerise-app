@@ -352,8 +352,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resultLowConfidenceTitle => 'Low confidence result';
 
   @override
-  String get resultLowConfidenceBody =>
-      'Add more dated life events or narrow the birth-time window to improve the estimate.';
+  String get resultLowConfidenceTipEvents => 'Add more dated life events.';
+
+  @override
+  String get resultLowConfidenceTipReviewInput =>
+      'Review your birth date, city, and approximate time.';
+
+  @override
+  String get resultLowConfidenceTipWiderWindow =>
+      'Try a wider birth-time window.';
+
+  @override
+  String get resultConfidenceExplainerTitle => 'What does this percent mean?';
+
+  @override
+  String get resultConfidenceExplainerBody =>
+      'Confidence is an estimate. It shows how strongly your dated life events support this candidate time compared with the other candidate times in your selected birth-time window.';
+
+  @override
+  String get resultConfidenceExplainerMethod =>
+      'Method: each candidate time is scored against your events using transits and progressions; higher scores mean a more probable match.';
 
   @override
   String get resultOtherCandidates => 'Other candidates';
@@ -382,6 +400,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get resultDemoShareButton => 'Share sample';
+
+  @override
+  String get resultFeedbackLabel => 'Result feedback';
+
+  @override
+  String get resultFeedbackTitle => 'Does this time feel plausible?';
+
+  @override
+  String get resultFeedbackYes => 'Yes';
+
+  @override
+  String get resultFeedbackNotSure => 'Not sure';
+
+  @override
+  String get resultFeedbackNo => 'No';
+
+  @override
+  String get resultFeedbackSaved => 'Thanks, saved.';
 
   @override
   String get shareCardTagline => 'Birth-time rectification';
@@ -746,6 +782,49 @@ class AppLocalizationsEn extends AppLocalizations {
       'You\'ve reached the calculation limit for now. Wait a little and try again, or switch on Demo mode to keep exploring offline.';
 
   @override
+  String get errorRateLimitedUseDemo => 'Use Demo Mode';
+
+  @override
+  String get errorRateLimitedEnterKey => 'Enter My API Key';
+
+  @override
+  String errorRateLimitedLocalQuotaBody(String resetDetail) {
+    return 'Your free live quota is used up.$resetDetail Switch to Demo Mode to keep exploring, or add your own API key in Settings.';
+  }
+
+  @override
+  String errorRateLimitedResetAt(String resetTime) {
+    return 'Resets at $resetTime UTC.';
+  }
+
+  @override
+  String errorRateLimitedRetryAfter(String duration) {
+    return 'You can try again in about $duration.';
+  }
+
+  @override
+  String errorRateLimitedRetryMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count minutes',
+      one: '1 minute',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String errorRateLimitedRetryHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count hours',
+      one: '1 hour',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get errorMalformedTitle => 'Couldn\'t read the response';
 
   @override
@@ -760,6 +839,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsSectionTimeFormat => 'Time format';
+
+  @override
+  String get settingsSectionApiKey => 'API key';
 
   @override
   String get settingsSectionData => 'Data';
@@ -779,6 +861,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsTimeFormat24 => '24-hour  (07:14)';
+
+  @override
+  String get settingsApiKeyHelper =>
+      'Already have an Astrology API key? Add it here.';
+
+  @override
+  String get settingsApiKeyConfigured => 'API key added';
+
+  @override
+  String get settingsApiKeyAdd => 'Add key';
+
+  @override
+  String get settingsApiKeyRemove => 'Remove key';
+
+  @override
+  String get settingsApiKeyFieldLabel => 'Astrology API key';
+
+  @override
+  String get settingsApiKeySave => 'Save key';
 
   @override
   String get settingsDeleteAllData => 'Delete all data';

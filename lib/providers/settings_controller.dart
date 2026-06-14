@@ -47,12 +47,16 @@ class SettingsController extends Notifier<SettingsModel> {
   /// visible "configured" flag (`docs/implementation-plan.md` §9.5).
   ///
   /// The raw key is **never** mirrored into [state] — only the boolean
-  /// flag is. [proApiKeyProvider] is invalidated so [dioProvider]
-  /// rebuilds onto the provider-direct path on the next read.
+  /// flag is. Both cache layers — [storedProApiKeyProvider] (the
+  /// secure-storage read) and [proApiKeyProvider] (the resolved key) —
+  /// are invalidated so [dioProvider] rebuilds onto the provider-direct
+  /// path on the next read.
   Future<void> setProApiKey(String key) async {
     await ref.read(settingsRepositoryProvider).setProApiKey(key);
     state = state.copyWith(proApiKeyConfigured: true);
-    ref.invalidate(proApiKeyProvider);
+    ref
+      ..invalidate(storedProApiKeyProvider)
+      ..invalidate(proApiKeyProvider);
   }
 
   /// Drop the stored Pro / Developer key and reset the visible flag,
@@ -60,7 +64,9 @@ class SettingsController extends Notifier<SettingsModel> {
   Future<void> clearProApiKey() async {
     await ref.read(settingsRepositoryProvider).clearProApiKey();
     state = state.copyWith(proApiKeyConfigured: false);
-    ref.invalidate(proApiKeyProvider);
+    ref
+      ..invalidate(storedProApiKeyProvider)
+      ..invalidate(proApiKeyProvider);
   }
 
   /// Wipe Drift + shared_preferences + secure storage
@@ -74,6 +80,7 @@ class SettingsController extends Notifier<SettingsModel> {
     if (outcome.isOk) {
       state = SettingsModel.initial();
       ref
+        ..invalidate(storedProApiKeyProvider)
         ..invalidate(proApiKeyProvider)
         ..invalidate(draftRepositoryProvider);
     }

@@ -14,6 +14,7 @@ import 'package:rectify/data/models/time_format.dart';
 import 'package:rectify/data/secure/secure_key_store.dart';
 import 'package:rectify/features/reviews/review_invitation.dart';
 import 'package:rectify/features/settings/delete_all_data_sheet.dart';
+import 'package:rectify/features/settings/privacy_policy_link.dart';
 import 'package:rectify/features/settings/privacy_policy_screen.dart';
 import 'package:rectify/features/settings/settings_screen.dart';
 import 'package:rectify/providers/core_providers.dart';
@@ -25,6 +26,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../data/fixtures/sample_calculation.dart';
 import '../../../helpers/fake_history_repository.dart';
+import '../../../helpers/fake_privacy_policy_launcher.dart';
 import '../../../helpers/fake_review_service.dart';
 import '../../../helpers/fake_share_service.dart';
 
@@ -45,10 +47,20 @@ ProviderScope _wrap(
   FakeHistoryRepository? history,
   FakeShareService? shareService,
   FakeReviewService? reviewService,
+  String? privacyPolicyUrl,
+  FakePrivacyPolicyLauncher? privacyLauncher,
 }) {
   return ProviderScope(
     overrides: [
       sharedPreferencesProvider.overrideWithValue(prefs),
+      // Simulates the owner's --dart-define=TRUERISE_PRIVACY_POLICY_URL
+      // without mutating the compile-time environment; the launcher is
+      // always faked so no test can reach the platform url_launcher.
+      if (privacyPolicyUrl != null)
+        privacyPolicyUrlProvider.overrideWithValue(privacyPolicyUrl),
+      privacyPolicyLauncherProvider.overrideWithValue(
+        privacyLauncher ?? FakePrivacyPolicyLauncher(),
+      ),
       secureKeyStoreProvider.overrideWithValue(
         secure ?? InMemorySecureKeyStore(),
       ),
@@ -181,6 +193,61 @@ void main() {
     expect(find.textContaining('7:14 AM'), findsNothing);
   });
 
+  testWidgets(
+    'API key flow saves trimmed key securely and never echoes it',
+    (tester) async {
+      final prefs = await _prefs();
+      final secure = InMemorySecureKeyStore();
+      final container = await _pumpOnSettings(
+        tester,
+        _wrap(prefs, secure: secure),
+      );
+
+      // Store-build safe copy plus the entry action.
+      expect(
+        find.text('Already have an Astrology API key? Add it here.'),
+        findsOneWidget,
+      );
+      expect(find.text('Add key'), findsOneWidget);
+
+      await tester.tap(find.text('Add key'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Astrology API key'), findsOneWidget);
+      expect(find.text('Save key'), findsOneWidget);
+
+      await tester.enterText(find.byType(TextField), '  user-key-123  ');
+      await tester.tap(find.text('Save key'));
+      await tester.pumpAndSettle();
+
+      // The trimmed key lands in secure storage only; the configured
+      // flag mirrors it in the controller and prefs.
+      expect(await secure.readProApiKey(), 'user-key-123');
+      expect(
+        container.read(settingsControllerProvider).proApiKeyConfigured,
+        isTrue,
+      );
+      expect(prefs.getBool('settings.pro_api_key_configured'), isTrue);
+
+      // §9.5 hard rule — the raw key is never echoed back into the UI.
+      expect(find.textContaining('user-key-123'), findsNothing);
+
+      expect(find.text('API key added'), findsOneWidget);
+      expect(find.text('Remove key'), findsOneWidget);
+
+      await tester.tap(find.text('Remove key'));
+      await tester.pumpAndSettle();
+
+      expect(await secure.readProApiKey(), isNull);
+      expect(
+        container.read(settingsControllerProvider).proApiKeyConfigured,
+        isFalse,
+      );
+      expect(prefs.getBool('settings.pro_api_key_configured'), isFalse);
+      expect(find.text('Add key'), findsOneWidget);
+    },
+  );
+
   testWidgets('Delete all data wipes stores and routes to onboarding', (
     tester,
   ) async {
@@ -236,8 +303,11 @@ void main() {
   });
 
   testWidgets('Privacy row pushes the in-app privacy screen', (tester) async {
+    // Default build: TRUERISE_PRIVACY_POLICY_URL is empty, so the hosted
+    // path is disabled and the bundled screen renders as before.
     final prefs = await _prefs();
-    await _pumpOnSettings(tester, _wrap(prefs));
+    final launcher = FakePrivacyPolicyLauncher();
+    await _pumpOnSettings(tester, _wrap(prefs, privacyLauncher: launcher));
 
     await tester.tap(find.text('Privacy Policy'));
     await tester.pumpAndSettle();
@@ -245,7 +315,78 @@ void main() {
     expect(find.byType(PrivacyPolicyScreen), findsOneWidget);
     expect(find.text('What TrueRise stores'), findsOneWidget);
     expect(find.text('Deleting your data'), findsOneWidget);
+    expect(launcher.opened, isEmpty);
   });
+
+  testWidgets(
+    'Privacy row opens a configured hosted policy URL in an in-app '
+    'browser view',
+    (tester) async {
+      final prefs = await _prefs();
+      final launcher = FakePrivacyPolicyLauncher();
+      await _pumpOnSettings(
+        tester,
+        _wrap(
+          prefs,
+          privacyPolicyUrl: 'https://truerise.app/privacy',
+          privacyLauncher: launcher,
+        ),
+      );
+
+      await tester.tap(find.text('Privacy Policy'));
+      await tester.pumpAndSettle();
+
+      expect(launcher.opened, ['https://truerise.app/privacy']);
+      expect(find.byType(PrivacyPolicyScreen), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'Privacy row falls back to the in-app screen for an unsafe URL',
+    (tester) async {
+      // A query string is where tracking params live — the validator
+      // rejects it, the launcher is never consulted, and the bundled
+      // screen renders instead.
+      final prefs = await _prefs();
+      final launcher = FakePrivacyPolicyLauncher();
+      await _pumpOnSettings(
+        tester,
+        _wrap(
+          prefs,
+          privacyPolicyUrl: 'https://truerise.app/privacy?utm_source=app',
+          privacyLauncher: launcher,
+        ),
+      );
+
+      await tester.tap(find.text('Privacy Policy'));
+      await tester.pumpAndSettle();
+
+      expect(launcher.opened, isEmpty);
+      expect(find.byType(PrivacyPolicyScreen), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'Privacy row falls back to the in-app screen when the launch fails',
+    (tester) async {
+      final prefs = await _prefs();
+      final launcher = FakePrivacyPolicyLauncher(returnsLaunched: false);
+      await _pumpOnSettings(
+        tester,
+        _wrap(
+          prefs,
+          privacyPolicyUrl: 'https://truerise.app/privacy',
+          privacyLauncher: launcher,
+        ),
+      );
+
+      await tester.tap(find.text('Privacy Policy'));
+      await tester.pumpAndSettle();
+
+      expect(launcher.opened, ['https://truerise.app/privacy']);
+      expect(find.byType(PrivacyPolicyScreen), findsOneWidget);
+    },
+  );
 
   testWidgets(
     'destructive CTA in delete sheet uses the destructive button variant',

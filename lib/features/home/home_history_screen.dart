@@ -36,12 +36,7 @@ class HomeHistoryScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.bgApp,
-      appBar: TopNav(
-        title: appBrandName,
-        trailingIcon: AppIcons.settings,
-        trailingSemanticsLabel: context.l10n.homeSettingsButton,
-        onTrailingTap: () => context.go(RoutePaths.settings),
-      ),
+      appBar: const TopNav(title: appBrandName),
       body: history.when(
         loading: () => const Center(
           child: CircularProgressIndicator(color: AppColors.accentClay),

@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:rectify/app/route_names.dart';
+import 'package:rectify/core/app_links.dart';
 import 'package:rectify/core/sharing/invite_copy_builder.dart';
 import 'package:rectify/core/sharing/share_service.dart';
 import 'package:rectify/data/models/time_format.dart';
 import 'package:rectify/features/settings/delete_all_data_sheet.dart';
+import 'package:rectify/features/settings/privacy_policy_link.dart';
 import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/providers/core_providers.dart';
 import 'package:rectify/providers/settings_controller.dart';
@@ -17,6 +19,7 @@ import 'package:rectify/theme/spacing.dart';
 import 'package:rectify/theme/typography.dart';
 import 'package:rectify/widgets/buttons/buttons.dart';
 import 'package:rectify/widgets/cards/app_card.dart';
+import 'package:rectify/widgets/inputs/input_field.dart';
 import 'package:rectify/widgets/inputs/labeled_toggle.dart';
 import 'package:rectify/widgets/inputs/radio_group.dart' as rectify;
 import 'package:rectify/widgets/nav/top_nav.dart';
@@ -36,8 +39,35 @@ class SettingsScreen extends ConsumerWidget {
   Future<void> _openDeleteAllSheet(BuildContext context, WidgetRef ref) =>
       DeleteAllDataSheet.show(context);
 
-  void _openPrivacy(BuildContext context) =>
-      context.push(RoutePaths.settingsPrivacy);
+  /// Opens the privacy policy. When the owner configured a hosted page at
+  /// build time (`TRUERISE_PRIVACY_POLICY_URL`) and it passes the
+  /// bare-HTTPS validator, it opens in an in-app browser view; when the
+  /// define is empty,
+  /// unsafe, or the launch fails, the bundled in-app screen is pushed
+  /// exactly as before — the row never dead-ends.
+  Future<void> _openPrivacy(BuildContext context, WidgetRef ref) async {
+    final url = ref.read(privacyPolicyUrlProvider);
+    if (AppLinks.isPrivacySafeShareUrl(url)) {
+      final opened = await ref.read(privacyPolicyLauncherProvider).open(url);
+      if (opened) return;
+    }
+    if (!context.mounted) return;
+    await context.push(RoutePaths.settingsPrivacy);
+  }
+
+  /// Collects a user-entered Astrology API key and stores the trimmed
+  /// value via the controller, which routes it into secure storage
+  /// (`docs/design-system.md` §9.5 — the raw key is never echoed back
+  /// into the UI, so the dialog closes before any configured state
+  /// renders). Store-build safe: no purchase or signup copy here.
+  Future<void> _openAddKeyDialog(BuildContext context, WidgetRef ref) async {
+    final key = await showDialog<String>(
+      context: context,
+      builder: (_) => const _ApiKeyDialog(),
+    );
+    if (key == null) return;
+    await ref.read(settingsControllerProvider.notifier).setProApiKey(key);
+  }
 
   /// Opt-in "Invite a friend" share (S4 — Invite Friend Lite). Sends a
   /// privacy-safe, localized, branded invite via [ShareService]. The text
@@ -113,6 +143,37 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.sectionGap),
+          _SectionLabel(l10n.settingsSectionApiKey),
+          AppCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Text(
+                  l10n.settingsApiKeyHelper,
+                  style: AppTypography.bodySm.copyWith(
+                    color: AppColors.inkSoft,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.s4),
+                if (settings.proApiKeyConfigured) ...<Widget>[
+                  Text(
+                    l10n.settingsApiKeyConfigured,
+                    style: AppTypography.bodyMd,
+                  ),
+                  const SizedBox(height: AppSpacing.s3),
+                  SecondaryButton(
+                    label: l10n.settingsApiKeyRemove,
+                    onPressed: controller.clearProApiKey,
+                  ),
+                ] else
+                  SecondaryButton(
+                    label: l10n.settingsApiKeyAdd,
+                    onPressed: () => _openAddKeyDialog(context, ref),
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sectionGap),
           _SectionLabel(l10n.settingsSectionData),
           AppCard(
             borderColor: AppColors.statusDanger.withValues(alpha: 0.4),
@@ -157,7 +218,7 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 _ChevronRow(
                   label: l10n.settingsPrivacyPolicy,
-                  onTap: () => _openPrivacy(context),
+                  onTap: () => _openPrivacy(context, ref),
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.s5,
                     vertical: AppSpacing.s4,
@@ -203,6 +264,59 @@ class _SectionLabel extends StatelessWidget {
       child: Text(
         text.toUpperCase(),
         style: AppTypography.labelSm.copyWith(color: AppColors.inkSoft),
+      ),
+    );
+  }
+}
+
+/// Modal that collects an Astrology API key. Pops with the trimmed key;
+/// an all-whitespace entry keeps the dialog open. The field is obscured
+/// and the dialog never re-renders a stored key (§9.5).
+class _ApiKeyDialog extends StatefulWidget {
+  const _ApiKeyDialog();
+
+  @override
+  State<_ApiKeyDialog> createState() => _ApiKeyDialogState();
+}
+
+class _ApiKeyDialogState extends State<_ApiKeyDialog> {
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _save() {
+    final key = _controller.text.trim();
+    if (key.isEmpty) return;
+    Navigator.of(context).pop(key);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      insetPadding: const EdgeInsets.all(AppSpacing.screenEdge),
+      child: AppCard(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            InputField(
+              label: l10n.settingsApiKeyFieldLabel,
+              controller: _controller,
+              obscureText: true,
+              autofocus: true,
+              onSubmitted: (_) => _save(),
+            ),
+            const SizedBox(height: AppSpacing.s4),
+            PrimaryButton(label: l10n.settingsApiKeySave, onPressed: _save),
+          ],
+        ),
       ),
     );
   }

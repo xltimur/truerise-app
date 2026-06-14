@@ -31,8 +31,9 @@ class _ResultNotFound extends StatelessWidget {
 /// candidate sits in the low band ([ConfidenceBar.isLowBand]).
 ///
 /// Frames a weak estimate as "needs more input", never as a failure:
-/// the user is pointed at adding more dated life events or narrowing
-/// the birth-time window for their next calculation. Deliberately has
+/// the user gets concrete next steps for their next calculation — more
+/// dated life events, double-checking the birth input, or a wider
+/// birth-time window. Deliberately has
 /// no CTA — the submitted draft is cleared on submit, so routing back
 /// into the calc flow from here cannot rehydrate this result's input
 /// without new state plumbing (out of scope; the evidence CTA below
@@ -45,6 +46,11 @@ class _LowConfidenceNote extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final tips = <String>[
+      l10n.resultLowConfidenceTipEvents,
+      l10n.resultLowConfidenceTipReviewInput,
+      l10n.resultLowConfidenceTipWiderWindow,
+    ];
     return Semantics(
       container: true,
       child: Container(
@@ -67,13 +73,244 @@ class _LowConfidenceNote extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.s1),
-            Text(
-              l10n.resultLowConfidenceBody,
-              style: AppTypography.bodySm.copyWith(
-                color: AppColors.accentClayDeep,
+            for (final tip in tips)
+              Padding(
+                padding: const EdgeInsets.only(top: AppSpacing.s1),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      '• ',
+                      style: AppTypography.bodySm.copyWith(
+                        color: AppColors.accentClayDeep,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        tip,
+                        style: AppTypography.bodySm.copyWith(
+                          color: AppColors.accentClayDeep,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Compact explanation block under the [ConfidenceBar] (and below the
+/// [_LowConfidenceNote] when present) telling the user what the
+/// confidence percent means and, at a high level, how candidate times
+/// are ranked.
+///
+/// Copy contract (G15/G16): strictly probabilistic — confidence is an
+/// estimate of how strongly the user's dated life events support this
+/// candidate relative to the other candidate times in the selected
+/// birth-time window, and the transits + progressions scoring is framed
+/// as method/tooling, never as absolute outcome claims or fortune-telling.
+/// Quiet surface tokens (sunken background, no accent border) so it
+/// reads as a footnote, not a warning — the clay-tinted low-confidence
+/// note above keeps visual priority.
+class _ConfidenceExplainer extends StatelessWidget {
+  const _ConfidenceExplainer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Semantics(
+      container: true,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.s4,
+          vertical: AppSpacing.s3,
+        ),
+        decoration: BoxDecoration(
+          color: AppColors.bgSurfaceSunken,
+          borderRadius: AppRadius.brSm,
+          border: Border.all(color: AppColors.inkLine),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              l10n.resultConfidenceExplainerTitle,
+              key: resultConfidenceExplainerTitleKey,
+              style: AppTypography.titleSm,
+            ),
+            const SizedBox(height: AppSpacing.s1),
+            Text(
+              l10n.resultConfidenceExplainerBody,
+              key: resultConfidenceExplainerBodyKey,
+              style: AppTypography.bodySm.copyWith(color: AppColors.inkSoft),
+            ),
+            const SizedBox(height: AppSpacing.s2),
+            Text(
+              l10n.resultConfidenceExplainerMethod,
+              key: resultConfidenceExplainerMethodKey,
+              style: AppTypography.bodySm.copyWith(color: AppColors.inkSoft),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Post-result "Does this time feel plausible?" prompt
+/// (`docs/mvp-scope.md` S1 / feature-gap G18).
+///
+/// Local-only by design: a tap persists exactly `result id -> answer`
+/// through [ResultFeedbackStore] — no network, analytics, or review
+/// invitation rides on it. A previously recorded answer renders
+/// pre-selected on first build, and any selection shows a quiet
+/// inline "saved" confirmation instead of a toast. Choices live in a
+/// [Wrap] so they reflow on narrow widths without overflowing.
+class _ResultFeedbackPrompt extends ConsumerStatefulWidget {
+  const _ResultFeedbackPrompt({required this.resultId, super.key});
+
+  final String resultId;
+
+  @override
+  ConsumerState<_ResultFeedbackPrompt> createState() =>
+      _ResultFeedbackPromptState();
+}
+
+class _ResultFeedbackPromptState extends ConsumerState<_ResultFeedbackPrompt> {
+  ResultFeedbackAnswer? _answer;
+
+  @override
+  void initState() {
+    super.initState();
+    _answer = ref.read(resultFeedbackStoreProvider).read(widget.resultId);
+  }
+
+  @override
+  void didUpdateWidget(_ResultFeedbackPrompt oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.resultId != widget.resultId) {
+      _answer = ref.read(resultFeedbackStoreProvider).read(widget.resultId);
+    }
+  }
+
+  Future<void> _select(ResultFeedbackAnswer answer) async {
+    setState(() => _answer = answer);
+    await ref.read(resultFeedbackStoreProvider).write(widget.resultId, answer);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Semantics(
+      container: true,
+      label: l10n.resultFeedbackLabel,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: AppColors.bgSurface,
+          borderRadius: AppRadius.brMd,
+          border: Border.all(color: AppColors.inkLine),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.s4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(l10n.resultFeedbackTitle, style: AppTypography.titleSm),
+              const SizedBox(height: AppSpacing.s3),
+              Wrap(
+                spacing: AppSpacing.s2,
+                runSpacing: AppSpacing.s2,
+                children: <Widget>[
+                  _FeedbackChoice(
+                    key: resultFeedbackYesKey,
+                    label: l10n.resultFeedbackYes,
+                    selected: _answer == ResultFeedbackAnswer.yes,
+                    onTap: () => _select(ResultFeedbackAnswer.yes),
+                  ),
+                  _FeedbackChoice(
+                    key: resultFeedbackNotSureKey,
+                    label: l10n.resultFeedbackNotSure,
+                    selected: _answer == ResultFeedbackAnswer.notSure,
+                    onTap: () => _select(ResultFeedbackAnswer.notSure),
+                  ),
+                  _FeedbackChoice(
+                    key: resultFeedbackNoKey,
+                    label: l10n.resultFeedbackNo,
+                    selected: _answer == ResultFeedbackAnswer.no,
+                    onTap: () => _select(ResultFeedbackAnswer.no),
+                  ),
+                ],
+              ),
+              if (_answer != null) ...<Widget>[
+                const SizedBox(height: AppSpacing.s3),
+                Text(
+                  l10n.resultFeedbackSaved,
+                  key: resultFeedbackSavedKey,
+                  style: AppTypography.bodySm.copyWith(
+                    color: AppColors.statusSuccess,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// One tappable answer in [_ResultFeedbackPrompt]. Constrained to a
+/// >= 44px hit target; the selected state mirrors the clay-tint
+/// "selected" chip tokens (`docs/design-system.md` §9.5).
+class _FeedbackChoice extends StatelessWidget {
+  const _FeedbackChoice({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+    super.key,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: label,
+      excludeSemantics: true,
+      child: Material(
+        color: selected ? AppColors.accentClayTint : AppColors.bgSurfaceSunken,
+        borderRadius: AppRadius.brSm,
+        child: InkWell(
+          borderRadius: AppRadius.brSm,
+          onTap: onTap,
+          child: Container(
+            constraints: const BoxConstraints(minHeight: 44, minWidth: 44),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.s4,
+              vertical: AppSpacing.s3,
+            ),
+            decoration: BoxDecoration(
+              borderRadius: AppRadius.brSm,
+              border: Border.all(
+                color: selected ? AppColors.accentClayLine : AppColors.inkLine,
+              ),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              label,
+              style: AppTypography.labelMd.copyWith(
+                color: selected ? AppColors.accentClayDeep : AppColors.inkMuted,
+              ),
+            ),
+          ),
         ),
       ),
     );

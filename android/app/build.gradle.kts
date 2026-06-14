@@ -1,4 +1,7 @@
 import java.io.FileInputStream
+import java.net.URI
+import java.net.URISyntaxException
+import java.util.Base64
 import java.util.Properties
 
 plugins {
@@ -50,7 +53,9 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        // First-publish bundle id is owner-gated: keep `com.rectify.rectify`
+        // until the owner explicitly approves a change. Recommended candidate
+        // is `app.astrolium.truerise` (see docs/bundle-id-recommendation.md).
         applicationId = "com.rectify.rectify"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
@@ -107,19 +112,166 @@ if (releaseSigningProblem != null) {
     }
 }
 
-// --- Bundled .env review-key release guard --------------------------------
+// --- Bundled .env, share URL, and proxy URL release guard ------------------
 // The repo tracks `.env` as a Flutter asset so review/demo builds boot with
 // a live provider key (README "Security boundary"). Assets are extractable
 // from a public APK/AAB, so release builds must not silently ship that key:
 // this task fails unless the owner explicitly acknowledges the bundled key
 // as a low-budget, capped, rotatable review key. The key value itself is
-// never read into any message. Mirrors `tool/release_env_guard.dart`, which
-// is the manual preflight for iOS builds.
+// never read into any message. The task also gates the release share/invite
+// URL: the default placeholder needs explicit owner confirmation, and a
+// custom TRUERISE_SHARE_URL must be bare HTTPS (host only, no userinfo, no
+// query, no fragment) so shipped share copy cannot leak tracking/personal
+// identifiers. The task also gates RECTIFY_PROXY_BASE_URL: the default
+// placeholder blocks the release - a public build must route through a real
+// owner-controlled proxy - unless explicitly acknowledged for local/test-only
+// builds, and a custom proxy URL must be a host-only HTTPS origin (no path
+// beyond an optional trailing "/", since RECTIFY_PROXY_PATH carries the
+// endpoint path separately) so it cannot smuggle credentials or tracking
+// identifiers into the shipped config.
+// Rejected custom URLs are never echoed. Mirrors
+// `tool/release_env_guard.dart`, which is the manual preflight for iOS
+// builds.
+
+// Default share/invite URL placeholder, mirrored from the Dart guard.
+val defaultShareUrl = "https://truerise.app"
+
+// Default RECTIFY_PROXY_BASE_URL placeholder, mirrored from the Dart guard.
+val defaultProxyBaseUrl = "https://proxy.invalid.example"
+
+// Flutter forwards --dart-define values to Gradle as the `dart-defines`
+// project property: comma-separated entries, each a base64/base64url encoded
+// `KEY=VALUE` pair. Decode defensively and skip undecodable entries.
+fun decodeDartDefine(encoded: String): String? {
+    val bytes = try {
+        Base64.getUrlDecoder().decode(encoded)
+    } catch (_: IllegalArgumentException) {
+        try {
+            Base64.getDecoder().decode(encoded)
+        } catch (_: IllegalArgumentException) {
+            return null
+        }
+    }
+    return String(bytes, Charsets.UTF_8)
+}
+
+fun dartDefineValue(dartDefines: String, key: String): String? {
+    for (entry in dartDefines.split(",")) {
+        val decoded = decodeDartDefine(entry.trim()) ?: continue
+        val separator = decoded.indexOf('=')
+        if (separator <= 0) continue
+        if (decoded.substring(0, separator) == key) {
+            return decoded.substring(separator + 1)
+        }
+    }
+    return null
+}
+
+// A custom share URL passes only as bare HTTPS: https scheme, host present,
+// no userinfo, no query, no fragment. A path is allowed for share URLs.
+fun isBareHttpsUrl(value: String): Boolean = try {
+    val uri = URI(value)
+    uri.scheme == "https" &&
+        !uri.host.isNullOrEmpty() &&
+        uri.rawUserInfo == null &&
+        uri.rawQuery == null &&
+        uri.rawFragment == null
+} catch (_: URISyntaxException) {
+    false
+}
+
+// A custom proxy base URL must additionally be a host-only HTTPS origin:
+// no path beyond an optional trailing "/", because RECTIFY_PROXY_PATH
+// carries the endpoint path separately.
+fun isBareHttpsOriginUrl(value: String): Boolean = try {
+    val uri = URI(value)
+    isBareHttpsUrl(value) &&
+        (uri.rawPath.isNullOrEmpty() || uri.rawPath == "/")
+} catch (_: URISyntaxException) {
+    false
+}
+
 val validateReleaseBundledEnv = tasks.register("validateReleaseBundledEnv") {
     group = "verification"
     description =
-        "Blocks release builds that bundle an unacknowledged ASTRO_API_KEY via the tracked .env."
+        "Blocks release builds whose bundled env carries an unacknowledged " +
+            "ASTRO_API_KEY or whose share URL or proxy base URL release " +
+            "config is unvetted."
     doLast {
+        // Share URL gate: prefer the Flutter dart-define, then the direct
+        // Gradle property, then the default placeholder.
+        val dartDefines = findProperty("dart-defines") as? String
+        val shareUrl = dartDefines?.let { dartDefineValue(it, "TRUERISE_SHARE_URL") }
+            ?: (findProperty("truerise.shareUrl") as? String)
+            ?: defaultShareUrl
+        if (shareUrl == defaultShareUrl) {
+            val allowDefault =
+                findProperty("truerise.allowDefaultShareUrl") == "true"
+            val sharePurpose = findProperty("truerise.shareUrlPurpose")
+            if (!(allowDefault && sharePurpose == "owner-confirmed")) {
+                throw GradleException(
+                    "Release blocked: the release would ship the default " +
+                        "placeholder share URL $defaultShareUrl. Pass the real " +
+                        "owner-controlled URL via " +
+                        "--dart-define=TRUERISE_SHARE_URL=<https-url> (or " +
+                        "-Ptruerise.shareUrl=<https-url> for direct Gradle " +
+                        "verification), or - ONLY if the owner confirms " +
+                        "shipping the placeholder - acknowledge it explicitly " +
+                        "with:\n" +
+                        "  -Ptruerise.allowDefaultShareUrl=true " +
+                        "-Ptruerise.shareUrlPurpose=owner-confirmed\n" +
+                        "No other purpose is accepted."
+                )
+            }
+        } else if (!isBareHttpsUrl(shareUrl)) {
+            throw GradleException(
+                "Release blocked: the custom TRUERISE_SHARE_URL value " +
+                    "(redacted) is not a bare HTTPS URL. It must use " +
+                    "https://, name a host, and carry no userinfo, no query, " +
+                    "and no fragment, so the shipped share copy cannot leak " +
+                    "tracking/personal identifiers."
+            )
+        }
+        // Proxy base URL gate: prefer the Flutter dart-define, then the
+        // direct Gradle property, then the default placeholder. The
+        // placeholder blocks the release - a public build must route through
+        // a real owner-controlled proxy - unless explicitly acknowledged for
+        // a local/test build that never reaches users.
+        val proxyBaseUrl = dartDefines
+            ?.let { dartDefineValue(it, "RECTIFY_PROXY_BASE_URL") }
+            ?: (findProperty("truerise.proxyBaseUrl") as? String)
+            ?: defaultProxyBaseUrl
+        if (proxyBaseUrl == defaultProxyBaseUrl) {
+            val allowDefaultProxy =
+                findProperty("truerise.allowDefaultProxyUrl") == "true"
+            val proxyPurpose = findProperty("truerise.proxyUrlPurpose")
+            if (!(allowDefaultProxy && proxyPurpose == "local-test-only")) {
+                throw GradleException(
+                    "Release blocked: the release would ship the default " +
+                        "placeholder RECTIFY_PROXY_BASE_URL " +
+                        "$defaultProxyBaseUrl. Pass the real owner-controlled " +
+                        "proxy URL via " +
+                        "--dart-define=RECTIFY_PROXY_BASE_URL=<https-url> (or " +
+                        "-Ptruerise.proxyBaseUrl=<https-url> for direct " +
+                        "Gradle verification), or - ONLY for a local/test " +
+                        "build that never reaches users - acknowledge the " +
+                        "placeholder explicitly with:\n" +
+                        "  -Ptruerise.allowDefaultProxyUrl=true " +
+                        "-Ptruerise.proxyUrlPurpose=local-test-only\n" +
+                        "No other purpose is accepted."
+                )
+            }
+        } else if (!isBareHttpsOriginUrl(proxyBaseUrl)) {
+            throw GradleException(
+                "Release blocked: the custom RECTIFY_PROXY_BASE_URL value " +
+                    "(redacted) is not a host-only HTTPS origin. It must use " +
+                    "https://, name a host, and carry no path (a single " +
+                    "trailing \"/\" is allowed), no userinfo, no query, and " +
+                    "no fragment - RECTIFY_PROXY_PATH carries the endpoint " +
+                    "path separately - so the shipped config cannot leak " +
+                    "credentials or tracking identifiers."
+            )
+        }
         val envFile = rootProject.file("../.env")
         val keyPresent = envFile.exists() && envFile.readLines().any { rawLine ->
             val line = rawLine.trim()

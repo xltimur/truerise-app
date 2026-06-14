@@ -1,6 +1,6 @@
+import 'package:dio/dio.dart' show CancelToken;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:rectify/core/failures.dart';
 import 'package:rectify/core/result.dart';
 import 'package:rectify/data/api/dto/rectification_request_dto.dart';
@@ -8,8 +8,10 @@ import 'package:rectify/data/api/dto/rectification_response_dto.dart';
 import 'package:rectify/data/api/rectification_api.dart';
 import 'package:rectify/data/db/database.dart';
 import 'package:rectify/data/models/match_strength.dart';
+import 'package:rectify/data/prefs/live_quota_store.dart';
 import 'package:rectify/data/repos/history_repository.dart';
 import 'package:rectify/data/repos/rectification_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../helpers/demo_fixtures.dart';
 import '../fixtures/sample_calculation.dart';
@@ -21,12 +23,15 @@ class _RecordingApi implements RectificationApi {
   RectificationSearchResponseDto? canned;
   String cannedRaw = '{}';
   AppFailure? failure;
+  CancelToken? lastCancelToken;
 
   @override
   Future<Result<RectificationApiResponse, AppFailure>> rectify(
-    RectificationSearchRequestDto request,
-  ) async {
+    RectificationSearchRequestDto request, {
+    CancelToken? cancelToken,
+  }) async {
     callCount++;
+    lastCancelToken = cancelToken;
     if (failure != null) return Result.err(failure!);
     if (canned == null) {
       throw StateError('Test forgot to seed the canned response');
@@ -40,16 +45,52 @@ class _RecordingApi implements RectificationApi {
 LiveRectificationRepository _makeRepo({
   required _RecordingApi api,
   required DriftHistoryRepository history,
-  bool apiKeyIsConfigured = true,
+  LiveQuotaStore? liveQuotaStore,
+  bool bypassLiveQuota = false,
 }) {
   return LiveRectificationRepository(
     api: api,
     history: history,
-    apiKeyIsConfigured: apiKeyIsConfigured,
+    liveQuotaStore: liveQuotaStore,
+    bypassLiveQuota: bypassLiveQuota,
     now: () => DateTime.utc(2026, 5, 20, 12),
     demoDelay: Duration.zero,
   );
 }
+
+/// Minimal valid v3 response for tests that only care that the call
+/// reached the API and round-tripped.
+const _minimalCannedResponse = RectificationSearchResponseDto(
+  candidates: <CandidateV3Dto>[
+    CandidateV3Dto(
+      rank: 1,
+      time: '08:00',
+      aggregateScore: 19.2,
+      normalizedScore: 91,
+      grade: 'excellent',
+      eventScores: <EventScoreDto>[
+        EventScoreDto(
+          eventIndex: 0,
+          eventDate: '2014-06',
+          eventCategory: 'marriage',
+          totalScore: 9.1,
+          interpretation: 'Proxy-mode evidence text.',
+        ),
+      ],
+      chart: <String, dynamic>{
+        'planetary_positions': <Map<String, dynamic>>[
+          <String, dynamic>{'name': 'Ascendant', 'sign': 'Leo'},
+        ],
+      },
+    ),
+  ],
+  summary: SummaryV3Dto(
+    confidence: ConfidenceAssessmentDto(level: 'high'),
+    peakTime: '08:00',
+    techniquesUsed: <String>['transit'],
+  ),
+  computedAt: '2026-05-20T12:00:00Z',
+);
 
 void main() {
   late AppDatabase db;
@@ -57,6 +98,7 @@ void main() {
   late _RecordingApi api;
 
   setUp(() {
+    SharedPreferences.setMockInitialValues(<String, Object>{});
     db = AppDatabase.forTesting(NativeDatabase.memory());
     history = DriftHistoryRepository(db);
     api = _RecordingApi();
@@ -115,13 +157,23 @@ void main() {
     });
 
     test(
-      'demo submit returns success even when apiKeyIsConfigured=false',
+      'demo submit succeeds and stays offline even with the live quota '
+      'exhausted',
       () async {
-        // Demo mode must never be blocked by missing API key.
+        // Demo mode is fully local: no key, no quota gate, no network.
+        SharedPreferences.setMockInitialValues(<String, Object>{
+          'live_quota.count': LiveQuotaStore.maxAttempts,
+          'live_quota.window_start_ms': DateTime.utc(
+            2026,
+            5,
+            20,
+            2,
+          ).millisecondsSinceEpoch,
+        });
         final repo = _makeRepo(
           api: api,
           history: history,
-          apiKeyIsConfigured: false,
+          liveQuotaStore: LiveQuotaStore(await SharedPreferences.getInstance()),
         );
         final result = await repo.submit(
           sampleRequest(isDemo: true),
@@ -133,38 +185,78 @@ void main() {
     );
   });
 
-  group('Real path — no API key configured', () {
-    test('returns MissingApiKeyFailure before calling the API', () async {
-      final repo = _makeRepo(
-        api: api,
-        history: history,
-        apiKeyIsConfigured: false,
-      );
-      final result = await repo.submit(sampleRequest());
+  group('Real path — proxy mode (no provider key configured)', () {
+    // With no bundled or Settings key, the API layer is wired for the
+    // proxy endpoint; the repository must still submit (the proxy holds
+    // the provider credential server-side), gated only by the local
+    // free-attempt quota.
 
-      expect(result.isErr, isTrue);
-      expect(result.failureOrNull, isA<MissingApiKeyFailure>());
-      expect(
-        api.callCount,
-        0,
-        reason: 'No network call should be made when key is absent',
-      );
-    });
+    test(
+      'no-key real submit reaches the API and records a quota attempt',
+      () async {
+        api
+          ..canned = _minimalCannedResponse
+          ..cannedRaw = '{"candidates":[{"rank":1,"time":"08:00"}]}';
+        final quota = LiveQuotaStore(await SharedPreferences.getInstance());
+        final repo = _makeRepo(
+          api: api,
+          history: history,
+          liveQuotaStore: quota,
+        );
 
-    test('MissingApiKeyFailure is distinct from NoNetworkFailure', () async {
-      final repo = _makeRepo(
-        api: api,
-        history: history,
-        apiKeyIsConfigured: false,
-      );
-      final result = await repo.submit(sampleRequest());
+        final result = await repo.submit(sampleRequest(eventCount: 1));
 
-      expect(result.failureOrNull, isNot(isA<NoNetworkFailure>()));
-      expect(result.failureOrNull, isA<MissingApiKeyFailure>());
-    });
+        expect(result.isOk, isTrue);
+        expect(
+          api.callCount,
+          1,
+          reason: 'No-key submissions must reach the proxy, not fail locally',
+        );
+        final snapshot = await quota.read(DateTime.utc(2026, 5, 20, 12));
+        expect(
+          snapshot.used,
+          1,
+          reason: 'Proxy-mode attempts must consume the local free quota',
+        );
+      },
+    );
+
+    test(
+      'exhausted local quota blocks a no-key submit before the API',
+      () async {
+        SharedPreferences.setMockInitialValues(<String, Object>{
+          'live_quota.count': LiveQuotaStore.maxAttempts,
+          'live_quota.window_start_ms': DateTime.utc(
+            2026,
+            5,
+            20,
+            2,
+          ).millisecondsSinceEpoch,
+        });
+        final repo = _makeRepo(
+          api: api,
+          history: history,
+          liveQuotaStore: LiveQuotaStore(await SharedPreferences.getInstance()),
+        );
+
+        final result = await repo.submit(sampleRequest());
+
+        expect(result.isErr, isTrue);
+        expect(result.failureOrNull, isA<RateLimitedFailure>());
+        expect(
+          (result.failureOrNull! as RateLimitedFailure).source,
+          RateLimitSource.local,
+        );
+        expect(
+          api.callCount,
+          0,
+          reason: 'Local quota must gate before any proxy call',
+        );
+      },
+    );
   });
 
-  group('Real path — key configured', () {
+  group('Real path — API round trip', () {
     test(
       'submit maps API response back to a domain CalculationResult',
       () async {
@@ -235,6 +327,100 @@ void main() {
       final result = await repo.submit(sampleRequest());
       expect(result.isErr, isTrue);
       expect(result.failureOrNull, isA<TimeoutFailure>());
+    });
+
+    test('submit threads the cancel token into the API call', () async {
+      api.failure = const TimeoutFailure();
+      final repo = _makeRepo(api: api, history: history);
+      final cancelToken = CancelToken();
+
+      await repo.submit(sampleRequest(), cancelToken: cancelToken);
+
+      expect(
+        api.lastCancelToken,
+        same(cancelToken),
+        reason:
+            'Cancel can only abort the HTTP request when the token '
+            'reaches the Dio boundary',
+      );
+    });
+
+    test(
+      'API failure after a user cancel maps to submissionCancelledFailure '
+      'and writes no history',
+      () async {
+        // An aborted Dio call surfaces as a transport failure; with the
+        // cancel flag already raised it must come back as the marker
+        // failure, never as an Unknown error.
+        api.failure = const UnknownFailure('simulated dio cancel');
+        final repo = _makeRepo(api: api, history: history);
+        final request = sampleRequest();
+
+        final result = await repo.submit(request, isCancelled: () => true);
+
+        expect(result.failureOrNull, same(submissionCancelledFailure));
+        final saved = await history.findById(request.id);
+        expect(
+          saved.isErr,
+          isTrue,
+          reason: 'a cancelled submission must not save a history row',
+        );
+      },
+    );
+  });
+
+  group('Real path — local live quota', () {
+    // Repo clock is fixed at 2026-05-20T12:00Z by _makeRepo; the seeded
+    // window started 10h earlier, so 14h remain until the quota resets.
+    final firstAttempt = DateTime.utc(2026, 5, 20, 2);
+
+    Future<LiveQuotaStore> seedExhaustedQuota() async {
+      SharedPreferences.setMockInitialValues(<String, Object>{
+        'live_quota.count': LiveQuotaStore.maxAttempts,
+        'live_quota.window_start_ms': firstAttempt.millisecondsSinceEpoch,
+      });
+      return LiveQuotaStore(await SharedPreferences.getInstance());
+    }
+
+    test(
+      'exhausted quota returns local RateLimitedFailure without calling '
+      'the API',
+      () async {
+        final repo = _makeRepo(
+          api: api,
+          history: history,
+          liveQuotaStore: await seedExhaustedQuota(),
+        );
+
+        final result = await repo.submit(sampleRequest());
+
+        expect(result.isErr, isTrue);
+        expect(result.failureOrNull, isA<RateLimitedFailure>());
+        final failure = result.failureOrNull! as RateLimitedFailure;
+        expect(failure.source, RateLimitSource.local);
+        expect(failure.resetAt, firstAttempt.add(LiveQuotaStore.window));
+        expect(failure.retryAfter, const Duration(hours: 14));
+        expect(
+          api.callCount,
+          0,
+          reason: 'Local quota must gate before any network call',
+        );
+      },
+    );
+
+    test('bypassLiveQuota=true skips the gate and reaches the API', () async {
+      api.failure = const TimeoutFailure();
+      final repo = _makeRepo(
+        api: api,
+        history: history,
+        liveQuotaStore: await seedExhaustedQuota(),
+        bypassLiveQuota: true,
+      );
+
+      final result = await repo.submit(sampleRequest());
+
+      expect(result.failureOrNull, isA<TimeoutFailure>());
+      expect(api.callCount, 1);
     });
   });
 }

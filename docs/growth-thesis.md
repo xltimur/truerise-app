@@ -302,7 +302,7 @@ exists in the binary or is cheap to add.
 |---|---|---|
 | Result-share rate (taps of the new Share CTA) | Analytics event on `resultShareButtonKey` | Already shipped per build-history 2026-05-22; this is our organic-loop instrumentation |
 | D1 / D7 retention | App Store Connect / Play Console | TrueRise has no daily loop by design — D1/D7 are a *health* signal, not a value signal |
-| Rating / review rate | App Store Connect / Play Console | We will *not* implement an in-app prompt in MVP per `docs/prd.md` §8 — organic only |
+| Rating / review rate | App Store Connect / Play Console | Update: a neutral, throttled in-app review prompt is now implemented in-repo with tests, superseding the earlier "organic only" stance; rating metrics themselves remain store-console scope, and no rating improvement is claimed |
 | Crash-free sessions | Crashlytics (deferred; see `docs/qa-phase8-report.md` §6) | `docs/prd.md` §15 target (≥99%) |
 
 ### 6.5 Instrumentation status
@@ -411,9 +411,12 @@ calculators; they should be in metadata but not relied on for top-10.
 - **Screenshots:** lead with the rectified time + confidence + "See
   how we got this." Result hero card, then evidence, then demo
   badge. This sells the product as a *tool*, not as an aesthetic.
-- **Reviews:** organic only. No in-app review prompt per
-  `docs/prd.md` §8 ("In-app review request flows (defer to after V1
-  launch)").
+- **Reviews:** a neutral, optional in-app review prompt is now
+  implemented in-repo (OS-owned via `in_app_review`, throttled, shown
+  only after an eligible successful result share, with unit and widget
+  tests). This supersedes the earlier "organic only" stance from
+  `docs/prd.md` §8. Rating metrics remain App Store Connect / Play
+  Console scope; no rating impact is claimed yet.
 
 ---
 
@@ -571,9 +574,10 @@ as `docs/mvp-scope.md` "Explicitly Deferred Features":
 - **No in-app purchase, paywall, subscription, restore, credit
   ledger, refunds.** V1.5 territory; growth thesis explicitly does
   not pre-empt the IAP design.
-- **No push notifications, in-app review prompts, behavioural
-  retargeting.** Prompts and pushes are V1.5 candidates if data
-  supports them.
+- **No push notifications or behavioural retargeting.** Pushes are
+  V1.5 candidates if data supports them. (A neutral in-app review
+  prompt, originally listed here, has since been implemented in-repo
+  with tests; see section 6.4.)
 - **No medical, legal, or financial claims** in any copy, screenshot,
   share text, or store description. Confidence is probabilistic, and
   this is non-negotiable per `docs/prd.md` §13 and §16.

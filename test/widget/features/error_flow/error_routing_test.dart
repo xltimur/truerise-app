@@ -10,6 +10,7 @@ import 'package:rectify/app/route_names.dart';
 import 'package:rectify/app/router.dart';
 import 'package:rectify/core/failures.dart';
 import 'package:rectify/data/models/event_category.dart';
+import 'package:rectify/data/models/geo_place.dart';
 import 'package:rectify/data/repos/draft_repository.dart';
 import 'package:rectify/data/secure/secure_key_store.dart';
 import 'package:rectify/features/calculation_flow/state/calculation_flow_controller.dart';
@@ -22,10 +23,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../helpers/fake_history_repository.dart';
 import '../../../helpers/fake_rectification_repository.dart';
 
-Future<SharedPreferences> _prefs() async {
+Future<SharedPreferences> _prefs({bool demoModeDefault = true}) async {
   SharedPreferences.setMockInitialValues(<String, Object>{
     'settings.onboarding_done': true,
-    'settings.demo_mode_default': true,
+    'settings.demo_mode_default': demoModeDefault,
   });
   return SharedPreferences.getInstance();
 }
@@ -51,8 +52,9 @@ Future<ProviderContainer> _bootFlow(
   required FakeRectificationRepository rectifier,
   required FakeHistoryRepository history,
   required InMemoryDraftRepository drafts,
+  bool demoModeDefault = true,
 }) async {
-  final prefs = await _prefs();
+  final prefs = await _prefs(demoModeDefault: demoModeDefault);
   await tester.pumpWidget(
     _harness(
       prefs: prefs,
@@ -202,6 +204,130 @@ void main() {
         },
       );
     }
+
+    testWidgets(
+      'submit failure is preserved in lastCalculationFailureProvider '
+      'for error UI details',
+      (tester) async {
+        final failure = RateLimitedFailure(
+          source: RateLimitSource.local,
+          resetAt: DateTime.utc(2026, 6, 13, 10),
+          retryAfter: const Duration(hours: 12),
+        );
+        final history = FakeHistoryRepository();
+        final rectifier = FakeRectificationRepository(history: history)
+          ..failureOverride = failure;
+        final drafts = InMemoryDraftRepository();
+        addTearDown(drafts.dispose);
+
+        final container = await _bootFlow(
+          tester,
+          rectifier: rectifier,
+          history: history,
+          drafts: drafts,
+        );
+
+        container.read(routerProvider).go(RoutePaths.calcLoading);
+        await tester.pumpAndSettle();
+
+        final location = container
+            .read(routerProvider)
+            .routerDelegate
+            .currentConfiguration
+            .uri
+            .toString();
+        expect(location, RoutePaths.errorRateLimited);
+        expect(
+          container.read(lastCalculationFailureProvider),
+          failure,
+          reason:
+              'loading screen must store the typed failure before '
+              'navigating so the error screen can show details',
+        );
+      },
+    );
+
+    testWidgets(
+      'server rate limit keeps generic copy but surfaces reset and '
+      'retry timing with both fallback actions',
+      (tester) async {
+        final failure = RateLimitedFailure(
+          resetAt: DateTime.utc(2026, 6, 13, 10),
+          retryAfter: const Duration(hours: 1),
+        );
+        final history = FakeHistoryRepository();
+        final rectifier = FakeRectificationRepository(history: history)
+          ..failureOverride = failure;
+        final drafts = InMemoryDraftRepository();
+        addTearDown(drafts.dispose);
+
+        final container = await _bootFlow(
+          tester,
+          rectifier: rectifier,
+          history: history,
+          drafts: drafts,
+        );
+
+        container.read(routerProvider).go(RoutePaths.calcLoading);
+        await tester.pumpAndSettle();
+
+        expect(
+          find.textContaining("You've reached the calculation limit"),
+          findsOneWidget,
+          reason: 'server 429 must keep the generic rate-limit body',
+        );
+        expect(
+          find.textContaining('Resets at 2026-06-13 10:00 UTC'),
+          findsOneWidget,
+          reason: 'server resetAt metadata must be shown to the user',
+        );
+        expect(
+          find.textContaining('try again in about 1 hour'),
+          findsOneWidget,
+          reason: 'server retryAfter metadata must be shown to the user',
+        );
+        expect(find.text('Use Demo Mode'), findsOneWidget);
+        expect(find.text('Enter My API Key'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'local rate limit renders quota copy, reset time, and both '
+      'fallback actions',
+      (tester) async {
+        final failure = RateLimitedFailure(
+          source: RateLimitSource.local,
+          resetAt: DateTime.utc(2026, 6, 13, 10),
+          retryAfter: const Duration(hours: 12),
+        );
+        final history = FakeHistoryRepository();
+        final rectifier = FakeRectificationRepository(history: history)
+          ..failureOverride = failure;
+        final drafts = InMemoryDraftRepository();
+        addTearDown(drafts.dispose);
+
+        final container = await _bootFlow(
+          tester,
+          rectifier: rectifier,
+          history: history,
+          drafts: drafts,
+        );
+
+        container.read(routerProvider).go(RoutePaths.calcLoading);
+        await tester.pumpAndSettle();
+
+        expect(
+          find.textContaining('Your free live quota is used up'),
+          findsOneWidget,
+        );
+        expect(
+          find.textContaining('Resets at 2026-06-13 10:00 UTC'),
+          findsOneWidget,
+        );
+        expect(find.text('Use Demo Mode'), findsOneWidget);
+        expect(find.text('Enter My API Key'), findsOneWidget);
+      },
+    );
   });
 
   group('Error screen actions (cancel/retry invariants)', () {
@@ -246,6 +372,113 @@ void main() {
           reason: 'retry must fire a second submission',
         );
         expect(location(container), '/calc/result/$draftId');
+      },
+    );
+
+    testWidgets(
+      'rate limited: primary switches the draft to demo mode and '
+      'resubmits to the result',
+      (tester) async {
+        final history = FakeHistoryRepository();
+        final rectifier = FakeRectificationRepository(history: history)
+          ..failureOverride = const RateLimitedFailure(
+            source: RateLimitSource.local,
+          );
+        final drafts = InMemoryDraftRepository();
+        addTearDown(drafts.dispose);
+
+        final container = await _bootFlow(
+          tester,
+          rectifier: rectifier,
+          history: history,
+          drafts: drafts,
+          demoModeDefault: false,
+        );
+        container
+            .read(calculationFlowControllerProvider.notifier)
+            .selectGeoPlace(
+              const GeoPlace(
+                displayName: 'Kyiv, Ukraine',
+                country: 'Ukraine',
+                latitude: 50.4501,
+                longitude: 30.5234,
+              ),
+            );
+        final draftId = container.read(calculationFlowControllerProvider).id;
+
+        container.read(routerProvider).go(RoutePaths.calcLoading);
+        await tester.pumpAndSettle();
+        expect(location(container), RoutePaths.errorRateLimited);
+        expect(rectifier.submissions, hasLength(1));
+        expect(rectifier.submissions.first.isDemo, isFalse);
+
+        rectifier.failureOverride = null;
+        await tester.tap(find.byKey(errorPrimaryActionKey));
+        await tester.pumpAndSettle();
+
+        expect(
+          rectifier.submissions,
+          hasLength(2),
+          reason: '"Use Demo Mode" must fire a second submission',
+        );
+        expect(
+          rectifier.submissions[1].isDemo,
+          isTrue,
+          reason: 'the resubmitted draft must be switched to demo mode',
+        );
+        expect(location(container), '/calc/result/$draftId');
+      },
+    );
+
+    testWidgets(
+      'rate limited: secondary opens settings without clearing the draft '
+      'or resubmitting',
+      (tester) async {
+        final history = FakeHistoryRepository();
+        final rectifier = FakeRectificationRepository(history: history)
+          ..failureOverride = const RateLimitedFailure(
+            source: RateLimitSource.local,
+          );
+        final drafts = InMemoryDraftRepository();
+        addTearDown(drafts.dispose);
+
+        final container = await _bootFlow(
+          tester,
+          rectifier: rectifier,
+          history: history,
+          drafts: drafts,
+          demoModeDefault: false,
+        );
+        container
+            .read(calculationFlowControllerProvider.notifier)
+            .selectGeoPlace(
+              const GeoPlace(
+                displayName: 'Kyiv, Ukraine',
+                country: 'Ukraine',
+                latitude: 50.4501,
+                longitude: 30.5234,
+              ),
+            );
+
+        container.read(routerProvider).go(RoutePaths.calcLoading);
+        await tester.pumpAndSettle();
+        expect(location(container), RoutePaths.errorRateLimited);
+        expect(rectifier.submissions, hasLength(1));
+
+        await tester.tap(find.byKey(errorSecondaryActionKey));
+        await tester.pumpAndSettle();
+
+        expect(location(container), RoutePaths.settings);
+        expect(
+          drafts.read(),
+          isNotNull,
+          reason: '"Enter My API Key" must keep the draft for resubmission',
+        );
+        expect(
+          rectifier.submissions,
+          hasLength(1),
+          reason: 'opening settings must not fire another submission',
+        );
       },
     );
 

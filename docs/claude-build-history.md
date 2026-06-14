@@ -5444,3 +5444,532 @@ passed auth — it reached business logic, not 401/403 — so the existing
   for a future cleanup; `flutter pub outdated` still lists newer
   versions held back by constraints (out of scope here).
 - **Limit/quota:** none hit.
+
+### 2026-06-12 - Config-gated hosted privacy policy URL
+
+- **Stage:** Settings privacy row can open an owner-hosted policy page.
+- **Session:** Claude Code (Fable 5); session id not exposed in-session.
+- **Artifacts:** `lib/core/app_links.dart` (new public, non-secret
+  build define `TRUERISE_PRIVACY_POLICY_URL`, default empty =
+  disabled); new `lib/core/privacy/privacy_policy_launcher.dart`
+  (`PrivacyPolicyLauncher` interface + `url_launcher`-backed impl,
+  mirroring `StoreLauncher`); new
+  `lib/features/settings/privacy_policy_link.dart`
+  (`privacyPolicyUrlProvider`, `privacyPolicyLauncherProvider`);
+  `lib/features/settings/settings_screen.dart` (privacy row opens the
+  hosted URL when configured and bare-HTTPS-safe, otherwise pushes the
+  in-app `PrivacyPolicyScreen` exactly as before); new test fake
+  `test/helpers/fake_privacy_policy_launcher.dart`; focused tests in
+  `test/widget/features/settings/settings_screen_test.dart` and
+  `test/unit/core/app_links_test.dart`.
+- **Summary:** The hosted URL is gated by the existing
+  `AppLinks.isPrivacySafeShareUrl` rules (https, host present, no
+  userinfo, no query, no fragment); empty means disabled. Validation
+  runs both at the call site (to pick the fallback) and inside the
+  production launcher (defence in depth). A failed launch also falls
+  back to the bundled screen, so the row never dead-ends. No README
+  change: like `TRUERISE_VERSION_CHECK_URL`, the define is documented
+  in the `AppLinks` dartdoc.
+- **Verification - RUN AND PASSED:** `dart format` on touched files
+  (0 changed); `flutter analyze` -> No issues found; focused
+  `flutter test` on the settings widget suite + app_links unit suite
+  -> 35 passed (default/empty -> in-app screen and launcher untouched;
+  valid hosted URL -> launcher receives it, no in-app push; unsafe URL
+  -> launcher untouched, in-app fallback; launch failure -> in-app
+  fallback).
+- **Limit/quota:** none hit.
+- **Residuals:** not committed per instruction (Codex-gated workflow);
+  full `flutter test` not run - change is scoped to the settings row
+  and additive constants.
+
+### 2026-06-14 - Local verification sweep after release-readiness cleanup
+
+- **Stage:** verification-only sweep of the current dirty working tree;
+  no product or code changes were made.
+- **Session:** Claude Code (Opus 4.8); Codex rechecked key commands.
+- **Purpose:** confirm the in-progress release-readiness cleanup leaves
+  the tree analyzing, testing, and building cleanly before any commit.
+  The dirty tree already included expected cleanup entries such as
+  `D lib/features/placeholders/coming_soon_screen.dart` and
+  `M android/app/build.gradle.kts`; those are cleanup changes, not
+  artifacts created by this verification run.
+- **Commands - RUN AND PASSED:**
+  - `git diff --check` -> clean (no whitespace errors or conflict
+    markers).
+  - `flutter analyze` -> No issues found (Claude saw 3.4s; Codex
+    recheck saw 2.7s).
+  - full `flutter test` -> `+505: All tests passed!` (505 tests, wall
+    about 23.2s).
+  - `flutter test test/tool/release_env_guard_test.dart` -> 33/33
+    passed; Codex reran it and confirmed.
+  - Android Gradle sanity: `./gradlew tasks --all` from `android/` with
+    `JAVA_HOME` pointed at the Android Studio bundled JBR ->
+    `BUILD SUCCESSFUL in 16s`; only a Gradle 10 deprecation warning.
+    Read-only task-graph check - no keystore use, no publish task.
+- **Known runner mismatch (not a defect):** `dart test
+  test/tool/release_env_guard_test.dart` fails because that test imports
+  `package:flutter_test/flutter_test.dart`, and the standalone Dart test
+  runner cannot compile Flutter framework sources. This is a test-runner
+  mismatch, not a code defect; the correct command is `flutter test
+  test/tool/release_env_guard_test.dart`.
+- **Git status:** 69 status entries before and after the sweep; no
+  tracked files were changed by verification. The only new working-tree
+  output was ignored `build/` and `android/.gradle/` artifacts produced
+  by Gradle.
+- **Limit/quota:** none hit.
+- **Residuals:** verification only - nothing committed, staged, or
+  reverted; no secrets were printed by any command.
+
+### 2026-06-14 - Screenshot compositor pure core + filename hardening
+
+- **Stage:** added a pure path/geometry core for future store
+  screenshot compositing, plus hardened raw screenshot filename
+  validation. No images were composited.
+- **Session:** Claude Code (Opus 4.8); session id not exposed
+  in-session.
+- **Artifacts:** new `test/tool/screenshot_compositor.dart` and
+  `test/tool/screenshot_compositor_test.dart` - a pure, no-rendering
+  path/geometry core (no image decode/encode, no Flutter or dart:ui
+  draw calls) intended as the seam for a later store screenshot
+  compositor. No screenshot generation was performed and no
+  `screenshots/store/**/composited/` directories were created.
+- **Hardening:** raw screenshot filenames now require an `NN-`
+  numeric prefix followed by lowercase alphanumeric slug segments
+  separated by single hyphens; empty, doubled, and trailing-hyphen
+  slug cases are now rejected.
+- **TDD evidence:** the invalid-case test failed against the old
+  regex first - `01--hero.png` matched true (doubled hyphen
+  accepted) before the regex was tightened to reject it.
+- **Verification - RUN AND PASSED:**
+  - `flutter test test/tool/screenshot_compositor_test.dart` ->
+    18 passed.
+  - `flutter analyze test/tool/screenshot_compositor.dart
+    test/tool/screenshot_compositor_test.dart` -> no issues.
+  - `git diff --check -- test/tool/screenshot_compositor.dart
+    test/tool/screenshot_compositor_test.dart` -> clean.
+  - `find screenshots/store -name composited -type d` -> no output
+    (no composited directories exist).
+- **Pre-existing dirt (not touched):** `pubspec.yaml` and
+  `pubspec.lock` were already dirty before this task and were not
+  modified by it.
+- **Limit/quota:** none hit.
+- **Residuals:** the compositor core is pure scaffolding only - no
+  rendering, no asset output, and nothing wired into a screenshot
+  pipeline yet.
+
+### 2026-06-14 - Store screenshot inventory manifest guard
+
+- **Stage:** test-only guard for the existing raw store screenshot
+  inventory. No images were rendered or composited.
+- **Session:** Claude Code (Opus 4.8); session id not exposed
+  in-session.
+- **Artifact:** new `test/tool/store_screenshot_manifest_test.dart`.
+- **Checks:** the test verifies that `screenshots/store` top-level
+  dirs match `supportedStoreLocales`; each per-locale manifest parses;
+  `(manifest['locale'] ?? manifest['storeLocale']) == locale`; the
+  device pixel size equals `kRawScreenshotWidth` /
+  `kRawScreenshotHeight`; the manifest frame files equal the five
+  expected PNG names; the referenced raw files exist; the composited
+  output target differs from the raw path and contains `/composited/`;
+  each locale folder contains exactly those five PNGs; and no
+  `composited/` dirs exist.
+- **Schema nuance (intentional):** the real manifests are not uniform -
+  `en` uses the `locale` key while `de`, `fr`, `es`, and `pt-BR` use
+  `storeLocale`. The test accepts either key without modifying any
+  manifest, so it guards the inventory as-is.
+- **Verification - RUN AND PASSED:**
+  - `flutter test test/tool/store_screenshot_manifest_test.dart` ->
+    46 passed.
+  - `flutter analyze test/tool/store_screenshot_manifest_test.dart
+    test/tool/screenshot_compositor.dart` -> no issues.
+  - `git diff --check -- test/tool/store_screenshot_manifest_test.dart`
+    -> clean.
+  - `find screenshots/store -name composited -type d` -> no output
+    (no composited directories exist).
+- **Pre-existing dirt (not touched):** `pubspec.yaml` and
+  `pubspec.lock` were already dirty before this task and were not
+  modified by it.
+- **Limit/quota:** none hit.
+- **Residuals:** still no screenshot rendering or compositing, no
+  generated image output, and no `screenshots/store` changes - this
+  task only adds an inventory guard test.
+
+### 2026-06-14 - In-memory store screenshot compositor renderer seam
+
+- **Stage:** added an in-memory renderer seam over the pure compositor
+  core that returns PNG bytes only. No images were written to disk and
+  no `composited/` directories were created.
+- **Session:** Claude Code (Opus 4.8); session id not exposed
+  in-session.
+- **Artifacts:** new `test/tool/store_screenshot_compositor_renderer.dart`
+  and `test/tool/store_screenshot_compositor_renderer_test.dart`. The
+  renderer uses `dart:ui` / `Canvas` to rasterize the composited frame
+  and returns PNG bytes in memory only - no file IO, no PNG generation
+  to disk, and no `screenshots/store/**/composited/` directories.
+- **Separation of concerns:** the renderer keeps
+  `test/tool/screenshot_compositor.dart` as the pure path/geometry core
+  (no image decode/encode, no draw calls); all rasterization lives in
+  the new renderer seam.
+- **Tests:** two focused tests cover the result-hero fixture and a long
+  caption case, exercising the renderer's PNG-bytes output.
+- **Verification - RUN AND PASSED:**
+  - targeted `flutter test
+    test/tool/store_screenshot_compositor_renderer_test.dart` -> passed.
+  - `flutter analyze` on the new renderer, its test, and the pure core
+    -> no issues.
+  - `git diff --check` -> clean.
+  - ASCII scan of the new sources -> ASCII-only.
+  - `find screenshots/store -name composited -type d` -> no output (no
+    composited directories exist).
+- **Pre-existing dirt (not touched):** `pubspec.yaml` and
+  `pubspec.lock` were already dirty before this task and were not
+  modified by it.
+- **Limit/quota:** none hit.
+- **Residuals:** the renderer returns bytes only - nothing is written
+  to disk, no `screenshots/store` changes, and nothing is wired into a
+  screenshot pipeline yet.
+
+### 2026-06-14 - Verification sweep after renderer seam
+
+- **Stage:** verification-only local sweep after the in-memory store
+  screenshot compositor renderer seam landed and the status docs were
+  updated. No product code, tests, or assets were changed by this
+  sweep.
+- **Session:** Codex (local verification run); session id not exposed
+  in-session.
+- **Artifacts:** none - this entry only records the sweep results.
+- **Verification - RUN AND PASSED:**
+  - `flutter test` -> `+571: All tests passed!`.
+  - `flutter analyze` -> `No issues found! (ran in 2.9s)`.
+  - `find screenshots/store -name composited -type d` -> no output (no
+    `screenshots/store/**/composited/` directories exist).
+- **Pre-existing dirt (not touched):** the repository still has
+  pre-existing dirty files outside this sweep; the working tree is not
+  clean and this sweep did not change that.
+- **Limit/quota:** none hit.
+- **Residuals:** verification only - no renderer, pipeline, or
+  `screenshots/store` changes; the renderer seam remains bytes-in-memory
+  with nothing wired into a screenshot pipeline.
+
+### 2026-06-14 - Manifest-driven store screenshot compositor planning seam
+
+- **Stage:** added a manifest-driven planning seam that builds the
+  composite job list for store screenshots. No images were rendered or
+  composited.
+- **Session:** Claude Code (Opus 4.8); session id not exposed
+  in-session.
+- **Artifacts:** new `test/tool/store_screenshot_compositor_plan.dart`
+  and `test/tool/store_screenshot_compositor_plan_test.dart`. The plan
+  seam derives the work list from on-disk manifests only - it does not
+  render images, write PNGs, create directories, or call the renderer.
+- **Behavior:** `StoreScreenshotCompositeJob` carries `locale`,
+  `fileName`, `rawPath`, `outputPath`, and `caption`.
+  `buildLocaleCompositeJobs` validates the supported locale, the frames
+  list, safe file names via `resolveCompositedTarget`, and a non-empty
+  `intendedCaption`, and preserves frame order.
+  `buildAllCompositeJobs` reads the on-disk manifests for
+  `supportedStoreLocales` and returns jobs in locale/frame order.
+- **Verification - RUN AND PASSED:**
+  - `flutter test test/tool/store_screenshot_compositor_plan_test.dart`
+    -> 5 tests passed.
+  - `flutter analyze test/tool/store_screenshot_compositor_plan.dart
+    test/tool/store_screenshot_compositor_plan_test.dart
+    test/tool/screenshot_compositor.dart` -> No issues found.
+  - `git diff --check -- test/tool/store_screenshot_compositor_plan.dart
+    test/tool/store_screenshot_compositor_plan_test.dart` -> clean.
+  - ASCII scan of the two new sources -> ASCII-only (no output).
+  - `find screenshots/store -name composited -type d` -> no output (no
+    composited directories exist).
+- **Pre-existing dirt (not touched):** `pubspec.yaml` and
+  `pubspec.lock` were already dirty before this task and were not
+  modified by it.
+- **Limit/quota:** none hit.
+- **Residuals:** still no on-disk composited PNG generation, no final
+  store image set, and no design/owner approval - the plan seam only
+  produces the job list and is not wired into a rendering pipeline.
+
+### 2026-06-14 - In-memory store screenshot compositor pipeline test
+
+- **Stage:** added an in-memory integration test that wires the
+  manifest-driven planning seam to the renderer seam. No images were
+  written to disk and no `composited/` directories were created.
+- **Session:** Claude Code (Opus 4.8); session id not exposed
+  in-session.
+- **Artifact:** new
+  `test/tool/store_screenshot_compositor_pipeline_test.dart`.
+- **Behavior:** the test calls `buildAllCompositeJobs()` and selects
+  `jobs.first` plus `jobs.last` as a fast representative subset rather
+  than rendering all 25 jobs. For each selected job it confirms the
+  `rawPath` exists, the `outputPath` does not exist before or after,
+  renders `StoreScreenshotCompositeInput` (raw bytes plus `job.caption`)
+  through `StoreScreenshotCompositorRenderer.render`, and asserts the
+  PNG magic bytes, that the output differs from the raw bytes, and that
+  the decoded output size equals `kRawScreenshotWidth` x
+  `kRawScreenshotHeight`. It also checks that no
+  `screenshots/store/<locale>/composited` directories exist before and
+  after for every `supportedStoreLocales`. No localized captions are
+  hardcoded - captions come from `job.caption` - and no files or
+  directories are written.
+- **Verification - RUN AND PASSED:**
+  - `flutter test
+    test/tool/store_screenshot_compositor_pipeline_test.dart` -> 1 test
+    passed.
+  - `flutter analyze
+    test/tool/store_screenshot_compositor_pipeline_test.dart
+    test/tool/store_screenshot_compositor_plan.dart
+    test/tool/store_screenshot_compositor_renderer.dart
+    test/tool/screenshot_compositor.dart` -> No issues found.
+  - `git diff --check --
+    test/tool/store_screenshot_compositor_pipeline_test.dart` -> clean.
+  - ASCII scan of the new test source -> ASCII-only (no output).
+  - `find screenshots/store -name composited -type d` -> no output (no
+    composited directories exist).
+- **Pre-existing dirt (not touched):** `pubspec.yaml` and
+  `pubspec.lock` were already dirty before this task and were not
+  modified by it.
+- **Limit/quota:** none hit.
+- **Residuals:** still no on-disk composited PNG generation, no final
+  store image set, and no design/owner approval - the pipeline test
+  exercises the plan-to-renderer seam in memory only.
+
+### 2026-06-14 - Store screenshot compositor dry-run CLI (no-write)
+
+- **Stage:** added a dry-run-only CLI that plans and validates the
+  store screenshot compositing work without rendering, writing, or
+  creating any files or directories.
+- **Session:** Claude Code (Opus 4.8) implemented; verified by Codex.
+  Session id not exposed in-session.
+- **Artifacts:** new `tool/store_screenshot_compositor_dry_run.dart`
+  and focused tests
+  `test/tool/store_screenshot_compositor_dry_run_test.dart`.
+- **CLI:** `dart run tool/store_screenshot_compositor_dry_run.dart`;
+  optional verbose run
+  `dart run tool/store_screenshot_compositor_dry_run.dart --verbose`
+  lists the planned output paths.
+- **Behavior:** plans 25 composited screenshots across 5 locales
+  (`en`, `de`, `fr`, `es`, `pt-BR`), validates that the raw sources
+  exist, validates that the composited outputs do not already exist,
+  and confirms it wrote no files, created no directories, and rendered
+  nothing. This is dry-run / no-write only - it does not generate any
+  composited PNGs.
+- **Exit behavior:** `0` on pass, `1` on validation fail, `64` on
+  usage error.
+- **Verification - RUN AND PASSED (Codex):**
+  - `flutter test
+    test/tool/store_screenshot_compositor_dry_run_test.dart` ->
+    `+10: All tests passed!`.
+  - `dart run tool/store_screenshot_compositor_dry_run.dart` -> exit 0.
+  - `dart run tool/store_screenshot_compositor_dry_run.dart --verbose`
+    -> exit 0, 25 output paths listed.
+  - `flutter analyze tool/store_screenshot_compositor_dry_run.dart
+    test/tool/store_screenshot_compositor_dry_run_test.dart
+    test/tool/store_screenshot_compositor_plan.dart
+    test/tool/screenshot_compositor.dart` -> No issues found!
+  - `git diff --check --
+    tool/store_screenshot_compositor_dry_run.dart
+    test/tool/store_screenshot_compositor_dry_run_test.dart` -> clean.
+  - ASCII scan of the two new sources -> ASCII-only (no matches).
+  - `find screenshots/store -name composited -type d` -> no output (no
+    composited directories exist).
+- **Limit/quota:** none hit.
+- **Residuals:** still no on-disk composited PNG generation and no
+  final store screenshots - the CLI is dry-run / no-write only and
+  produces no images, no `screenshots/store/**/composited/`
+  directories, and no rendered output.
+
+### 2026-06-14 - Verification sweep after dry-run CLI and status sync
+
+- **Stage:** verification-only full sweep after the store screenshot
+  compositor dry-run CLI and the publication status doc sync landed. No
+  product code, tests, or assets were changed by this sweep - this entry
+  is evidence only.
+- **Session:** Claude Code (Opus 4.8) ran the sweep; Codex independently
+  repeated the key checks. Session id not exposed in-session.
+- **Artifacts:** none - this entry only records the sweep results.
+- **Verification - RUN AND PASSED:**
+  - `flutter test` -> `+587: All tests passed!`.
+  - `flutter analyze` -> `No issues found!` (Claude saw `ran in 2.4s`;
+    Codex saw `ran in 2.0s`).
+  - `dart run tool/store_screenshot_compositor_dry_run.dart` -> exit 0;
+    planned 25 composited screenshots across 5 locales (`en`, `de`,
+    `fr`, `es`, `pt-BR`); wrote no files, created no directories, and
+    rendered nothing.
+  - `dart run tool/store_screenshot_compositor_dry_run.dart --verbose`
+    -> Claude verified exit 0 with all 25 planned output paths listed.
+  - `find screenshots/store -name composited -type d` -> no output (no
+    `screenshots/store/**/composited/` directories exist).
+  - `git status` for the scoped paths showed expected dirty/untracked
+    paths only, with no `screenshots/store` entries.
+- **Benign tooling note:** a `Running build hooks...` line appeared
+  before the dry-run CLI output (Dart build-hook chatter); the command
+  still exited 0.
+- **Pre-existing dirt (not touched):** the repository still has
+  pre-existing dirty files outside this sweep; the working tree is not
+  clean and this sweep did not change that.
+- **Limit/quota:** none hit.
+- **Residuals:** verification only - no final composited screenshots
+  were generated, no `screenshots/store` changes, and no blocker status
+  changes; the compositor remains dry-run / no-write with nothing wired
+  into a rendering pipeline.
+
+### 2026-06-14 - Store screenshot compositor writer seam (IO-only)
+
+- **Stage:** added an IO-only writer seam that turns planned
+  composite jobs into on-disk outputs through an injected renderer,
+  exercised entirely inside temp directories. No final store PNGs were
+  generated and no `screenshots/store/**/composited/` directories were
+  created in the repo.
+- **Session:** Claude Code (Opus 4.8) implemented; verified by Codex.
+  Session id not exposed in-session.
+- **Artifacts:** new `test/tool/store_screenshot_compositor_writer.dart`
+  and focused tests
+  `test/tool/store_screenshot_compositor_writer_test.dart`.
+- **Behavior:** the writer seam is IO-only and takes planned
+  `StoreScreenshotCompositeJob` items plus an injected renderer callback
+  returning `Uint8List`; it has no `dart:ui`/Flutter renderer import. It
+  resolves repo-relative raw/output paths under an injected root
+  `Directory`, so tests write only inside temp dirs. Before rendering or
+  writing it preflights missing raw sources and already-existing
+  outputs, and existing outputs require `allowOverwrite` set to `true`.
+  It creates only the needed temp composited parent directories and
+  returns the repo-relative written output paths.
+- **Verification - RUN AND PASSED (Codex):**
+  - `flutter test
+    test/tool/store_screenshot_compositor_writer_test.dart` ->
+    `+5: All tests passed!`.
+  - `flutter analyze` on the writer, writer test, and plan sources ->
+    `No issues found!` (ran in 0.9s).
+  - `git diff --check` on the two new files -> clean.
+  - `find screenshots/store -name composited -type d` -> no output (no
+    composited directories exist).
+- **Limit/quota:** none hit.
+- **Residuals:** this is still local tooling/test evidence only - it
+  does NOT produce final store PNGs, does NOT remove design/owner
+  approval, and changes no P0 blocker status. The writer seam runs only
+  against temp directories and is not wired into a repo-writing
+  rendering pipeline.
+
+### 2026-06-14 - Store screenshot compositor guarded write CLI seam
+
+- **Stage:** added an explicit, guarded CLI entrypoint that can later
+  write composited store screenshots by wiring the plan, renderer, and
+  writer seams together. No store PNGs were generated and no
+  `screenshots/store/**/composited/` directories were created in the
+  repo during implementation or verification.
+- **Session:** Claude Code (Opus 4.8) implemented. Session id not
+  exposed in-session. Codex independently verified (see Codex block
+  below).
+- **Artifacts:** new `tool/store_screenshot_compositor_write.dart`; new
+  focused tests `test/tool/store_screenshot_compositor_write_test.dart`
+  (flag parsing plus the `runWriteCli` orchestrator, temp dir + stub
+  renderer) and
+  `test/tool/store_screenshot_compositor_write_harness_test.dart` (the
+  real `dart:ui` renderer wired through `runWriteCli` into a temp dir).
+  This build-history note.
+- **Behavior:** the default `dart run` invocation is a no-write preview
+  that reports the planned count and locales and writes nothing. A real
+  write requires BOTH `--write` and the `--yes` confirmation flag;
+  `--write` alone refuses. `--allow-overwrite` is supported but defaults
+  to refusing existing outputs. On a real write the CLI reports the
+  count and the repo-relative written paths; otherwise it states plainly
+  that no files were written. The orchestration core `runWriteCli` takes
+  an injected renderer callback and an injected root `Directory`, so it
+  is driven end to end only inside temp directories in tests. The tool
+  imports neither `dart:ui` nor Flutter; because the renderer needs the
+  Flutter engine, plain `dart run ... --write --yes` declines with exit
+  70 and points at the Flutter-compatible execution path, which the
+  harness test documents and exercises.
+- **Verification - RUN AND PASSED (Claude):**
+  - `flutter test test/tool/store_screenshot_compositor_write_test.dart
+    test/tool/store_screenshot_compositor_write_harness_test.dart` ->
+    `+13: All tests passed!`.
+  - `flutter test test/tool/` -> `+133: All tests passed!`.
+  - `flutter analyze` on the new tool and two test files ->
+    `No issues found!`.
+  - manual `dart run tool/store_screenshot_compositor_write.dart`
+    across `(default | --write | --write --yes | --help | --bogus)` ->
+    exit `0 | 64 | 70 | 0 | 64`, all printing "No files written" on the
+    non-success paths.
+  - `find screenshots/store -type d -name composited` -> no output.
+- **Verification - RUN AND PASSED (Codex, independent):**
+  - `flutter test test/tool/store_screenshot_compositor_write_test.dart
+    test/tool/store_screenshot_compositor_write_harness_test.dart` ->
+    `+13: All tests passed!`.
+  - `flutter analyze tool/store_screenshot_compositor_write.dart
+    test/tool/store_screenshot_compositor_write_test.dart
+    test/tool/store_screenshot_compositor_write_harness_test.dart` ->
+    `No issues found!`.
+  - `git diff --check` on the new tool/test/docs paths -> clean.
+  - `dart run tool/store_screenshot_compositor_write.dart` -> preview of
+    25 jobs, "No files written".
+  - `dart run tool/store_screenshot_compositor_write.dart --write` ->
+    exit `64`, "No files written".
+  - `dart run tool/store_screenshot_compositor_write.dart --write --yes`
+    -> exit `70`, "No files written".
+  - `dart run tool/store_screenshot_compositor_write.dart --bogus` ->
+    exit `64`.
+  - `find screenshots/store -type d -name composited` -> no output.
+- **Limit/quota:** none hit.
+- **Residuals:** local tooling/test evidence only - it does NOT produce
+  final store PNGs, does NOT remove design/owner approval, and changes
+  no P0 blocker status. No real-write Flutter harness is wired against
+  `screenshots/store`; the documented write path must be run
+  deliberately and never in CI.
+
+### 2026-06-14 - Store screenshot output size profiles + per-profile layout
+
+- **Stage:** added named output size profiles and a profile-driven layout
+  to the screenshot compositing harness. This is profile/layout support
+  only: no final store PNGs were generated and no
+  `screenshots/store/**/composited/` directories were created.
+- **Session:** Claude Code (Opus 4.8) implemented via TDD (RED on missing
+  symbols, then GREEN).
+- **Artifacts:** `test/tool/screenshot_compositor.dart` gained a pure
+  `StoreScreenshotOutputProfile` data type (safe id/label/width/height
+  plus `widthPx`/`heightPx`/`aspectRatio` getters), an
+  `isSafeOutputProfileId` slug guard, three named profiles
+  (`iphone-6-7` 1290x2796 default, `iphone-6-5` 1242x2688,
+  `google-play-phone` 1080x1920) with a `storeScreenshotOutputProfiles`
+  list, and a `StoreScreenshotLayout.forProfile` factory. Focused tests
+  added to `test/tool/screenshot_compositor_test.dart` (profile ids,
+  dimensions, per-profile layout invariants) and
+  `test/tool/store_screenshot_compositor_renderer_test.dart` (renders the
+  Google Play 1080x1920 profile from a synthetic in-memory PNG; sweeps for
+  any `composited` directory). This build-history note.
+- **Behavior:** `forProfile` scales margin/caption/gap by the height ratio
+  against the 1290x2796 baseline, so the caption band keeps the baseline
+  ~17% share of canvas height (under the 20% Google Play tagline guidance)
+  and the device frame stays positive and inside the canvas for every
+  profile. `StoreScreenshotLayout.standard()` is unchanged and remains
+  exactly 1290x2796; `forProfile(iphone-6-7)` is identical to it (scale
+  1.0). The renderer needed no change: it already honors an injected
+  `layout`, so non-default profiles render purely in memory.
+- **Verification - RUN AND PASSED (Claude):**
+  - `flutter test test/tool/screenshot_compositor_test.dart
+    test/tool/store_screenshot_compositor_renderer_test.dart` ->
+    `+28: All tests passed!`.
+  - `flutter test test/tool/` -> `+141: All tests passed!`.
+  - `flutter analyze` on the core and two test files ->
+    `No issues found!`.
+  - `dart format --set-exit-if-changed` on the three files -> 0 changed.
+  - `find screenshots/store -type d -name composited` -> no output.
+- **Verification - RUN AND PASSED (Codex, independent):**
+  - `flutter test test/tool/screenshot_compositor_test.dart
+    test/tool/store_screenshot_compositor_renderer_test.dart` ->
+    `+28: All tests passed!`.
+  - `flutter analyze test/tool/screenshot_compositor.dart
+    test/tool/screenshot_compositor_test.dart
+    test/tool/store_screenshot_compositor_renderer.dart
+    test/tool/store_screenshot_compositor_renderer_test.dart` ->
+    `No issues found!`.
+  - `git diff --check` on `test/tool/screenshot_compositor.dart`,
+    `test/tool/screenshot_compositor_test.dart`,
+    `test/tool/store_screenshot_compositor_renderer_test.dart`, and
+    `docs/claude-build-history.md` -> clean.
+  - `find screenshots/store -type d -name composited` -> no output.
+- **Limit/quota:** none hit.
+- **Residuals:** still local tooling/test evidence only - it does NOT
+  produce final store PNGs, does NOT remove design/owner approval, and
+  changes no P0 blocker status. Profiles cover the default iPhone 6.7",
+  Apple iPhone 6.5", and a Google Play phone size; other device classes
+  and any real asset generation remain out of scope.
