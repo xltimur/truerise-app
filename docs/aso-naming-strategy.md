@@ -729,3 +729,7 @@ privacy/demo. Use `estimate`; never `exact` or `guaranteed` as a result claim
 Track in Appeeky once the listing is live (resubscribe per
 `docs/competitor-aso-research.md` §15.3): `rectify birth time`, `birth time
 finder`, `birth time rectification`, `rising sign`, `ascendant`.
+
+The full after-live runbook (Appeeky ASO Audit + Opportunities, this tracking
+set, the experimentation matrix, per-locale keyword research, and Apple Search
+Ads prep) lives in `docs/post-launch-aso-plan.md`.

@@ -812,6 +812,13 @@ closing summary.
 
 ### 12.1 Owner decisions (gate submission — not decidable from code)
 
+> The birth-data / life-events / Astrology-provider privacy decisions in items
+> 3 and 9 below (controller/processor, DPA/SCC/subprocessor, retention,
+> deletion, incidents, data-subject rights, and what must be reflected in the
+> privacy policy / Apple App Privacy labels / Play Data Safety / reviewer notes)
+> are collected as an owner/legal checklist in
+> `docs/privacy-gdpr-dpa-checklist.md` (draft, not legal advice).
+
 1. **Bundle ID:** current ID stays `com.rectify.rectify` until explicit owner
    approval. Recommendation is in `docs/bundle-id-recommendation.md`: primary
    `app.astrolium.truerise`; fallbacks `com.astrolium.truerise` (if only
