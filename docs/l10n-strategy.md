@@ -160,12 +160,18 @@ important guardrail for the translation runs.
    (Impl Run A) by swapping the *English source* to the brand decision, after
    which the corrected English string is what gets extracted. Sequencing note in
    Section 10.
-4. **Astrology-method, not astrology-category, framing survives translation
-   `[ASSUMED from Run 3 policy-safe copy rules]`.** Localized copy references
-   astrology as the *method* used to estimate a time, consistent with the
-   Utilities/Tools category framing and 4.3(b) risk posture (Section 6, Section
-   9). Translators must not "upgrade" the category framing into horoscope/fortune
-   language to chase local astrology keywords.
+4. **Tool-led / probabilistic copy framing survives translation
+   `[ASSUMED from Run 3 policy-safe copy rules; category leg updated 2026-06-15
+   post-Appeeky]`.** Localized copy references astrology as the *method* used to
+   estimate a time. That tool-led, probabilistic framing carries into every locale
+   even though the current store **category** recommendation is now **Lifestyle**
+   on both the App Store and Google Play (post-Appeeky; see
+   `docs/aso-naming-strategy.md` §14.4 and `docs/store-listing-en.md` §1) — and
+   because the category no longer acts as the 4.3(b) shield, that copy discipline
+   matters *more*, not less. *(The earlier "consistent with the Utilities/Tools
+   category framing and 4.3(b) risk posture" wording reflected the superseded
+   historical category posture.)* Translators must not "upgrade" the framing into
+   horoscope/fortune language to chase local astrology keywords.
 5. **Provider/proper nouns stay untranslated `[VERIFIED present in code]`.**
    `astrology-api.io` (named in `error_screen.dart` copy), city names from the
    geocoding stub (`Kyiv, Ukraine`, `Berlin, Germany`, ...), and zodiac sign
@@ -355,14 +361,17 @@ title/name, with the brand token held constant (Section 4).
 | es | `TrueRise - Hora de nacimiento` | averigua tu hora de nacimiento probable a partir de eventos de vida | rectificación hora de nacimiento, ascendente, hora de nacimiento desconocida | "Tu hora de nacimiento más probable" + indicios + privacidad. |
 | pt-BR | `TrueRise - Horário de nascimento` | descubra seu horário de nascimento provável pelos eventos da vida | retificação horário de nascimento, ascendente, horário de nascimento desconhecido | "Seu horário de nascimento mais provável" + indícios + privacidade. |
 
-**Constraints carried from Run 3 `[ASSUMED]`:** iOS category Utilities, Play
-category Tools (4.3(b) posture); respect ~30-char iOS title and ~30-char
-subtitle limits *per locale* (localized strings are longer — DE especially may
-not fit and may need a shorter descriptor); iOS keyword field ~100 chars
-*per locale*; no keyword stuffing in Play long description. **All character
-counts must be re-validated in-console per locale** — do not trust estimates
-(Section 13). Tier 0 (English) may use Run 3 **Option H (High-intent)**; DE
-should stay Conservative.
+**Constraints `[category updated 2026-06-15 post-Appeeky; limits ASSUMED]`:**
+category **Lifestyle on both the App Store and Google Play** (current post-Appeeky
+recommendation — see `docs/aso-naming-strategy.md` §14.4,
+`docs/store-listing-en.md` §1/§3.4, `docs/publication-readiness-current-status.md`
+P0-10; the earlier iOS-Utilities / Play-Tools 4.3(b) posture is superseded
+historical context); respect ~30-char iOS title and ~30-char subtitle limits
+*per locale* (localized strings are longer — DE especially may not fit and may
+need a shorter descriptor); iOS keyword field ~100 chars *per locale*; no keyword
+stuffing in Play long description. **All character counts must be re-validated
+in-console per locale** — do not trust estimates (Section 13). Tier 0 (English)
+may use Run 3 **Option H (High-intent)**; DE should stay Conservative.
 
 **Measurement tie-in `[ASSUMED Run 1 H4]`:** the localization bet is justified
 by hypothesis **H4** (localized listings lift non-English install share within
