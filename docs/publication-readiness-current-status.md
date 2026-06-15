@@ -1,13 +1,16 @@
 # Publication Readiness — Current Status (TrueRise)
 
-**Reconciled 2026-06-12 · current local release-readiness state of the
-repository working tree.**
+**Reconciled 2026-06-15 (post-Appeeky) - current release-readiness state of the
+repository working tree. Updates and supersedes the 2026-06-12 framing.**
 
 > **What this document is.** A current-state, evidence-based reconciliation of
 > publication readiness, read from the repository **working tree on
-> 2026-06-12** — committed history through `98eddc8` plus local uncommitted
-> work awaiting the Codex-gated commit flow. It replaces the earlier Impl Run
-> E.1 snapshot (2026-06-03, commit `887bdd8` — historical) and **supersedes
+> 2026-06-15** after the post-Appeeky ASO/category and screenshot-caption
+> documentation alignment landed in the post-Appeeky docs commits `29f5e6b`,
+> `8447f96`, and `b00117a`. It updates the earlier 2026-06-12 reconciliation (then
+> committed through `98eddc8` with local work still awaiting the Codex-gated
+> commit flow; that work has since been committed). It replaces the earlier Impl
+> Run E.1 snapshot (2026-06-03, commit `887bdd8` - historical) and **supersedes
 > the status fields** in `docs/store-submission-readiness.md` §3 (Run 6,
 > 2026-06-02) and `docs/feature-gap-analysis.md` §4/§5/§10 (Run 4, 2026-06-02)
 > **wherever the repo evidence has since changed**.
@@ -22,7 +25,8 @@ repository working tree.**
 ## 1. Evidence labels
 
 - **[DONE — VERIFIED]** — owner-independent artifact confirmed present in the
-  working tree this run (2026-06-12, includes local uncommitted work).
+  working tree this run (2026-06-15; post-Appeeky docs commits through `b00117a`
+  before this status sync).
 - **[PARTIAL]** — the owner-independent part is done in-repo; a named
   owner/secret/legal/console step still remains.
 - **[OWNER]** — blocked on an owner decision, secret, legal sign-off, or
@@ -31,9 +35,11 @@ repository working tree.**
   `docs/mvp-scope.md` and `CLAUDE.md`; do **not** pull forward to unblock the
   store.
 
-The headline as of 2026-06-12: the **engineering / owner-independent artifact**
-side of the P0 set is complete in-repo, including the release guards, quota
-UX, and sharing/onboarding work landed since the 2026-06-03 snapshot (§2a).
+The headline as of 2026-06-15 (post-Appeeky): the **engineering /
+owner-independent artifact** side of the P0 set is complete in-repo, including
+the release guards, quota UX, and sharing/onboarding work landed since the
+2026-06-03 snapshot (§2a), plus the 2026-06-15 post-Appeeky ASO/category and
+screenshot-caption documentation alignment now committed in-repo (§2, §3).
 What remains on the critical path is **owner / secret / legal / backend /
 console work only** — see §5.
 
@@ -41,7 +47,7 @@ console work only** — see §5.
 
 ## 2. P0 blocker reconciliation (`store-submission-readiness.md` §3)
 
-| # | Blocker | Run 6 (2026-06-02, historical) | Current (2026-06-12) | Evidence read this run | What still remains |
+| # | Blocker | Run 6 (2026-06-02, historical) | Current (2026-06-15) | Evidence read this run | What still remains |
 | --- | --- | --- | --- | --- | --- |
 | P0-1 | Public display name = TrueRise | gap | **[DONE — VERIFIED]** | `ios/Runner/Info.plist` `CFBundleDisplayName=TrueRise`; `android/.../AndroidManifest.xml` `android:label="TrueRise"`; `lib/l10n/l10n.dart:11` `appBrandName='TrueRise'`; no user-facing "Rectify" in `lib/features/settings`. (Run A.1) | none — `CFBundleName=rectify` + `com.rectify.rectify` retained as codename **by design** |
 | P0-2 | Release signing (not debug) | debug-signed | **[PARTIAL - wiring done, owner secrets pending]** (2026-06-12) | `android/app/build.gradle.kts` release now reads `android/key.properties` (no debug fallback); release tasks fail with an actionable error when it is missing/incomplete; debug builds unaffected | owner provides real upload keystore + Play App Signing enrollment; iOS distribution cert/profile still owner-side |
@@ -50,19 +56,21 @@ console work only** — see §5.
 | P0-5 | Apple privacy labels + Play Data Safety | not authored | **[PARTIAL — authored prep]** | `docs/apple-privacy-labels.md`, `docs/play-data-safety.md` (Run A.2) map verified data flow to each form; in-app privacy copy now discloses live transmission (Run A.1) | owner/legal sign-off + actual console entry (both docs are explicitly "guidance, not a submission, not legal advice") |
 | P0-6 | Age gate / age rating | absent | **[DONE — VERIFIED]** (gate) | `lib/features/calculation_flow/screens/birth_data_screen.dart:94,115` — picker `lastDate = CalculationFlowState.latestAllowedBirthDate(now)` (18+ floor, clamped). (Run A.1) | store age-rating questionnaire is a console/owner step |
 | P0-7 | Real app icon | stock glyph | **[DONE — VERIFIED]** | iOS `Assets.xcassets/AppIcon.appiconset/` full set incl. `Icon-App-1024x1024@1x.png`, last modified in commit `72d6003`; Android adaptive icon `res/mipmap-anydpi-v26/ic_launcher.xml` + `ic_launcher_foreground.png` across densities + legacy `ic_launcher.png`. (Run A.3) | none (icon **visual** not re-rendered this doc-only run) |
-| P0-8 | Store metadata finalized | placeholder | **[DONE — owner-independent]** | `docs/store-listing-en.md` ready-to-paste (Run A.4); `pubspec.yaml:2` description is real marketing copy, not "A new Flutter project." | console character re-count + trademark clearance for "TrueRise" (owner) |
-| P0-9 | Screenshot set | absent | **[DONE — raw captures]** | `screenshots/store/{en,de,fr,es,pt-BR}/` — 5 frames each (`01-result-hero` … `05-privacy-policy`) + `manifest.json` + `README.md` (Runs A.5, D.4). 6.7" / 1290×2796. Test-only compositor path/geometry + store-inventory guards now exist (`test/tool/screenshot_compositor.dart`, `test/tool/screenshot_compositor_test.dart`, `test/tool/store_screenshot_manifest_test.dart`); an in-memory `dart:ui`/Canvas renderer seam (`test/tool/store_screenshot_compositor_renderer.dart` + `…_test.dart`) now returns composited PNG **bytes** only, keeping `screenshot_compositor.dart` pure (focused tests cover the result-hero fixture + a long caption, asserting PNG magic, output size, bytes differing from the raw frame, and that no `composited/` dir is created); a manifest-driven planning seam (`test/tool/store_screenshot_compositor_plan.dart` + `…_test.dart`) builds validated `StoreScreenshotCompositeJob`s (locale, fileName, rawPath, outputPath, caption) from on-disk manifests only — validating supported locale, safe file names (`resolveCompositedTarget`), non-empty caption, and preserved locale/frame order — and renders nothing, writes no PNGs, creates no directories, and never calls the renderer (5 focused tests pass); an in-memory pipeline test (`test/tool/store_screenshot_compositor_pipeline_test.dart`) now wires the plan seam to the renderer seam: `buildAllCompositeJobs()` then renders a fast representative subset (`jobs.first` + `jobs.last`, not all 25 jobs) through `StoreScreenshotCompositorRenderer.render(StoreScreenshotCompositeInput(rawScreenshotPng: rawBytes, caption: job.caption))`, asserting rawPath present and outputPath absent before/after, PNG magic, output differing from the raw frame, decoded size `kRawScreenshotWidth` x `kRawScreenshotHeight`, captions taken from `job.caption` (no localized captions hardcoded), and no `screenshots/store/<locale>/composited` dir before/after across `supportedStoreLocales` (1 test passes; writes no files, creates no composited dirs); a runnable no-write dry-run CLI (`tool/store_screenshot_compositor_dry_run.dart` + `test/tool/store_screenshot_compositor_dry_run_test.dart`) now plans all 25 composited screenshots across the 5 locales (en, de, fr, es, pt-BR), validates every raw source exists and that no composited output already exists, and confirms it rendered nothing, wrote no files, and created no dirs — `dart run tool/store_screenshot_compositor_dry_run.dart` exits 0 (1 on validation fail, 64 on usage error), `--verbose` lists the 25 planned output paths (`+10` focused tests pass); a new IO-only write seam (`test/tool/store_screenshot_compositor_writer.dart` + `test/tool/store_screenshot_compositor_writer_test.dart`) now owns the harness's only disk-touching step — `writeCompositedScreenshots` reads each planned job's raw source, asks an injected renderer callback (returning `Uint8List`) for the composited bytes, and writes them under an injected root `Directory`, pre-flighting the whole batch (refusing a missing raw source or an existing output, the latter unless `allowOverwrite` is set) before any render/write and staying free of `dart:ui` — its 5 focused tests drive real IO entirely inside temp directories, so no `composited/` dir is ever created under the repo's `screenshots/store/` (`+5` tests pass) — still no final composed store PNGs written in the repo, and not wired into a repo-writing rendering CLI/pipeline | actual on-disk rendering/output, the final composed App Store/Play PNG set, native-speaker caption review, other device sizes, visual/design approval, console upload (owner/design) |
-| P0-10 | Category positioning | owner | **[OWNER]** | Utilities (iOS) / Tools (Play) documented in `store-listing-en.md` §1 | select/confirm in console (owner) |
+| P0-8 | Store metadata finalized | placeholder | **[DONE — owner-independent]** | `docs/store-listing-en.md` ready-to-paste (Run A.4), refreshed 2026-06-15 from the Appeeky audit (post-Appeeky title/subtitle/keyword package + **Lifestyle** category; companion `docs/aso-naming-strategy.md` + `docs/competitor-aso-research.md`); `pubspec.yaml:2` description is real marketing copy, not "A new Flutter project." | console character re-count + trademark clearance for "TrueRise" (owner) |
+| P0-9 | Screenshot set | absent | **[DONE — raw captures]** | `screenshots/store/{en,de,fr,es,pt-BR}/` — 5 frames each (`01-result-hero` … `05-privacy-policy`) + `manifest.json` + `README.md` (Runs A.5, D.4). 6.7" / 1290×2796. The post-Appeeky 5-frame caption / story plan (problem hook -> life events -> result -> evidence -> privacy) is aligned in `docs/store-listing-en.md` §5 and the per-locale `screenshots/store/<locale>/README.md` + `manifest.json` (2026-06-15); the existing PNGs remain pre-Appeeky raw / reference captures, not final composited listing images. Test-only compositor path/geometry + store-inventory guards now exist (`test/tool/screenshot_compositor.dart`, `test/tool/screenshot_compositor_test.dart`, `test/tool/store_screenshot_manifest_test.dart`); an in-memory `dart:ui`/Canvas renderer seam (`test/tool/store_screenshot_compositor_renderer.dart` + `…_test.dart`) now returns composited PNG **bytes** only, keeping `screenshot_compositor.dart` pure (focused tests cover the result-hero fixture + a long caption, asserting PNG magic, output size, bytes differing from the raw frame, and that no `composited/` dir is created); a manifest-driven planning seam (`test/tool/store_screenshot_compositor_plan.dart` + `…_test.dart`) builds validated `StoreScreenshotCompositeJob`s (locale, fileName, rawPath, outputPath, caption) from on-disk manifests only — validating supported locale, safe file names (`resolveCompositedTarget`), non-empty caption, and preserved locale/frame order — and renders nothing, writes no PNGs, creates no directories, and never calls the renderer (5 focused tests pass); an in-memory pipeline test (`test/tool/store_screenshot_compositor_pipeline_test.dart`) now wires the plan seam to the renderer seam: `buildAllCompositeJobs()` then renders a fast representative subset (`jobs.first` + `jobs.last`, not all 25 jobs) through `StoreScreenshotCompositorRenderer.render(StoreScreenshotCompositeInput(rawScreenshotPng: rawBytes, caption: job.caption))`, asserting rawPath present and outputPath absent before/after, PNG magic, output differing from the raw frame, decoded size `kRawScreenshotWidth` x `kRawScreenshotHeight`, captions taken from `job.caption` (no localized captions hardcoded), and no `screenshots/store/<locale>/composited` dir before/after across `supportedStoreLocales` (1 test passes; writes no files, creates no composited dirs); a runnable no-write dry-run CLI (`tool/store_screenshot_compositor_dry_run.dart` + `test/tool/store_screenshot_compositor_dry_run_test.dart`) now plans all 25 composited screenshots across the 5 locales (en, de, fr, es, pt-BR), validates every raw source exists and that no composited output already exists, and confirms it rendered nothing, wrote no files, and created no dirs — `dart run tool/store_screenshot_compositor_dry_run.dart` exits 0 (1 on validation fail, 64 on usage error), `--verbose` lists the 25 planned output paths (`+10` focused tests pass); a new IO-only write seam (`test/tool/store_screenshot_compositor_writer.dart` + `test/tool/store_screenshot_compositor_writer_test.dart`) now owns the harness's only disk-touching step — `writeCompositedScreenshots` reads each planned job's raw source, asks an injected renderer callback (returning `Uint8List`) for the composited bytes, and writes them under an injected root `Directory`, pre-flighting the whole batch (refusing a missing raw source or an existing output, the latter unless `allowOverwrite` is set) before any render/write and staying free of `dart:ui` — its 5 focused tests drive real IO entirely inside temp directories, so no `composited/` dir is ever created under the repo's `screenshots/store/` (`+5` tests pass) — still no final composed store PNGs written in the repo, and not wired into a repo-writing rendering CLI/pipeline | actual on-disk rendering/output, the final composed App Store/Play PNG set, native-speaker caption review, other device sizes, visual/design approval, console upload (owner/design) |
+| P0-10 | Category positioning | owner | **[OWNER]** | Post-Appeeky recommendation is **Lifestyle** on both the App Store and Google Play, documented in `store-listing-en.md` §1/§3.4 and `store-listing-tier1-localized.md` (those docs carry the earlier non-Lifestyle category rationale only as explicitly superseded historical context) | owner selects/confirms the final category in the store consoles |
 | P0-11 | Demo/review key hygiene | owner | **[PARTIAL - release guard added, owner rotation pending]** (2026-06-12) | `pubspec.yaml` still bundles `.env` as an asset, but Android release/bundle tasks now fail (redacted message) on an unacknowledged `ASTRO_API_KEY` unless acknowledged via `--android-project-arg=truerise.allowBundledApiKey=true --android-project-arg=truerise.bundledApiKeyPurpose=review-capped` on `flutter build appbundle`; iOS/manual preflight: `dart run tool/release_env_guard.dart --share-url "$TRUERISE_SHARE_URL" --proxy-base-url "$RECTIFY_PROXY_BASE_URL" --allow-bundled-key --purpose=review-capped` (see `docs/api-integration.md`) | owner rotates the current embedded key (treat as throwaway) to a low-budget capped review key - or removes it - before public build |
 
 **P0 tally:** 5 fully resolved in-repo (P0-1, P0-6, P0-7, P0-8, P0-9), 4
 partial with the in-repo artifact done and an owner/legal/console remainder
 (P0-2, P0-4, P0-5, P0-11), 2 purely owner decision/console (P0-3, P0-10).
 
-### 2a. Additional release-readiness work in-repo (2026-06-12)
+### 2a. Additional release-readiness work in-repo (through 2026-06-15)
 
-Beyond the numbered P0 lines, the following is now an in-repo artifact (much
-of it local/uncommitted, pending the Codex-gated commit flow):
+Beyond the numbered P0 lines, the following is now an in-repo artifact, all
+committed (post-Appeeky docs commits through `b00117a` before this status sync;
+the earlier "local/uncommitted, pending the Codex-gated commit flow" caveat no
+longer applies):
 
 - **Proxy base URL guard + proxy contract** — `tool/release_env_guard.dart`
   (run by the Android release Gradle task; manual for iOS) blocks a release
@@ -96,7 +104,7 @@ of it local/uncommitted, pending the Codex-gated commit flow):
 
 ## 3. Gap reconciliation (`feature-gap-analysis.md` G1–G8, G20, G22)
 
-| Gap | Run 4 status (historical) | Current (2026-06-12) | Source run |
+| Gap | Run 4 status (historical) | Current (2026-06-15) | Source run |
 | --- | --- | --- | --- |
 | G1 — display name → TrueRise | MISSING | **[DONE — VERIFIED]** | A.1 |
 | G2 — hosted privacy-policy URL | PARTIAL (in-app only) | **[PARTIAL]** — content authored (`privacy-policy.md`); app wiring done 2026-06-12 (config-gated `TRUERISE_PRIVACY_POLICY_URL`, in-app fallback); owner hosting + console/listing URL still pending | A.2 |
@@ -104,7 +112,7 @@ of it local/uncommitted, pending the Codex-gated commit flow):
 | G4 — real app icon | MISSING | **[DONE — VERIFIED]** | A.3 |
 | G5 — bundle-id + release signing | OPEN | **[OWNER]** — bundle-id decision + signing material still pending (Android gradle wiring done 2026-06-12: release requires owner `key.properties`, no debug fallback) | — |
 | G6 — COPPA / age gate | UNVERIFIED | **[DONE — VERIFIED]** — 18+ gate enforced in the date picker | A.1 |
-| G7 — store metadata | READY (doc) | **[DONE]** — finalized EN (`store-listing-en.md`) + localized drafts (`store-listing-tier1-localized.md`); `pubspec` description updated | A.4, D.3 |
+| G7 — store metadata | READY (doc) | **[DONE]** — finalized EN (`store-listing-en.md`) + localized drafts (`store-listing-tier1-localized.md`), both refreshed 2026-06-15 from the Appeeky audit (post-Appeeky **Lifestyle** category + 5-frame caption plan; see §2 P0-8/P0-9/P0-10); `pubspec` description updated | A.4, D.3 |
 | G8 — store screenshots | MISSING | **[DONE — raw]** — EN + de/fr/es/pt-BR raw frames captured | A.5, D.4 |
 | G20 — l10n extraction pipeline | MISSING | **[DONE — VERIFIED]** — `flutter_localizations` + `generate: true` + `l10n.yaml` + `lib/l10n/app_en.arb` + extraction | C.1 |
 | G22 — translated UI + ASO metadata (de/fr/es/pt-BR) | BLOCKED on G20 | **[DONE — in-repo]** — `app_{de,fr,es,pt}.arb`, localized listing drafts, localized screenshots; native-speaker review + per-locale console re-count remain | D.1, D.3, D.4 |
@@ -125,8 +133,9 @@ Not a P0 submission blocker.
 ## 4. Historical baseline: the 2026-06-02 → 2026-06-03 A / C / D runs
 
 Historical record, kept for traceability; current status lives in §2/§2a.
-Later work (2026-06-04 through 2026-06-12: share/invite hardening, update
-notification, and the §2a set) is detailed per-stage in
+Later work (2026-06-04 through 2026-06-15: share/invite hardening, update
+notification, the §2a set, and the 2026-06-15 post-Appeeky ASO/category +
+screenshot-caption documentation alignment) is detailed per-stage in
 `docs/claude-build-history.md`. From that file:
 
 - **A.1** — public brand → TrueRise, 18+ age gate, in-app live-transmission
@@ -177,7 +186,10 @@ an owner input first. Roughly in dependency order:
    Data Safety form (P0-5 / G3), using `apple-privacy-labels.md` /
    `play-data-safety.md` as the input.
 5. **Demo/review key rotation** to a low-budget capped key (P0-11).
-6. **Confirm category** Utilities (iOS) / Tools (Play) in console (P0-10).
+6. **Confirm category** in the store consoles (P0-10). Post-Appeeky
+   recommendation is **Lifestyle** on both the App Store and Google Play
+   (`store-listing-en.md` §1/§3.4, `store-listing-tier1-localized.md`); the
+   final category selection/confirmation stays owner/console scope.
 7. **Trademark clearance + name availability** for "TrueRise" (gates metadata
    lock — `store-submission-readiness.md` §12).
 8. **Console character re-count** + **native-speaker review** of localized
@@ -323,8 +335,11 @@ the card goes out via the OS share sheet.
 
 ## 6. Residual risks & caveats for this run
 
-- **Latest full-suite evidence is now the 2026-06-14 verification sweep after
-  the dry-run CLI and status sync**, recorded in
+- **Latest full-suite evidence remains the 2026-06-14 verification sweep after
+  the dry-run CLI and status sync** (the 2026-06-15 post-Appeeky changes were
+  documentation-only - ASO/category/caption docs and this status sync - with no
+  product code, test, or asset changes, so they did not require a re-run),
+  recorded in
   `docs/claude-build-history.md` (a verification-only sweep run after the
   no-write store screenshot compositor dry-run CLI
   (`tool/store_screenshot_compositor_dry_run.dart`) and the publication
@@ -412,14 +427,23 @@ the card goes out via the OS share sheet.
   analyzer/test/build status is therefore clean - the release remains blocked
   by owner/proxy/store/signing/privacy-URL decisions (see §5a), not by
   engineering or local test status.
-- **Much of the 2026-06-12 work is local and uncommitted**, pending the
-  Codex-gated commit flow — a handoff must include the working tree, not just
-  commit `98eddc8`.
+- **The 2026-06-12 work is now committed** (history through `b00117a`,
+  including the 2026-06-15 post-Appeeky ASO/category and screenshot-caption doc
+  alignment); the earlier "local and uncommitted, pending the Codex-gated
+  commit flow" caveat no longer applies. The earlier uncommitted caveat no
+  longer applies once this status sync is committed; use the committed tree plus
+  this document.
 - **App icon visual not re-verified.** P0-7 is marked DONE from repo assets +
   commit `72d6003` + the Run A.3 history entry, not from a visual render.
-- **Screenshots are raw 6.7" captures only** — they still need device framing,
-  marketing captions, native-speaker caption review, and additional device
-  sizes before console upload; they are source assets, not final listing images.
+- **Screenshots are raw 6.7" captures only** — the post-Appeeky 5-frame
+  caption / story plan is now documented (`docs/store-listing-en.md` §5 plus the
+  per-locale `screenshots/store/<locale>/README.md` + `manifest.json`, aligned
+  2026-06-15), but the PNGs themselves remain pre-Appeeky raw / reference
+  captures. They still need device framing, the planned marketing-caption
+  compositing, native-speaker caption review, and additional device sizes before
+  console upload. No composited / final listing images exist in the repo; the
+  store screenshots are still source assets plus compositor tooling only, not
+  final listing images.
 - **P0-4 / P0-5 docs are preparation guidance**, explicitly "not legal advice"
   and "not a submission" — they do not themselves satisfy the store
   requirement; the owner/legal/console step is the gating action.
