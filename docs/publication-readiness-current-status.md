@@ -7,10 +7,15 @@ repository working tree. Updates and supersedes the 2026-06-12 framing.**
 > publication readiness, read from the repository **working tree on
 > 2026-06-15** after the post-Appeeky ASO/category and screenshot-caption
 > documentation alignment landed in the post-Appeeky docs commits `29f5e6b`,
-> `8447f96`, and `b00117a`, with the later category/listing doc syncs across the
-> sibling docs continuing through `21286ce` (`116ce01`, `95baf06`, `0ccd986`,
-> `21286ce`); the guarded screenshot-compositor write CLI itself landed earlier
-> in `f694fba`. It updates the earlier 2026-06-12 reconciliation (then
+> `8447f96`, and `b00117a`, with the later category/listing and data-safety doc
+> syncs across the sibling docs continuing through `c724109` (`116ce01`,
+> `95baf06`, `0ccd986`, `21286ce`, then `2697f0f`, `e4ae8fb`, `18601a5`,
+> `5c1ac56`, `c724109`); the most recent two refined this package — `5c1ac56`
+> clarified the live-quota / reviewer notes (Demo offline, free live quota of 3
+> live requests per rolling 24h, user-provided Astrology API key bypassing the
+> shared quota) and `c724109` added the post-launch ASO runbook and the
+> privacy/GDPR/DPA checklist. The guarded screenshot-compositor write CLI itself
+> landed earlier in `f694fba`. It updates the earlier 2026-06-12 reconciliation (then
 > committed through `98eddc8` with local work still awaiting the Codex-gated
 > commit flow; that work has since been committed). It replaces the earlier Impl
 > Run E.1 snapshot (2026-06-03, commit `887bdd8` - historical) and **supersedes
@@ -29,7 +34,9 @@ repository working tree. Updates and supersedes the 2026-06-12 framing.**
 
 - **[DONE — VERIFIED]** — owner-independent artifact confirmed present in the
   working tree this run (2026-06-15, after the post-Appeeky docs syncs through
-  `21286ce`; this file is the current status sync).
+  `c724109` — the latter two being `5c1ac56` live-quota / reviewer-note
+  clarification and `c724109` post-launch ASO + privacy/GDPR/DPA checklists;
+  this file is the current status sync).
 - **[PARTIAL]** — the owner-independent part is done in-repo; a named
   owner/secret/legal/console step still remains.
 - **[OWNER]** — blocked on an owner decision, secret, legal sign-off, or
@@ -72,9 +79,10 @@ partial with the in-repo artifact done and an owner/legal/console remainder
 
 Beyond the numbered P0 lines, the following is now an in-repo artifact, all
 committed (the earlier post-Appeeky docs commits began with
-`29f5e6b`/`8447f96`/`b00117a` and later category/listing doc syncs continued
-through `21286ce`, all before this status sync; the earlier "local/uncommitted,
-pending the Codex-gated commit flow" caveat no longer applies):
+`29f5e6b`/`8447f96`/`b00117a` and later category/listing and data-safety doc
+syncs continued through `c724109`, all before this status sync; the earlier
+"local/uncommitted, pending the Codex-gated commit flow" caveat no longer
+applies):
 
 - **Proxy base URL guard + proxy contract** — `tool/release_env_guard.dart`
   (run by the Android release Gradle task; manual for iOS) blocks a release
@@ -103,6 +111,26 @@ pending the Codex-gated commit flow" caveat no longer applies):
   low-confidence results get refine-input guidance, loading Cancel + error
   retry hardened, compliant in-app review prompt, P2 dependency/file hygiene
   (unused deps removed, `result_screen` split).
+- **Reviewer notes — live-quota wording clarified** (`5c1ac56`,
+  `docs/store-listing-en.md`, `docs/store-submission-readiness.md`): the
+  reviewer / Data-safety notes now explicitly document that **Demo mode is
+  offline** and consumes no quota, the **free live path** (proxy / bundled
+  review key) is limited to **3 live requests per rolling 24-hour window**, and a
+  user who enters their own **Astrology API key** in Settings calls the provider
+  directly and **bypasses the shared free quota** (provider-direct mode). The
+  earlier "BYO key removed / no longer user-facing" note was stale and is
+  corrected.
+- **Post-launch ASO runbook** (`docs/post-launch-aso-plan.md`, `c724109`) —
+  closes the locally preparable after-live ASO planning (Appeeky audit/
+  opportunities follow-up, the experimentation/A-B matrix, per-locale keyword
+  research, Apple Search Ads prep) as a runbook; **live execution stays blocked**
+  until the listing is live and the owner takes the billing/account actions, so
+  nothing here is asserted as executed against a live listing.
+- **Privacy / GDPR / DPA checklist** (`docs/privacy-gdpr-dpa-checklist.md`,
+  `c724109`) — collects the birth-data / life-events / provider
+  controller-processor, DPA/SCC/subprocessor, retention, deletion, and
+  data-subject-rights decisions for owner/legal sign-off; it is an owner/legal
+  **draft, explicitly not legal advice** and asserts no compliance.
 
 ---
 
@@ -461,9 +489,11 @@ the card goes out via the OS share sheet.
   engineering or local test status.
 - **The 2026-06-12 work is now committed** (the earlier post-Appeeky doc
   alignment began with `29f5e6b`/`8447f96`/`b00117a` and the later
-  category/listing doc syncs continued through `21286ce`, all before this status
-  sync); the earlier "local and uncommitted, pending the Codex-gated commit
-  flow" caveat no longer applies; use the committed tree plus this document.
+  category/listing and data-safety doc syncs continued through `c724109` — most
+  recently `5c1ac56` live-quota / reviewer-note clarification and `c724109`
+  post-launch ASO + privacy/GDPR/DPA checklists — all before this status sync);
+  the earlier "local and uncommitted, pending the Codex-gated commit flow"
+  caveat no longer applies; use the committed tree plus this document.
 - **App icon visual not re-verified.** P0-7 is marked DONE from repo assets +
   commit `72d6003` + the Run A.3 history entry, not from a visual render.
 - **Screenshots are raw 6.7" captures only** — the post-Appeeky 5-frame
