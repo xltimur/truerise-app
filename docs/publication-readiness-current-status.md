@@ -7,7 +7,10 @@ repository working tree. Updates and supersedes the 2026-06-12 framing.**
 > publication readiness, read from the repository **working tree on
 > 2026-06-15** after the post-Appeeky ASO/category and screenshot-caption
 > documentation alignment landed in the post-Appeeky docs commits `29f5e6b`,
-> `8447f96`, and `b00117a`. It updates the earlier 2026-06-12 reconciliation (then
+> `8447f96`, and `b00117a`, with the later category/listing doc syncs across the
+> sibling docs continuing through `21286ce` (`116ce01`, `95baf06`, `0ccd986`,
+> `21286ce`); the guarded screenshot-compositor write CLI itself landed earlier
+> in `f694fba`. It updates the earlier 2026-06-12 reconciliation (then
 > committed through `98eddc8` with local work still awaiting the Codex-gated
 > commit flow; that work has since been committed). It replaces the earlier Impl
 > Run E.1 snapshot (2026-06-03, commit `887bdd8` - historical) and **supersedes
@@ -25,8 +28,8 @@ repository working tree. Updates and supersedes the 2026-06-12 framing.**
 ## 1. Evidence labels
 
 - **[DONE — VERIFIED]** — owner-independent artifact confirmed present in the
-  working tree this run (2026-06-15; post-Appeeky docs commits through `b00117a`
-  before this status sync).
+  working tree this run (2026-06-15, after the post-Appeeky docs syncs through
+  `21286ce`; this file is the current status sync).
 - **[PARTIAL]** — the owner-independent part is done in-repo; a named
   owner/secret/legal/console step still remains.
 - **[OWNER]** — blocked on an owner decision, secret, legal sign-off, or
@@ -57,7 +60,7 @@ console work only** — see §5.
 | P0-6 | Age gate / age rating | absent | **[DONE — VERIFIED]** (gate) | `lib/features/calculation_flow/screens/birth_data_screen.dart:94,115` — picker `lastDate = CalculationFlowState.latestAllowedBirthDate(now)` (18+ floor, clamped). (Run A.1) | store age-rating questionnaire is a console/owner step |
 | P0-7 | Real app icon | stock glyph | **[DONE — VERIFIED]** | iOS `Assets.xcassets/AppIcon.appiconset/` full set incl. `Icon-App-1024x1024@1x.png`, last modified in commit `72d6003`; Android adaptive icon `res/mipmap-anydpi-v26/ic_launcher.xml` + `ic_launcher_foreground.png` across densities + legacy `ic_launcher.png`. (Run A.3) | none (icon **visual** not re-rendered this doc-only run) |
 | P0-8 | Store metadata finalized | placeholder | **[DONE — owner-independent]** | `docs/store-listing-en.md` ready-to-paste (Run A.4), refreshed 2026-06-15 from the Appeeky audit (post-Appeeky title/subtitle/keyword package + **Lifestyle** category; companion `docs/aso-naming-strategy.md` + `docs/competitor-aso-research.md`); `pubspec.yaml:2` description is real marketing copy, not "A new Flutter project." | console character re-count + trademark clearance for "TrueRise" (owner) |
-| P0-9 | Screenshot set | absent | **[DONE — raw captures]** | `screenshots/store/{en,de,fr,es,pt-BR}/` — 5 frames each (`01-result-hero` … `05-privacy-policy`) + `manifest.json` + `README.md` (Runs A.5, D.4). 6.7" / 1290×2796. The post-Appeeky 5-frame caption / story plan (problem hook -> life events -> result -> evidence -> privacy) is aligned in `docs/store-listing-en.md` §5 and the per-locale `screenshots/store/<locale>/README.md` + `manifest.json` (2026-06-15); the existing PNGs remain pre-Appeeky raw / reference captures, not final composited listing images. Test-only compositor path/geometry + store-inventory guards now exist (`test/tool/screenshot_compositor.dart`, `test/tool/screenshot_compositor_test.dart`, `test/tool/store_screenshot_manifest_test.dart`); an in-memory `dart:ui`/Canvas renderer seam (`test/tool/store_screenshot_compositor_renderer.dart` + `…_test.dart`) now returns composited PNG **bytes** only, keeping `screenshot_compositor.dart` pure (focused tests cover the result-hero fixture + a long caption, asserting PNG magic, output size, bytes differing from the raw frame, and that no `composited/` dir is created); a manifest-driven planning seam (`test/tool/store_screenshot_compositor_plan.dart` + `…_test.dart`) builds validated `StoreScreenshotCompositeJob`s (locale, fileName, rawPath, outputPath, caption) from on-disk manifests only — validating supported locale, safe file names (`resolveCompositedTarget`), non-empty caption, and preserved locale/frame order — and renders nothing, writes no PNGs, creates no directories, and never calls the renderer (5 focused tests pass); an in-memory pipeline test (`test/tool/store_screenshot_compositor_pipeline_test.dart`) now wires the plan seam to the renderer seam: `buildAllCompositeJobs()` then renders a fast representative subset (`jobs.first` + `jobs.last`, not all 25 jobs) through `StoreScreenshotCompositorRenderer.render(StoreScreenshotCompositeInput(rawScreenshotPng: rawBytes, caption: job.caption))`, asserting rawPath present and outputPath absent before/after, PNG magic, output differing from the raw frame, decoded size `kRawScreenshotWidth` x `kRawScreenshotHeight`, captions taken from `job.caption` (no localized captions hardcoded), and no `screenshots/store/<locale>/composited` dir before/after across `supportedStoreLocales` (1 test passes; writes no files, creates no composited dirs); a runnable no-write dry-run CLI (`tool/store_screenshot_compositor_dry_run.dart` + `test/tool/store_screenshot_compositor_dry_run_test.dart`) now plans all 25 composited screenshots across the 5 locales (en, de, fr, es, pt-BR), validates every raw source exists and that no composited output already exists, and confirms it rendered nothing, wrote no files, and created no dirs — `dart run tool/store_screenshot_compositor_dry_run.dart` exits 0 (1 on validation fail, 64 on usage error), `--verbose` lists the 25 planned output paths (`+10` focused tests pass); a new IO-only write seam (`test/tool/store_screenshot_compositor_writer.dart` + `test/tool/store_screenshot_compositor_writer_test.dart`) now owns the harness's only disk-touching step — `writeCompositedScreenshots` reads each planned job's raw source, asks an injected renderer callback (returning `Uint8List`) for the composited bytes, and writes them under an injected root `Directory`, pre-flighting the whole batch (refusing a missing raw source or an existing output, the latter unless `allowOverwrite` is set) before any render/write and staying free of `dart:ui` — its 5 focused tests drive real IO entirely inside temp directories, so no `composited/` dir is ever created under the repo's `screenshots/store/` (`+5` tests pass) — still no final composed store PNGs written in the repo, and not wired into a repo-writing rendering CLI/pipeline | actual on-disk rendering/output, the final composed App Store/Play PNG set, native-speaker caption review, other device sizes, visual/design approval, console upload (owner/design) |
+| P0-9 | Screenshot set | absent | **[DONE — raw captures]** | `screenshots/store/{en,de,fr,es,pt-BR}/` — 5 frames each (`01-result-hero` … `05-privacy-policy`) + `manifest.json` + `README.md` (Runs A.5, D.4). 6.7" / 1290×2796. The post-Appeeky 5-frame caption / story plan (problem hook -> life events -> result -> evidence -> privacy) is aligned in `docs/store-listing-en.md` §5 and the per-locale `screenshots/store/<locale>/README.md` + `manifest.json` (2026-06-15); the existing PNGs remain pre-Appeeky raw / reference captures, not final composited listing images. Test-only compositor path/geometry + store-inventory guards now exist (`test/tool/screenshot_compositor.dart`, `test/tool/screenshot_compositor_test.dart`, `test/tool/store_screenshot_manifest_test.dart`); an in-memory `dart:ui`/Canvas renderer seam (`test/tool/store_screenshot_compositor_renderer.dart` + `…_test.dart`) now returns composited PNG **bytes** only, keeping `screenshot_compositor.dart` pure (focused tests cover the result-hero fixture + a long caption, asserting PNG magic, output size, bytes differing from the raw frame, and that no `composited/` dir is created); a manifest-driven planning seam (`test/tool/store_screenshot_compositor_plan.dart` + `…_test.dart`) builds validated `StoreScreenshotCompositeJob`s (locale, fileName, rawPath, outputPath, caption) from on-disk manifests only — validating supported locale, safe file names (`resolveCompositedTarget`), non-empty caption, and preserved locale/frame order — and renders nothing, writes no PNGs, creates no directories, and never calls the renderer (5 focused tests pass); an in-memory pipeline test (`test/tool/store_screenshot_compositor_pipeline_test.dart`) now wires the plan seam to the renderer seam: `buildAllCompositeJobs()` then renders a fast representative subset (`jobs.first` + `jobs.last`, not all 25 jobs) through `StoreScreenshotCompositorRenderer.render(StoreScreenshotCompositeInput(rawScreenshotPng: rawBytes, caption: job.caption))`, asserting rawPath present and outputPath absent before/after, PNG magic, output differing from the raw frame, decoded size `kRawScreenshotWidth` x `kRawScreenshotHeight`, captions taken from `job.caption` (no localized captions hardcoded), and no `screenshots/store/<locale>/composited` dir before/after across `supportedStoreLocales` (1 test passes; writes no files, creates no composited dirs); a runnable no-write dry-run CLI (`tool/store_screenshot_compositor_dry_run.dart` + `test/tool/store_screenshot_compositor_dry_run_test.dart`) now plans all 25 composited screenshots across the 5 locales (en, de, fr, es, pt-BR), validates every raw source exists and that no composited output already exists, and confirms it rendered nothing, wrote no files, and created no dirs — `dart run tool/store_screenshot_compositor_dry_run.dart` exits 0 (1 on validation fail, 64 on usage error), `--verbose` lists the 25 planned output paths (`+10` focused tests pass); a new IO-only write seam (`test/tool/store_screenshot_compositor_writer.dart` + `test/tool/store_screenshot_compositor_writer_test.dart`) now owns the harness's only disk-touching step — `writeCompositedScreenshots` reads each planned job's raw source, asks an injected renderer callback (returning `Uint8List`) for the composited bytes, and writes them under an injected root `Directory`, pre-flighting the whole batch (refusing a missing raw source or an existing output, the latter unless `allowOverwrite` is set) before any render/write and staying free of `dart:ui` — its 5 focused tests drive real IO entirely inside temp directories, so no `composited/` dir is ever created under the repo's `screenshots/store/` (`+5` tests pass). A guarded write CLI now wires the plan, renderer, and writer seams together (`tool/store_screenshot_compositor_write.dart` + `test/tool/store_screenshot_compositor_write_test.dart` (12 tests) + `test/tool/store_screenshot_compositor_write_harness_test.dart`, landed in commit `f694fba`): the default path is a no-write preview (exit 0, writes nothing), a real write requires BOTH `--write` and `--yes` (`--write` alone refuses, exit 64), and a plain `dart run tool/store_screenshot_compositor_write.dart --write --yes` refuses (exit 70) because real rendering needs the Flutter engine (`dart:ui`), pointing instead at the Flutter-compatible harness — that harness wires the real `dart:ui` renderer through `runWriteCli` into a temp dir and verifies it composites and writes a PNG there (never under the repo's `screenshots/store/`). No final composited / on-disk store PNGs have been generated in the repo (`find screenshots/store -name composited -type d` -> no output) | final composited App Store/Play PNG generation, final visual/design approval, native-speaker caption review, other device sizes, console upload (all owner/design) |
 | P0-10 | Category positioning | owner | **[OWNER]** | Post-Appeeky recommendation is **Lifestyle** on both the App Store and Google Play, documented in `store-listing-en.md` §1/§3.4 and `store-listing-tier1-localized.md` (those docs carry the earlier non-Lifestyle category rationale only as explicitly superseded historical context) | owner selects/confirms the final category in the store consoles |
 | P0-11 | Demo/review key hygiene | owner | **[PARTIAL - release guard added, owner rotation pending]** (2026-06-12) | `pubspec.yaml` still bundles `.env` as an asset, but Android release/bundle tasks now fail (redacted message) on an unacknowledged `ASTRO_API_KEY` unless acknowledged via `--android-project-arg=truerise.allowBundledApiKey=true --android-project-arg=truerise.bundledApiKeyPurpose=review-capped` on `flutter build appbundle`; iOS/manual preflight: `dart run tool/release_env_guard.dart --share-url "$TRUERISE_SHARE_URL" --proxy-base-url "$RECTIFY_PROXY_BASE_URL" --allow-bundled-key --purpose=review-capped` (see `docs/api-integration.md`) | owner rotates the current embedded key (treat as throwaway) to a low-budget capped review key - or removes it - before public build |
 
@@ -68,9 +71,10 @@ partial with the in-repo artifact done and an owner/legal/console remainder
 ### 2a. Additional release-readiness work in-repo (through 2026-06-15)
 
 Beyond the numbered P0 lines, the following is now an in-repo artifact, all
-committed (post-Appeeky docs commits through `b00117a` before this status sync;
-the earlier "local/uncommitted, pending the Codex-gated commit flow" caveat no
-longer applies):
+committed (the earlier post-Appeeky docs commits began with
+`29f5e6b`/`8447f96`/`b00117a` and later category/listing doc syncs continued
+through `21286ce`, all before this status sync; the earlier "local/uncommitted,
+pending the Codex-gated commit flow" caveat no longer applies):
 
 - **Proxy base URL guard + proxy contract** — `tool/release_env_guard.dart`
   (run by the Android release Gradle task; manual for iOS) blocks a release
@@ -296,13 +300,27 @@ engineering tasks identified earlier have all landed (each leaving only its
   passed!`; `flutter analyze` on the writer, its test, and
   `store_screenshot_compositor_plan.dart` -> `No issues found!`; `git diff
   --check` on the two new files -> clean; `find screenshots/store -name
-  composited -type d` -> no output. It is still not wired into a repo-writing
-  rendering CLI/pipeline and writes no final composed store PNGs in the repo. It
-  still does NOT create the final composed/on-disk screenshots and does NOT
-  remove the design/owner approval. Actual on-disk composited PNG
-  generation/output, the final composed App Store/Play PNG set, and
-  visual/design approval are **still not done** and remain optional design/owner
-  work (the Run D.4 spec deliberately leaves caption overlays to
+  composited -type d` -> no output. A guarded write CLI
+  (`tool/store_screenshot_compositor_write.dart` +
+  `test/tool/store_screenshot_compositor_write_test.dart` (12 tests) +
+  `test/tool/store_screenshot_compositor_write_harness_test.dart`, landed in
+  commit `f694fba`) now wires the plan, renderer, and writer seams into one
+  explicit entrypoint, but writing stays deliberately hard to trigger: the
+  default path is a no-write preview (exit 0, writes nothing), a real write
+  requires BOTH `--write` and `--yes` (`--write` alone refuses, exit 64), and a
+  plain `dart run tool/store_screenshot_compositor_write.dart --write --yes`
+  refuses (exit 70) because real rendering needs the Flutter engine (`dart:ui`) —
+  it declines and points at the Flutter-compatible harness. That harness
+  (`store_screenshot_compositor_write_harness_test.dart`) wires the real
+  `dart:ui` `StoreScreenshotCompositorRenderer` through `runWriteCli` into a
+  temporary directory and verifies it composites and writes a real PNG there
+  (PNG magic, bytes differing from the raw frame), asserting that no
+  `composited/` dir is created under the repo's `screenshots/store/`. No final
+  composited / on-disk store PNGs have been generated in the repo (`find
+  screenshots/store -name composited -type d` -> no output). Final composited
+  App Store/Play PNG generation, final visual/design approval, native-speaker
+  caption review, other device sizes, and console upload all remain optional
+  design/owner work (the Run D.4 spec deliberately leaves caption overlays to
   owner-composited work). This adds no owner-independent P0 surface — the §5b
   "none blocking" headline above still holds.
 - **Localize the share text payload** (`share_copy_builder.dart`) — **[DONE
@@ -414,10 +432,24 @@ the card goes out via the OS share sheet.
   passed!`; `flutter analyze` on the writer, its test, and
   `store_screenshot_compositor_plan.dart` -> `No issues found!`; `git diff
   --check` on the two new files -> clean; `find screenshots/store -name
-  composited -type d` -> no output. It is not wired into a repo-writing
-  rendering CLI/pipeline, generates no final composed/on-disk store PNGs in the
-  repo, changes no blocker status, and does NOT remove the owner/design approval
-  still required.
+  composited -type d` -> no output. A later guarded write CLI
+  (`tool/store_screenshot_compositor_write.dart` +
+  `test/tool/store_screenshot_compositor_write_test.dart` (12 tests) +
+  `test/tool/store_screenshot_compositor_write_harness_test.dart`, landed in
+  commit `f694fba`) now wires the plan, renderer, and writer seams into one
+  explicit entrypoint: its default path is a no-write preview (exit 0, writes
+  nothing), a real write requires BOTH `--write` and `--yes` (`--write` alone
+  refuses, exit 64), and a plain `dart run
+  tool/store_screenshot_compositor_write.dart --write --yes` refuses (exit 70)
+  because real rendering needs the Flutter engine (`dart:ui`), pointing instead
+  at the Flutter-compatible harness, which wires the real `dart:ui` renderer
+  through `runWriteCli` into a temp directory and verifies it composites and
+  writes a PNG there without ever touching the repo's `screenshots/store/`. No
+  final composited / on-disk store PNGs have been generated in the repo (`find
+  screenshots/store -name composited -type d` -> no output); this changes no
+  blocker status, and final composited App Store/Play PNG generation, final
+  visual/design approval, native-speaker caption review, other device sizes, and
+  console upload all remain owner/design work.
 - **Runner note for the release-env guard test.** `dart test
   test/tool/release_env_guard_test.dart` is the wrong runner for that file - it
   imports `package:flutter_test/flutter_test.dart`, which the standalone Dart
@@ -427,12 +459,11 @@ the card goes out via the OS share sheet.
   analyzer/test/build status is therefore clean - the release remains blocked
   by owner/proxy/store/signing/privacy-URL decisions (see §5a), not by
   engineering or local test status.
-- **The 2026-06-12 work is now committed** (history through `b00117a`,
-  including the 2026-06-15 post-Appeeky ASO/category and screenshot-caption doc
-  alignment); the earlier "local and uncommitted, pending the Codex-gated
-  commit flow" caveat no longer applies. The earlier uncommitted caveat no
-  longer applies once this status sync is committed; use the committed tree plus
-  this document.
+- **The 2026-06-12 work is now committed** (the earlier post-Appeeky doc
+  alignment began with `29f5e6b`/`8447f96`/`b00117a` and the later
+  category/listing doc syncs continued through `21286ce`, all before this status
+  sync); the earlier "local and uncommitted, pending the Codex-gated commit
+  flow" caveat no longer applies; use the committed tree plus this document.
 - **App icon visual not re-verified.** P0-7 is marked DONE from repo assets +
   commit `72d6003` + the Run A.3 history entry, not from a visual render.
 - **Screenshots are raw 6.7" captures only** — the post-Appeeky 5-frame
