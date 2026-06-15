@@ -44,13 +44,14 @@
 >   optional / out of scope until a Meta/Facebook App ID exists.
 > - **Still true:** the build is **not submittable today** — but the open
 >   blockers are now owner/secret/legal/console items, not engineering artifacts.
-> - **Removed since this baseline:** the optional bring-your-own
->   provider-credential entry has been taken out — its row no longer appears in
->   **Settings**, and the matching section was removed from the in-app **Privacy**
->   screen and from `docs/privacy-policy.md`. Live calculations still run;
->   provider credentials are simply no longer user-facing. The §2.1, §8.3, and
->   §12.2 entries below have been brought in line with the simplified Settings and
->   Privacy surfaces.
+> - **Corrected since this baseline (2026-06-15):** the optional bring-your-own
+>   provider-credential entry is **user-facing** and shipped — **Settings**
+>   includes add/remove UX for a user-provided Astrology API key
+>   (`lib/features/settings/settings_screen.dart` `_ApiKeyDialog`). When a user
+>   supplies their own key, the app runs in **provider-direct mode**, calling the
+>   provider directly and **bypassing the proxy and the shared free quota**. The
+>   earlier "removed / no longer user-facing" note was stale; the §2.1, §8.3, and
+>   §12.2 entries below and the reviewer notes reflect this BYO-key path.
 >
 > The §6 ASO drafts are finalized in `docs/store-listing-en.md`; the §7 localized
 > plan is realized in `docs/store-listing-tier1-localized.md` + the localized
@@ -628,9 +629,13 @@ Capture both paths so reviewers and screenshots reflect reality:
 > user-entered life events and returns time candidates with an **honest
 > confidence score** — it is not a horoscope or fortune-telling app. To review
 > without using live API credits, enable **Demo mode** (Settings → Demo mode),
-> which runs entirely **offline**; demo results are labeled with a DEMO pill.
+> which runs entirely **offline** and does not consume the free live quota;
+> demo results are labeled with a DEMO pill.
 > In live mode, birth data and event dates are sent over HTTPS to our astrology
-> calculation provider solely to compute the result; see our privacy policy at
+> calculation provider solely to compute the result; the free live path
+> (proxy / bundled review key) is limited to 3 live requests per rolling 24-hour
+> window, while a user who enters their own provider API key in Settings is not
+> subject to that shared free quota. See our privacy policy at
 > [URL]. The app stores data on-device only, has no user accounts, and offers a
 > one-tap 'Delete all data'." **[PROPOSED]**
 
