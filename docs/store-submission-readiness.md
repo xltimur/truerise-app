@@ -31,6 +31,7 @@
 >   `android/key.properties`; owner upload keystore + Play App Signing
 >   enrollment + iOS distribution signing still pending), **P0-3** bundle-ID
 >   decision, **P0-10** category confirm, **P0-11** demo-key rotation.
+> - **Post-Appeeky category delta (2026-06-15):** **P0-10** current recommendation is **Lifestyle** on both the App Store and Google Play (`docs/store-listing-en.md` §1/§3.4; `docs/publication-readiness-current-status.md` P0-10). The older Utilities/Tools posture below is historical/superseded context, not the current console instruction.
 > - **Shipped since this baseline (2026-06-12):** the privacy-safe
 >   **share-card image** (Run 4 G9). This supersedes the baseline's "text
 >   only / G9 not built / no `share_plus`" statements in §1, §2.3, §3, §8.2,
@@ -140,10 +141,7 @@ listing copy (`docs/store-listing-en.md`, `docs/store-listing-tier1-localized.md
 and raw 6.7" screenshots for all five locales (`screenshots/store/`). Submission
 is now gated by owner/secret/legal/console work: bundle-ID/name approval,
 production proxy + share/privacy URLs, signing material, store forms, and
-console upload. If the owner prefers, submit **English Tier 0 first** under
-**iOS Utilities / Play Tools** positioning (Apple 4.3(b) survival), with
-localized publication following native-speaker review and per-locale console
-recount/upload. This document specifies each step, labels every claim, and ends
+console upload. If the owner prefers, submit **English Tier 0 first** under **Lifestyle** on both the App Store and Google Play (current post-Appeeky recommendation; see `docs/store-listing-en.md` §1/§3.4 and `docs/publication-readiness-current-status.md` P0-10), with localized publication following native-speaker review and per-locale console recount/upload. This document specifies each step, labels every claim, and ends
 with the owner decisions that gate submission.
 
 ---
@@ -221,7 +219,7 @@ Each item below blocks first submission. ID maps to Run 4
 | P0-7 | **Real app icon** (iOS + Android adaptive) | G4 | **[DONE 2026-06]**: `ios/Runner/Assets.xcassets/AppIcon.appiconset/` + Android adaptive icon (`mipmap-*`) in repo. *(Original audit assumed the default glyph per `docs/qa-phase8-report.md` §6.)* Store icon review at submission remains | Impl Run A **[done]** |
 | P0-8 | **Store metadata finalized** (title/subtitle/keywords/descriptions) | G7 | **[DONE in-repo 2026-06]**: `docs/store-listing-en.md` + `docs/store-listing-tier1-localized.md`; real `pubspec` description. Remaining owner scope: console character recount, trademark confirmation, native-speaker review | Owner console entry |
 | P0-9 | **Screenshot set** captured for required device classes | G8 | **[DONE in-repo 2026-06 — raw]**: `screenshots/store/{en,de,fr,es,pt-BR}/`, five 6.7" frames per locale. Remaining design/owner scope: device-frame/caption compositing, other device sizes, console upload | Design compositing + owner upload |
-| P0-10 | **Category positioning** confirmed: iOS **Utilities**, Play **Tools** (4.3(b) survival) | — | Run 2/3; Vedic Samay precedent **[ASSUMED]** | Owner confirm (Sec. 9) |
+| P0-10 | **Category positioning** confirmed: **Lifestyle** on both the App Store and Google Play (current post-Appeeky recommendation; older Utilities/Tools rationale is superseded historical context) | — | `docs/store-listing-en.md` §1/§3.4; `docs/publication-readiness-current-status.md` P0-10 | Owner confirm (Sec. 9) |
 | P0-11 | **Demo/review key hygiene** — rotate to a low-budget capped key before public build; confirm `.env` exposure is acceptable for review | — | `README.md`, `pubspec.yaml` `.env` asset **[VERIFIED]** | Owner key rotation |
 
 **Not P0 (do not block on these):** analytics SDK (G13, greenfield), localized
@@ -566,7 +564,7 @@ Capture both paths so reviewers and screenshots reflect reality:
   rejection. The only known mobile-native BTR app (Vedic Samay) ships under
   **Utilities** — the working precedent.
 - **Mitigation:**
-  1. **Category = Utilities (iOS) / Tools (Play).** **[PROPOSED]**
+  1. **Category = Lifestyle on both the App Store and Google Play (current post-Appeeky recommendation).** The earlier Utilities/Tools category mitigation is superseded historical context; keep the calculator-style copy discipline.
   2. **Frame as a calculation tool, not a horoscope.** Listing copy leads with
      *estimate / method / confidence*, not *prediction / destiny / fortune*.
   3. **No Group D terms** ("fortune", "psychic", "prediction", "future").
@@ -650,7 +648,7 @@ path is owner/secret/legal/console work:
 
 ```
 Owner gates                  ──►  Console finalization        ──►  Internal test  ──►  Submit EN Tier 0
-(bundle-ID approval,              (final metadata re-count,        (both stores)       (Utilities/Tools)
+(bundle-ID approval,              (final metadata re-count,        (both stores)       (Lifestyle)
  signing material,                 screenshot compositing +
  hosted privacy URL,               upload, demo/review key)
  Apple/Play privacy forms,
@@ -680,8 +678,7 @@ Owner gates                  ──►  Console finalization        ──►  I
    internal-testing track; run Play pre-launch report in **Demo mode**;
    on-device smoke on a real iOS + Android device (deferred in Phase 8).
    **[PROPOSED]**
-6. **Submit English Tier 0** under Utilities/Tools with the reviewer notes from
-   Sec. 9.6. **[PROPOSED]**
+6. **Submit English Tier 0** under **Lifestyle** on both stores with the reviewer notes from Sec. 9.6. **[PROPOSED]**
 7. **Localized listings (prepared, review-gated).** The l10n pipeline,
    in-app translations, listing drafts, and raw localized screenshots are
    **done in-repo** (G20/G22). Publication waits on native-speaker review,
@@ -776,7 +773,7 @@ flutter build appbundle --release \
       localized variants; console re-count remains)
 - [ ] Raw 6.7" screenshots are **in-repo** (P0-9); remaining submission work
       is compositing, other device sizes, and console upload. **[P0-9]**
-- [ ] Category = Utilities (iOS) / Tools (Play). **[P0-10]**
+- [ ] Category = Lifestyle on both the App Store and Google Play. **[P0-10]**
 - [ ] Demo/review key rotated to a low-budget capped key; reviewer notes point
       to offline Demo mode. **[P0-11]**
 - [ ] Trademark clearance + App Store name availability for "TrueRise"
@@ -815,7 +812,7 @@ closing summary.
    in-binary exposure is acceptable for review. **[decision]**
 5. **Trademark clearance + App Store name availability for "TrueRise."**
    Not asserted here — must be cleared before locking metadata. **[decision]**
-6. **Category confirmation:** Utilities (iOS) / Tools (Play). **[decision]**
+6. **Category confirmation:** Lifestyle on both the App Store and Google Play. **[decision]**
 7. **Device matrix:** is iPad / Android tablet a target (affects screenshot
    sets + landscape QA)? **[decision]**
 8. **Localized-listing go/no-go + launch sequencing** — artifacts are prepared
