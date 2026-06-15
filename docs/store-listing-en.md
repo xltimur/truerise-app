@@ -22,6 +22,24 @@ decision remain owner work (see the checklist at the end).
 > conclusions in `docs/competitor-aso-research.md` (Run 2) or
 > `docs/feature-gap-analysis.md` (Run 4).
 
+> **Update 2026-06-15 (Appeeky audit - adopted as the current recommendation).**
+> The pre-launch Appeeky audit revised several launch fields; those revisions are
+> now the current recommendation and are reflected in the literal ready-to-paste
+> strings below (no longer pending):
+> - **Subtitle (§2.2):** `Estimate your rising sign`.
+> - **iOS keyword field (§2.5):**
+>   `rectify,ascendant,natal,chart,calculator,unknown,horoscope,astrology,houses,zodiac,moon,sun`
+>   (91/100).
+> - **Play short description (§3.2):** `Estimate your birth time, rising sign &
+>   natal chart from life events.`
+> - **Category (§1, §2, §3.4, §7):** primary **Lifestyle** (not Utilities/Tools).
+>   This reverses the earlier 4.3(b)-driven Utilities/Tools posture, trading it
+>   for discoverability/featuring. The superseded Utilities/Tools rationale is
+>   retained below as historical context only, not as a current instruction to
+>   paste.
+> Rationale and supporting data: `docs/aso-naming-strategy.md` §14 and
+> `docs/competitor-aso-research.md` §15.
+
 ---
 
 ## 1. Decision summary
@@ -29,18 +47,26 @@ decision remain owner work (see the checklist at the end).
 - **Public brand:** **TrueRise** — one word, English, kept in every locale; the
   descriptor tail carries the search intent. (Bundle/codename stays `rectify` /
   `com.rectify.rectify` pending the owner's bundle-ID decision.)
-- **Positioning:** a focused **birth-time calculation utility** that estimates an
+- **Positioning:** a focused **birth-time calculation tool** that estimates an
   unknown birth time from the user's own life events and returns candidate times
-  with an **honest confidence score** and per-event evidence. Framed as a tool,
-  **not** a horoscope or fortune-telling app — this is both the product truth and
-  the Apple **4.3(b)** survival posture (precedent: Vedic Samay ships in
-  Utilities; `docs/competitor-aso-research.md` §10).
-- **Category recommendation:**
-  - **App Store:** Primary **Utilities**; optional Secondary **Reference**. Do
-    not select Lifestyle or any horoscope-adjacent slot.
-  - **Google Play:** **Tools.** (Lifestyle is the discovery-oriented alternative;
-    if ever chosen, the utility framing matters more, not less. Recommend Tools
-    for consistency.)
+  with an **honest confidence score** and per-event evidence. The copy still
+  leads with the calculation function and avoids horoscope/fortune-telling
+  lexicon; under the current **Lifestyle** category (below) that tool-led,
+  probabilistic framing matters more, not less, to keep the listing reading as a
+  calculator. (The earlier posture treated the **Utilities** category itself as
+  the Apple **4.3(b)** survival move - precedent: Vedic Samay ships in Utilities,
+  `docs/competitor-aso-research.md` §10 - but that category choice is now
+  superseded by the Appeeky-driven Lifestyle recommendation; the copy discipline
+  it required is retained.)
+- **Category recommendation (current, post-Appeeky):**
+  - **App Store:** Primary **Lifestyle** - where the astrology comparison set and
+    audience sit; trades the old Utilities 4.3(b) caution for
+    discoverability/featuring (`docs/aso-naming-strategy.md` §14.4).
+  - **Google Play:** **Lifestyle.**
+  - *Superseded (historical):* App Store primary **Utilities** (+ optional
+    Secondary **Reference**) and Google Play **Tools**, chosen as the Apple
+    4.3(b) survival posture. Retained here as context only - no longer the field
+    to enter.
 - **Growth angle baked into the copy:** the listing emphasizes **privacy-safe,
   shareable insight** — a result you can share as a short line (time + rising +
   confidence) **without** sharing any birth data
@@ -94,14 +120,20 @@ TrueRise: Birth Time Finder
 ### 2.2 Subtitle — limit 30
 
 ```
-Rectify your birth time
+Estimate your rising sign
 ```
 
-(~23 chars.) Uses **rectify** as the domain verb (not the brand) to capture the
-“rectify birth time” intent.
+(~25 chars.) Current recommendation (post-Appeeky): leads with the
+highest-popularity term the Appeeky audit surfaced (`rising sign`) plus the
+probabilistic verb `estimate`. Treat it as a high-intent conversion line, not a
+day-one rank target - `rising sign` is held by incumbents with far more reviews
+(`docs/aso-naming-strategy.md` §14.1).
 
+- **Alternative (earlier launch default; keeps the "rectify birth time" intent):**
+  `Rectify your birth time` (~23) - uses **rectify** as the domain verb, not the
+  brand.
 - **Conservative alternative (recommended verbatim for a future German front and
-  for the most review-cautious posture):** `Estimate your birth time` (~24) —
+  for the most review-cautious posture):** `Estimate your birth time` (~24) -
   leads with the probabilistic verb.
 - **Brand-echo alternative:** `Find your real birth time` (~25).
 
@@ -153,20 +185,25 @@ lexicon or certainty claims.)
 
 ### 2.5 iOS keyword field — limit 100 (comma-separated, no spaces)
 
-The field must not repeat words already in the Name/Subtitle (`truerise, birth,
-time, finder, rectify, your`). Apple indexes Name + Subtitle + keywords together
-and de-duplicates.
+The field must not repeat words already in the Name/Subtitle. With the current
+Name `TrueRise: Birth Time Finder` and subtitle `Estimate your rising sign`, the
+excluded set is `truerise, birth, time, finder, estimate, your, rising, sign`.
+Apple indexes Name + Subtitle + keywords together and de-duplicates.
 
-**Recommended (Tier 0 launch — high-intent long-tail + light astrology reach):**
+**Recommended (current, post-Appeeky):**
 
 ```
-rectification,ascendant,rising,natal,chart,calculator,unknown,accurate,astrology,houses,sign
+rectify,ascendant,natal,chart,calculator,unknown,horoscope,astrology,houses,zodiac,moon,sun
 ```
 
-**(92 / 100 characters.)**
+**(91 / 100 characters.)** Keeps the ownable `rectify` token and, paired with the
+**Lifestyle** category, deliberately adds astrology head terms (`horoscope`,
+`astrology`, `zodiac`, `moon`, `sun`) for reach (`docs/aso-naming-strategy.md`
+§14.2).
 
-**Conservative variant (no head terms — use for a future German front / safest
-4.3 posture):**
+**Conservative variant (earlier utility posture; assumes the earlier `Estimate
+your birth time` subtitle - no astrology head terms, for a future German front /
+safest 4.3 posture):**
 
 ```
 rectification,ascendant,rising,calculator,unknown,approximate,accurate,natal,chart,houses
@@ -174,9 +211,11 @@ rectification,ascendant,rising,calculator,unknown,approximate,accurate,natal,cha
 
 **(89 / 100 characters.)**
 
-> Do **not** pad the field with `horoscope`, `zodiac`, or `fortune` to use up
-> characters — leave it short. Re-count in App Store Connect after the
-> Name/Subtitle are locked; localized glyph counts differ.
+> The conservative variant above reflects the superseded Utilities posture, which
+> deliberately omitted `horoscope`/`zodiac`/`fortune`. The current recommended
+> field pairs with the Lifestyle category and intentionally includes astrology
+> head terms; do not additionally add `fortune`. Re-count in App Store Connect
+> after the Name/Subtitle are locked; localized glyph counts differ.
 
 ### 2.6 App Review Notes (draft)
 
@@ -210,11 +249,14 @@ TrueRise: Birth Time Finder
 ### 3.2 Short description — limit 80
 
 ```
-Estimate your unknown birth time from real life events. Private, on-device.
+Estimate your birth time, rising sign & natal chart from life events.
 ```
 
-(~75 chars.) Leads with intent + method + privacy.
+(~69 chars.) Current recommendation (post-Appeeky): leads with the probabilistic
+verb `estimate` and names the three deliverables (birth time, rising sign, natal
+chart) plus the method (life events) (`docs/aso-naming-strategy.md` §14.3).
 
+- **Earlier launch default:** `Estimate your unknown birth time from real life events. Private, on-device.` (~75) - intent + method + privacy.
 - **Evidence-forward alternative:** `Find your most likely birth time from your life events — with evidence.` (~70).
 - **Question-hook alternative:** `Don't know your birth time? Estimate it from your life events, privately.` (~73).
 
@@ -255,10 +297,12 @@ Try the free demo — offline, private, no birth time required.
 
 ### 3.4 Suggested category, tags, and search phrases
 
-- **Category:** **Tools.**
-- **Tags (pick from Play's fixed tag list; closest matches):** *Utilities /
-  Tools*, *Calculator*; if an astrology/horoscope tag is offered, use **at most
-  one** and keep it secondary — keep the visible listing utility-led.
+- **Category (current, post-Appeeky):** **Lifestyle.** (Superseded: **Tools**,
+  the earlier utility-posture choice; see `docs/aso-naming-strategy.md` §14.4.)
+- **Tags (pick from Play's fixed tag list; closest matches):** *Calculator* and
+  *Utilities / Tools* still describe the function, and an astrology/horoscope tag
+  now fits the Lifestyle placement; keep the visible listing copy
+  calculation-led regardless (§6).
 - **Search phrases to support naturally in the text (do not list them as a
   block):** birth time rectification, rectify birth time, unknown birth time,
   birth time calculator, find my birth time, approximate birth time, rising sign
@@ -268,7 +312,7 @@ Try the free demo — offline, private, no birth time required.
 ### 3.5 Reviewer notes (draft)
 
 ```
-TrueRise is a Tools-category utility that estimates an unknown birth time from user-entered life events, returning candidate times with a confidence score. No deterministic, predictive, medical, legal, or financial claims are made.
+TrueRise is a birth-time calculation tool that estimates an unknown birth time from user-entered life events, returning candidate times with a confidence score. No deterministic, predictive, medical, legal, or financial claims are made.
 
 TEST WITHOUT LIVE CREDITS OR PAYMENT: Settings > Demo mode runs the complete flow OFFLINE (no network, no key, no purchase); demo results are labeled "Demo — not a real calculation." The Play pre-launch report can be run in Demo mode.
 
@@ -349,9 +393,12 @@ answer-first message; not required to submit.
 - **No fortune-telling lexicon.** Avoid fortune, psychic, tarot, oracle,
   divination, palm reading, destiny, “predict your future” — in title, subtitle,
   keywords, description, screenshots, and promo text.
-- **Astrology as method, not category.** Reference transits/progressions as the
-  calculation *method*; keep astrology/horoscope/zodiac out of the visible
-  title/subtitle and the first screenshot (Apple 4.3(b)).
+- **Astrology as method, not promise.** Treat astrology as the calculation
+  *method* and tone (transits/progressions that score candidate times), never as
+  a visible fortune-telling *promise*; keep astrology/horoscope/zodiac out of the
+  visible title/subtitle and the first screenshot (Apple 4.3(b)). This is a
+  copy/positioning rule, not a store-category rule - the store category is
+  **Lifestyle** (§1, §3.4).
 - **Privacy-safe sharing only.** Any sharing copy must match the shipped share
   surfaces — text and the share-card image (both shipped as of 2026-06-12):
   time + rising (when present) + confidence + brand + the public share link,
@@ -383,8 +430,10 @@ answer-first message; not required to submit.
       confirmed.
 - [ ] **Character re-count** of Name/Subtitle/keywords/Title/short description in
       each console.
-- [ ] **Category** confirmed: Utilities (+ optional Reference) on iOS; Tools on
-      Play.
+- [ ] **Category** confirmed: **Lifestyle** on iOS and Google Play (current
+      post-Appeeky recommendation; the earlier Utilities/Reference (iOS) / Tools
+      (Play) posture is superseded - see §1 and
+      `docs/aso-naming-strategy.md` §14.4).
 - [ ] **Age rating** questionnaires completed consistent with the **18+** gate;
       Play target audience = adults.
 - [ ] **Apple App Privacy labels** entered (`docs/apple-privacy-labels.md`) and
@@ -399,8 +448,10 @@ answer-first message; not required to submit.
 ## 8. Source / preserved conclusions
 
 - `docs/aso-naming-strategy.md` (Run 3) — name = TrueRise + descriptor tail;
-  Utilities/Tools; keyword Groups A–D; Option H for Tier 0, Option C for DE;
-  probabilistic copy rules. **Finalized here, not changed.**
+  keyword Groups A–D; Option H for Tier 0, Option C for DE; probabilistic copy
+  rules. **Finalized here.** *(The Run 3 Utilities/Tools category leg is
+  superseded by the 2026-06-15 Appeeky update - primary Lifestyle; see §1, §3.4,
+  §7 above and `docs/aso-naming-strategy.md` §14.4.)*
 - `docs/store-submission-readiness.md` (Run 6) — P0-8 scope; English Tier 0
   package; 4-frame screenshot storyboard; reviewer-note language. **Closed here
   for the owner-independent part.**

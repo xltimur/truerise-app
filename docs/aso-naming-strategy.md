@@ -157,13 +157,30 @@ the descriptor line, not as the brand** (Section 3).
 
 ### 4.1 Category
 
-**Primary: Utilities.** Rationale (Run 2 §10, evidence-backed): Apple Guideline
-4.3(b) names "fortune telling / astrology / horoscopes / zodiac reports" as a
-saturated category subject to rejection, and disclaimers do not cure a 4.3
-rejection. The one real mobile-native BTR incumbent, Vedic Samay, ships in
-**Utilities** - a working precedent. The single-function calculation framing is
-the textbook 4.3 answer. **Secondary (if a second category is offered):
-Reference.** Do **not** select Lifestyle or any horoscope-adjacent slot.
+**Current recommendation (post-Appeeky, 2026-06-15): primary `Lifestyle`** (see
+§14.4). This is where the astrology comparison set and audience sit; it trades
+the earlier Utilities 4.3(b) caution for discoverability/featuring. Because the
+category no longer carries the 4.3(b) shield, the §7 probabilistic/utility copy
+rules matter more, not less, to keep the listing reading as a calculation tool.
+
+**Superseded (earlier posture): primary Utilities, optional Secondary
+Reference.** Rationale (Run 2 §10, evidence-backed): Apple Guideline 4.3(b) names
+"fortune telling / astrology / horoscopes / zodiac reports" as a saturated
+category subject to rejection, and disclaimers do not cure a 4.3 rejection. The
+one real mobile-native BTR incumbent, Vedic Samay, ships in Utilities - a working
+precedent, and the single-function calculation framing is the textbook 4.3
+answer. This was the original recommendation and is retained as the
+4.3(b)-risk-minimizing rationale, but it is **no longer the recommended
+category** - the Appeeky-driven Lifestyle choice in §14.4 supersedes it, and the
+earlier "do not select Lifestyle" instruction no longer applies.
+
+> **Update 2026-06-15 (Appeeky audit):** the Appeeky audit recommends primary
+> category **Lifestyle, not Utilities**, on discoverability grounds (the
+> astrology competitors sit in Lifestyle; Utilities is argued to weaken
+> discoverability/featuring and to risk reclassification). This reverses the
+> earlier 4.3(b)-driven posture; the trade-off (4.3(b) review risk vs
+> discoverability/featuring) has been resolved in favor of Lifestyle, now the
+> current recommendation. See §14.4.
 
 ### 4.2 Title candidates (~30 char limit; validate in console)
 
@@ -237,11 +254,12 @@ rather than pad with head/blocked terms.
 Play has no saturation-rejection signal equivalent to Apple 4.3(b) (Run 2 §10,
 not re-verified this run - see Section 11), but its restricted-content and
 health-claim policies still bind; the no-medical-claims non-goal (Run 1 §10)
-covers that. Category: **Tools** (mirrors the Apple Utilities posture and the
-single-function framing). **Lifestyle** is the discovery-oriented alternative
-where the astrology-curious browse; if chosen, the 4.3-style distancing in copy
-matters more, not less. Recommend **Tools** for consistency; flag Lifestyle as a
-tradeoff for the team to weigh against Play discovery.
+covers that. **Current recommendation (post-Appeeky, §14.4): primary
+Lifestyle** - mirroring the iOS choice, it places the listing where the
+astrology-curious browse; the §7 4.3-style copy distancing then matters more, not
+less. *Superseded (earlier posture):* **Tools**, chosen to mirror the old Apple
+Utilities posture and the single-function framing and recommended then for
+consistency - retained as historical rationale, not the category to select.
 
 ### 5.1 Title candidates (~30 char limit)
 
@@ -356,7 +374,11 @@ it is a Tier 1 / Run 4+ console task, not a claim made here.
 - Lead every visible surface (title, subtitle, first screenshot, first 250 chars
   of the Play description) with the **calculation function**, not with
   "astrology / horoscope / zodiac / fortune."
-- Choose **Utilities** (iOS) / **Tools** (Play), not a horoscope/Lifestyle slot.
+- **Category (updated 2026-06-15):** the original 4.3(b) mitigation chose
+  **Utilities** (iOS) / **Tools** (Play) over a horoscope/Lifestyle slot. The
+  current recommendation is **primary Lifestyle** on both stores (§4.1 / §5 /
+  §14.4), so the category no longer acts as the 4.3(b) shield - the remaining
+  bullets here carry that load instead.
 - Demonstrate a **unique, single, high-quality function** (probable birth time
   from life events, with evidence) - this, not a disclaimer, is what answers 4.3.
 - Keep the visible positioning indistinguishable from a calculator/utility; let
@@ -463,7 +485,7 @@ imagery - that reintroduces the 4.3 surface the rest of the strategy removes.
 
 | Source item | This run's position |
 |---|---|
-| **A1** Utility / probabilistic framing | **Honored and operationalized** into category (Utilities/Tools), copy rules (Section 7), and screenshot order (Section 8). |
+| **A1** Utility / probabilistic framing | **Honored and operationalized** into copy rules (Section 7) and screenshot order (Section 8). *(The category leg - originally Utilities/Tools - is superseded as of 2026-06-15: primary Lifestyle, §14.4; the probabilistic/tool-led copy framing is unchanged and matters more under Lifestyle.)* |
 | **A2** "Maya" ICP first | **Honored** - keyword bank, copy, and screenshots target the English consumer enthusiast; "kundli" deliberately excluded from Tier 0/1 (Run 1 §4.3). |
 | **A3** Tier 0 -> Tier 1 (DE/FR/PT-BR/ES) -> Tier 2 Hindi (gated) | **Honored** - Section 6.3 / Section 9 give Tier 1 descriptor direction only; no Hindi/India ASO proposed. |
 | **A4** North-star RRC/wk | **Honored** - top-10 ambition framed only on realistic long-tail; head terms explicitly not success criteria. |
@@ -497,8 +519,9 @@ Decisions above are proposals; the following must be verified by a human / conso
    Connect / Play Console (localized glyph counts differ from this doc's ~Ns).
 6. [ ] Finalize and re-count the 100-char keyword field in console after
    title/subtitle lock.
-7. [ ] Confirm final category selection (Utilities/Reference on iOS; Tools vs
-   Lifestyle on Play).
+7. [ ] Confirm final category selection in console - current recommendation is
+   **primary Lifestyle** on both stores (§4.1 / §5 / §14.4); the earlier
+   Utilities/Reference (iOS) / Tools (Play) posture is superseded.
 
 **Carried from Run 2 §12.4 (informational, not blocking the name decision):**
 8. [ ] In-store native-front search rankings for the Section 6 terms (App Store
@@ -519,7 +542,14 @@ Decisions above are proposals; the following must be verified by a human / conso
 ## 12. Final Recommended Metadata Draft Set
 
 Three clearly-marked options. All counts approximate - re-validate in console
-(Section 11). Category Utilities (iOS) / Tools (Play) in all three.
+(Section 11). The category leg shown in all three (Utilities on iOS / Tools on
+Play) reflects the earlier posture and is superseded: the current recommendation
+is primary **Lifestyle** on both stores (§14.4).
+
+> **Update 2026-06-15:** the Appeeky audit defines the current launch package
+> (subtitle `Estimate your rising sign`, a new iOS keyword field, a new Play
+> short description, and a **Lifestyle** category), which supersedes the launch
+> defaults below. See §14.
 
 ### Option C - Conservative (lowest policy risk, brand + neutral utility)
 
@@ -602,3 +632,100 @@ measurable branded installs (Run 1 H3). Use **Option C** verbatim for the German
 Apple App Review Guidelines 4.3, locale long-tail pages, astro.com rectification
 FAQs). No live ranking, search volume, rating, or trademark clearance is asserted
 in this document; all such items are routed to Section 11.
+
+---
+
+## 14. Appeeky Audit Update (2026-06-15) - Revised Metadata Package & Category
+
+**Basis.** Built on the Appeeky pre-launch data recorded in
+`docs/competitor-aso-research.md` §15 (competitor keyword ranks + ratings, and
+the `birth time` / `rising sign` / `rectify` keyword popularity/difficulty
+scores). Appeeky's direct ASO Audit / Opportunities could not run pre-launch
+(the manual app entry is "Not yet live"); these are recommendations to apply at
+submission and then re-validate against the live listing.
+
+### 14.1 Title and subtitle
+
+- **Title - keep:** `TrueRise: Birth Time Finder` (~27). Unchanged from §4.2 /
+  §12; `birth time` is reachable for a focused app (Appeeky: `birth time`
+  difficulty 29 easy; TimePassages ranks #2 on it).
+- **Launch subtitle:** `Estimate your rising sign` (~25). This replaces the
+  earlier launch default (`Rectify your birth time` / `Estimate your birth
+  time`) and leads with the highest-popularity term the audit surfaced (`rising
+  sign`, popularity 55).
+- **Caveat - `rising sign` is conversion / long-tail at launch, not an
+  immediately winnable ranking.** Appeeky shows it at difficulty 53 with 0/50
+  exact-name listings, and the term is held by incumbents with tens to hundreds
+  of thousands of reviews (Co-Star #1 / ~205k, Nebula #3 / ~170k, The Pattern
+  #4, TimePassages #5; `docs/competitor-aso-research.md` §15.1). TrueRise
+  launches with zero reviews, so the subtitle works as a high-intent conversion
+  line, not a day-one rank target.
+- **Preserve the `rectify` / `rectification` niche.** It is the ownable,
+  uncontested lane (Appeeky: `rectify birth time` difficulty 27, 0/50 in-name;
+  §15.2). The `rectify` token is retained in the keyword field below, and the
+  title's "Birth Time" + `rectify` keeps `rectify birth time` / `birth time
+  rectification` coverage.
+
+### 14.2 iOS keyword field (recommended)
+
+```
+rectify,ascendant,natal,chart,calculator,unknown,horoscope,astrology,houses,zodiac,moon,sun
+```
+
+**(91 / 100 characters.)** Built against the title `TrueRise: Birth Time
+Finder` and the subtitle `Estimate your rising sign`, so it **intentionally
+avoids duplicating** any title/subtitle word (truerise, birth, time, finder,
+estimate, your, rising, sign) - Apple indexes name + subtitle + keywords
+together and de-duplicates. It keeps the `rectify` niche token and, unlike the
+§4.4 Group C/D guidance under the prior Utilities posture, **now includes
+astrology head terms** (`horoscope`, `astrology`, `zodiac`, `moon`, `sun`);
+that is a deliberate shift that pairs with the Lifestyle category in §14.4.
+Re-count in App Store Connect after the title/subtitle are locked.
+
+### 14.3 Google Play short description (recommended)
+
+```
+Estimate your birth time, rising sign & natal chart from life events.
+```
+
+Leads with `estimate` (probabilistic, not certainty) and names the three
+deliverables (birth time, rising sign, natal chart) plus the method (life
+events).
+
+### 14.4 Category recommendation - Lifestyle (revises §4.1)
+
+The audit recommends **primary category `Lifestyle`, not `Utilities`**, because:
+
+- the astrology competitors above all sit in **Lifestyle**, so that is where the
+  audience and the comparison set are;
+- **Utilities weakens discoverability and featuring** for an astrology-adjacent
+  app and may **risk reclassification**.
+
+This **reverses** the earlier §4.1 / Run 2 §10 recommendation, which chose
+Utilities specifically as the Apple **4.3(b)** survival posture (precedent: Vedic
+Samay in Utilities). The two positions trade **discoverability/featuring
+(Lifestyle)** against **4.3(b) review risk (Utilities)**; that trade-off has been
+resolved in favor of **Lifestyle**, now the current recommendation across this
+doc and `docs/store-listing-en.md`. Because the category no longer provides the
+4.3(b) shield, the §7 probabilistic/utility copy rules matter **more**, not less,
+to keep the listing reading as a calculation tool.
+
+### 14.5 Screenshot caption direction
+
+Order the captions problem-hook -> life events -> result -> evidence ->
+privacy/demo. Use `estimate`; never `exact` or `guaranteed` as a result claim
+(§7.3; `docs/store-listing-en.md` §6).
+
+1. **Problem hook:** `Don't know your exact birth time?` ("exact" is allowed
+   only in the user's *problem* statement, never as a result claim.)
+2. **Life events:** the dated life-event input.
+3. **Result:** estimated time + rising sign + confidence.
+4. **Transparent evidence:** the per-event "see how we got this" breakdown.
+5. **Privacy / offline demo:** on-device; offline demo before committing
+   anything real.
+
+### 14.6 Post-launch tracking (after the listing is live)
+
+Track in Appeeky once the listing is live (resubscribe per
+`docs/competitor-aso-research.md` §15.3): `rectify birth time`, `birth time
+finder`, `birth time rectification`, `rising sign`, `ascendant`.

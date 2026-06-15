@@ -393,10 +393,17 @@ record that the assumption survived contact with current evidence.
   answer: TrueRise does one thing no horoscope app does (compute a probable
   birth time from life events). **Vedic Samay's survival in Utilities** is a
   working precedent.
-- **Copy/category strategy (feeds Run 3):** make the **calculation USP the
-  headline**; keep "astrology / horoscope / zodiac / fortune" out of the
-  *primary* title/subtitle and category choice; pick **Utilities** (or
-  Reference), not Lifestyle-horoscope. This serves relevance *and* 4.3 survival.
+- **Copy/category strategy (feeds Run 3) - category leg superseded 2026-06-15,
+  see §15:** make the **calculation USP the headline**; keep "astrology /
+  horoscope / zodiac / fortune" out of the *primary* title/subtitle and category
+  choice; pick **Utilities** (or Reference), not Lifestyle-horoscope. This serves
+  relevance *and* 4.3 survival. **No longer the current category recommendation:**
+  the 2026-06-15 Appeeky audit reversed the category pick to **primary Lifestyle**
+  on both stores (§15; `docs/aso-naming-strategy.md` §14.4;
+  `docs/store-listing-en.md` §1). The copy discipline above - calculation USP in
+  the headline, and astrology/horoscope/zodiac/fortune kept out of the visible
+  title/subtitle and first screenshot - still stands; only the Utilities/Reference
+  category choice is superseded.
 - This directly confirms the `docs/prd.md` §16 risk row ("App Store rejection
   for vague astrology category policy") as a **live, specific** risk and
   upgrades its mitigation from "ensure factual/calculation-based" to a concrete
@@ -435,8 +442,13 @@ India *marketing* stays deferred.
 ## 12. Implications for Later Runs
 
 ### 12.1 ASO naming & metadata strategy (Run 3)
-- **Category:** target **Utilities** (precedent: Vedic Samay), not a horoscope/
-  Lifestyle slot — for relevance *and* Apple 4.3(b) survival (§10).
+- **Category - superseded 2026-06-15 (see §15); historical 4.3(b) rationale, not
+  today's recommendation:** target **Utilities** (precedent: Vedic Samay), not a
+  horoscope/Lifestyle slot — for relevance *and* Apple 4.3(b) survival (§10). The
+  2026-06-15 Appeeky audit (§15) reversed this to **primary Lifestyle** on both
+  stores; treat the Utilities/Reference pick here as historical 4.3(b) rationale
+  only (current field: `docs/store-listing-en.md` §1,
+  `docs/aso-naming-strategy.md` §14.4).
 - **Title/subtitle:** lead with the **calculation function** ("Birth Time
   Finder" / "Rectify your birth time from life events"); keep
   astrology/horoscope/zodiac/fortune out of the *primary* line.
@@ -472,6 +484,9 @@ India *marketing* stays deferred.
 3. Google Play astrology-policy specifics (not re-verified this run).
 4. A small structured review sample for Vedic Samay + 1–2 majors, if Run 3
    wants quantified review themes rather than the qualitative §7 read.
+
+> **Update 2026-06-15:** items 1 and 2 are now answered by the Appeeky audit -
+> see §15 below (in-store keyword ranks and competitor ratings / review counts).
 
 ---
 
@@ -537,3 +552,72 @@ India *marketing* stays deferred.
 that file's Sources section for Vedic Samay, Cosmic Birthtime, AstroSage BTR,
 AI Pandit, Co-Star/CHANI, Sanctuary, TimePassages, and market-size citations.
 No market-size or pricing figure has been newly invented in this document.
+
+---
+
+## 15. Appeeky Audit Update (2026-06-15)
+
+**Source / status:** all figures below are from **Appeeky** (Startup Monthly
+plan), used for pre-launch ASO research, accessed **2026-06-15**. These are
+**third-party tool figures**, not direct store reads - they close the §2 (#1,
+#2) and §12.4 (#1, #2) gaps Run 2 could not fetch (in-store keyword ranks,
+competitor ratings / review counts) and add keyword-difficulty data Run 2
+lacked. The metadata interpretation built on this data lives in
+`docs/aso-naming-strategy.md` §14.
+
+**Audit access limitation (Observed):** Appeeky's direct **ASO Audit /
+Opportunities / rank-tracking** tools **cannot run on TrueRise yet** - the
+manual app entry is "Not yet live," so those tools stay locked until the App
+Store listing is published. Pre-launch research therefore relied on Appeeky's
+keyword and competitor explorers, not on a TrueRise-specific audit.
+
+### 15.1 Competitor snapshots (Appeeky, 2026-06-15)
+
+Keyword ranks are Appeeky's tracked positions for the listed terms; ratings /
+review counts are Appeeky-reported (third-party, not a direct store read).
+
+| App | `rising sign` | `birth time` | `birth time finder` | Rating / reviews (approx) |
+|---|---|---|---|---|
+| CHANI | - | #7 | #18 | ~4.9 stars / 54.6k |
+| Co-Star | #1 | - | - | ~4.8 stars / 205k |
+| Nebula | #3 | #21 | #33 | ~4.6 stars / 170k |
+| The Pattern | #4 | #10 | #13 | ~3.9 stars / 13.4k |
+| TimePassages | #5 | #2 | #8 | ~4.8 stars / 43.6k |
+| AstroSage | #12 | - | - | ~4.6 stars / 6.8k |
+
+**Read (Inference):** the high-intent astrology terms are held by incumbents
+with **tens to hundreds of thousands of reviews** (Co-Star ~205k, Nebula
+~170k). TrueRise launches with **zero reviews**, so a head term like `rising
+sign` is not immediately winnable on ranking - it is conversion / long-tail
+surface at launch. TimePassages shows `birth time` (#2) and `birth time finder`
+(#8) are reachable for a focused app, which supports keeping the birth-time
+descriptor in the title.
+
+### 15.2 Keyword findings (Appeeky, 2026-06-15)
+
+Popularity and difficulty are Appeeky's 0-100 scores; "In Name" = listings with
+the exact phrase in their app name, out of the top 50.
+
+| Term | Popularity | Difficulty | In Name | Note |
+|---|---|---|---|---|
+| `birth time` | 34 (low) | 29 (easy) | 1/50 | total results 171; noisy - pregnancy / labor / time-clock results |
+| `birth time finder` | 6 (very low) | 41 (competitive) | 0/50 | noisy |
+| `rectify birth time` | 6 (very low) | 27 (easy) | 0/50 | ownable niche term |
+| `birth time rectification` | 6 (very low) | 52 (competitive) | 0/50 | - |
+| `rising sign` | 55 (medium) | 53 (competitive) | 0/50 | high-intent astrology term, but difficult for a new app with zero reviews |
+
+**Read (Inference):** the `rectify` / `rectification` niche (very low
+popularity, low-to-mid difficulty, 0/50 in-name) remains **ownable** and
+uncontested by name - consistent with §6.1. `rising sign` carries the volume
+(popularity 55) but its difficulty (53) plus the zero-review launch posture
+confirms it is a conversion / long-tail play, not a day-one ranking target.
+
+### 15.3 Appeeky subscription recommendation
+
+- **Now:** export the current Appeeky values (the snapshots above) and
+  **cancel** the subscription - the direct audit tools are locked until the
+  listing is live, so the monthly cost has no further pre-launch return.
+- **At live launch:** **resubscribe for 1-2 months** to run the ASO Audit,
+  Opportunities, and rank-tracking tools against the live TrueRise listing.
+- **After the listing is live, track:** `rectify birth time`, `birth time
+  finder`, `birth time rectification`, `rising sign`, `ascendant`.
