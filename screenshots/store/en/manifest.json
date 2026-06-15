@@ -18,7 +18,10 @@
   "demoMode": true,
   "network": "none (demo mode is fully offline; no network calls, no HTTP)",
   "captionsBakedIn": false,
-  "captionPlanSource": "docs/store-listing-en.md §5 (marketing captions are intended overlays to be composited by the owner; they are NOT baked into these raw frames).",
+  "captionPlanSource": "HISTORICAL (pre-Appeeky) intended overlays. These raw frames pre-date the post-Appeeky 5-frame story order, so the per-frame intendedCaption values below are reference/historical, NOT the final captions; the current caption plan is in currentCaptionPlanSource. Captions are owner-composited overlays, NOT baked into these raw frames.",
+  "captionPlanStatus": "pre_appeeky_reference_raw_captures",
+  "currentCaptionPlanSource": "docs/store-listing-en.md §5 / docs/store-listing-tier1-localized.md §3 (post-Appeeky 5-frame plan)",
+  "currentCaptionPlanRequiresNewFrames": true,
   "refresh": {
     "date": "2026-06-03",
     "model": "claude-opus-4-8",

@@ -3,9 +3,19 @@
 **Impl Run A.5 · 2026-06-02 · model `claude-opus-4-8`.**
 
 Owner-independent **P0** store screenshot set, captured from the **shipped
-Flutter UI** (real widgets, routes, and state — not marketing mockups). These
-satisfy the screenshot gate in `docs/store-submission-readiness.md` and the
-4-frame storyboard in `docs/store-listing-en.md` §5.
+Flutter UI** (real widgets, routes, and state — not marketing mockups). They
+were captured for the screenshot gate in `docs/store-submission-readiness.md`.
+
+> **Caption-plan status (updated 2026-06-15).** These are **pre-Appeeky raw /
+> reference captures**, not the current final caption order. The current caption
+> plan is the **post-Appeeky five-frame** story order (problem hook -> life
+> events -> result -> evidence -> privacy / offline demo) in
+> `docs/store-listing-en.md` §5 and `docs/aso-naming-strategy.md` §14.5. The
+> frames below cover **result / evidence / privacy / share**; they do **not**
+> yet include a problem-hook frame or a life-events input frame, so final
+> compositing will likely need those new frames recaptured/added. The old
+> **share** frame is now optional/bonus, not a required frame. Treat the captions
+> in the frames table below as the historical (pre-Appeeky) intended overlays.
 
 See `manifest.json` for the machine-readable version of everything below.
 
@@ -27,17 +37,21 @@ See `manifest.json` for the machine-readable version of everything below.
 | 4 | `04-share-result.png` | Result (`/calc/result/:id`) | The shipped **Share result** button in context (see share-sheet note below). |
 | 5 | `05-privacy-policy.png` | Privacy (`/settings/privacy`) | **Bonus.** In-app privacy disclosure: on-device storage, offline demo, live-mode HTTPS, no accounts. |
 
-Frames 1–4 are the **required** set. Frame 5 is an optional bonus that
-reinforces the privacy story; it is not one of the four mandated frames.
+In the original pre-Appeeky plan, the first four frames were the required set and
+frame 5 an optional bonus that reinforced the privacy story. Under the current
+five-frame plan (see the caption-plan status note above), this raw set no longer
+maps one-to-one to the required frames: the problem-hook and life-events frames
+are not captured yet, and the share frame is now optional/bonus.
 
 > **Frames 3 and 5 refreshed (2026-06-03).** Both PNGs were re-captured from the
 > current simplified **Settings** and in-app **Privacy** screens, using the same
 > throwaway `/tmp` widget-test harness, iPhone 6.7" geometry, and offline
 > Demo-mode capture method as the rest of the set.
 
-The marketing captions in `docs/store-listing-en.md` §5 are **intended
-overlays** to be composited by the owner — they are **not** baked into these raw
-frames.
+The captions shown in the frames table above are the **historical (pre-Appeeky)
+intended overlays**; the current overlay copy is the post-Appeeky five-frame plan
+in `docs/store-listing-en.md` §5. Either way, overlays are composited by the
+owner - they are **not** baked into these raw frames.
 
 ## Frame 4 — share: exact text payload (privacy-safe)
 
@@ -59,7 +73,7 @@ My TrueRise rectification result:
 Calculated with TrueRise — birth-time rectification
 ```
 
-This matches the "share without oversharing" / no-share-card guardrail in
+This matches the "share without oversharing" / privacy-safe-sharing guardrail in
 `docs/store-listing-en.md` §6 and `docs/feature-gap-analysis.md`.
 
 ## How they were captured

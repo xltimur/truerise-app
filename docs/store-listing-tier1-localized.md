@@ -86,10 +86,11 @@ approvals are asserted anywhere in this document.
   or first screenshot (Apple Guideline 4.3(b)).
 - **No deterministic / no-PII rules carry over.** Always "most likely" + a
   confidence/probability score; never a guaranteed or exact result. Sharing copy
-  describes the shipped **privacy-safe text share only** (time + rising +
-  confidence + brand, no birth data); do **not** imply an image/share-card —
-  that is unbuilt (V1.5). No accounts, analytics, ads, IAP, or paywalls are
-  implied anywhere.
+  describes the shipped **privacy-safe text and image share** (time + rising +
+  confidence + brand, no birth data) - both shipped share surfaces are
+  privacy-safe. Do **not** imply **direct Instagram Stories** posting - that is
+  out of scope until a Meta/Facebook App ID exists. No accounts, analytics, ads,
+  IAP, or paywalls are implied anywhere.
 - **Register / orthography per locale:** de uses informal **du**; es uses
   inverted **¿ ¡**; pt-BR uses **horário** (not *hora*) and **compartilhar**
   (not *partilhar*) (`docs/l10n-strategy.md` §8).
@@ -142,23 +143,29 @@ PRIVACY & DATA: on-device storage; no analytics/crash/ads/tracking SDKs; only th
 
 ## 3. Screenshot caption localization plan
 
-No images are created here. These adapt the four English captions
-(`docs/store-listing-en.md` §5) for the future capture run. Frame order and the
-"real shipped UI only" rule are unchanged; **Frame 4 must show the text share,
-not a mocked share-card** (unbuilt). Captions are short by design but are **not
-hard-limited** — keep them on one line at the chosen overlay size and re-check
+No images are created here. These adapt the **five** English captions
+(`docs/store-listing-en.md` §5, post-Appeeky story order: problem hook -> life
+events -> result -> evidence -> privacy / offline demo) for the future capture
+run. Frame order and the "real shipped UI only" rule follow the English plan. An
+optional **bonus share frame** may use either shipped privacy-safe share surface
+(the text share or the shipped share-card image) - both shipped share surfaces
+are privacy-safe; only **direct Instagram Stories** posting stays out of scope
+(no Meta/Facebook App ID yet). Captions are short by design but are **not
+hard-limited** - keep them on one line at the chosen overlay size and re-check
 wrap per device. All `[PROPOSED]`, pending native review.
 
 | # | Frame | English (source) | de | fr | es | pt-BR |
 |---|---|---|---|---|---|---|
-| 1 | The answer | Find your real birth time — with an honest confidence score. | Finde deine echte Geburtszeit – mit einem ehrlichen Wahrscheinlichkeitswert. | Trouvez votre vraie heure de naissance – avec un niveau de confiance honnête. | Encuentra tu verdadera hora de nacimiento, con un nivel de confianza honesto. | Encontre seu verdadeiro horário de nascimento – com um nível de confiança honesto. |
-| 2 | The evidence | See why — from the life events you actually remember. | Sieh warum – aus den Lebensereignissen, an die du dich wirklich erinnerst. | Voyez pourquoi – à partir des événements de vie dont vous vous souvenez vraiment. | Mira por qué, a partir de los eventos de vida que realmente recuerdas. | Veja por quê – a partir dos eventos de vida que você realmente lembra. |
-| 3 | Private & offline | Private by default. Try it free, offline, in Demo mode. | Privat von Anfang an. Teste kostenlos, offline, im Demo-Modus. | Privé par défaut. Essayez gratuitement, hors ligne, en mode démo. | Privado por defecto. Pruébalo gratis, sin conexión, en modo demo. | Privado por padrão. Experimente grátis, off-line, no modo demo. |
-| 4 | Share the result | Share your result — never your birth data. | Teile dein Ergebnis – nie deine Geburtsdaten. | Partagez votre résultat – jamais vos données de naissance. | Comparte tu resultado, nunca tus datos de nacimiento. | Compartilhe seu resultado – nunca seus dados de nascimento. |
+| 1 | Problem hook | Don't know your exact birth time? | Du kennst deine genaue Geburtszeit nicht? | Vous ne connaissez pas votre heure de naissance exacte ? | ¿No sabes tu hora de nacimiento exacta? | Não sabe seu horário de nascimento exato? |
+| 2 | Life events | Add the life events you remember. | Füge die Lebensereignisse hinzu, an die du dich erinnerst. | Ajoutez les événements de vie dont vous vous souvenez. | Añade los eventos de vida que recuerdas. | Adicione os eventos de vida que você lembra. |
+| 3 | The result | Estimate your birth time and rising sign. | Schätze deine Geburtszeit und deinen Aszendenten. | Estimez votre heure de naissance et votre ascendant. | Estima tu hora de nacimiento y tu ascendente. | Estime seu horário de nascimento e seu ascendente. |
+| 4 | The evidence | See the evidence behind every candidate. | Sieh die Hinweise hinter jeder Kandidatenzeit. | Voyez les indices derrière chaque heure candidate. | Mira los indicios detrás de cada hora candidata. | Veja os indícios por trás de cada horário candidato. |
+| 5 | Private & offline demo | Private by default. Try it free, offline. | Privat von Anfang an. Teste kostenlos, offline. | Privé par défaut. Essayez gratuitement, hors ligne. | Privado por defecto. Pruébalo gratis, sin conexión. | Privado por padrão. Experimente grátis, off-line. |
 
-Caption-length caution: German caption 1 is the longest line — verify it does
-not wrap awkwardly over the result card at the chosen type size; if it does,
-fall back to `Finde deine echte Geburtszeit – mit ehrlichem Wahrscheinlichkeitswert.`
+Caption-length caution: the German lines run longest - verify caption 2
+(`Füge die Lebensereignisse hinzu, an die du dich erinnerst.`) and caption 4 do
+not wrap awkwardly over the underlying screen at the chosen type size, and
+shorten per native review if they do.
 
 ---
 

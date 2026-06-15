@@ -93,12 +93,14 @@ decision remain owner work (see the checklist at the end).
      `com.rectify.rectify` until explicit owner approval.
   4. **Release signing** — Android upload keystore + Play App Signing; iOS
      distribution profile.
-  5. **Screenshots** — raw captures are already in the repo
-     (`screenshots/store/{en,de,fr,es,pt-BR}/`, 5 frames per locale, plus
-     manifest/README), taken per the §5 copy plan from the post-A.1/A.3 build.
-     Remaining owner/design work: device-frame + caption compositing, any
-     additional device sizes the consoles require, console upload, and
-     owner/design review.
+  5. **Screenshots** — pre-Appeeky raw/reference captures already exist in the
+     repo (`screenshots/store/{en,de,fr,es,pt-BR}/`, 5 raw frames per locale,
+     plus manifest/README), captured from the post-A.1/A.3 build **before** the
+     §5 five-frame story order. They cover result/evidence/privacy/share;
+     adopting the current §5 plan likely requires recapturing/adding a
+     problem-hook frame and a life-events input frame. Remaining owner/design
+     work: those new frames, device-frame + caption compositing, any additional
+     device sizes the consoles require, console upload, and owner/design review.
   6. **Trademark clearance + App Store name availability** for “TrueRise.”
   7. **Console character re-count**, **category confirmation**, **age rating**
      consistent with the 18+ gate, **Apple privacy labels + Play Data Safety**
@@ -350,32 +352,47 @@ Apple 4.3(b) and misleading-claim risk and pull the wrong audience
 
 ---
 
-## 5. Screenshot copy plan *(executed since: raw captures live in `screenshots/store/{en,de,fr,es,pt-BR}/`; compositing + console upload remain)*
+## 5. Screenshot copy plan (post-Appeeky 5-frame story order)
 
-Capture from a **post-A.1/A.3 build** (TrueRise name + production icon, no
-“Rectify” leak). Four frames, ordered answer → trust → privacy → spread; every
-frame must show **real, shipped UI** (`docs/store-submission-readiness.md` §8.2).
-Capture in both 12h and 24h time formats.
+> **Updated 2026-06-15 (Appeeky audit).** The current caption plan is **five
+> frames**, ordered **problem hook -> life events -> result -> evidence ->
+> privacy / offline demo** (`docs/aso-naming-strategy.md` §14.5). It replaces the
+> earlier four-frame answer -> evidence -> privacy -> share order. Every frame
+> must still show **real, shipped UI** (`docs/store-submission-readiness.md`
+> §8.2) and follow the §6 guardrails: use `estimate`, never `exact` or
+> `guaranteed` as a *result* claim (`exact` is allowed only in the frame-1 *user
+> problem* statement). Capture from a **post-A.1/A.3 build** (TrueRise name +
+> production icon, no "Rectify" leak), in both 12h and 24h time formats.
 
 | # | Frame (shipped UI) | Overlay / caption text |
 |---|---|---|
-| 1 | **The answer** — hero result card: estimated time + “X Rising” + confidence bar | `Find your real birth time — with an honest confidence score.` |
-| 2 | **The evidence** — “See how we got this” per-event breakdown + alternate candidates | `See why — from the life events you actually remember.` |
-| 3 | **Private & offline** — Demo pill + Settings privacy posture (on-device, Delete all data, demo = no network) | `Private by default. Try it free, offline, in Demo mode.` |
-| 4 | **Share the result** — the Share button + OS share sheet carrying the privacy-safe **text** | `Share your result — never your birth data.` |
+| 1 | **Problem hook** - the unknown-birth-time entry point (intro / birth-window input that frames the problem) | `Don't know your exact birth time?` |
+| 2 | **Life events** - the dated life-events input / list screen | `Add the life events you remember.` |
+| 3 | **The result** - hero result card: estimated time + "X Rising" + confidence bar | `Estimate your birth time and rising sign.` |
+| 4 | **The evidence** - "See how we got this" per-event breakdown + alternate candidates | `See the evidence behind every candidate.` |
+| 5 | **Private & offline demo** - Demo pill + Settings / privacy posture (on-device, Delete all data, demo = no network) | `Private by default. Try it free, offline.` |
 
-> **Frame 4 may show either shipped share surface** — the text share (the
-> `ShareCopyBuilder` line: time + rising + confidence + "Calculated with
-> TrueRise" + the public link) or the shipped privacy-safe **share-card image**
-> (the `StoryCardRenderer` PNG: brand, time, rising when present, confidence,
-> tagline; shared via `share_plus`, updated 2026-06-12). Show only real,
-> shipped UI: do not mock up direct Instagram Stories posting (out of scope
-> until a Meta/Facebook App ID exists) or any content beyond the privacy-safe
-> allow-list. Do not lead any frame with zodiac wheels, horoscopes, or mystic
-> imagery.
+> **Status of the existing raw captures.** The PNGs already in
+> `screenshots/store/{en,de,fr,es,pt-BR}/` are still useful **raw / reference**
+> captures, but they were taken **before** this post-Appeeky story order. They
+> cover **result, evidence, privacy, and share**; they do **not** yet include a
+> problem-hook frame or a life-events input frame. Adopting the five-frame plan
+> above therefore likely requires **recapturing / adding** a problem-hook frame
+> and a life-events input frame; do not treat the existing PNGs as already
+> satisfying this final plan.
 
-Optional later: a Play **feature graphic** (1024×500) using the same
-answer-first message; not required to submit.
+> **Share frame is now optional / bonus** (not one of the required five). If a
+> share frame is still composited as a bonus, it may show either shipped
+> privacy-safe share surface: the `ShareCopyBuilder` text line (time + rising +
+> confidence + "Calculated with TrueRise" + the public link) or the shipped
+> privacy-safe **share-card image** (the `StoryCardRenderer` PNG: brand, time,
+> rising when present, confidence, tagline; shared via `share_plus`, updated
+> 2026-06-12). Both shipped share surfaces are privacy-safe; **direct Instagram
+> Stories** posting stays out of scope until a Meta/Facebook App ID exists. Do
+> not lead any frame with zodiac wheels, horoscopes, or mystic imagery.
+
+Optional later: a Play **feature graphic** (1024x500) using the same
+problem-first message; not required to submit.
 
 ---
 
@@ -422,9 +439,11 @@ answer-first message; not required to submit.
       `docs/bundle-id-recommendation.md` — immutable after).
 - [ ] **Release signing** configured (Android upload keystore + Play App Signing;
       iOS distribution profile); release no longer debug-signed.
-- [ ] **Screenshots** — raw captures done per §5
-      (`screenshots/store/{en,de,fr,es,pt-BR}/`, 5 frames per locale).
-      Remaining: device-frame/caption compositing, other device sizes if the
+- [ ] **Screenshots** — pre-Appeeky raw/reference captures exist
+      (`screenshots/store/{en,de,fr,es,pt-BR}/`, 5 raw frames per locale), taken
+      before the §5 five-frame story order; the current §5 plan likely needs new
+      problem-hook and life-events frames. Remaining: any recaptured/added
+      frames, device-frame/caption compositing, other device sizes if the
       consoles require them, console upload, owner/design review.
 - [ ] **Trademark clearance + App Store name availability** for “TrueRise”
       confirmed.
@@ -453,15 +472,16 @@ answer-first message; not required to submit.
   superseded by the 2026-06-15 Appeeky update - primary Lifestyle; see §1, §3.4,
   §7 above and `docs/aso-naming-strategy.md` §14.4.)*
 - `docs/store-submission-readiness.md` (Run 6) — P0-8 scope; English Tier 0
-  package; 4-frame screenshot storyboard; reviewer-note language. **Closed here
-  for the owner-independent part.**
+  package; the Run 6 four-frame screenshot storyboard (since superseded by the
+  §5 five-frame plan); reviewer-note language. **Closed here for the
+  owner-independent part.**
 - `docs/competitor-aso-research.md` (Run 2) — Vedic Samay = Utilities precedent;
   Apple 4.3(b) risk; “is it accurate, can you show me why?” axis. **Preserved.**
 - `docs/feature-gap-analysis.md` (Run 4) — text share is PII-free and shipped;
-  demo is offline. **Preserved.** *(The Run 4 "image/share-card is unbuilt
-  V1.5" conclusion is superseded as of 2026-06-12: the privacy-safe share-card
-  image has shipped in-repo — see the §5/§6 notes above and the status note in
-  `docs/feature-gap-analysis.md`.)*
+  demo is offline. **Preserved.** *(The Run 4 conclusion that the image
+  share-card was not yet built - deferred to V1.5 - is superseded as of
+  2026-06-12: the privacy-safe share-card image has shipped in-repo; see the
+  §5/§6 notes above and the status note in `docs/feature-gap-analysis.md`.)*
 - `docs/privacy-policy.md`, `docs/apple-privacy-labels.md`,
   `docs/play-data-safety.md` (Run A.2) — authoritative data posture used in the
   reviewer notes (on-device storage; offline demo; live HTTPS transmission of

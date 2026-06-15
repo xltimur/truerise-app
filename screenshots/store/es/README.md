@@ -8,6 +8,20 @@ offline Demo mode — not marketing mockups.
 
 See `manifest.json` for the machine-readable details.
 
+> **Caption-plan status (updated 2026-06-15).** These are **pre-Appeeky raw /
+> reference captures**, not the current final caption order. The current caption
+> plan is the **post-Appeeky five-frame** story order (problem hook -> life
+> events -> result -> evidence -> privacy / offline demo) in
+> `docs/store-listing-tier1-localized.md` §3, `docs/store-listing-en.md` §5, and
+> `docs/aso-naming-strategy.md` §14.5. The frames below cover
+> **result / evidence / privacy / share**; they do **not** yet include a
+> problem-hook frame or a life-events input frame, so final compositing will
+> likely need those new frames recaptured/added. The old **share** frame is now
+> optional/bonus, not a required frame. The per-frame `intendedCaption` values in
+> `manifest.json` are the historical (pre-Appeeky) overlay drafts; the current
+> overlay copy is the five-frame plan in `docs/store-listing-tier1-localized.md`
+> §3.
+
 ## Device / format
 
 - **iPhone 6.7" / Pro Max portrait** — **1290 x 2796 px** (logical 430 x 932 @
@@ -24,7 +38,11 @@ See `manifest.json` for the machine-readable details.
 | 4 | `04-share-result.png` | Result (`/calc/result/:id`) | The shipped `Compartir el resultado` affordance in context. |
 | 5 | `05-privacy-policy.png` | Privacy (`/settings/privacy`) | Bonus privacy frame: on-device storage, offline demo, live-mode HTTPS. |
 
-Frames 1-4 are the required set. Frame 5 is an optional bonus privacy frame.
+In the original pre-Appeeky plan, the first four frames were the required set and
+frame 5 an optional bonus privacy frame. Under the current five-frame plan (see
+the caption-plan status note above), this raw set no longer maps one-to-one to
+the required frames: the problem-hook and life-events frames are not captured
+yet, and the share frame is now optional/bonus.
 
 > **Frames 3 and 5 refreshed (2026-06-03).** Both PNGs were re-captured from the
 > current simplified **Settings** and in-app **Privacy** screens, using the same
