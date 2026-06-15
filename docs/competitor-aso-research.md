@@ -621,3 +621,41 @@ confirms it is a conversion / long-tail play, not a day-one ranking target.
   Opportunities, and rank-tracking tools against the live TrueRise listing.
 - **After the listing is live, track:** `rectify birth time`, `birth time
   finder`, `birth time rectification`, `rising sign`, `ascendant`.
+
+### 15.4 Pre-launch recheck (2026-06-15)
+
+A same-day recheck of the Appeeky entry for TrueRise re-confirmed the Sec. 15
+audit-access limitation: the direct ASO tools are still locked because the app
+is not yet published. This is a status re-confirmation only; it changes no
+metadata, keyword, or category recommendation.
+
+- **App status: still "Not yet live."** The manual TrueRise entry remains in the
+  "Not yet live" state, so the direct ASO Audit / Opportunities / rank-tracking
+  tools stay locked (unchanged from the Sec. 15 head note).
+- **Opportunities is not yet TrueRise-specific.** The Opportunities view can show
+  a breadcrumb / header reading `TRUERISE: BIRTH TIME FINDER`, but the underlying
+  table still returned **stale Vedic / Samay rows** (e.g. `samaysheet`, `samaya`,
+  `vedic astrology`). Those rows are **not valid TrueRise Opportunities** - they
+  are leftover / source-app data - and **must not** drive TrueRise metadata,
+  keywords, or category. A correct TrueRise-specific Opportunities pull only
+  becomes possible once the listing is live (the Sec. 2 / Sec. 12.4 gap stays
+  open until then; the live pull is the post-launch runbook in
+  `docs/post-launch-aso-plan.md` Sec. 2).
+- **Keyword Intelligence / rankings: still locked.** TrueRise-specific keyword
+  intelligence and rank data remain unavailable until the App Store listing is
+  live.
+- **Current Tracking: 0/100.** No terms are tracked yet for the (not-live)
+  TrueRise entry.
+- **Category field shows "Utilities" - treat as stale, NOT a recommendation
+  reversal.** Appeeky still displayed TrueRise's category as **Utilities**. This
+  is **stale third-party / source metadata**, not a category decision: the repo
+  recommendation is unchanged and remains **Lifestyle** for both the App Store
+  and Google Play (Sec. 10 / Sec. 12.1 keep the Utilities/Reference rationale
+  only as historical 4.3(b) context; current field: `docs/store-listing-en.md`
+  Sec. 1 / `docs/aso-naming-strategy.md` Sec. 14.4). Do not change the category
+  recommendation on the strength of this stale Utilities value.
+
+**No metadata change.** This recheck does not alter the title, subtitle, keyword
+field, store copy, or category recommendation in any listing doc; it only records
+that TrueRise is still pre-live and that the Opportunities / category values
+currently surfaced are stale and must not be treated as TrueRise signal.

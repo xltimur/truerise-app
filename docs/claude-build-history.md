@@ -5973,3 +5973,31 @@ passed auth — it reached business logic, not 401/403 — so the existing
   changes no P0 blocker status. Profiles cover the default iPhone 6.7",
   Apple iPhone 6.5", and a Google Play phone size; other device classes
   and any real asset generation remain out of scope.
+
+### 2026-06-15 - Appeeky pre-launch recheck annotation (docs-only)
+
+- **Stage:** docs-only sync recording a 2026-06-15 Appeeky recheck of the
+  (still not-live) TrueRise entry. No product code, tests, or assets were
+  changed, and no metadata, keyword, or category recommendation changed.
+- **Session:** Claude Code (Opus 4.8). Session id not exposed in-session.
+- **Artifacts:** `docs/competitor-aso-research.md` (new Sec. 15.4 recheck
+  subsection), `docs/post-launch-aso-plan.md` (Sec. 1 status bullet + Sec. 2.1
+  precondition note), `docs/publication-readiness-current-status.md` (P0-10 row
+  + Sec. 5a-6 stale-Utilities note), and this build-history entry.
+- **Facts recorded:** TrueRise still appears in Appeeky as "Not yet live", so the
+  direct ASO Audit / Opportunities / rank-tracking tools stay locked; Keyword
+  Intelligence / rankings remain locked until the App Store listing is live;
+  Current Tracking was 0/100. The Opportunities view can show a breadcrumb /
+  header reading `TRUERISE: BIRTH TIME FINDER`, but the table still returned
+  stale Vedic / Samay rows (`samaysheet`, `samaya`, `vedic astrology`) that are
+  NOT valid TrueRise Opportunities and must not drive metadata. Appeeky still
+  showed the TrueRise category as Utilities; that is stale source metadata, not a
+  recommendation reversal - the repo recommendation remains Lifestyle for the App
+  Store and Google Play.
+- **Verification:** `git status` / `git diff` confirm docs-only changes to the
+  four files above; ASCII-only additions; no live rank / install / rating claim
+  was added. No Flutter build/test was required or run (docs-only).
+- **Limit/quota:** none hit.
+- **Residuals:** no change to any listing string or category recommendation; the
+  real TrueRise-specific Appeeky Audit / Opportunities / rank pull remains an
+  after-live action (`docs/post-launch-aso-plan.md` Sec. 2).

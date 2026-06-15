@@ -40,6 +40,18 @@ listing is live - it is not claimed as done.
   (`docs/competitor-aso-research.md` Sec. 15.3) are account/billing decisions made
   in the Appeeky account by the owner. This repo does not perform, automate, or
   assert them.
+- **2026-06-15 recheck - still pre-live; surfaced values are stale.** A same-day
+  recheck (`docs/competitor-aso-research.md` Sec. 15.4) re-confirmed TrueRise is
+  still "Not yet live" in Appeeky. The Opportunities view can show a breadcrumb /
+  header reading `TRUERISE: BIRTH TIME FINDER`, but that header is **not** proof
+  of valid TrueRise Opportunities - the underlying table still returned stale
+  Vedic / Samay rows (`samaysheet`, `samaya`, `vedic astrology`) that are not
+  TrueRise signal and must not drive metadata. Current Tracking was **0/100**, and
+  Keyword Intelligence / rankings stay locked until the listing is live. The
+  category field still showed **Utilities**, which is stale source metadata, not a
+  reversal of the **Lifestyle** recommendation (`docs/store-listing-en.md` Sec. 1).
+  The real Appeeky Audit / Opportunities / rank pull therefore remains an
+  **after-live** action (Sec. 2), not something to run or trust pre-live.
 
 **What is preparable now (and is done in this doc):** the after-live runbook
 (Sec. 2), the tracking term set (Sec. 3), the experimentation matrix with honest
@@ -64,6 +76,14 @@ account.
 3. **[owner/billing]** Add/confirm the live TrueRise entry in Appeeky so the
    manual app entry flips from "Not yet live" to the live listing, which unlocks
    the direct tools (`docs/competitor-aso-research.md` Sec. 15).
+
+> **Note (2026-06-15 recheck):** until that "Not yet live" -> live flip happens,
+> an Opportunities breadcrumb / header that reads `TRUERISE: BIRTH TIME FINDER`
+> is **not** proof the tool is returning valid TrueRise Opportunities - pre-live
+> it still returned stale Vedic / Samay rows and Current Tracking was 0/100
+> (Sec. 1; `docs/competitor-aso-research.md` Sec. 15.4). Only trust the
+> Opportunities / rank data captured **after** the entry is live; this rerun is
+> an after-live action only.
 
 ### 2.2 Run the audit + opportunities
 
