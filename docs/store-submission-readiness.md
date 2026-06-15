@@ -674,8 +674,12 @@ Owner gates                  ──►  Console finalization        ──►  I
    console char re-count (post-trademark), screenshot compositing, other
    device sizes, and console upload. **[VERIFIED in-repo / console
    remainder]**
-4. **Privacy/Data-Safety forms (owner + Legal).** Author Apple labels + Play
-   Data Safety to match Sec. 9.3. **[PROPOSED]**
+4. **Privacy/Data-Safety forms (owner + Legal).** The Apple privacy labels +
+   Play Data Safety drafts are authored in-repo
+   (`docs/apple-privacy-labels.md`, `docs/play-data-safety.md`, matching
+   Sec. 9.3). Remaining stage: owner/legal sign-off + entering/submitting the
+   forms in App Store Connect / Play Console. **[VERIFIED in-repo /
+   owner-gated remainder]**
 5. **Internal testing (engineering).** TestFlight internal + Play
    internal-testing track; run Play pre-launch report in **Demo mode**;
    on-device smoke on a real iOS + Android device (deferred in Phase 8).
@@ -692,10 +696,12 @@ Owner gates                  ──►  Console finalization        ──►  I
 
 - **Blocking (must precede submit):** bundle-ID approval, signing material
   (upload keystore + iOS distribution), hosted privacy URL, privacy/
-  Data-Safety forms, console metadata re-count, screenshot compositing +
-  upload, demo/review key, real-device smoke.
+  Data-Safety console entry + sign-off (drafts already authored in-repo),
+  console metadata re-count, screenshot compositing + upload, demo/review
+  key, real-device smoke.
 - **Parallel (independent owner tracks):** privacy-URL hosting,
-  privacy/Data-Safety forms, demo-key rotation, screenshot compositing.
+  privacy/Data-Safety console entry + legal sign-off, demo-key rotation,
+  screenshot compositing.
 - **Off critical path:** analytics (G13). The share-card image (G9) has
   since shipped in-repo (2026-06-12), so it is no longer pending work.
   Localized **publication** is owner/review gated (native-speaker review +
