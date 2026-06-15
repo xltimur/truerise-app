@@ -20,6 +20,12 @@ terminology as `docs/l10n-strategy.md` §7–§8.
 It does **not** create images, screenshots, ARB strings, or any app/config
 change. It is documentation only.
 
+> **Category alignment (2026-06-15).** The category guidance in this document
+> was aligned to the post-Appeeky decision: the current recommendation is
+> **Lifestyle** on both the App Store and Google Play (see §0 gate 6 and the
+> per-locale Google Play packages). The earlier category guidance is
+> superseded; the honest-confidence copy discipline is unchanged.
+
 ---
 
 ## 0. How to use this document (status & gates)
@@ -46,9 +52,10 @@ the listing owner must clear every gate below:
 5. **Hosted URLs.** Privacy-policy and support URLs are owner-supplied and must
    be live and localized (or at least language-appropriate) before submission.
    Placeholders read `[OWNER: hosted URL]`.
-6. **Final category / age-rating owner decision.** iOS category (Utilities, with
-   optional secondary Reference), Play category (Tools), and the 18+ content
-   rating are owner decisions; this document recommends but does not set them.
+6. **Final category / age-rating owner decision.** The current recommendation
+   (post-Appeeky, 2026-06-15) is **Lifestyle** on both the App Store and Google
+   Play; the in-app 18+ content rating stays in place. Final category and age
+   rating remain owner decisions; this document recommends but does not set them.
 7. **Screenshot captions are drafts (§3).** No image is produced here. Caption
    translations need the same native review and must be baked into the capture
    run, not this file.
@@ -123,7 +130,7 @@ AGE: the app enforces an in-app 18+ birth-date gate; please set the App Store ag
 ### 2.2 Google Play — canonical review notes (English, all locales)
 
 ```
-TrueRise is a Tools-category utility that estimates an unknown birth time from user-entered life events, returning candidate times with a confidence score. No deterministic, predictive, medical, legal, or financial claims are made. This is a localized listing (de/fr/es/pt-BR) of the same app; only store metadata is translated.
+TrueRise is a focused Lifestyle utility that estimates an unknown birth time from user-entered life events, returning candidate times with a confidence score. No deterministic, predictive, medical, legal, or financial claims are made. This is a localized listing (de/fr/es/pt-BR) of the same app; only store metadata is translated.
 
 TEST WITHOUT LIVE CREDITS OR PAYMENT: Settings > Demo mode runs the complete flow OFFLINE (no network, no key, no purchase); demo results are labeled "Demo — not a real calculation." The Play pre-launch report can be run in Demo mode.
 
@@ -266,8 +273,8 @@ Schätze deine unbekannte Geburtszeit aus Lebensereignissen. Privat, lokal.
 **Full description — limit 4000** (first ~250 chars are the hook): use the §4.1
 App Store full description verbatim (2376).
 
-**Category / tags:** Category **Tools**; closest tags *Utilities / Tools*,
-*Calculator*; at most one astrology tag, kept secondary. `[PROPOSED]`
+**Category / tags:** Category **Lifestyle**; closest supporting tags
+*Lifestyle*, *Calculator*; at most one astrology tag, kept secondary. `[PROPOSED]`
 
 ### 4.3 ASO rationale & query mapping (de)
 
@@ -399,7 +406,7 @@ Estimez votre heure de naissance inconnue à partir de vos événements de vie.
 **Full description — limit 4000:** use the §5.1 App Store full description
 verbatim (2534).
 
-**Category / tags:** Category **Tools**; tags *Utilities / Tools*, *Calculator*;
+**Category / tags:** Category **Lifestyle**; tags *Lifestyle*, *Calculator*;
 at most one astrology tag, secondary. `[PROPOSED]`
 
 ### 5.3 ASO rationale & query mapping (fr)
@@ -523,7 +530,7 @@ Estima tu hora de nacimiento desconocida a partir de tus eventos de vida.
 **Full description — limit 4000:** use the §6.1 App Store full description
 verbatim (2299).
 
-**Category / tags:** Category **Tools**; tags *Utilities / Tools*, *Calculator*;
+**Category / tags:** Category **Lifestyle**; tags *Lifestyle*, *Calculator*;
 at most one astrology tag, secondary. `[PROPOSED]`
 
 ### 6.3 ASO rationale & query mapping (es)
@@ -655,7 +662,7 @@ Estime seu horário de nascimento desconhecido pelos eventos da sua vida.
 **Full description — limit 4000:** use the §7.1 App Store full description
 verbatim (2397).
 
-**Category / tags:** Category **Tools**; tags *Utilities / Tools*, *Calculator*;
+**Category / tags:** Category **Lifestyle**; tags *Lifestyle*, *Calculator*;
 at most one astrology tag, secondary. `[PROPOSED]`
 
 ### 7.3 ASO rationale & query mapping (pt-BR)
