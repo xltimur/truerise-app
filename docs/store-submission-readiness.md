@@ -857,7 +857,15 @@ closing summary.
 > share_plus" claim and the Run 4 row's "share-card image = V1.5" — `share_plus`
 > is now a dependency and the privacy-safe share-card image (G9) is shipped
 > in-repo; the share rows below describe the text surface only, which still
-> exists alongside the image surface.
+> exists alongside the image surface. Likewise historical (superseded since
+> 2026-06): the `pubspec.yaml` row's "no flutter_localizations" claim and the
+> Run 5 "No l10n pipeline" evidence row - the gen-l10n bundle (`l10n.yaml` +
+> `flutter_localizations` + `generate: true` + `lib/l10n/app_{en,de,es,fr,pt}.arb`
+> + generated `AppLocalizations`) ships in-repo, giving the EN/DE/ES/FR/PT-BR
+> interface-localization base, with manual + automatic (device)
+> interface-language selection added 2026-06-16 (`docs/claude-build-history.md`).
+> Native-speaker review of the localized copy/captions remains an
+> owner/legal/content blocker and is not asserted here.
 > See the status note at the top of this document.
 
 | Claim | Source | Label |
