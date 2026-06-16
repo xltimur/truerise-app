@@ -6075,3 +6075,64 @@ passed auth — it reached business logic, not 401/403 — so the existing
   implemented; a dated current-status banner was added at its top rather than
   rewriting the historical body. (3) Endonym labels are intentionally identical
   across locales; only the section heading and the Auto label are translated.
+
+### 2026-06-16 - Store screenshot pack verification and compositor handoff
+
+- **Stage:** verification-only sweep of the store screenshot pack and the
+  no-write compositor pipeline, to close the local screenshot/compositor
+  readiness point for the App Store / Google Play submission draft. No product
+  code, tests, assets, manifests, or screenshots were changed; this entry is
+  evidence and handoff only.
+- **Session:** Claude Code (Opus 4.8) ran the sweep. Session id not exposed
+  in-session.
+- **Artifacts:** none except this build-history entry. The authoritative
+  screenshot/compositor status remains `docs/publication-readiness-current-status.md`
+  P0-9 / Sec. 5 (reconciled 2026-06-15), the per-locale
+  `screenshots/store/<locale>/README.md` + `manifest.json`, and the caption
+  plan in `docs/store-listing-en.md` Sec. 5 / `docs/store-listing-tier1-localized.md`
+  Sec. 3. This sweep confirmed those are accurate and current; nothing was
+  missing, so no status prose was added or duplicated.
+- **Pack verification - RUN AND PASSED:**
+  - Inventory: all five locales (`en`, `de`, `fr`, `es`, `pt-BR`) each hold the
+    five expected raw frames in canonical order (`01-result-hero`,
+    `02-evidence-breakdown`, `03-privacy-demo-settings`, `04-share-result`,
+    `05-privacy-policy`) plus `manifest.json` + `README.md`; no extra PNGs and no
+    `composited/` directory anywhere (`find screenshots/store -name composited
+    -type d` -> no output).
+  - PNG validity: all 25 PNGs carry a valid PNG signature and decode to
+    1290 x 2796 (iPhone 6.7" portrait), matching each manifest's declared device
+    geometry (`file` + a signature/IHDR check).
+  - `flutter test test/tool/` -> `+141: All tests passed!` (exit 0); includes
+    the manifest inventory guard `store_screenshot_manifest_test.dart` and the
+    full compositor plan/renderer/writer/pipeline/dry-run/write-CLI suite.
+  - `dart run tool/store_screenshot_compositor_dry_run.dart --verbose` -> exit 0;
+    plans 25 composited jobs across the 5 locales, all raw sources present, no
+    composited output exists yet, wrote nothing.
+  - `flutter analyze tool/store_screenshot_compositor_dry_run.dart
+    tool/store_screenshot_compositor_write.dart test/tool/` -> `No issues found!`
+    (exit 0).
+- **Caption-plan finding (expected, documented):** the manifests' per-frame
+  `intendedCaption` values are the HISTORICAL pre-Appeeky overlay drafts and do
+  NOT match the current post-Appeeky five-frame plan (problem hook -> life events
+  -> result -> evidence -> privacy/offline demo; share is now an optional bonus
+  frame). Each manifest self-declares this (`captionPlanStatus`:
+  `pre_appeeky_reference_raw_captures`, `currentCaptionPlanRequiresNewFrames`:
+  true) and points to the current plan in the listing docs. The schema drift
+  between the `en` manifest (`locale`) and the four localized manifests
+  (`storeLocale` + `appLocale`) is intentional and already tolerated by
+  `store_screenshot_manifest_test.dart` (`locale ?? storeLocale`); left as-is.
+- **Handoff conclusion (regenerate vs. usable):** the current PNG pack is a
+  valid, consistent set of RAW / REFERENCE captures usable as a submission DRAFT,
+  but it is NOT the final composited listing set. The compositor plan seam
+  currently sources the historical `intendedCaption`s, so the guarded write CLI
+  must NOT be used to produce final assets as-is. Before generating final
+  composites, the owner/design track must: capture the two missing frames
+  (problem hook, life events), set the current five-frame captions, then run the
+  compositor and complete native-speaker caption review, device-frame/caption
+  compositing, any additional device sizes, and console upload. All remaining
+  items are owner/designer/store-console dependent; no engineering blocker
+  remains on this point.
+- **Limit/quota:** none hit (all offline; no network).
+- **Residuals / open questions:** none new. The compositor stays no-write /
+  in-memory with nothing wired into a rendering pipeline; no final composited or
+  on-disk store PNGs exist in the repo.
