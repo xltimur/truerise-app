@@ -6136,3 +6136,51 @@ passed auth — it reached business logic, not 401/403 — so the existing
 - **Residuals / open questions:** none new. The compositor stays no-write /
   in-memory with nothing wired into a rendering pipeline; no final composited or
   on-disk store PNGs exist in the repo.
+
+### 2026-06-16 - Guard store screenshot compositor write path against stale manifests
+
+- **Stage:** hardened the store screenshot compositor write path so it cannot
+  turn stale source manifests into final composited listing PNGs. Code + tests
+  landed in commit `0dbe012`; this entry records the behavior and status. No
+  store PNGs and no `screenshots/store/**/composited/` directories were
+  generated.
+- **Session:** Claude Code (Opus 4.8). Session id not exposed in-session.
+- **Artifacts (commit `0dbe012`):**
+  - `test/tool/store_screenshot_compositor_plan.dart` - added a pure
+    `CaptionPlanReadiness` data type plus `readLocaleCaptionPlanReadiness` /
+    `readAllCaptionPlanReadiness` read helpers on the planning seam (reads only
+    `manifest.json`, renders nothing, writes nothing, creates no directories).
+  - `tool/store_screenshot_compositor_write.dart` - `runWriteCli` now takes a
+    required `readiness` gate; a real `--write --yes` is refused (exit 65,
+    EX_DATAERR) whenever any source manifest blocks final composites, and the
+    no-write preview surfaces the same blocked status.
+  - `tool/store_screenshot_compositor_dry_run.dart` - the dry-run report and
+    CLI now surface a final-not-ready status for blocked manifests without
+    failing the (no-write) dry run.
+  - tests: `store_screenshot_compositor_plan_test.dart`,
+    `store_screenshot_compositor_write_test.dart`,
+    `store_screenshot_compositor_dry_run_test.dart`, and the write-harness test
+    extended for the required readiness parameter and the block/allow paths.
+- **Behavior:** a manifest blocks final composites when it still requires newly
+  captured frames (`currentCaptionPlanRequiresNewFrames`: true) or carries a
+  pre-Appeeky / reference caption plan (`captionPlanStatus` naming `pre_appeeky`
+  or `reference`). All five shipped manifests currently block, so the guarded
+  write CLI refuses real writes today; the dry run and the write preview report
+  "final composites not ready / blocked" and still write nothing. Final
+  screenshot export stays gated on capturing the current 5-frame plan (the two
+  missing problem-hook + life-events frames) and updating captions/manifests,
+  after which the manifests unblock.
+- **Verification:**
+  - In commit `0dbe012` (engineering change): focused
+    plan/write/dry-run/harness suites assert the block path (real write
+    refused, renderer never called, exit non-zero) and the allow path, plus the
+    no-write preview and the real on-disk plan reporting not-ready;
+    `git diff --check` clean; `find screenshots/store -type d -name composited`
+    -> no output (no composited dirs, no store PNGs).
+  - This docs-only follow-up adds no code: `git diff --check` on the changed
+    doc -> clean; ASCII-only prose.
+- **Limit/quota:** none hit (all offline; no network).
+- **Residuals / open questions:** none new. The compositor stays no-write /
+  guarded; no final composited or on-disk store PNGs exist in the repo.
+  Capturing the current 5-frame plan and updating captions/manifests remains
+  owner/design work and is what unblocks the guarded write path.
