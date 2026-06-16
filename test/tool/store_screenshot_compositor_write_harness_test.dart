@@ -106,11 +106,17 @@ void main() {
         ..parent.createSync(recursive: true);
       await rawFile.writeAsBytes(await _tinyPng());
 
+      // This temp-root harness composites a synthetic, unmarked manifest, so it
+      // passes empty readiness and is not blocked. A real harness that writes
+      // the repo's `screenshots/store/` must instead pass
+      // `readAllCaptionPlanReadiness()`, which currently refuses (the shipped
+      // manifests are pre-Appeeky reference captures awaiting new frames).
       final result = await runWriteCli(
         parseWriteCliArgs(const <String>['--write', '--yes']),
         jobs: <StoreScreenshotCompositeJob>[job],
         root: root,
         render: _renderJob,
+        readiness: const <CaptionPlanReadiness>[],
       );
 
       expect(result.wroteFiles, isTrue);

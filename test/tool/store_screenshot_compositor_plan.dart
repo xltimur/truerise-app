@@ -136,6 +136,77 @@ List<StoreScreenshotCompositeJob> buildLocaleCompositeJobs(
   return jobs;
 }
 
+/// The manifest key holding the caption-plan status marker.
+const String _captionPlanStatusKey = 'captionPlanStatus';
+
+/// The manifest key flagging that the current caption plan needs new frames.
+const String _requiresNewFramesKey = 'currentCaptionPlanRequiresNewFrames';
+
+/// Caption-plan readiness parsed from one locale's `manifest.json`: whether
+/// final compositing is currently blocked for that locale, and why.
+///
+/// Pure data, immutable. Final store composites must never be produced from
+/// raw frames whose caption plan is still a pre-Appeeky reference plan, or
+/// whose manifest explicitly requires newly captured frames. The compositor
+/// write path consults this before any real write so stale manifests cannot
+/// accidentally produce final composited screenshots.
+class CaptionPlanReadiness {
+  const CaptionPlanReadiness({
+    required this.locale,
+    required this.captionPlanStatus,
+    required this.requiresNewFrames,
+  });
+
+  /// The locale folder this readiness was parsed from, e.g. `en`.
+  final String locale;
+
+  /// The raw `captionPlanStatus` marker, e.g.
+  /// `pre_appeeky_reference_raw_captures`; empty when the manifest omits it.
+  final String captionPlanStatus;
+
+  /// Whether `currentCaptionPlanRequiresNewFrames` is set on the manifest.
+  final bool requiresNewFrames;
+
+  /// Whether the caption plan is a pre-Appeeky / reference plan: its status
+  /// names `pre_appeeky` or `reference`.
+  bool get isPreAppeekyReference =>
+      captionPlanStatus.contains('pre_appeeky') ||
+      captionPlanStatus.contains('reference');
+
+  /// Whether final composites are blocked for this locale: the manifest needs
+  /// new frames, or its captions are still the pre-Appeeky reference plan.
+  bool get blocksFinalComposite => requiresNewFrames || isPreAppeekyReference;
+}
+
+/// Parses the [CaptionPlanReadiness] for [locale] from an already-decoded
+/// [manifest] map (typically `jsonDecode` of its `manifest.json`).
+///
+/// Reads only the two readiness markers; a missing or non-string status is
+/// treated as empty and a missing/non-true flag as `false`, so an unmarked
+/// manifest is reported as not blocked. Performs no I/O and writes nothing.
+CaptionPlanReadiness readLocaleCaptionPlanReadiness(
+  String locale,
+  Map<String, dynamic> manifest,
+) {
+  final status = manifest[_captionPlanStatusKey];
+  return CaptionPlanReadiness(
+    locale: locale,
+    captionPlanStatus: status is String ? status : '',
+    requiresNewFrames: manifest[_requiresNewFramesKey] == true,
+  );
+}
+
+/// Reads every on-disk manifest under [kStoreScreenshotsRoot] and returns its
+/// [CaptionPlanReadiness], in [supportedStoreLocales] order.
+///
+/// Reads only `manifest.json` files; performs no rendering, creates no
+/// directories, and writes nothing.
+List<CaptionPlanReadiness> readAllCaptionPlanReadiness() =>
+    <CaptionPlanReadiness>[
+      for (final locale in supportedStoreLocales)
+        readLocaleCaptionPlanReadiness(locale, _readManifest(locale)),
+    ];
+
 /// Repository-relative path of the on-disk manifest for [locale].
 String storeManifestPath(String locale) =>
     '$kStoreScreenshotsRoot/$locale/manifest.json';

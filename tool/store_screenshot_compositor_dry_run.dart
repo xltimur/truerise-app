@@ -78,7 +78,11 @@ DryRunArgs parseDryRunArgs(List<String> args) {
 /// [ok] is true only when [errors] is empty. All retained strings are
 /// repository-relative paths that are safe to print.
 class DryRunReport {
-  const DryRunReport._({required this.jobs, required this.errors});
+  const DryRunReport._({
+    required this.jobs,
+    required this.errors,
+    required this.blockedReadiness,
+  });
 
   /// The compositing jobs the plan produced, in plan order.
   final List<StoreScreenshotCompositeJob> jobs;
@@ -87,7 +91,13 @@ class DryRunReport {
   /// when the plan is safe to render.
   final List<String> errors;
 
-  /// Whether every job passed validation.
+  /// Source manifests whose caption plan currently blocks final composites
+  /// (pre-Appeeky reference captures, or captions still awaiting new frames).
+  /// Empty when no readiness was supplied or nothing blocks. This does not
+  /// affect [ok]: the dry run only validates paths and stays a no-write tool.
+  final List<CaptionPlanReadiness> blockedReadiness;
+
+  /// Whether every job passed path validation.
   bool get ok => errors.isEmpty;
 
   /// Number of planned compositing jobs.
@@ -117,9 +127,15 @@ class DryRunReport {
 /// - its [StoreScreenshotCompositeJob.outputPath] already exists;
 /// - its output path does not contain `/composited/`, or equals its raw path
 ///   (a defensive guard against future incompatible path derivation).
+///
+/// [readiness] is the optional per-locale caption-plan readiness for the source
+/// manifests. Blocked entries are recorded on [DryRunReport.blockedReadiness]
+/// and surfaced by [formatReport]; they do not fail the dry run, which stays a
+/// safe no-write preview.
 DryRunReport buildDryRunReport(
   List<StoreScreenshotCompositeJob> jobs, {
   required bool Function(String path) pathExists,
+  List<CaptionPlanReadiness> readiness = const <CaptionPlanReadiness>[],
 }) {
   final errors = <String>[];
   for (final job in jobs) {
@@ -138,7 +154,13 @@ DryRunReport buildDryRunReport(
       errors.add('Output collides with raw source: ${job.rawPath}');
     }
   }
-  return DryRunReport._(jobs: jobs, errors: errors);
+  return DryRunReport._(
+    jobs: jobs,
+    errors: errors,
+    blockedReadiness: readiness
+        .where((r) => r.blocksFinalComposite)
+        .toList(growable: false),
+  );
 }
 
 /// Formats [report] into the lines to print, in order.
@@ -173,6 +195,21 @@ List<String> formatReport(DryRunReport report, {bool verbose = false}) {
     for (final error in report.errors) {
       lines.add('  - $error');
     }
+  }
+
+  final blocked = report.blockedReadiness;
+  if (blocked.isNotEmpty) {
+    final locales = blocked.map((r) => r.locale).join(', ');
+    lines
+      ..add(
+        'FINAL COMPOSITES NOT READY: ${blocked.length} manifest(s) still '
+        'require new frames or use the pre-Appeeky reference caption plan '
+        '($locales).',
+      )
+      ..add(
+        'Final compositing is blocked until the current 5-frame plan is '
+        'captured and captions are updated.',
+      );
   }
 
   return lines;
@@ -213,6 +250,7 @@ void main(List<String> args) {
   final report = buildDryRunReport(
     buildAllCompositeJobs(),
     pathExists: (path) => File(path).existsSync(),
+    readiness: readAllCaptionPlanReadiness(),
   );
 
   final sink = report.ok ? stdout : stderr;

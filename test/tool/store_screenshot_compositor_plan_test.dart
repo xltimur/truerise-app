@@ -135,4 +135,72 @@ void main() {
       );
     });
   });
+
+  group('caption-plan readiness', () {
+    test('flags a pre-Appeeky manifest that needs new frames as blocked', () {
+      final readiness = readLocaleCaptionPlanReadiness('en', <String, dynamic>{
+        'captionPlanStatus': 'pre_appeeky_reference_raw_captures',
+        'currentCaptionPlanRequiresNewFrames': true,
+      });
+
+      expect(readiness.locale, 'en');
+      expect(readiness.requiresNewFrames, isTrue);
+      expect(readiness.isPreAppeekyReference, isTrue);
+      expect(readiness.blocksFinalComposite, isTrue);
+    });
+
+    test('treats a final, frames-ready manifest as not blocked', () {
+      final readiness = readLocaleCaptionPlanReadiness('en', <String, dynamic>{
+        'captionPlanStatus': 'final_appeeky_captions',
+        'currentCaptionPlanRequiresNewFrames': false,
+      });
+
+      expect(readiness.requiresNewFrames, isFalse);
+      expect(readiness.isPreAppeekyReference, isFalse);
+      expect(readiness.blocksFinalComposite, isFalse);
+    });
+
+    test('blocks when only new frames are required', () {
+      final readiness = readLocaleCaptionPlanReadiness('en', <String, dynamic>{
+        'captionPlanStatus': 'final_appeeky_captions',
+        'currentCaptionPlanRequiresNewFrames': true,
+      });
+
+      expect(readiness.blocksFinalComposite, isTrue);
+    });
+
+    test('blocks when only the pre-Appeeky reference status is set', () {
+      final readiness = readLocaleCaptionPlanReadiness('en', <String, dynamic>{
+        'captionPlanStatus': 'pre_appeeky_reference_raw_captures',
+        'currentCaptionPlanRequiresNewFrames': false,
+      });
+
+      expect(readiness.blocksFinalComposite, isTrue);
+    });
+
+    test('defaults to not blocked when the markers are absent', () {
+      final readiness = readLocaleCaptionPlanReadiness(
+        'en',
+        <String, dynamic>{},
+      );
+
+      expect(readiness.captionPlanStatus, isEmpty);
+      expect(readiness.requiresNewFrames, isFalse);
+      expect(readiness.blocksFinalComposite, isFalse);
+    });
+
+    test('every on-disk manifest currently blocks final composites', () {
+      final all = readAllCaptionPlanReadiness();
+
+      expect(
+        all.map((r) => r.locale),
+        orderedEquals(supportedStoreLocales),
+      );
+      expect(
+        all.every((r) => r.blocksFinalComposite),
+        isTrue,
+        reason: all.map((r) => '${r.locale}:${r.captionPlanStatus}').join(', '),
+      );
+    });
+  });
 }

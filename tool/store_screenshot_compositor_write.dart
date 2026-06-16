@@ -17,10 +17,13 @@
 //       Refuses: a real write also requires the explicit confirmation flag.
 //
 //   dart run tool/store_screenshot_compositor_write.dart --write --yes
-//       Requests a real write. Plain `dart run` cannot satisfy this because the
-//       renderer needs the Flutter engine (`dart:ui`); the CLI declines and
-//       points at the Flutter-compatible execution path. See the
-//       `runWriteCli` doc and store_screenshot_compositor_write_harness_test.
+//       Requests a real write. It is refused while any source manifest blocks
+//       final composites (pre-Appeeky reference captures, or captions still
+//       awaiting newly captured frames). Even once unblocked, plain `dart run`
+//       cannot satisfy it because the renderer needs the Flutter engine
+//       (`dart:ui`); the CLI declines and points at the Flutter-compatible
+//       execution path. See the `runWriteCli` doc and
+//       store_screenshot_compositor_write_harness_test.
 //
 //   --allow-overwrite  Replace existing composited outputs (default: refuse).
 //   --verbose          List one planned line per job in the preview.
@@ -166,15 +169,30 @@ List<String> _locales(List<StoreScreenshotCompositeJob> jobs) {
 /// `store_screenshot_compositor_write_harness_test.dart`); this function never
 /// imports `dart:ui` itself. A [StoreScreenshotWriteException] from the writer
 /// is caught and reported as a clean refusal that wrote nothing.
+///
+/// [readiness] is the per-locale caption-plan readiness for the source
+/// manifests (from `readAllCaptionPlanReadiness()` in real use). Any entry that
+/// [CaptionPlanReadiness.blocksFinalComposite] makes `--write --yes` refuse,
+/// because final composites must not be produced from pre-Appeeky reference
+/// captures or manifests still awaiting newly captured frames. It is required
+/// so a real-write caller cannot silently skip the guard; the no-write preview
+/// surfaces the same blocked status without refusing. Pass an empty list only
+/// when the source manifests carry no readiness markers (e.g. a synthetic
+/// temp-root harness).
 Future<WriteCliResult> runWriteCli(
   WriteCliArgs args, {
   required List<StoreScreenshotCompositeJob> jobs,
   required Directory root,
   required CompositeRenderCallback render,
+  required List<CaptionPlanReadiness> readiness,
 }) async {
+  final blocked = readiness
+      .where((r) => r.blocksFinalComposite)
+      .toList(growable: false);
+
   if (!args.write) {
     return WriteCliResult(
-      lines: _previewLines(jobs, verbose: args.verbose),
+      lines: _previewLines(jobs, blocked: blocked, verbose: args.verbose),
       exitCode: 0,
       writtenOutputPaths: const <String>[],
     );
@@ -188,6 +206,16 @@ Future<WriteCliResult> runWriteCli(
       lines: <String>['Refusing to write without confirmation.', guidance],
       exitCode: 64, // EX_USAGE
       writtenOutputPaths: <String>[],
+    );
+  }
+
+  // Final-composite guard: never turn stale pre-Appeeky reference captures (or
+  // any manifest still requiring new frames) into final composited screenshots.
+  if (blocked.isNotEmpty) {
+    return WriteCliResult(
+      lines: finalCompositeBlockedLines(blocked),
+      exitCode: 65, // EX_DATAERR
+      writtenOutputPaths: const <String>[],
     );
   }
 
@@ -219,8 +247,12 @@ Future<WriteCliResult> runWriteCli(
 }
 
 /// Builds the no-write preview lines for [jobs].
+///
+/// When [blocked] is non-empty the preview clearly surfaces that a real
+/// `--write --yes` would refuse, but the preview itself still writes nothing.
 List<String> _previewLines(
   List<StoreScreenshotCompositeJob> jobs, {
+  required List<CaptionPlanReadiness> blocked,
   required bool verbose,
 }) {
   final lines = <String>['Store screenshot compositor - WRITE (preview)'];
@@ -230,15 +262,49 @@ List<String> _previewLines(
     }
   }
   final locales = _locales(jobs);
-  return lines
-    ..add(
-      'Planned ${jobs.length} composited screenshots across '
-      '${locales.length} locale(s): ${locales.join(', ')}.',
-    )
-    ..add(
-      'No files written. Re-run with --write --yes to write '
-      '(--allow-overwrite to replace existing).',
-    );
+  lines.add(
+    'Planned ${jobs.length} composited screenshots across '
+    '${locales.length} locale(s): ${locales.join(', ')}.',
+  );
+  if (blocked.isNotEmpty) {
+    lines
+      ..add(
+        'FINAL COMPOSITES BLOCKED: ${blocked.length} manifest(s) still require '
+        'new frames or use the pre-Appeeky reference caption plan '
+        '(${_blockedLocales(blocked)}).',
+      )
+      ..add(
+        'A real --write --yes will refuse until the current 5-frame plan is '
+        'captured and captions are updated.',
+      );
+  }
+  return lines..add(
+    'No files written. Re-run with --write --yes to write '
+    '(--allow-overwrite to replace existing).',
+  );
+}
+
+/// Comma-joined locales of the [blocked] readiness entries, in order.
+String _blockedLocales(List<CaptionPlanReadiness> blocked) =>
+    blocked.map((r) => r.locale).join(', ');
+
+/// Lines explaining why a real write is refused by source-manifest state.
+///
+/// Returned for the `--write --yes` guard and reused by the CLI entry point so
+/// the message is identical wherever the block is reported.
+List<String> finalCompositeBlockedLines(List<CaptionPlanReadiness> blocked) {
+  const detail =
+      'Final composites are blocked until the current 5-frame plan is '
+      'captured and captions are updated.';
+  final locales =
+      'Blocked locale(s): ${_blockedLocales(blocked)} '
+      '(pre-Appeeky reference captures / awaiting new frames).';
+  return <String>[
+    'Refusing to write final composites: blocked by source-manifest state.',
+    detail,
+    locales,
+    'No files written.',
+  ];
 }
 
 /// Usage text shown for `--help` and on a usage error.
@@ -281,7 +347,19 @@ Future<void> main(List<String> args) async {
     return;
   }
 
+  // Source-manifest readiness from the on-disk plan. Reading it here lets the
+  // entry point report the real blocker before the dart:ui limitation below.
+  final readiness = readAllCaptionPlanReadiness();
+
   if (parsed.write && parsed.confirm) {
+    final blocked = readiness
+        .where((r) => r.blocksFinalComposite)
+        .toList(growable: false);
+    if (blocked.isNotEmpty) {
+      finalCompositeBlockedLines(blocked).forEach(stderr.writeln);
+      exitCode = 65; // EX_DATAERR
+      return;
+    }
     stderr
       ..writeln(
         'Real compositing needs the Flutter engine (dart:ui), which a plain '
@@ -306,6 +384,7 @@ Future<void> main(List<String> args) async {
     jobs: buildAllCompositeJobs(),
     root: Directory.current,
     render: _rendererUnavailable,
+    readiness: readiness,
   );
   final sink = result.exitCode == 0 ? stdout : stderr;
   result.lines.forEach(sink.writeln);

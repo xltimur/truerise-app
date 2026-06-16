@@ -43,6 +43,14 @@ File _seedRaw(Directory root, StoreScreenshotCompositeJob job, String body) {
   return file;
 }
 
+/// Readiness for [locale] that blocks final composites (pre-Appeeky reference
+/// captures that still require newly captured frames).
+CaptionPlanReadiness _blockedReadiness(String locale) =>
+    readLocaleCaptionPlanReadiness(locale, <String, dynamic>{
+      'captionPlanStatus': 'pre_appeeky_reference_raw_captures',
+      'currentCaptionPlanRequiresNewFrames': true,
+    });
+
 /// A renderer stub that records each call and returns deterministic bytes.
 class _RecordingRenderer {
   final List<String> renderedFiles = <String>[];
@@ -125,6 +133,7 @@ void main() {
         jobs: jobs,
         root: root,
         render: renderer.render,
+        readiness: const <CaptionPlanReadiness>[],
       );
 
       expect(result.wroteFiles, isFalse);
@@ -152,6 +161,7 @@ void main() {
         jobs: <StoreScreenshotCompositeJob>[job],
         root: root,
         render: renderer.render,
+        readiness: const <CaptionPlanReadiness>[],
       );
 
       expect(result.wroteFiles, isFalse);
@@ -185,6 +195,7 @@ void main() {
         jobs: <StoreScreenshotCompositeJob>[job],
         root: root,
         render: renderer.render,
+        readiness: const <CaptionPlanReadiness>[],
       );
 
       expect(result.wroteFiles, isTrue);
@@ -215,6 +226,7 @@ void main() {
         jobs: <StoreScreenshotCompositeJob>[job],
         root: root,
         render: renderer.render,
+        readiness: const <CaptionPlanReadiness>[],
       );
 
       expect(result.wroteFiles, isFalse);
@@ -239,6 +251,7 @@ void main() {
         jobs: <StoreScreenshotCompositeJob>[job],
         root: root,
         render: renderer.render,
+        readiness: const <CaptionPlanReadiness>[],
       );
 
       expect(result.wroteFiles, isTrue);
@@ -259,6 +272,7 @@ void main() {
           jobs: <StoreScreenshotCompositeJob>[job],
           root: root,
           render: renderer.render,
+          readiness: const <CaptionPlanReadiness>[],
         );
 
         expect(result.wroteFiles, isFalse);
@@ -268,6 +282,87 @@ void main() {
         _expectNoRepoCompositedDirs();
       },
     );
+
+    test(
+      'refuses --write --yes when a manifest blocks final composites',
+      () async {
+        final renderer = _RecordingRenderer();
+        final job = _job('01-result-hero.png');
+        _seedRaw(root, job, 'raw-bytes');
+
+        final result = await runWriteCli(
+          parseWriteCliArgs(const <String>['--write', '--yes']),
+          jobs: <StoreScreenshotCompositeJob>[job],
+          root: root,
+          render: renderer.render,
+          readiness: <CaptionPlanReadiness>[_blockedReadiness('en')],
+        );
+
+        expect(result.wroteFiles, isFalse);
+        expect(result.exitCode, isNot(0));
+        expect(renderer.renderedFiles, isEmpty);
+
+        final text = result.lines.join('\n').toLowerCase();
+        expect(text, contains('blocked'));
+        expect(text, contains('5-frame'));
+        expect(text, contains('captions'));
+        expect(text, contains('en'));
+
+        expect(File('${root.path}/${job.outputPath}').existsSync(), isFalse);
+        _expectNoRepoCompositedDirs();
+      },
+    );
+
+    test(
+      'still writes when readiness reports no blocking manifests',
+      () async {
+        final renderer = _RecordingRenderer();
+        final job = _job('01-result-hero.png');
+        _seedRaw(root, job, 'raw-bytes');
+
+        final ready = readLocaleCaptionPlanReadiness('en', <String, dynamic>{
+          'captionPlanStatus': 'final_appeeky_captions',
+          'currentCaptionPlanRequiresNewFrames': false,
+        });
+
+        final result = await runWriteCli(
+          parseWriteCliArgs(const <String>['--write', '--yes']),
+          jobs: <StoreScreenshotCompositeJob>[job],
+          root: root,
+          render: renderer.render,
+          readiness: <CaptionPlanReadiness>[ready],
+        );
+
+        expect(result.wroteFiles, isTrue);
+        expect(result.exitCode, 0);
+        expect(result.writtenOutputPaths, <String>[job.outputPath]);
+        _expectNoRepoCompositedDirs();
+      },
+    );
+  });
+
+  group('runWriteCli preview surfaces blocked readiness', () {
+    test('preview reports the blocked status but writes nothing', () async {
+      final renderer = _RecordingRenderer();
+      final jobs = <StoreScreenshotCompositeJob>[_job('01-result-hero.png')];
+
+      final result = await runWriteCli(
+        parseWriteCliArgs(const <String>[]),
+        jobs: jobs,
+        root: Directory.systemTemp,
+        render: renderer.render,
+        readiness: <CaptionPlanReadiness>[_blockedReadiness('en')],
+      );
+
+      expect(result.wroteFiles, isFalse);
+      expect(result.exitCode, 0);
+      expect(renderer.renderedFiles, isEmpty);
+
+      final text = result.lines.join('\n').toLowerCase();
+      expect(text, contains('blocked'));
+      expect(text, contains('--write --yes'));
+      _expectNoRepoCompositedDirs();
+    });
   });
 
   group('runWriteCli preview over the real on-disk plan', () {
@@ -282,6 +377,7 @@ void main() {
         jobs: buildAllCompositeJobs(),
         root: Directory.current,
         render: renderer.render,
+        readiness: readAllCaptionPlanReadiness(),
       );
 
       expect(result.wroteFiles, isFalse);

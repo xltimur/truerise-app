@@ -115,6 +115,56 @@ void main() {
     });
   });
 
+  group('dry run surfaces caption-plan readiness', () {
+    CaptionPlanReadiness blockedReadiness(String locale) =>
+        readLocaleCaptionPlanReadiness(locale, <String, dynamic>{
+          'captionPlanStatus': 'pre_appeeky_reference_raw_captures',
+          'currentCaptionPlanRequiresNewFrames': true,
+        });
+
+    test('surfaces a final-not-ready status when a manifest is blocked', () {
+      final jobs = buildAllCompositeJobs();
+      final report = buildDryRunReport(
+        jobs,
+        pathExists: _rawsPresentOutputsAbsent,
+        readiness: <CaptionPlanReadiness>[blockedReadiness('en')],
+      );
+
+      // The dry run is still allowed: path validation found no problems.
+      expect(report.ok, isTrue);
+
+      final text = formatReport(report).join('\n').toLowerCase();
+      expect(text, contains('not ready'));
+      expect(text, contains('captions'));
+      expect(text, contains('en'));
+    });
+
+    test('omits the not-ready status when no manifest is blocked', () {
+      final jobs = buildAllCompositeJobs();
+      final report = buildDryRunReport(
+        jobs,
+        pathExists: _rawsPresentOutputsAbsent,
+      );
+
+      final text = formatReport(report).join('\n').toLowerCase();
+      expect(text, isNot(contains('not ready')));
+    });
+
+    test(
+      'the real on-disk plan currently reports final composites not ready',
+      () {
+        final report = buildDryRunReport(
+          buildAllCompositeJobs(),
+          pathExists: _rawsPresentOutputsAbsent,
+          readiness: readAllCaptionPlanReadiness(),
+        );
+
+        final text = formatReport(report).join('\n').toLowerCase();
+        expect(text, contains('not ready'));
+      },
+    );
+  });
+
   group('parseDryRunArgs', () {
     test('defaults to a quiet, valid run with no flags', () {
       final args = parseDryRunArgs(const <String>[]);
