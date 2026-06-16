@@ -11,7 +11,11 @@ a derived, condensed handoff - if anything here disagrees with that file, the
 status doc wins.
 
 **Local verification commands** for everything below live in
-`docs/release-preflight-commands.md`.
+`docs/release-preflight-commands.md`. The latest dated run of those commands and
+its exact results (2026-06-16: analyze clean, 648 tests green, release guard and
+screenshot dry-run pass) is recorded in
+`docs/release-verification-report-2026-06-16.md` - evidence only; it does not
+unblock submission and changes no status below.
 
 **Scope guard.** No live store rankings, installs, ratings, DNS resolution,
 trademark clearance, production proxy availability, or store approvals are

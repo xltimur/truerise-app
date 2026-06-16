@@ -392,7 +392,24 @@ the card goes out via the OS share sheet.
 
 ## 6. Residual risks & caveats for this run
 
-- **Latest full-suite evidence remains the 2026-06-14 verification sweep after
+- **2026-06-16 verification sweep (latest full-suite evidence).** A docs-only
+  task re-ran the local checks and they passed: `flutter analyze` -> `No issues
+  found!`; full `flutter test` -> 648 tests passed; `flutter test
+  integration_test/demo_flow_test.dart` -> demo/offline flow passed; `flutter
+  test test/tool/release_env_guard_test.dart` -> 33 passed; `dart run
+  tool/release_env_guard.dart --share-url=... --proxy-base-url=...
+  --allow-bundled-key --purpose=review-capped` (illustrative bare-HTTPS
+  placeholders, not the real owner URLs) -> exit 0; `dart run
+  tool/store_screenshot_compositor_dry_run.dart` -> exit 0, planned 25 composites
+  across the 5 locales while writing no files and rendering nothing; `git diff
+  --check` clean and the tree stayed clean. The dated command/result snapshot is
+  `docs/release-verification-report-2026-06-16.md`. The 648-test figure
+  supersedes the earlier `+587` (2026-06-14) figure below as the latest
+  full-suite evidence. This changes **no** blocker status: the engineering/local
+  side is clean, but the release stays not-submittable on the owner/backend/legal
+  /console items in Sec. 5a, and no final composited screenshots were generated.
+- **Earlier 2026-06-14 full-suite sweep (superseded as the latest figure by the
+  2026-06-16 sweep above; kept here for detail), run after
   the dry-run CLI and status sync** (the 2026-06-15 post-Appeeky changes were
   documentation-only - ASO/category/caption docs and this status sync - with no
   product code, test, or asset changes, so they did not require a re-run),

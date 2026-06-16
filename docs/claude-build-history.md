@@ -6271,3 +6271,53 @@ passed auth — it reached business logic, not 401/403 — so the existing
   compositing, console upload); capturing/adopting the current five-frame plan
   into the canonical packs and updating captions/manifests is what unblocks the
   guarded write path.
+
+### 2026-06-16 - Close local-only release documentation tasks (verification report + owner Slack template)
+
+- **Stage:** docs-only closeout of the remaining local release-documentation
+  tasks. No app code, build config, tests, assets, screenshots, `.env`,
+  generated l10n, manifests, or signing files were touched; the five doc files
+  below are the whole change.
+- **Session:** Claude Code (Opus 4.8). Session id not exposed in-session.
+- **Verified facts used (Codex reran the suites; recorded 2026-06-16):** tree
+  clean and `main` in sync with `origin/main` before the task (last commit
+  `c9fe9e8`); `git diff --check` clean; `flutter analyze` -> `No issues found`;
+  `flutter test` -> 648 passed; `flutter test
+  integration_test/demo_flow_test.dart` -> demo/offline passed; `flutter test
+  test/tool/release_env_guard_test.dart` -> 33 passed; `dart run
+  tool/release_env_guard.dart --share-url=... --proxy-base-url=...
+  --allow-bundled-key --purpose=review-capped` (illustrative bare-HTTPS
+  placeholders) -> exit 0; `dart run
+  tool/store_screenshot_compositor_dry_run.dart` -> exit 0, planned 25 composites
+  across en/de/fr/es/pt-BR, wrote no files; tree stayed clean.
+- **Artifacts (added):**
+  - `docs/release-verification-report-2026-06-16.md` - dated command/result
+    snapshot separating passed local checks from owner/backend/legal/store
+    blockers and the screenshot final-compositing status; explicitly evidence
+    only, changes no blocker status, defers to the authoritative status doc.
+  - `docs/release-owner-slack-update-template.md` - concise paste-ready Russian
+    Slack update for the owner (Oleg): local checks passed, what still needs
+    owner/backend/legal/store, screenshot status, and the exact owner asks;
+    explicitly claims no owner approval/sign-off is done.
+- **Artifacts (changed):**
+  - `docs/release-preflight-commands.md` - refreshed the full-suite figure to
+    648 (2026-06-16, supersedes +587 2026-06-14) and cross-referenced the new
+    report; kept the "does not unblock submission" framing.
+  - `docs/release-handoff-owner-checklist.md` - one-line cross-reference to the
+    new dated verification report under "Local verification commands".
+  - `docs/publication-readiness-current-status.md` Sec. 6 - new dated bullet
+    recording the 2026-06-16 sweep (latest full-suite evidence, 648 tests),
+    pointing to the report; reworded the prior 2026-06-14 bullet so it no longer
+    claims to be the latest. Authoritative hierarchy preserved (this status doc
+    still wins).
+- **Verification:** docs-only - `git diff --check` -> clean; scoped `git status
+  --short -- lib ios android test integration_test pubspec.yaml pubspec.lock
+  assets screenshots tool l10n.yaml .env` -> empty (no app code/asset/config/test
+  change); every changed/added path is under `docs/`.
+- **Limit/quota:** none hit (no network; suites not re-run locally - recorded
+  Codex results used).
+- **Residuals / open questions:** unchanged - the release stays not-submittable
+  on the owner/backend/legal/console items in
+  `docs/publication-readiness-current-status.md` Sec. 5a; no final composited
+  screenshots were generated. Not committed (awaiting the Codex-gated commit
+  flow).

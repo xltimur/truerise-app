@@ -162,7 +162,7 @@ ls lib/l10n/app_*.arb        # expect 5: app_en app_de app_es app_fr app_pt
 flutter analyze              # expect: No issues found!
 
 # Full suite (touches shared models/routing/persistence) - last recorded
-# full run: +587 passing on the 2026-06-14 sweep
+# full run: 648 passing on the 2026-06-16 sweep
 flutter test
 
 # Demo-flow integration test (offline)
@@ -177,7 +177,12 @@ Notes:
 - This handoff is **documentation-only**; `flutter analyze` / `flutter test`
   are not required to land it, but are the gate for any release build.
 - `flutter test` count drifts as tests are added; treat "all pass" as the
-  expectation and `+587` (2026-06-14) as the last recorded figure.
+  expectation and `648` (2026-06-16) as the last recorded figure (supersedes the
+  earlier `+587` 2026-06-14 sweep). The dated command/result snapshot lives in
+  `docs/release-verification-report-2026-06-16.md`. These checks being green
+  proves the tree is engineering-clean; it does **not** unblock submission - the
+  owner/backend/legal/store items in
+  `docs/publication-readiness-current-status.md` Sec. 5a still gate any release.
 
 ---
 
