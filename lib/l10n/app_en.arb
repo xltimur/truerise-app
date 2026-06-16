@@ -1072,6 +1072,34 @@
   "@settingsTimeFormat24": {
     "description": "Radio option for 24-hour time format. The sample time 07:14 is illustrative and kept stable."
   },
+  "settingsSectionLanguage": "Language",
+  "@settingsSectionLanguage": {
+    "description": "Settings section heading for the interface-language choice. Rendered in uppercase."
+  },
+  "settingsLanguageAuto": "Automatic (device language)",
+  "@settingsLanguageAuto": {
+    "description": "Radio option that defers the interface language to the device's language, with a deterministic English fallback when the device language is unsupported."
+  },
+  "settingsLanguageEnglish": "English",
+  "@settingsLanguageEnglish": {
+    "description": "Radio option label for English. An endonym (a language shown in its own name) held constant across all locales, like the brand name."
+  },
+  "settingsLanguageGerman": "Deutsch",
+  "@settingsLanguageGerman": {
+    "description": "Radio option label for German. An endonym held constant across all locales."
+  },
+  "settingsLanguageSpanish": "Español",
+  "@settingsLanguageSpanish": {
+    "description": "Radio option label for Spanish. An endonym held constant across all locales."
+  },
+  "settingsLanguageFrench": "Français",
+  "@settingsLanguageFrench": {
+    "description": "Radio option label for French. An endonym held constant across all locales."
+  },
+  "settingsLanguagePortuguese": "Português",
+  "@settingsLanguagePortuguese": {
+    "description": "Radio option label for Portuguese. An endonym held constant across all locales."
+  },
   "settingsApiKeyHelper": "Already have an Astrology API key? Add it here.",
   "@settingsApiKeyHelper": {
     "description": "Helper text in the Settings API-key card for users who already hold an Astrology API key. Must not read as a purchase or signup prompt."

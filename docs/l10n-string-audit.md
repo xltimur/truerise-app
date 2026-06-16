@@ -1,5 +1,19 @@
 # TrueRise Localization String Audit (Run 5)
 
+> **CURRENT STATUS (2026-06-15) - SUPERSEDES THE "no localization" baseline
+> below.** Localization is now implemented. The app ships a gen-l10n bundle
+> (`l10n.yaml` + `lib/l10n/app_{en,de,es,fr,pt}.arb` + generated
+> `AppLocalizations`) covering EN / DE / ES / FR / PT, with `pubspec.yaml`
+> `generate: true` and `flutter_localizations` wired in `lib/app/app.dart`.
+> Product owner Oleg confirmed on 2026-06-15 that interface localization must
+> support EN / DE / ES / FR / PT and that the app needs both automatic (device)
+> and manual language selection; manual interface-language selection (Auto +
+> the five languages) plus persistence landed on 2026-06-15 (see
+> `docs/claude-build-history.md`, entry "Interface language selection"). The
+> Section 2 "no-l10n baseline" and the Section 9 "extraction complete"
+> checklist describe the pre-implementation state on 2026-06-02 and are retained
+> as historical record only.
+
 - **Document:** `docs/l10n-string-audit.md`
 - **Version:** v1.0 (Run 5)
 - **Date:** 2026-06-02

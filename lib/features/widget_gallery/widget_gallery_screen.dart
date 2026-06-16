@@ -91,7 +91,7 @@ class _WidgetGalleryScreenState extends State<WidgetGalleryScreen> {
               const SizedBox(height: AppSpacing.s3),
               TimePickerField(
                 label: 'Time of birth',
-                formattedValue: '07:14 AM',
+                formattedValue: '07:14',
                 onTap: () {},
               ),
               const SizedBox(height: AppSpacing.s7),
@@ -142,8 +142,8 @@ class _WidgetGalleryScreenState extends State<WidgetGalleryScreen> {
               ),
               const SizedBox(height: AppSpacing.s3),
               const CandidateCard(
-                time: '6:48',
-                meridiem: 'AM',
+                time: '06:48',
+                meridiem: '',
                 risingSign: 'Taurus Rising',
                 confidence: 0.62,
               ),
@@ -151,8 +151,8 @@ class _WidgetGalleryScreenState extends State<WidgetGalleryScreen> {
               const HistoryCard(
                 label: 'Untitled calculation',
                 date: '20 May 2026',
-                time: '7:14',
-                meridiem: 'AM',
+                time: '07:14',
+                meridiem: '',
                 risingSign: 'Gemini Rising',
                 confidence: 0.78,
                 isDemo: true,
@@ -188,8 +188,8 @@ class _WidgetGalleryScreenState extends State<WidgetGalleryScreen> {
 
               _section('Hero result (§9.7)'),
               const HeroResultCard(
-                time: '7:14',
-                meridiem: 'AM',
+                time: '07:14',
+                meridiem: '',
                 risingSign: 'Gemini Rising',
               ),
               const SizedBox(height: AppSpacing.s7),

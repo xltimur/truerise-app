@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SettingsModel {
 
- bool get demoModeDefault; TimeFormat get timeFormat; bool get onboardingDone; bool get proApiKeyConfigured;
+ bool get demoModeDefault; TimeFormat get timeFormat; bool get onboardingDone; bool get proApiKeyConfigured; LanguagePreference get languagePreference;
 /// Create a copy of SettingsModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $SettingsModelCopyWith<SettingsModel> get copyWith => _$SettingsModelCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SettingsModel&&(identical(other.demoModeDefault, demoModeDefault) || other.demoModeDefault == demoModeDefault)&&(identical(other.timeFormat, timeFormat) || other.timeFormat == timeFormat)&&(identical(other.onboardingDone, onboardingDone) || other.onboardingDone == onboardingDone)&&(identical(other.proApiKeyConfigured, proApiKeyConfigured) || other.proApiKeyConfigured == proApiKeyConfigured));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SettingsModel&&(identical(other.demoModeDefault, demoModeDefault) || other.demoModeDefault == demoModeDefault)&&(identical(other.timeFormat, timeFormat) || other.timeFormat == timeFormat)&&(identical(other.onboardingDone, onboardingDone) || other.onboardingDone == onboardingDone)&&(identical(other.proApiKeyConfigured, proApiKeyConfigured) || other.proApiKeyConfigured == proApiKeyConfigured)&&(identical(other.languagePreference, languagePreference) || other.languagePreference == languagePreference));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,demoModeDefault,timeFormat,onboardingDone,proApiKeyConfigured);
+int get hashCode => Object.hash(runtimeType,demoModeDefault,timeFormat,onboardingDone,proApiKeyConfigured,languagePreference);
 
 @override
 String toString() {
-  return 'SettingsModel(demoModeDefault: $demoModeDefault, timeFormat: $timeFormat, onboardingDone: $onboardingDone, proApiKeyConfigured: $proApiKeyConfigured)';
+  return 'SettingsModel(demoModeDefault: $demoModeDefault, timeFormat: $timeFormat, onboardingDone: $onboardingDone, proApiKeyConfigured: $proApiKeyConfigured, languagePreference: $languagePreference)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $SettingsModelCopyWith<$Res>  {
   factory $SettingsModelCopyWith(SettingsModel value, $Res Function(SettingsModel) _then) = _$SettingsModelCopyWithImpl;
 @useResult
 $Res call({
- bool demoModeDefault, TimeFormat timeFormat, bool onboardingDone, bool proApiKeyConfigured
+ bool demoModeDefault, TimeFormat timeFormat, bool onboardingDone, bool proApiKeyConfigured, LanguagePreference languagePreference
 });
 
 
@@ -62,13 +62,14 @@ class _$SettingsModelCopyWithImpl<$Res>
 
 /// Create a copy of SettingsModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? demoModeDefault = null,Object? timeFormat = null,Object? onboardingDone = null,Object? proApiKeyConfigured = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? demoModeDefault = null,Object? timeFormat = null,Object? onboardingDone = null,Object? proApiKeyConfigured = null,Object? languagePreference = null,}) {
   return _then(_self.copyWith(
 demoModeDefault: null == demoModeDefault ? _self.demoModeDefault : demoModeDefault // ignore: cast_nullable_to_non_nullable
 as bool,timeFormat: null == timeFormat ? _self.timeFormat : timeFormat // ignore: cast_nullable_to_non_nullable
 as TimeFormat,onboardingDone: null == onboardingDone ? _self.onboardingDone : onboardingDone // ignore: cast_nullable_to_non_nullable
 as bool,proApiKeyConfigured: null == proApiKeyConfigured ? _self.proApiKeyConfigured : proApiKeyConfigured // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,languagePreference: null == languagePreference ? _self.languagePreference : languagePreference // ignore: cast_nullable_to_non_nullable
+as LanguagePreference,
   ));
 }
 
@@ -153,10 +154,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool demoModeDefault,  TimeFormat timeFormat,  bool onboardingDone,  bool proApiKeyConfigured)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool demoModeDefault,  TimeFormat timeFormat,  bool onboardingDone,  bool proApiKeyConfigured,  LanguagePreference languagePreference)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SettingsModel() when $default != null:
-return $default(_that.demoModeDefault,_that.timeFormat,_that.onboardingDone,_that.proApiKeyConfigured);case _:
+return $default(_that.demoModeDefault,_that.timeFormat,_that.onboardingDone,_that.proApiKeyConfigured,_that.languagePreference);case _:
   return orElse();
 
 }
@@ -174,10 +175,10 @@ return $default(_that.demoModeDefault,_that.timeFormat,_that.onboardingDone,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool demoModeDefault,  TimeFormat timeFormat,  bool onboardingDone,  bool proApiKeyConfigured)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool demoModeDefault,  TimeFormat timeFormat,  bool onboardingDone,  bool proApiKeyConfigured,  LanguagePreference languagePreference)  $default,) {final _that = this;
 switch (_that) {
 case _SettingsModel():
-return $default(_that.demoModeDefault,_that.timeFormat,_that.onboardingDone,_that.proApiKeyConfigured);case _:
+return $default(_that.demoModeDefault,_that.timeFormat,_that.onboardingDone,_that.proApiKeyConfigured,_that.languagePreference);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -194,10 +195,10 @@ return $default(_that.demoModeDefault,_that.timeFormat,_that.onboardingDone,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool demoModeDefault,  TimeFormat timeFormat,  bool onboardingDone,  bool proApiKeyConfigured)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool demoModeDefault,  TimeFormat timeFormat,  bool onboardingDone,  bool proApiKeyConfigured,  LanguagePreference languagePreference)?  $default,) {final _that = this;
 switch (_that) {
 case _SettingsModel() when $default != null:
-return $default(_that.demoModeDefault,_that.timeFormat,_that.onboardingDone,_that.proApiKeyConfigured);case _:
+return $default(_that.demoModeDefault,_that.timeFormat,_that.onboardingDone,_that.proApiKeyConfigured,_that.languagePreference);case _:
   return null;
 
 }
@@ -209,13 +210,14 @@ return $default(_that.demoModeDefault,_that.timeFormat,_that.onboardingDone,_tha
 
 
 class _SettingsModel implements SettingsModel {
-  const _SettingsModel({required this.demoModeDefault, required this.timeFormat, required this.onboardingDone, required this.proApiKeyConfigured});
+  const _SettingsModel({required this.demoModeDefault, required this.timeFormat, required this.onboardingDone, required this.proApiKeyConfigured, required this.languagePreference});
   
 
 @override final  bool demoModeDefault;
 @override final  TimeFormat timeFormat;
 @override final  bool onboardingDone;
 @override final  bool proApiKeyConfigured;
+@override final  LanguagePreference languagePreference;
 
 /// Create a copy of SettingsModel
 /// with the given fields replaced by the non-null parameter values.
@@ -227,16 +229,16 @@ _$SettingsModelCopyWith<_SettingsModel> get copyWith => __$SettingsModelCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SettingsModel&&(identical(other.demoModeDefault, demoModeDefault) || other.demoModeDefault == demoModeDefault)&&(identical(other.timeFormat, timeFormat) || other.timeFormat == timeFormat)&&(identical(other.onboardingDone, onboardingDone) || other.onboardingDone == onboardingDone)&&(identical(other.proApiKeyConfigured, proApiKeyConfigured) || other.proApiKeyConfigured == proApiKeyConfigured));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SettingsModel&&(identical(other.demoModeDefault, demoModeDefault) || other.demoModeDefault == demoModeDefault)&&(identical(other.timeFormat, timeFormat) || other.timeFormat == timeFormat)&&(identical(other.onboardingDone, onboardingDone) || other.onboardingDone == onboardingDone)&&(identical(other.proApiKeyConfigured, proApiKeyConfigured) || other.proApiKeyConfigured == proApiKeyConfigured)&&(identical(other.languagePreference, languagePreference) || other.languagePreference == languagePreference));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,demoModeDefault,timeFormat,onboardingDone,proApiKeyConfigured);
+int get hashCode => Object.hash(runtimeType,demoModeDefault,timeFormat,onboardingDone,proApiKeyConfigured,languagePreference);
 
 @override
 String toString() {
-  return 'SettingsModel(demoModeDefault: $demoModeDefault, timeFormat: $timeFormat, onboardingDone: $onboardingDone, proApiKeyConfigured: $proApiKeyConfigured)';
+  return 'SettingsModel(demoModeDefault: $demoModeDefault, timeFormat: $timeFormat, onboardingDone: $onboardingDone, proApiKeyConfigured: $proApiKeyConfigured, languagePreference: $languagePreference)';
 }
 
 
@@ -247,7 +249,7 @@ abstract mixin class _$SettingsModelCopyWith<$Res> implements $SettingsModelCopy
   factory _$SettingsModelCopyWith(_SettingsModel value, $Res Function(_SettingsModel) _then) = __$SettingsModelCopyWithImpl;
 @override @useResult
 $Res call({
- bool demoModeDefault, TimeFormat timeFormat, bool onboardingDone, bool proApiKeyConfigured
+ bool demoModeDefault, TimeFormat timeFormat, bool onboardingDone, bool proApiKeyConfigured, LanguagePreference languagePreference
 });
 
 
@@ -264,13 +266,14 @@ class __$SettingsModelCopyWithImpl<$Res>
 
 /// Create a copy of SettingsModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? demoModeDefault = null,Object? timeFormat = null,Object? onboardingDone = null,Object? proApiKeyConfigured = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? demoModeDefault = null,Object? timeFormat = null,Object? onboardingDone = null,Object? proApiKeyConfigured = null,Object? languagePreference = null,}) {
   return _then(_SettingsModel(
 demoModeDefault: null == demoModeDefault ? _self.demoModeDefault : demoModeDefault // ignore: cast_nullable_to_non_nullable
 as bool,timeFormat: null == timeFormat ? _self.timeFormat : timeFormat // ignore: cast_nullable_to_non_nullable
 as TimeFormat,onboardingDone: null == onboardingDone ? _self.onboardingDone : onboardingDone // ignore: cast_nullable_to_non_nullable
 as bool,proApiKeyConfigured: null == proApiKeyConfigured ? _self.proApiKeyConfigured : proApiKeyConfigured // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,languagePreference: null == languagePreference ? _self.languagePreference : languagePreference // ignore: cast_nullable_to_non_nullable
+as LanguagePreference,
   ));
 }
 

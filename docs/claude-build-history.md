@@ -6001,3 +6001,77 @@ passed auth — it reached business logic, not 401/403 — so the existing
 - **Residuals:** no change to any listing string or category recommendation; the
   real TrueRise-specific Appeeky Audit / Opportunities / rank pull remains an
   after-live action (`docs/post-launch-aso-plan.md` Sec. 2).
+
+### 2026-06-15 - Interface language selection (Auto + manual EN/DE/ES/FR/PT)
+
+- **Stage:** in-app interface-language selection UX + persistence. Product
+  owner Oleg confirmed on 2026-06-15 that interface localization must support
+  EN / DE / ES / FR / PT and that the app needs BOTH automatic (device) language
+  selection and manual language selection. This stage implements the manual
+  override on top of the already-built gen-l10n bundle.
+- **Session:** Claude Code (Opus 4.8). Session id not exposed in-session.
+- **Artifacts created:**
+  - `lib/data/models/language_preference.dart` - `LanguagePreference` enum
+    (`auto`, `english`, `german`, `spanish`, `french`, `portuguese`); stable
+    `tag` persisted in prefs; `locale` getter returns `null` for `auto`
+    (device-driven) or the language-code `Locale` otherwise. Modeled on
+    `TimeFormat`.
+  - `test/data/models/language_preference_test.dart` - tag round-trip, unknown
+    tag -> auto fallback, and the auto->null / explicit->Locale mapping.
+- **Artifacts changed:**
+  - `lib/data/models/settings_model.dart` - new required
+    `languagePreference` field (default `auto` in `.initial()`); freezed
+    regenerated via build_runner (not hand-edited).
+  - `lib/data/prefs/settings_store.dart` - `settings.language_preference`
+    key wired into read/write/`setLanguagePreference`/`deleteAll`.
+  - `lib/data/repos/settings_repository.dart` - `setLanguagePreference` on the
+    contract + default impl.
+  - `lib/providers/settings_controller.dart` - `setLanguagePreference` writes
+    through the repo then mirrors into state so the app rebuilds onto the new
+    locale immediately.
+  - `lib/app/app.dart` - `RectifyApp` watches `languagePreference` and passes
+    `locale:` to `MaterialApp.router`. `null` (Auto) keeps the existing
+    `localeListResolutionCallback: resolveAppLocale` device path with its
+    deterministic English fallback; a manual pick is resolved through the same
+    callback (`resolveAppLocale([locale], supported)`) and all five options are
+    already supported.
+  - `lib/features/settings/settings_screen.dart` - new "Language" section
+    (`RadioGroup<LanguagePreference>`) with Auto + 5 endonyms, between the
+    Time-format and API-key sections.
+  - `lib/l10n/app_en.arb` (template, with @metadata) + `app_de/es/fr/pt.arb`
+    - `settingsSectionLanguage` (translated heading), `settingsLanguageAuto`
+    (translated), and 5 endonym labels (English / Deutsch / Espanol / Francais /
+    Portugues with proper diacritics) held constant across all locales like the
+    brand name. `flutter gen-l10n` regenerated `app_localizations*.dart`.
+  - `lib/features/widget_gallery/widget_gallery_screen.dart` - dev-only:
+    removed the four hardcoded AM samples (the malformed `07:14 AM` plus three
+    `meridiem: 'AM'`), converting them to clean 24-hour samples with empty
+    meridiem (the widgets' documented 24h contract) so a `lib/`-wide time-format
+    grep has no avoidable dev-only AM/PM exception.
+  - tests: extended `settings_store_test`, `settings_repository_test`, and the
+    Settings widget test (`settings_screen_test`) - the widget test asserts the
+    six options render, Auto is the default, and selecting Deutsch updates the
+    controller + persists `de` to prefs + re-localizes the live UI (the Auto
+    radio label switches to its German form).
+- **Behavior:** Default stays Auto (device language, English fallback). A manual
+  pick applies on the next rebuild (no restart) and persists across restarts
+  through the existing settings/prefs architecture; "Delete all data" resets it
+  to Auto.
+- **Verification - RUN AND PASSED:** Flutter 3.44.0 / Dart 3.12.0.
+  - `flutter gen-l10n` -> clean (exit 0).
+  - `dart run build_runner build --delete-conflicting-outputs` -> wrote outputs;
+    `settings_model.freezed.dart` carries the new field.
+  - `flutter analyze` -> `No issues found!`.
+  - `dart format` on the 12 changed non-generated Dart files -> 1 reformatted.
+  - Focused: model (`+4`), store (`+9`), repository (`+6`), Settings widget
+    (`+16`), `locale_resolution` + `localized_screens` green.
+  - Full `flutter test` -> `+622: All tests passed!`.
+  - Integration test (`integration_test/demo_flow_test.dart`) not run - needs a
+    device/simulator.
+- **Limit/quota:** none hit (no network; all offline tests).
+- **Residuals / open questions:** (1) Manual override pins only the language
+  code; region tags are not offered (out of scope, matches `resolveAppLocale`).
+  (2) The stale Run-5 `docs/l10n-string-audit.md` described l10n as not
+  implemented; a dated current-status banner was added at its top rather than
+  rewriting the historical body. (3) Endonym labels are intentionally identical
+  across locales; only the section heading and the Auto label are translated.

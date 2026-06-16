@@ -1,6 +1,7 @@
 import 'package:rectify/core/failures.dart';
 import 'package:rectify/core/result.dart';
 import 'package:rectify/data/db/database.dart';
+import 'package:rectify/data/models/language_preference.dart';
 import 'package:rectify/data/models/settings_model.dart';
 import 'package:rectify/data/models/time_format.dart';
 import 'package:rectify/data/prefs/result_feedback_store.dart';
@@ -14,6 +15,7 @@ abstract class SettingsRepository {
 
   Future<void> setDemoModeDefault({required bool value});
   Future<void> setTimeFormat(TimeFormat value);
+  Future<void> setLanguagePreference(LanguagePreference value);
   Future<void> setOnboardingDone({required bool value});
 
   /// Save the user's Pro / Developer key (kept in secure storage),
@@ -48,6 +50,10 @@ class DefaultSettingsRepository implements SettingsRepository {
 
   @override
   Future<void> setTimeFormat(TimeFormat value) => prefs.setTimeFormat(value);
+
+  @override
+  Future<void> setLanguagePreference(LanguagePreference value) =>
+      prefs.setLanguagePreference(value);
 
   @override
   Future<void> setOnboardingDone({required bool value}) =>

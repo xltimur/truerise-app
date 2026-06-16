@@ -10,6 +10,7 @@ import 'package:rectify/core/app_links.dart';
 import 'package:rectify/core/reviews/review_service.dart';
 import 'package:rectify/core/sharing/share_service.dart';
 import 'package:rectify/data/db/database.dart';
+import 'package:rectify/data/models/language_preference.dart';
 import 'package:rectify/data/models/time_format.dart';
 import 'package:rectify/data/secure/secure_key_store.dart';
 import 'package:rectify/features/reviews/review_invitation.dart';
@@ -96,8 +97,10 @@ Future<ProviderContainer> _pumpOnSettings(
   // an 800×600 surface where the lower rows (Delete all / Privacy /
   // version) live below the fold and never enter the lazy ListView.
   // Stretch the surface so every row is built and findable without
-  // scrolling, then restore on tear-down.
-  await tester.binding.setSurfaceSize(const Size(420, 1400));
+  // scrolling, then restore on tear-down. The Language section (6 radio
+  // rows) pushes the lower rows further down, so the surface is tall
+  // enough to build them all.
+  await tester.binding.setSurfaceSize(const Size(420, 1800));
   addTearDown(() => tester.binding.setSurfaceSize(null));
 
   await tester.pumpWidget(app);
@@ -192,6 +195,56 @@ void main() {
     expect(find.textContaining('07:14'), findsOneWidget);
     expect(find.textContaining('7:14 AM'), findsNothing);
   });
+
+  testWidgets('renders the language section with Auto and 5 endonyms', (
+    tester,
+  ) async {
+    final prefs = await _prefs();
+    final container = await _pumpOnSettings(tester, _wrap(prefs));
+
+    // `_SectionLabel` renders headings uppercased, like every other section.
+    expect(find.text('LANGUAGE'), findsOneWidget);
+    expect(find.text('Automatic (device language)'), findsOneWidget);
+    expect(find.text('English'), findsOneWidget);
+    expect(find.text('Deutsch'), findsOneWidget);
+    expect(find.text('Español'), findsOneWidget);
+    expect(find.text('Français'), findsOneWidget);
+    expect(find.text('Português'), findsOneWidget);
+
+    // Default is Auto (device-driven) — nothing manual persisted yet.
+    expect(
+      container.read(settingsControllerProvider).languagePreference,
+      LanguagePreference.auto,
+    );
+    expect(prefs.getString('settings.language_preference'), isNull);
+  });
+
+  testWidgets(
+    'selecting a language applies immediately and persists across restart',
+    (tester) async {
+      final prefs = await _prefs();
+      final container = await _pumpOnSettings(tester, _wrap(prefs));
+
+      // The endonym row label is constant across locales, so it is
+      // tappable regardless of the current UI language.
+      await tester.tap(find.text('Deutsch'));
+      await tester.pumpAndSettle();
+
+      // Controller state + persisted prefs both hold the manual choice.
+      expect(
+        container.read(settingsControllerProvider).languagePreference,
+        LanguagePreference.german,
+      );
+      expect(prefs.getString('settings.language_preference'), 'de');
+
+      // MaterialApp.router re-localized live: the translated Auto label
+      // switched to German and the English one is gone, while the endonym
+      // row label stays constant across locales.
+      expect(find.text('Automatisch (Gerätesprache)'), findsOneWidget);
+      expect(find.text('Automatic (device language)'), findsNothing);
+      expect(find.text('Deutsch'), findsOneWidget);
+    },
+  );
 
   testWidgets(
     'API key flow saves trimmed key securely and never echoes it',

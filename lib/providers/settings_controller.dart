@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:rectify/core/failures.dart';
 import 'package:rectify/core/result.dart';
+import 'package:rectify/data/models/language_preference.dart';
 import 'package:rectify/data/models/settings_model.dart';
 import 'package:rectify/data/models/time_format.dart';
 import 'package:rectify/providers/core_providers.dart';
@@ -40,6 +41,15 @@ class SettingsController extends Notifier<SettingsModel> {
   Future<void> setTimeFormat(TimeFormat value) async {
     await ref.read(settingsRepositoryProvider).setTimeFormat(value);
     state = state.copyWith(timeFormat: value);
+  }
+
+  /// Persist the interface-language choice and mirror it into [state] so
+  /// `RectifyApp` (which watches `languagePreference`) rebuilds
+  /// `MaterialApp.router` onto the new locale immediately. `auto` returns
+  /// to device-driven resolution (`resolveAppLocale`).
+  Future<void> setLanguagePreference(LanguagePreference value) async {
+    await ref.read(settingsRepositoryProvider).setLanguagePreference(value);
+    state = state.copyWith(languagePreference: value);
   }
 
   /// Persist the user-supplied Pro / Developer API key via

@@ -1443,6 +1443,48 @@ abstract class AppLocalizations {
   /// **'24-hour  (07:14)'**
   String get settingsTimeFormat24;
 
+  /// Settings section heading for the interface-language choice. Rendered in uppercase.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get settingsSectionLanguage;
+
+  /// Radio option that defers the interface language to the device's language, with a deterministic English fallback when the device language is unsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic (device language)'**
+  String get settingsLanguageAuto;
+
+  /// Radio option label for English. An endonym (a language shown in its own name) held constant across all locales, like the brand name.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get settingsLanguageEnglish;
+
+  /// Radio option label for German. An endonym held constant across all locales.
+  ///
+  /// In en, this message translates to:
+  /// **'Deutsch'**
+  String get settingsLanguageGerman;
+
+  /// Radio option label for Spanish. An endonym held constant across all locales.
+  ///
+  /// In en, this message translates to:
+  /// **'Español'**
+  String get settingsLanguageSpanish;
+
+  /// Radio option label for French. An endonym held constant across all locales.
+  ///
+  /// In en, this message translates to:
+  /// **'Français'**
+  String get settingsLanguageFrench;
+
+  /// Radio option label for Portuguese. An endonym held constant across all locales.
+  ///
+  /// In en, this message translates to:
+  /// **'Português'**
+  String get settingsLanguagePortuguese;
+
   /// Helper text in the Settings API-key card for users who already hold an Astrology API key. Must not read as a purchase or signup prompt.
   ///
   /// In en, this message translates to:

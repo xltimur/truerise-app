@@ -875,6 +875,27 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsTimeFormat24 => '24-Stunden  (07:14)';
 
   @override
+  String get settingsSectionLanguage => 'Sprache';
+
+  @override
+  String get settingsLanguageAuto => 'Automatisch (Gerätesprache)';
+
+  @override
+  String get settingsLanguageEnglish => 'English';
+
+  @override
+  String get settingsLanguageGerman => 'Deutsch';
+
+  @override
+  String get settingsLanguageSpanish => 'Español';
+
+  @override
+  String get settingsLanguageFrench => 'Français';
+
+  @override
+  String get settingsLanguagePortuguese => 'Português';
+
+  @override
   String get settingsApiKeyHelper =>
       'Hast du bereits einen Astrology-API-Schlüssel? Füge ihn hier hinzu.';
 

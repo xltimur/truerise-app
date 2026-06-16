@@ -1,6 +1,7 @@
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rectify/data/db/database.dart';
+import 'package:rectify/data/models/language_preference.dart';
 import 'package:rectify/data/models/time_format.dart';
 import 'package:rectify/data/prefs/result_feedback_store.dart';
 import 'package:rectify/data/prefs/settings_store.dart';
@@ -59,6 +60,19 @@ void main() {
       await repo.setTimeFormat(TimeFormat.h24);
       final settings = await repo.read();
       expect(settings.timeFormat, TimeFormat.h24);
+    });
+
+    test('setLanguagePreference persists the new language', () async {
+      await repo.setLanguagePreference(LanguagePreference.french);
+      final settings = await repo.read();
+      expect(settings.languagePreference, LanguagePreference.french);
+    });
+
+    test('deleteAllData resets the language preference to auto', () async {
+      await repo.setLanguagePreference(LanguagePreference.german);
+      final wipe = await repo.deleteAllData();
+      expect(wipe.isOk, isTrue);
+      expect((await repo.read()).languagePreference, LanguagePreference.auto);
     });
 
     test('deleteAllData clears prefs, secure storage, and DB tables', () async {

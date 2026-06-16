@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:rectify/data/models/language_preference.dart';
 import 'package:rectify/data/models/settings_model.dart';
 import 'package:rectify/data/models/time_format.dart';
 import 'package:rectify/data/prefs/settings_store.dart';
@@ -21,6 +22,7 @@ void main() {
         expect(settings.timeFormat, TimeFormat.h12);
         expect(settings.onboardingDone, isFalse);
         expect(settings.proApiKeyConfigured, isFalse);
+        expect(settings.languagePreference, LanguagePreference.auto);
       },
     );
 
@@ -35,6 +37,7 @@ void main() {
           timeFormat: TimeFormat.h24,
           onboardingDone: true,
           proApiKeyConfigured: true,
+          languagePreference: LanguagePreference.spanish,
         );
         await store.write(settings);
 
@@ -50,11 +53,24 @@ void main() {
       await store.setDemoModeDefault(value: true);
       await store.setTimeFormat(TimeFormat.h24);
       await store.setOnboardingDone(value: true);
+      await store.setLanguagePreference(LanguagePreference.french);
 
       final settings = await store.read();
       expect(settings.demoModeDefault, isTrue);
       expect(settings.timeFormat, TimeFormat.h24);
       expect(settings.onboardingDone, isTrue);
+      expect(settings.languagePreference, LanguagePreference.french);
+    });
+
+    test('language preference survives a simulated restart', () async {
+      final prefs = await SharedPreferences.getInstance();
+      await SettingsStore(prefs).setLanguagePreference(
+        LanguagePreference.german,
+      );
+
+      // A fresh store over the same prefs models an app relaunch.
+      final recovered = await SettingsStore(prefs).read();
+      expect(recovered.languagePreference, LanguagePreference.german);
     });
 
     test('deleteAll wipes every persisted setting', () async {
@@ -67,6 +83,7 @@ void main() {
           timeFormat: TimeFormat.h24,
           onboardingDone: true,
           proApiKeyConfigured: true,
+          languagePreference: LanguagePreference.portuguese,
         ),
       );
       await store.deleteAll();

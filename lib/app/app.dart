@@ -5,6 +5,7 @@ import 'package:rectify/app/router.dart';
 import 'package:rectify/features/app_update/update_gate.dart';
 import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/l10n/locale_resolution.dart';
+import 'package:rectify/providers/settings_controller.dart';
 import 'package:rectify/theme/theme.dart';
 
 class RectifyApp extends ConsumerWidget {
@@ -13,10 +14,19 @@ class RectifyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
+    // Manual interface-language override. `null` keeps Auto: Flutter then
+    // resolves the device locales through [resolveAppLocale] below. A
+    // non-null value pins the locale and is itself routed through the same
+    // callback (`resolveAppLocale([locale], supported)`), so a manual pick
+    // applies immediately on the next rebuild and persists via settings.
+    final language = ref.watch(
+      settingsControllerProvider.select((s) => s.languagePreference),
+    );
 
     return MaterialApp.router(
       title: appBrandName,
       debugShowCheckedModeBanner: false,
+      locale: language.locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       localeListResolutionCallback: resolveAppLocale,

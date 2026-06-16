@@ -874,6 +874,27 @@ class AppLocalizationsPt extends AppLocalizations {
   String get settingsTimeFormat24 => '24 horas  (07:14)';
 
   @override
+  String get settingsSectionLanguage => 'Idioma';
+
+  @override
+  String get settingsLanguageAuto => 'Automático (idioma do dispositivo)';
+
+  @override
+  String get settingsLanguageEnglish => 'English';
+
+  @override
+  String get settingsLanguageGerman => 'Deutsch';
+
+  @override
+  String get settingsLanguageSpanish => 'Español';
+
+  @override
+  String get settingsLanguageFrench => 'Français';
+
+  @override
+  String get settingsLanguagePortuguese => 'Português';
+
+  @override
   String get settingsApiKeyHelper =>
       'Já tem uma chave da Astrology API? Adicione-a aqui.';
 

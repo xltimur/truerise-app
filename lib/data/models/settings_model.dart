@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'package:rectify/data/models/language_preference.dart';
 import 'package:rectify/data/models/time_format.dart';
 
 part 'settings_model.freezed.dart';
@@ -18,6 +19,7 @@ abstract class SettingsModel with _$SettingsModel {
     required TimeFormat timeFormat,
     required bool onboardingDone,
     required bool proApiKeyConfigured,
+    required LanguagePreference languagePreference,
   }) = _SettingsModel;
 
   factory SettingsModel.initial() => const SettingsModel(
@@ -25,5 +27,6 @@ abstract class SettingsModel with _$SettingsModel {
     timeFormat: TimeFormat.h12,
     onboardingDone: false,
     proApiKeyConfigured: false,
+    languagePreference: LanguagePreference.auto,
   );
 }

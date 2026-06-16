@@ -6,6 +6,7 @@ import 'package:rectify/app/route_names.dart';
 import 'package:rectify/core/app_links.dart';
 import 'package:rectify/core/sharing/invite_copy_builder.dart';
 import 'package:rectify/core/sharing/share_service.dart';
+import 'package:rectify/data/models/language_preference.dart';
 import 'package:rectify/data/models/time_format.dart';
 import 'package:rectify/features/settings/delete_all_data_sheet.dart';
 import 'package:rectify/features/settings/privacy_policy_link.dart';
@@ -140,6 +141,40 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ],
               onChanged: controller.setTimeFormat,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sectionGap),
+          _SectionLabel(l10n.settingsSectionLanguage),
+          AppCard(
+            child: rectify.RadioGroup<LanguagePreference>(
+              value: settings.languagePreference,
+              options: <rectify.RadioOption<LanguagePreference>>[
+                rectify.RadioOption<LanguagePreference>(
+                  value: LanguagePreference.auto,
+                  label: l10n.settingsLanguageAuto,
+                ),
+                rectify.RadioOption<LanguagePreference>(
+                  value: LanguagePreference.english,
+                  label: l10n.settingsLanguageEnglish,
+                ),
+                rectify.RadioOption<LanguagePreference>(
+                  value: LanguagePreference.german,
+                  label: l10n.settingsLanguageGerman,
+                ),
+                rectify.RadioOption<LanguagePreference>(
+                  value: LanguagePreference.spanish,
+                  label: l10n.settingsLanguageSpanish,
+                ),
+                rectify.RadioOption<LanguagePreference>(
+                  value: LanguagePreference.french,
+                  label: l10n.settingsLanguageFrench,
+                ),
+                rectify.RadioOption<LanguagePreference>(
+                  value: LanguagePreference.portuguese,
+                  label: l10n.settingsLanguagePortuguese,
+                ),
+              ],
+              onChanged: controller.setLanguagePreference,
             ),
           ),
           const SizedBox(height: AppSpacing.sectionGap),

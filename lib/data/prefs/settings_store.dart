@@ -1,3 +1,4 @@
+import 'package:rectify/data/models/language_preference.dart';
 import 'package:rectify/data/models/settings_model.dart';
 import 'package:rectify/data/models/time_format.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,6 +17,7 @@ class SettingsStore {
   static const _kTimeFormat = 'settings.time_format';
   static const _kOnboardingDone = 'settings.onboarding_done';
   static const _kProApiKeyConfigured = 'settings.pro_api_key_configured';
+  static const _kLanguagePreference = 'settings.language_preference';
 
   Future<SettingsModel> read() async => readSync();
 
@@ -31,6 +33,9 @@ class SettingsStore {
       ),
       onboardingDone: _prefs.getBool(_kOnboardingDone) ?? false,
       proApiKeyConfigured: _prefs.getBool(_kProApiKeyConfigured) ?? false,
+      languagePreference: LanguagePreference.fromTag(
+        _prefs.getString(_kLanguagePreference) ?? LanguagePreference.auto.tag,
+      ),
     );
   }
 
@@ -41,6 +46,10 @@ class SettingsStore {
     await _prefs.setBool(
       _kProApiKeyConfigured,
       settings.proApiKeyConfigured,
+    );
+    await _prefs.setString(
+      _kLanguagePreference,
+      settings.languagePreference.tag,
     );
   }
 
@@ -56,11 +65,15 @@ class SettingsStore {
   Future<void> setProApiKeyConfigured({required bool value}) =>
       _prefs.setBool(_kProApiKeyConfigured, value);
 
+  Future<void> setLanguagePreference(LanguagePreference value) =>
+      _prefs.setString(_kLanguagePreference, value.tag);
+
   /// Wipe every settings key. Used by "Delete all data" (§8.5).
   Future<void> deleteAll() async {
     await _prefs.remove(_kDemoModeDefault);
     await _prefs.remove(_kTimeFormat);
     await _prefs.remove(_kOnboardingDone);
     await _prefs.remove(_kProApiKeyConfigured);
+    await _prefs.remove(_kLanguagePreference);
   }
 }
