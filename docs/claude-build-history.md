@@ -6239,3 +6239,35 @@ passed auth — it reached business logic, not 401/403 — so the existing
   sizes, and console upload remain owner/design work. The canonical packs still
   block the guarded compositor write path until the current 5-frame captions /
   manifests are adopted.
+
+### 2026-06-16 - Sync release/submission status docs after EN draft raw capture
+
+- **Stage:** docs-only status sync of the release/submission readiness docs to
+  record the EN current-plan raw-capture draft work (commit `828620d`). No app
+  code, tests, assets, manifests, or screenshots were changed; this entry plus
+  the two status-doc edits are the whole change.
+- **Session:** Claude Code (Opus 4.8). Session id not exposed in-session.
+- **Artifacts (changed):**
+  - `docs/publication-readiness-current-status.md` Sec. 6 - added one concise
+    caveat recording the `screenshots/store/en-current-draft/` raw frames
+    (problem hook + life events) captured via the committed offline Demo-mode
+    harness, that no canonical pack was overwritten and no final composites were
+    generated, that the guarded compositor write path is unchanged, and that
+    final submission still needs owner/design visual approval, native-speaker
+    localized caption review, additional device sizes, and console upload.
+  - `docs/store-submission-readiness.md` top status block - one concise dated
+    bullet mirroring the same, pointing to the authoritative doc above.
+- **Status recorded (not new engineering):** the two previously-missing
+  post-Appeeky frames are now RAW DRAFT scratch frames only; `en-current-draft`
+  is not a supported store locale, so the compositor never consumes it; the
+  canonical `screenshots/store/{en,de,fr,es,pt-BR}` packs and the production
+  write guard are unchanged; no `screenshots/store/**/composited/` exists.
+- **Verification:** docs-only - `git diff --check` -> clean; ASCII-only prose;
+  no `lib/`, test, asset, manifest, or screenshot file changed.
+- **Limit/quota:** none hit (no network).
+- **Residuals / open questions:** final screenshot submission remains
+  owner/design gated (visual approval, native-speaker localized caption review,
+  additional device sizes if the consoles require them, caption/device
+  compositing, console upload); capturing/adopting the current five-frame plan
+  into the canonical packs and updating captions/manifests is what unblocks the
+  guarded write path.

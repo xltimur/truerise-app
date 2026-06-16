@@ -52,6 +52,17 @@
 >   provider directly and **bypassing the proxy and the shared free quota**. The
 >   earlier "removed / no longer user-facing" note was stale; the §2.1, §8.3, and
 >   §12.2 entries below and the reviewer notes reflect this BYO-key path.
+> - **Screenshot draft (2026-06-16, commit `828620d`):** the two frames the
+>   current post-Appeeky five-frame plan was missing (problem hook + life events)
+>   are now captured as RAW, clearly-labeled DRAFT scratch frames in
+>   `screenshots/store/en-current-draft/` via a committed offline Demo-mode
+>   Flutter-test harness. The canonical `screenshots/store/{en,de,fr,es,pt-BR}`
+>   packs were NOT overwritten, NO final composited PNGs were generated, and the
+>   production compositor write guard is unchanged and still refuses final
+>   writes. This does not change P0-9: final screenshot submission still needs
+>   owner/design visual approval, native-speaker localized caption review,
+>   additional device sizes if the consoles require them, and console upload. See
+>   `docs/publication-readiness-current-status.md` Sec. 6 for detail.
 >
 > The §6 ASO drafts are finalized in `docs/store-listing-en.md`; the §7 localized
 > plan is realized in `docs/store-listing-tier1-localized.md` + the localized

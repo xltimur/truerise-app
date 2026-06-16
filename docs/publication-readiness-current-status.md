@@ -508,6 +508,23 @@ the card goes out via the OS share sheet.
   console upload. No composited / final listing images exist in the repo; the
   store screenshots are still source assets plus compositor tooling only, not
   final listing images.
+- **EN current-plan draft frames captured (2026-06-16, commit `828620d`).** The
+  two frames the post-Appeeky five-frame plan was missing - problem hook and
+  life events - are now captured as RAW, clearly-labeled DRAFT scratch frames in
+  `screenshots/store/en-current-draft/` (`01-problem-hook.png`,
+  `02-life-events.png`) via a committed offline Demo-mode Flutter-test harness
+  (`test/tool/raw_screenshot_capture_test.dart`); frames 3-5 reference the
+  canonical `en` pack unchanged. `en-current-draft` is deliberately NOT a
+  supported store locale, so the compositor write/dry-run pipeline never consumes
+  it. No canonical `screenshots/store/<locale>` pack was overwritten, no final
+  composited PNGs were generated (`find screenshots/store -name composited -type
+  d` -> no output), and the guarded compositor write path
+  (`tool/store_screenshot_compositor_write.dart`) is unchanged and still refuses
+  final writes for the pre-Appeeky manifests. This does not change P0-9: final
+  screenshot submission still requires owner/design visual approval,
+  native-speaker localized caption review, additional device sizes if the
+  consoles require them, caption/device compositing, and console upload - all
+  owner/design work.
 - **P0-4 / P0-5 docs are preparation guidance**, explicitly "not legal advice"
   and "not a submission" — they do not themselves satisfy the store
   requirement; the owner/legal/console step is the gating action.
