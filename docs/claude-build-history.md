@@ -6184,3 +6184,58 @@ passed auth — it reached business logic, not 401/403 — so the existing
   guarded; no final composited or on-disk store PNGs exist in the repo.
   Capturing the current 5-frame plan and updating captions/manifests remains
   owner/design work and is what unblocks the guarded write path.
+
+### 2026-06-16 - Committed raw screenshot capture harness + en current-plan draft
+
+- **Stage:** re-introduced a committed, reusable Flutter-test raw screenshot
+  capture harness and captured the two missing current-plan frames (problem
+  hook + life events) into a clearly-labeled draft folder. No app runtime code,
+  no canonical locale pack, and no production-readiness guard were changed; no
+  final composited PNGs were generated.
+- **Session:** Claude Code (Opus 4.8). Session id not exposed in-session.
+- **Artifacts (new):**
+  - `test/tool/raw_screenshot_capture.dart` - pure path / opt-in / frame-plan
+    seam. `draftRawScreenshotPath` can only resolve inside
+    `screenshots/store/en-current-draft/`; it can never resolve inside a
+    canonical `screenshots/store/<locale>` pack. `captureWritesEnabled` gates
+    all on-disk writes behind `RECTIFY_CAPTURE_RAW_SCREENSHOTS=1`.
+    `en-current-draft` is deliberately not a supported store locale, so the
+    compositor never consumes it.
+  - `test/tool/raw_screenshot_capture_test.dart` - the harness. Renders the
+    shipped `RectifyApp` offline (Demo mode, no network) at 1290x2796, loads all
+    bundled fonts (text + MaterialIcons + Lucide) for real glyphs/icons, and on
+    explicit opt-in encodes ONE frame per process via
+    `RenderRepaintBoundary.toImage(pixelRatio: 3)` and flushes it to the draft
+    folder. A normal `flutter test` run takes the no-`toImage`, no-write path
+    (the `toImage` path always ends in the documented finalization timeout, so
+    it must never run by default).
+  - `test/tool/raw_screenshot_capture_safety_test.dart` - pure safety suite:
+    proves the opt-in default writes nothing, the draft path never escapes into
+    a canonical pack, the compositor refuses the draft segment, and the frame
+    plan is consistent.
+  - `screenshots/store/en-current-draft/{01-problem-hook,02-life-events}.png` -
+    the two newly captured raw frames (1290x2796 RGBA, real shipped UI).
+  - `screenshots/store/en-current-draft/{README.md,manifest.json}` - DRAFT /
+    NOT FINAL docs mapping the current five-frame plan; frames 3-5 are
+    references to the canonical `en` pack (not copies).
+  - `test/tool/store_screenshot_manifest_test.dart` - inventory guard
+    strengthened: still asserts the locale dirs equal the supported locales, and
+    now also asserts every non-locale dir is a clearly-labeled draft folder.
+- **Verification - RUN AND PASSED:**
+  - `flutter test test/tool/` -> `+167: All tests passed!` (includes the new
+    safety suite and the harness default-mode render; the harness writes nothing
+    to the repo on a default run).
+  - Captured both draft frames via the opt-in env, one per process; both are
+    valid 1290x2796 RGBA PNGs (signature + IHDR + IEND verified) showing the
+    real TimeWindowScreen and a populated LifeEventsScreen.
+  - `flutter analyze` -> `No issues found!`; `dart format` clean on changed
+    files; `git diff --check` clean.
+  - Canonical `screenshots/store/en` pack unchanged (0 entries); no `lib/`
+    runtime change; `tool/store_screenshot_compositor_write.dart` readiness
+    guard untouched; no `screenshots/store/**/composited/` directories.
+- **Limit/quota:** none hit (all offline; no network).
+- **Residuals / open questions:** the draft is raw / not final - caption
+  overlays, device framing, native-speaker caption review, additional device
+  sizes, and console upload remain owner/design work. The canonical packs still
+  block the guarded compositor write path until the current 5-frame captions /
+  manifests are adopted.

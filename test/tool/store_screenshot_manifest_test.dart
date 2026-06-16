@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
+import 'raw_screenshot_capture.dart';
 import 'screenshot_compositor.dart';
 
 /// Raw screenshot file names every locale folder under
@@ -40,13 +41,28 @@ String _baseName(String path) {
 
 void main() {
   group('store screenshot inventory', () {
-    test('top-level store directories match the supported locales', () {
+    test('top-level store dirs are exactly the locales plus only clearly '
+        'labeled draft scratch folders', () {
       final dirNames = Directory(kStoreScreenshotsRoot)
           .listSync()
           .whereType<Directory>()
           .map((dir) => _baseName(dir.path))
           .toList();
-      expect(dirNames, unorderedEquals(supportedStoreLocales));
+
+      // Every shipped locale pack is present exactly once, with no stray
+      // canonical-locale directory.
+      final localeDirs = dirNames.where(isSupportedStoreLocale).toList();
+      expect(localeDirs, unorderedEquals(supportedStoreLocales));
+
+      // The only other thing allowed beside the locale packs is a draft
+      // scratch folder, which can never be a supported locale and so can never
+      // be consumed by the compositor (it rejects the segment).
+      final nonLocaleDirs = dirNames
+          .where((name) => !isSupportedStoreLocale(name))
+          .toList();
+      for (final name in nonLocaleDirs) {
+        expect(isDraftScreenshotDirName(name), isTrue, reason: name);
+      }
     });
   });
 

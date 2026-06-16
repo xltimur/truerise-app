@@ -1,0 +1,92 @@
+{
+  "set": "store-screenshots-en-current-plan-DRAFT",
+  "status": "DRAFT",
+  "final": false,
+  "date": "2026-06-16",
+  "model": "claude-opus-4-8",
+  "locale": "en-current-draft",
+  "isCanonicalLocalePack": false,
+  "purpose": "Draft, non-final raw frames for the CURRENT post-Appeeky five-frame store story order (problem hook -> life events -> result -> evidence -> privacy/offline demo). This folder is a scratch draft, NOT a shipped locale pack: 'en-current-draft' is not a supported store locale, so the compositor write/dry-run pipeline never consumes it. It does not overwrite or replace the canonical screenshots/store/en pack.",
+  "currentCaptionPlanSource": "docs/store-listing-en.md Sec. 5 (post-Appeeky 5-frame plan); docs/aso-naming-strategy.md Sec. 14.5.",
+  "captureHarness": "test/tool/raw_screenshot_capture_test.dart (committed Flutter-test harness). Run one frame per process, opt-in: RECTIFY_CAPTURE_RAW_SCREENSHOTS=1 RECTIFY_CAPTURE_FRAME=<id> flutter test test/tool/raw_screenshot_capture_test.dart",
+  "device": {
+    "label": "iPhone 6.7\" / Pro Max portrait",
+    "pixelWidth": 1290,
+    "pixelHeight": 2796,
+    "logicalWidth": 430,
+    "logicalHeight": 932,
+    "devicePixelRatio": 3,
+    "safeAreaPaddingPhysicalPx": { "top": 177, "bottom": 102 }
+  },
+  "source": "Shipped Flutter UI (package rectify) rendered from real widgets, routes, and Demo-mode state. No marketing mockups, no fabricated screens.",
+  "captureMethod": "RenderRepaintBoundary.toImage(pixelRatio: 3) over the real RectifyApp, offline Demo mode (no network), navigated through the real calculation_flow controller and go_router. All bundled fonts (text + MaterialIcons + Lucide) loaded from FontManifest.json so glyphs and icons render real.",
+  "demoMode": true,
+  "network": "none (Demo mode is fully offline; no network calls, no HTTP)",
+  "captionsBakedIn": false,
+  "captionPlanStatus": "current_post_appeeky_5_frame_DRAFT",
+  "newlyCapturedHere": ["01-problem-hook.png", "02-life-events.png"],
+  "referencedFromCanonicalPack": [
+    "screenshots/store/en/01-result-hero.png",
+    "screenshots/store/en/02-evidence-breakdown.png",
+    "screenshots/store/en/03-privacy-demo-settings.png"
+  ],
+  "frames": [
+    {
+      "order": 1,
+      "file": "01-problem-hook.png",
+      "origin": "captured-here-DRAFT",
+      "title": "Problem hook",
+      "screen": "TimeWindowScreen",
+      "route": "/calc/window",
+      "shows": "The unknown-birth-time entry point: 'Do you know an approximate birth time?' with 'I have an approximate time' / 'I have no idea', an approximate time, a search window, and the derived range copy. Frames the core problem in real shipped input UI.",
+      "intendedCaption": "Don't know your exact birth time?"
+    },
+    {
+      "order": 2,
+      "file": "02-life-events.png",
+      "origin": "captured-here-DRAFT",
+      "title": "Life events input",
+      "screen": "LifeEventsScreen",
+      "route": "/calc/events",
+      "shows": "Populated life-events list (5 added): Education milestone (2008), Relocation (2012), Career change (Sep 2015), Marriage / Partnership (Jun 2018), Birth of child (Mar 2021), with 'Add event' and 'Continue (demo)'.",
+      "intendedCaption": "Add the life events you remember."
+    },
+    {
+      "order": 3,
+      "file": "../en/01-result-hero.png",
+      "origin": "reference-to-canonical-pack",
+      "title": "The result",
+      "screen": "ResultScreen",
+      "route": "/calc/result/:id",
+      "shows": "Existing canonical raw frame. Estimated time 7:14 AM, Gemini Rising, 78% confidence, alternates, DEMO badge. Referenced unchanged; not copied here.",
+      "intendedCaption": "Estimate your birth time and rising sign."
+    },
+    {
+      "order": 4,
+      "file": "../en/02-evidence-breakdown.png",
+      "origin": "reference-to-canonical-pack",
+      "title": "The evidence",
+      "screen": "EvidenceScreen",
+      "route": "/calc/result/:id/evidence",
+      "shows": "Existing canonical raw frame. Per-event STRONG/MODERATE/WEAK breakdown behind the candidate time. Referenced unchanged; not copied here.",
+      "intendedCaption": "See the evidence behind every candidate."
+    },
+    {
+      "order": 5,
+      "file": "../en/03-privacy-demo-settings.png",
+      "origin": "reference-to-canonical-pack",
+      "title": "Private & offline demo",
+      "screen": "SettingsScreen",
+      "route": "/settings",
+      "shows": "Existing canonical raw frame. Demo mode toggle (free, no network), time format, Delete all data. Referenced unchanged; not copied here.",
+      "intendedCaption": "Private by default. Try it free, offline."
+    }
+  ],
+  "shareFrameStatus": "Optional / bonus under the current plan, not one of the required five. The canonical screenshots/store/en/04-share-result.png remains available if a bonus share frame is composited.",
+  "limitations": [
+    "DRAFT, not final. No marketing caption overlays and no device bezels: these are raw device-resolution captures only. Caption compositing (current plan captions above) and device framing are owner work.",
+    "Frames 3-5 are REFERENCES to the canonical screenshots/store/en pack, not copies. The canonical pack is unchanged.",
+    "Times/signs/percentages in the referenced result/evidence frames come from the offline canonical DEMO dataset; the DEMO badge is visible in-frame.",
+    "No final composited PNGs were generated. The guarded compositor write path (tool/store_screenshot_compositor_write.dart) is unchanged and still refuses final writes for the canonical pre-Appeeky manifests."
+  ]
+}
