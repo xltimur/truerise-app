@@ -145,8 +145,8 @@ proxy and share URLs (the default placeholders block a public release):
 ```bash
 # Manual preflight (iOS and Android)
 dart run tool/release_env_guard.dart \
-  --share-url "$TRUERISE_SHARE_URL" \
-  --proxy-base-url "$RECTIFY_PROXY_BASE_URL" \
+  --share-url="$TRUERISE_SHARE_URL" \
+  --proxy-base-url="$RECTIFY_PROXY_BASE_URL" \
   --allow-bundled-key --purpose=review-capped
 ```
 

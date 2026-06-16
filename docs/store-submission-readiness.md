@@ -67,6 +67,14 @@
 > The §6 ASO drafts are finalized in `docs/store-listing-en.md`; the §7 localized
 > plan is realized in `docs/store-listing-tier1-localized.md` + the localized
 > ARBs/screenshots. Re-read those for the current copy.
+>
+> **Owner handoff + preflight (added 2026-06-16).** For a condensed,
+> paste-ready owner handoff (prepared-in-repo vs. owner/legal/store inputs,
+> exact store-metadata values, screenshot status, and next-action order) see
+> `docs/release-handoff-owner-checklist.md`. For the exact local verification
+> commands with expected outcomes - including the corrected `release_env_guard`
+> equals-form syntax that supersedes the space-form examples in §11.1 below -
+> see `docs/release-preflight-commands.md`.
 
 ---
 
@@ -748,8 +756,8 @@ flutter test integration_test/demo_flow_test.dart
 # proxy/share URLs; placeholders block a public release. Omit the two
 # --allow-bundled-key flags if ASTRO_API_KEY was removed from .env.
 dart run tool/release_env_guard.dart \
-  --share-url "$TRUERISE_SHARE_URL" \
-  --proxy-base-url "$RECTIFY_PROXY_BASE_URL" \
+  --share-url="$TRUERISE_SHARE_URL" \
+  --proxy-base-url="$RECTIFY_PROXY_BASE_URL" \
   --allow-bundled-key --purpose=review-capped
 
 # Build the shippable artifacts (release env defines per README
