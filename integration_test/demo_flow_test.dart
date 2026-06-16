@@ -168,6 +168,16 @@ void main() {
       container.read(routerProvider).go(RoutePaths.settings);
       await tester.pumpAndSettle();
       expect(find.text('Settings'), findsWidgets);
+      // The destructive "Delete all data" card sits below the fold in the
+      // Settings ListView. On real simulator viewports the lazy list never
+      // builds that row until it scrolls into range, so drive the scroll
+      // before asserting rather than assuming it is already laid out.
+      await tester.scrollUntilVisible(
+        find.text('Delete all data'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
       expect(find.text('Delete all data'), findsOneWidget);
 
       // ── 8. No HTTP calls happened — FakeRectificationRepository
