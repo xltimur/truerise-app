@@ -24,7 +24,7 @@ site/robots.txt    -> https://truerise.app/robots.txt
 
 No build step is required before deploying.
 
-## Planned URL structure
+## URL structure
 
 | URL                            | File             | Purpose                              |
 |--------------------------------|------------------|--------------------------------------|
@@ -33,19 +33,19 @@ No build step is required before deploying.
 | `https://truerise.app/support` | `support.html`   | Support contact page                 |
 | `https://truerise.app/404`     | `404.html`       | Custom 404 error page                |
 
-## Planned file/directory layout
+## File/directory layout
 
 ```
 site/
-  index.html          <- marketing landing page (step 2+)
-  privacy.html        <- privacy policy page (later step)
-  support.html        <- support page (later step)
-  404.html            <- custom 404 (later step)
-  robots.txt          <- search crawler rules (later step)
+  index.html          <- public landing / share destination
+  privacy.html        <- privacy policy draft page
+  support.html        <- support and FAQ page
+  404.html            <- custom 404
+  robots.txt          <- search crawler rules
   assets/
-    styles.css        <- single shared stylesheet (later step)
-    fonts/            <- self-hosted webfonts if approved (later step)
-    img/              <- brand assets, og-card, favicon (later step)
+    styles.css        <- single shared stylesheet
+    fonts/            <- self-hosted Inter, Source Serif 4, JetBrains Mono
+    img/              <- brandmark, favicon, og-card
   README.md           <- this file
 ```
 
@@ -91,7 +91,7 @@ page referencing them is published.
 6. **Children's privacy section**
 
         [OWNER/LEGAL: confirm the minimum age stated here
-        matches both the in-app gate and the app-store age rating.]
+        matches both the inside-the-app gate and the app-store age rating.]
 
 7. **International transfers section**
 
@@ -114,11 +114,29 @@ page referencing them is published.
 
         [OWNER/LEGAL: support email]
 
-## What is NOT here yet (deferred to later steps)
+## Local checks
 
-- Any HTML pages
-- `robots.txt`
-- `assets/styles.css`
-- Any fonts or images
-- Favicon or og-card
-- External CDN links, analytics, or web fonts (require explicit approval)
+From the repository root, serve the folder with:
+
+```
+python3 -m http.server 8080 --directory site
+```
+
+Then open:
+
+- `http://localhost:8080/`
+- `http://localhost:8080/privacy.html`
+- `http://localhost:8080/support.html`
+- `http://localhost:8080/404.html`
+
+Check that:
+
+- There are no external font, analytics, CDN, iframe, or remote script
+  requests.
+- There is no monetization or key-entry copy.
+- The service disclaimer appears in HTML pages and includes entertainment and
+  not medical/scientific/legal/financial guarantee language.
+- Owner/legal placeholders remain visible in `privacy.html`, `support.html`,
+  and this README until owner/legal review supplies real values.
+- Inter and JetBrains Mono are copied from app TTF assets. Source Serif 4 is
+  a local WOFF generated from the app TTF to keep whole-tree text greps clean.
