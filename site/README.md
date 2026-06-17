@@ -45,7 +45,7 @@ site/
   assets/
     styles.css        <- single shared stylesheet
     fonts/            <- self-hosted Inter, Source Serif 4, JetBrains Mono
-    img/              <- brandmark, favicon, og-card
+    img/              <- brandmark.svg, favicon.svg (rising-sun motif), og-card.png (1200x630, navy bg)
   README.md           <- this file
 ```
 
