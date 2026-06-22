@@ -75,10 +75,12 @@ Integration coverage of this flow lives in
 
 ### Running the Live mode (real astrology-api.io calculation)
 
-Live mode calls the real [astrology-api.io](https://api.astrology-api.io)
-rectification API and costs **15 credits per request**. The key is
-resolved at runtime by `proApiKeyProvider`, which prefers a value in
-secure storage and otherwise falls back to the bundled `.env`:
+Live mode calls the real astrology-api.io rectification API and costs
+**15 credits per request**. No-key live calls use Oleg's public, owner-billed
+API endpoint, `https://api-public.astrology-api.io`; user-key/provider-direct
+calls use the canonical provider host, `https://api.astrology-api.io`. The key
+is resolved at runtime by `proApiKeyProvider`, which prefers a value in secure
+storage and otherwise falls back to the bundled `.env`:
 
 1. **Bundled `.env` (demo / review builds).** `lib/main.dart` calls
    `dotenv.load(fileName: '.env')` at startup, and `proApiKeyProvider`
@@ -102,11 +104,13 @@ Live flow:
 3. From the home screen tap **New calculation**, fill in your birth
    data and life events, then tap **Rectify**.
 
-The app connects directly to `https://api.astrology-api.io/api/v3/rectification/search`
-with `Authorization: Bearer <key>`. If no key is configured (empty `.env`
-and empty secure storage) the live calculation can't start and the app
-shows a dedicated error screen offering **Try again** and **Demo mode** —
-not a generic network error.
+With a key, the app connects to
+`https://api.astrology-api.io/api/v3/rectification/search` with
+`Authorization: Bearer <key>` and bypasses the local free quota. If no key is
+configured (empty `.env` and empty secure storage), the app uses
+`https://api-public.astrology-api.io/api/v3/rectification/search` without an
+`Authorization` header and keeps the local **3 live requests / 24h** quota
+enforced in-app.
 
 See `docs/api-integration.md` for the full endpoint reference and
 `docs/implementation-plan.md` §9.5 for the security boundary.
@@ -139,14 +143,16 @@ flutter run \
 ```
 
 Public release build (same keys, release mode). First run the guard
-preflight — it covers both iOS and Android and must pass with the real
-proxy and share URLs (the default placeholders block a public release):
+preflight — it covers both iOS and Android. The default no-key API host is
+`https://api-public.astrology-api.io`; the share URL still needs a real or
+owner-acknowledged value:
 
 ```bash
 # Manual preflight (iOS and Android)
 dart run tool/release_env_guard.dart \
   --share-url="$TRUERISE_SHARE_URL" \
   --proxy-base-url="$RECTIFY_PROXY_BASE_URL" \
+  --provider-base-url="$RECTIFY_PROVIDER_BASE_URL" \
   --allow-bundled-key --purpose=review-capped
 ```
 
@@ -176,12 +182,12 @@ Public configuration keys (full reference: `docs/implementation-plan.md`
 | Key | Purpose |
 |---|---|
 | `RECTIFY_ENV` | `dev` / `staging` / `prod` — logger verbosity, Crashlytics. |
-| `RECTIFY_PROXY_BASE_URL` | Base URL of the backend rectification proxy. |
-| `RECTIFY_PROXY_PATH` | Optional path prefix appended to the proxy. |
+| `RECTIFY_PROXY_BASE_URL` | Base URL used for no-key live calls (default: `https://api-public.astrology-api.io`; can be replaced by an owner-controlled proxy). |
+| `RECTIFY_PROXY_PATH` | Endpoint path appended to `RECTIFY_PROXY_BASE_URL` (default: `/api/v3/rectification/search`). |
 | `RECTIFY_PROXY_APP_ID` | Public app identifier (NOT a secret; see Appendix B). |
 | `TRUERISE_SHARE_URL` | Public share-link base for shared copy (bare HTTPS, no tracking params). |
 | `TRUERISE_PRIVACY_POLICY_URL` | Optional public (non-secret) hosted privacy-policy page opened from Settings. Must be a bare HTTPS URL (no query/fragment/userinfo). Default is empty = disabled: the Settings row keeps the bundled in-app `PrivacyPolicyScreen`, which is also the fallback for unsafe values or launch failures. |
-| `RECTIFY_PROVIDER_BASE_URL` | Provider-direct base URL (default: `https://api.astrology-api.io`). |
+| `RECTIFY_PROVIDER_BASE_URL` | Provider-direct base URL for user/bundled API-key mode (default: `https://api.astrology-api.io`). |
 | `RECTIFY_PROVIDER_PATH` | Provider-direct endpoint path (default: `/api/v3/rectification/search`). |
 | `RECTIFY_GEOCODING_BASE_URL` | Public geocoding provider URL. |
 | `RECTIFY_GEOCODING_PUBLIC_KEY` | URL/bundle-id-restricted `pk.…` token only. |

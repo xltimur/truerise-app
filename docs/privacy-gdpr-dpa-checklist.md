@@ -15,12 +15,15 @@
   `docs/api-integration.md`, `docs/store-submission-readiness.md` Sec. 12.1.
 
 **Why this exists.** TrueRise processes **birth data + life events** and, in live
-mode, transmits them to a **third-party Astrology calculation provider** (possibly
-via a proxy). Birth data plus dated life events are inherently identifying about a
-real person, and free-text event descriptions can contain GDPR **special-category
-data** (Art. 9). That raises controller/processor, transfer, and data-subject-
-rights questions the shipped code cannot answer on its own. This checklist
-gathers them in one place for owner/legal sign-off.
+mode, transmits them to a **third-party Astrology calculation provider**: no-key
+traffic currently uses Oleg's owner-billed public host, while a user-provided API
+key goes directly to the canonical provider host. A future owner-controlled proxy
+would add another processing surface. Birth data plus dated life events are
+inherently identifying about a real person, and free-text event descriptions can
+contain GDPR **special-category data** (Art. 9). That raises controller/
+processor, transfer, and data-subject-rights questions the shipped code cannot
+answer on its own. This checklist gathers them in one place for owner/legal
+sign-off.
 
 ---
 
@@ -37,7 +40,7 @@ From the verified data posture (`docs/apple-privacy-labels.md` Sec. 2,
 | Life events | category + date + optional free-text description (<=200 chars each) | Yes (live mode) | Free text is unconstrained. |
 | Special-category data (GDPR Art. 9) | health (`illness`/`accident` categories, free text), and possibly religious belief / sexual orientation typed into free text | Yes (live mode, if user types it) | The central legal flag - see Sec. 3. |
 | Calculation label | optional user label | **No** (on-device only) | Not in the request DTO; stays local. |
-| Provider API key | user-entered key (secure storage) | To the provider only, as the user's own credential | Never sent to a TrueRise server; not our data to control. |
+| Provider API key | user-entered key (secure storage) | To the canonical provider host only, as the user's own credential | Never sent to the owner-billed public host or a TrueRise server; not our data to control. |
 | IP address | network metadata | Seen by the receiving server | Inherent to any HTTPS request; not stored by us. |
 
 Demo mode transmits **nothing** (offline); the app is declared on **live-mode**

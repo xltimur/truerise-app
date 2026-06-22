@@ -18,13 +18,19 @@ const String _safeShareUrl = 'https://get.truerise.app';
 /// Satisfies the share-url gate in tests that are about other gates.
 const String _safeShareUrlArg = '--share-url=$_safeShareUrl';
 
-/// Default RECTIFY_PROXY_BASE_URL placeholder; a public release must not
-/// ship it.
-const String _defaultProxyUrl = 'https://proxy.invalid.example';
+/// Default RECTIFY_PROXY_BASE_URL; Oleg provided this public host for no-key
+/// live API calls.
+const String _defaultProxyUrl = 'https://api-public.astrology-api.io';
+
+/// Default RECTIFY_PROVIDER_BASE_URL for user-key/provider-direct mode.
+const String _defaultProviderUrl = 'https://api.astrology-api.io';
 
 /// Owner-controlled proxy base URL: bare HTTPS, no query, fragment, or
 /// userinfo.
 const String _safeProxyUrl = 'https://proxy.truerise.app';
+
+/// Owner-controlled provider-compatible base URL: bare HTTPS origin.
+const String _safeProviderUrl = 'https://provider.truerise.app';
 
 /// Satisfies the proxy-url gate in tests that are about other gates.
 const String _safeProxyUrlArg = '--proxy-base-url=$_safeProxyUrl';
@@ -343,23 +349,24 @@ void main() {
       envPath = await writeEnv('OTHER_SETTING=1\n');
     });
 
-    test('blocks release when --proxy-base-url is omitted, treating it as '
-        'the default placeholder', () {
-      final result = runGuard(['--env-file=$envPath', _safeShareUrlArg]);
+    test(
+      'passes when --proxy-base-url is omitted, using the public default',
+      () {
+        final result = runGuard(['--env-file=$envPath', _safeShareUrlArg]);
 
-      expect(result.exitCode, isNot(0));
-      expect(result.message, contains(_defaultProxyUrl));
-      expect(result.message, contains('--allow-default-proxy-url'));
-    });
+        expect(result.exitCode, 0);
+        expect(result.message, contains(_defaultProxyUrl));
+      },
+    );
 
-    test('blocks the default placeholder when passed explicitly', () {
+    test('passes when the public default is passed explicitly', () {
       final result = runGuard([
         '--env-file=$envPath',
         _safeShareUrlArg,
         '--proxy-base-url=$_defaultProxyUrl',
       ]);
 
-      expect(result.exitCode, isNot(0));
+      expect(result.exitCode, 0);
       expect(result.message, contains(_defaultProxyUrl));
     });
 
@@ -458,8 +465,7 @@ void main() {
     });
 
     test(
-      'allows the omitted/default proxy URL only with both '
-      '--allow-default-proxy-url and --proxy-url-purpose=local-test-only',
+      'accepts legacy default proxy acknowledgement but no longer requires it',
       () {
         final result = runGuard([
           '--env-file=$envPath',
@@ -469,22 +475,21 @@ void main() {
         ]);
 
         expect(result.exitCode, 0);
-        expect(result.message, contains('local-test-only'));
+        expect(result.message, contains('no longer required'));
       },
     );
 
-    test('fails to confirm the default without a purpose', () {
+    test('legacy default proxy allow flag without a purpose still passes', () {
       final result = runGuard([
         '--env-file=$envPath',
         _safeShareUrlArg,
         '--allow-default-proxy-url',
       ]);
 
-      expect(result.exitCode, isNot(0));
-      expect(result.message, contains('local-test-only'));
+      expect(result.exitCode, 0);
     });
 
-    test('fails to confirm the default with a wrong purpose', () {
+    test('legacy default proxy wrong purpose still passes', () {
       final result = runGuard([
         '--env-file=$envPath',
         _safeShareUrlArg,
@@ -492,17 +497,104 @@ void main() {
         '--proxy-url-purpose=production',
       ]);
 
-      expect(result.exitCode, isNot(0));
+      expect(result.exitCode, 0);
     });
 
-    test('fails to confirm the default with a purpose but no allow flag', () {
+    test('legacy default proxy purpose without allow flag still passes', () {
       final result = runGuard([
         '--env-file=$envPath',
         _safeShareUrlArg,
         '--proxy-url-purpose=local-test-only',
       ]);
 
+      expect(result.exitCode, 0);
+    });
+  });
+
+  group('provider URL gate', () {
+    late String envPath;
+
+    setUp(() async {
+      // Key-free env so only the provider-url gate decides the outcome.
+      envPath = await writeEnv('OTHER_SETTING=1\n');
+    });
+
+    test('passes when --provider-base-url is omitted, using the canonical '
+        'default', () {
+      final result = runGuard([
+        '--env-file=$envPath',
+        _safeShareUrlArg,
+        _safeProxyUrlArg,
+      ]);
+
+      expect(result.exitCode, 0);
+      expect(result.message, contains(_defaultProviderUrl));
+    });
+
+    test('passes with a custom bare HTTPS provider URL', () {
+      final result = runGuard([
+        '--env-file=$envPath',
+        _safeShareUrlArg,
+        _safeProxyUrlArg,
+        '--provider-base-url=$_safeProviderUrl',
+      ]);
+
+      expect(result.exitCode, 0);
+    });
+
+    test('blocks a provider URL carrying a query string and redacts it', () {
+      final result = runGuard([
+        '--env-file=$envPath',
+        _safeShareUrlArg,
+        _safeProxyUrlArg,
+        '--provider-base-url=$_safeProviderUrl/?token=trk-vq-77',
+      ]);
+
       expect(result.exitCode, isNot(0));
+      expect(
+        result.message,
+        isNot(contains('trk-vq-77')),
+        reason:
+            'query values may carry credentials/identifiers and must '
+            'never be printed',
+      );
+      expect(result.message, contains('redacted'));
+    });
+
+    test('blocks a provider URL with userinfo and redacts it', () {
+      final result = runGuard([
+        '--env-file=$envPath',
+        _safeShareUrlArg,
+        _safeProxyUrlArg,
+        '--provider-base-url=https://trk-vu-77@provider.truerise.app',
+      ]);
+
+      expect(result.exitCode, isNot(0));
+      expect(
+        result.message,
+        isNot(contains('trk-vu-77')),
+        reason: 'userinfo may carry credentials and must never be printed',
+      );
+      expect(result.message, contains('redacted'));
+    });
+
+    test('blocks a provider URL carrying a path and redacts it', () {
+      final result = runGuard([
+        '--env-file=$envPath',
+        _safeShareUrlArg,
+        _safeProxyUrlArg,
+        '--provider-base-url=$_safeProviderUrl/v3',
+      ]);
+
+      expect(result.exitCode, isNot(0));
+      expect(
+        result.message,
+        isNot(contains('/v3')),
+        reason:
+            'path segments must never be printed; RECTIFY_PROVIDER_PATH '
+            'carries the endpoint path separately',
+      );
+      expect(result.message, contains('redacted'));
     });
   });
 

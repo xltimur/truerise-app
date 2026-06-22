@@ -52,10 +52,10 @@ find screenshots/store -name composited -type d       # expect: no output
 
 ## 2. release_env_guard - the release-config gate
 
-The guard runs three gates in order: **share URL -> proxy URL -> bundled key**.
-It exits at the first failure. Exit codes: `0` = OK, `1` = BLOCKED (a gate
-failed), `2` = usage error (unknown argument). The key value is never printed;
-rejected custom URLs are never echoed.
+The guard runs four gates in order: **share URL -> no-key API URL -> provider
+API URL -> bundled key**. It exits at the first failure. Exit codes: `0` = OK,
+`1` = BLOCKED (a gate failed), `2` = usage error (unknown argument). The key
+value is never printed; rejected custom URLs are never echoed.
 
 ### 2.1 Passing preflight (real owner values)
 
@@ -64,20 +64,25 @@ export PATH="$HOME/development/flutter/bin:$PATH"   # if flutter is not on PATH
 dart run tool/release_env_guard.dart \
   --share-url="$TRUERISE_SHARE_URL" \
   --proxy-base-url="$RECTIFY_PROXY_BASE_URL" \
+  --provider-base-url="$RECTIFY_PROVIDER_BASE_URL" \
   --allow-bundled-key --purpose=review-capped
 ```
 
-Expected (`exit 0`): three OK/ACKNOWLEDGED lines -
+Expected (`exit 0`): four OK/ACKNOWLEDGED lines -
 
 ```
 ACKNOWLEDGED: bundled ASTRO_API_KEY (value redacted) accepted for purpose "review-capped". ...
 OK: custom share URL accepted (bare HTTPS, no userinfo, no query, no fragment).
 OK: custom proxy base URL accepted (host-only HTTPS origin, no path, ...).
+OK: default/custom provider base URL accepted (...).
 ```
 
-- `$TRUERISE_SHARE_URL` / `$RECTIFY_PROXY_BASE_URL` must be **bare** HTTPS
-  (proxy: host-only origin, no path). Anything with a path/query/fragment/
-  userinfo is rejected (exit 1, value redacted).
+- `$TRUERISE_SHARE_URL` / `$RECTIFY_PROXY_BASE_URL` /
+  `$RECTIFY_PROVIDER_BASE_URL` must be **bare** HTTPS (API/provider/proxy:
+  host-only origin, no path). Anything with a path/query/fragment/userinfo is
+  rejected (exit 1, value redacted). When omitted, `RECTIFY_PROXY_BASE_URL`
+  defaults to `https://api-public.astrology-api.io` and
+  `RECTIFY_PROVIDER_BASE_URL` defaults to `https://api.astrology-api.io`.
 - **Drop** `--allow-bundled-key --purpose=review-capped` once `ASTRO_API_KEY`
   has been removed from `.env`; with no bundled key the guard prints
   `OK: no bundled ASTRO_API_KEY found`.
@@ -87,25 +92,24 @@ OK: custom proxy base URL accepted (host-only HTTPS origin, no path, ...).
 | Command | Exit | Why |
 | --- | --- | --- |
 | `dart run tool/release_env_guard.dart` (no args) | `1` | default placeholder share URL `https://truerise.app` -> BLOCKED (share gate runs first) |
-| `... --share-url=https://truerise.app` (real proxy, default proxy omitted) | `1` | BLOCKED on the default placeholder proxy URL `https://proxy.invalid.example` |
+| `... --share-url=https://truerise.app` (default API host omitted) | `1` | BLOCKED: `https://truerise.app` is still the default share placeholder unless explicitly owner-confirmed |
 | `... --share-url=https://x.example --proxy-base-url=https://p.example` (bundled key present, no ack) | `1` | BLOCKED: tracked `.env` bundles a non-empty `ASTRO_API_KEY` without acknowledgement |
 | `... --allow-bundled-key` (no `--purpose`) | `1` | BLOCKED: `--allow-bundled-key` requires `--purpose=review-capped` |
 | `... --share-url=https://truerise.app?utm=x` | `1` | BLOCKED: custom share URL not bare HTTPS (query present; value redacted) |
 | `... --proxy-base-url=https://p.example/v1` | `1` | BLOCKED: proxy URL must be host-only (path belongs in `RECTIFY_PROXY_PATH`) |
+| `... --provider-base-url=https://p.example/v1` | `1` | BLOCKED: provider URL must be host-only (path belongs in `RECTIFY_PROVIDER_PATH`) |
 | `... --share-url https://x.example` (space form) | `2` | usage error: `--share-url` is an unknown argument; use `--share-url=...` |
 
-Placeholder-acknowledgement escape hatches (local/test builds only, never a
-public release):
+Placeholder-acknowledgement escape hatch for the share URL:
 
 ```bash
 # Ship the placeholder share URL on purpose (owner-confirmed):
 dart run tool/release_env_guard.dart \
-  --allow-default-share-url --share-url-purpose=owner-confirmed \
-  --allow-default-proxy-url --proxy-url-purpose=local-test-only
+  --allow-default-share-url --share-url-purpose=owner-confirmed
 ```
 
-The proxy placeholder acknowledgement is accepted **only** for
-`--proxy-url-purpose=local-test-only` and that build must never reach users.
+Legacy proxy-placeholder acknowledgement flags are accepted but no longer
+required; the default no-key API host is `https://api-public.astrology-api.io`.
 
 ---
 
@@ -228,6 +232,7 @@ flutter analyze                                            # expect: No issues f
 dart run tool/release_env_guard.dart \
   --share-url="$TRUERISE_SHARE_URL" \
   --proxy-base-url="$RECTIFY_PROXY_BASE_URL" \
+  --provider-base-url="$RECTIFY_PROVIDER_BASE_URL" \
   --allow-bundled-key --purpose=review-capped              # expect: exit 0
 ```
 

@@ -49,9 +49,10 @@
 >   includes add/remove UX for a user-provided Astrology API key
 >   (`lib/features/settings/settings_screen.dart` `_ApiKeyDialog`). When a user
 >   supplies their own key, the app runs in **provider-direct mode**, calling the
->   provider directly and **bypassing the proxy and the shared free quota**. The
->   earlier "removed / no longer user-facing" note was stale; the §2.1, §8.3, and
->   §12.2 entries below and the reviewer notes reflect this BYO-key path.
+>   canonical provider host directly and **bypassing the no-key public-host
+>   quota**. The earlier "removed / no longer user-facing" note was stale; the
+>   §2.1, §8.3, and §12.2 entries below and the reviewer notes reflect this
+>   BYO-key path.
 > - **Screenshot draft (2026-06-16, commit `828620d`):** the two frames the
 >   current post-Appeeky five-frame plan was missing (problem hook + life events)
 >   are now captured as RAW, clearly-labeled DRAFT scratch frames in
@@ -651,10 +652,11 @@ Capture both paths so reviewers and screenshots reflect reality:
 > which runs entirely **offline** and does not consume the free live quota;
 > demo results are labeled with a DEMO pill.
 > In live mode, birth data and event dates are sent over HTTPS to our astrology
-> calculation provider solely to compute the result; the free live path
-> (proxy / bundled review key) is limited to 3 live requests per rolling 24-hour
-> window, while a user who enters their own provider API key in Settings is not
-> subject to that shared free quota. See our privacy policy at
+> calculation provider solely to compute the result; the no-key live path uses
+> the owner-billed public provider host and is locally guarded to 3 live requests
+> per rolling 24-hour window, while a user who enters their own provider API key
+> in Settings calls the canonical provider host directly and is not subject to
+> that no-key quota. See our privacy policy at
 > [URL]. The app stores data on-device only, has no user accounts, and offers a
 > one-tap 'Delete all data'." **[PROPOSED]**
 
@@ -758,6 +760,7 @@ flutter test integration_test/demo_flow_test.dart
 dart run tool/release_env_guard.dart \
   --share-url="$TRUERISE_SHARE_URL" \
   --proxy-base-url="$RECTIFY_PROXY_BASE_URL" \
+  --provider-base-url="$RECTIFY_PROVIDER_BASE_URL" \
   --allow-bundled-key --purpose=review-capped
 
 # Build the shippable artifacts (release env defines per README

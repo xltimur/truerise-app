@@ -77,7 +77,7 @@ console work only** — see §5.
 | P0-8 | Store metadata finalized | placeholder | **[DONE — owner-independent]** | `docs/store-listing-en.md` ready-to-paste (Run A.4), refreshed 2026-06-15 from the Appeeky audit (post-Appeeky title/subtitle/keyword package + **Lifestyle** category; companion `docs/aso-naming-strategy.md` + `docs/competitor-aso-research.md`); `pubspec.yaml:2` description is real marketing copy, not "A new Flutter project." | console character re-count + trademark clearance for "TrueRise" (owner) |
 | P0-9 | Screenshot set | absent | **[DONE — raw captures]** | `screenshots/store/{en,de,fr,es,pt-BR}/` — 5 frames each (`01-result-hero` … `05-privacy-policy`) + `manifest.json` + `README.md` (Runs A.5, D.4). 6.7" / 1290×2796. The post-Appeeky 5-frame caption / story plan (problem hook -> life events -> result -> evidence -> privacy) is aligned in `docs/store-listing-en.md` §5 and the per-locale `screenshots/store/<locale>/README.md` + `manifest.json` (2026-06-15); the existing PNGs remain pre-Appeeky raw / reference captures, not final composited listing images. Test-only compositor path/geometry + store-inventory guards now exist (`test/tool/screenshot_compositor.dart`, `test/tool/screenshot_compositor_test.dart`, `test/tool/store_screenshot_manifest_test.dart`); an in-memory `dart:ui`/Canvas renderer seam (`test/tool/store_screenshot_compositor_renderer.dart` + `…_test.dart`) now returns composited PNG **bytes** only, keeping `screenshot_compositor.dart` pure (focused tests cover the result-hero fixture + a long caption, asserting PNG magic, output size, bytes differing from the raw frame, and that no `composited/` dir is created); a manifest-driven planning seam (`test/tool/store_screenshot_compositor_plan.dart` + `…_test.dart`) builds validated `StoreScreenshotCompositeJob`s (locale, fileName, rawPath, outputPath, caption) from on-disk manifests only — validating supported locale, safe file names (`resolveCompositedTarget`), non-empty caption, and preserved locale/frame order — and renders nothing, writes no PNGs, creates no directories, and never calls the renderer (5 focused tests pass); an in-memory pipeline test (`test/tool/store_screenshot_compositor_pipeline_test.dart`) now wires the plan seam to the renderer seam: `buildAllCompositeJobs()` then renders a fast representative subset (`jobs.first` + `jobs.last`, not all 25 jobs) through `StoreScreenshotCompositorRenderer.render(StoreScreenshotCompositeInput(rawScreenshotPng: rawBytes, caption: job.caption))`, asserting rawPath present and outputPath absent before/after, PNG magic, output differing from the raw frame, decoded size `kRawScreenshotWidth` x `kRawScreenshotHeight`, captions taken from `job.caption` (no localized captions hardcoded), and no `screenshots/store/<locale>/composited` dir before/after across `supportedStoreLocales` (1 test passes; writes no files, creates no composited dirs); a runnable no-write dry-run CLI (`tool/store_screenshot_compositor_dry_run.dart` + `test/tool/store_screenshot_compositor_dry_run_test.dart`) now plans all 25 composited screenshots across the 5 locales (en, de, fr, es, pt-BR), validates every raw source exists and that no composited output already exists, and confirms it rendered nothing, wrote no files, and created no dirs — `dart run tool/store_screenshot_compositor_dry_run.dart` exits 0 (1 on validation fail, 64 on usage error), `--verbose` lists the 25 planned output paths (`+10` focused tests pass); a new IO-only write seam (`test/tool/store_screenshot_compositor_writer.dart` + `test/tool/store_screenshot_compositor_writer_test.dart`) now owns the harness's only disk-touching step — `writeCompositedScreenshots` reads each planned job's raw source, asks an injected renderer callback (returning `Uint8List`) for the composited bytes, and writes them under an injected root `Directory`, pre-flighting the whole batch (refusing a missing raw source or an existing output, the latter unless `allowOverwrite` is set) before any render/write and staying free of `dart:ui` — its 5 focused tests drive real IO entirely inside temp directories, so no `composited/` dir is ever created under the repo's `screenshots/store/` (`+5` tests pass). A guarded write CLI now wires the plan, renderer, and writer seams together (`tool/store_screenshot_compositor_write.dart` + `test/tool/store_screenshot_compositor_write_test.dart` (12 tests) + `test/tool/store_screenshot_compositor_write_harness_test.dart`, landed in commit `f694fba`): the default path is a no-write preview (exit 0, writes nothing), a real write requires BOTH `--write` and `--yes` (`--write` alone refuses, exit 64), and a plain `dart run tool/store_screenshot_compositor_write.dart --write --yes` refuses (exit 70) because real rendering needs the Flutter engine (`dart:ui`), pointing instead at the Flutter-compatible harness — that harness wires the real `dart:ui` renderer through `runWriteCli` into a temp dir and verifies it composites and writes a PNG there (never under the repo's `screenshots/store/`). No final composited / on-disk store PNGs have been generated in the repo (`find screenshots/store -name composited -type d` -> no output) | final composited App Store/Play PNG generation, final visual/design approval, native-speaker caption review, other device sizes, console upload (all owner/design) |
 | P0-10 | Category positioning | owner | **[OWNER]** | Post-Appeeky recommendation is **Lifestyle** on both the App Store and Google Play, documented in `store-listing-en.md` Sec. 1 / Sec. 3.4 and `store-listing-tier1-localized.md` (those docs carry the earlier non-Lifestyle category rationale only as explicitly superseded historical context). A 2026-06-15 Appeeky recheck still showed TrueRise's category field as **Utilities**; that is stale third-party / source metadata, **not** a recommendation reversal - Lifestyle stands (`docs/competitor-aso-research.md` Sec. 15.4) | owner selects/confirms the final category in the store consoles |
-| P0-11 | Demo/review key hygiene | owner | **[PARTIAL - release guard added, owner rotation pending]** (2026-06-12) | `pubspec.yaml` still bundles `.env` as an asset, but Android release/bundle tasks now fail (redacted message) on an unacknowledged `ASTRO_API_KEY` unless acknowledged via `--android-project-arg=truerise.allowBundledApiKey=true --android-project-arg=truerise.bundledApiKeyPurpose=review-capped` on `flutter build appbundle`; iOS/manual preflight: `dart run tool/release_env_guard.dart --share-url="$TRUERISE_SHARE_URL" --proxy-base-url="$RECTIFY_PROXY_BASE_URL" --allow-bundled-key --purpose=review-capped` (see `docs/api-integration.md`) | owner rotates the current embedded key (treat as throwaway) to a low-budget capped review key - or removes it - before public build |
+| P0-11 | Demo/review key hygiene | owner | **[PARTIAL - release guard added, owner rotation pending]** (2026-06-12) | `pubspec.yaml` still bundles `.env` as an asset, but Android release/bundle tasks now fail (redacted message) on an unacknowledged `ASTRO_API_KEY` unless acknowledged via `--android-project-arg=truerise.allowBundledApiKey=true --android-project-arg=truerise.bundledApiKeyPurpose=review-capped` on `flutter build appbundle`; iOS/manual preflight: `dart run tool/release_env_guard.dart --share-url="$TRUERISE_SHARE_URL" --proxy-base-url="$RECTIFY_PROXY_BASE_URL" --provider-base-url="$RECTIFY_PROVIDER_BASE_URL" --allow-bundled-key --purpose=review-capped` (see `docs/api-integration.md`) | owner rotates the current embedded key (treat as throwaway) to a low-budget capped review key - or removes it - before public build |
 
 **P0 tally:** 5 fully resolved in-repo (P0-1, P0-6, P0-7, P0-8, P0-9), 4
 partial with the in-repo artifact done and an owner/legal/console remainder
@@ -92,20 +92,21 @@ syncs continued through `c724109`, all before this status sync; the earlier
 "local/uncommitted, pending the Codex-gated commit flow" caveat no longer
 applies):
 
-- **Proxy base URL guard + proxy contract** — `tool/release_env_guard.dart`
-  (run by the Android release Gradle task; manual for iOS) blocks a release
-  shipping the placeholder `RECTIFY_PROXY_BASE_URL` and validates the real
-  one as a host-only HTTPS origin; `docs/proxy-contract.md` documents the
-  mobile↔backend contract. **Owner/backend remainder:** stand up the
-  production proxy and confirm host + contract — no production proxy is
-  asserted as live here.
+- **No-key live API guard + optional proxy contract** —
+  `tool/release_env_guard.dart` (run by the Android release Gradle task; manual
+  for iOS) allows Oleg's confirmed public no-key host
+  `https://api-public.astrology-api.io` and validates custom API/proxy hosts as
+  host-only HTTPS origins; `docs/proxy-contract.md` documents the current
+  owner-billed public host plus the optional owner-controlled proxy contract.
+  **Owner/backend remainder:** exact provider-side rate-limit numbers are not
+  documented in OpenAPI/headers; request them from the owner/provider if needed.
 - **API key / quota UX** — local 3-attempts-per-24h live-quota guard
   (`lib/data/prefs/live_quota_store.dart`); server 429 UX honoring
   `retryAfter`/`resetAt` (`RateLimitedFailure` + dedicated rate-limit error
   screen); demo mode stays fully offline and a user-entered provider key
-  goes provider-direct, bypassing the proxy quota. **Backend remainder:**
-  true anti-abuse enforcement must live on the proxy — the local guard is
-  UX, not security.
+  goes provider-direct to the canonical provider host, bypassing the no-key
+  free quota. The no-key public host is owner-billed and Oleg-confirmed for
+  mobile use; the local guard remains UX, not security.
 - **Live coordinates guard** — live submissions can no longer silently send
   0,0: live flow requires resolved coordinates; the `?? 0` fallback is
   demo-only.
@@ -122,12 +123,12 @@ applies):
 - **Reviewer notes — live-quota wording clarified** (`5c1ac56`,
   `docs/store-listing-en.md`, `docs/store-submission-readiness.md`): the
   reviewer / Data-safety notes now explicitly document that **Demo mode is
-  offline** and consumes no quota, the **free live path** (proxy / bundled
-  review key) is limited to **3 live requests per rolling 24-hour window**, and a
-  user who enters their own **Astrology API key** in Settings calls the provider
-  directly and **bypasses the shared free quota** (provider-direct mode). The
-  earlier "BYO key removed / no longer user-facing" note was stale and is
-  corrected.
+  offline** and consumes no quota, the **no-key live path** uses Oleg's
+  owner-billed public host with the local **3 live requests per rolling
+  24-hour window** UX guard, and a user who enters their own **Astrology API
+  key** in Settings calls the canonical provider host directly and **bypasses
+  the no-key quota** (provider-direct mode). The earlier "BYO key removed / no
+  longer user-facing" note was stale and is corrected.
 - **Post-launch ASO runbook** (`docs/post-launch-aso-plan.md`, `c724109`) —
   closes the locally preparable after-live ASO planning (Appeeky audit/
   opportunities follow-up, the experimentation/A-B matrix, per-locale keyword
@@ -250,14 +251,19 @@ an owner input first. Roughly in dependency order:
    HTTPS URL with no tracking params — enforced by
    `AppLinks.isPrivacySafeShareUrl`, its tests, and the release guard, which
    refuses the placeholder without explicit owner acknowledgement.)
-10. **Production proxy host + contract confirmation** (backend/owner). The app
-    and the release guard are built against `docs/proxy-contract.md` and the
-    `RECTIFY_PROXY_BASE_URL` build define, and the guard blocks a release that
-    ships the placeholder — but **no production proxy is asserted as deployed
-    or reachable**. The owner/backend must stand up the proxy per the
-    contract, confirm host and endpoint path, and supply the base URL at
-    build time; until then the default (proxy-routed) live tier cannot work
-    in production, and server-side anti-abuse does not exist.
+10. **No-key live API host** (owner/backend). Oleg provided
+    `https://api-public.astrology-api.io` as an owner-billed public Astrology
+    API host for no-key mobile calls. The app now defaults no-key live calls to
+    that host and `/api/v3/rectification/search`; the local 3-per-24h UX quota
+    remains enforced. A bounded 2026-06-22 invalid-key check showed this host
+    ignores invalid `Authorization` values and returns `x-auth-bypass: true`, so
+    provider-direct/user-key traffic stays on `https://api.astrology-api.io` by
+    default. A separate owner-controlled proxy is now optional for stronger
+    server-side quota/device attestation, not required for the app to reach the
+    live API. **Release check still needed:** one owner-approved valid-key call
+    against `https://api.astrology-api.io` to confirm the canonical host accepts
+    the same rectification path/schema and that any bundled review key is capped
+    and budgeted for real credit consumption.
 
 ### 5b. Engineering-delegatable — none blocking
 
@@ -396,10 +402,11 @@ the card goes out via the OS share sheet.
   task re-ran the local checks and they passed: `flutter analyze` -> `No issues
   found!`; full `flutter test` -> 648 tests passed; `flutter test
   integration_test/demo_flow_test.dart` -> demo/offline flow passed; `flutter
-  test test/tool/release_env_guard_test.dart` -> 33 passed; `dart run
+  test test/tool/release_env_guard_test.dart` -> 38 passed; `dart run
   tool/release_env_guard.dart --share-url=... --proxy-base-url=...
-  --allow-bundled-key --purpose=review-capped` (illustrative bare-HTTPS
-  placeholders, not the real owner URLs) -> exit 0; `dart run
+  --provider-base-url=... --allow-bundled-key --purpose=review-capped`
+  (illustrative bare-HTTPS placeholders, not the real owner URLs) -> exit 0;
+  `dart run
   tool/store_screenshot_compositor_dry_run.dart` -> exit 0, planned 25 composites
   across the 5 locales while writing no files and rendering nothing; `git diff
   --check` clean and the tree stayed clean. The dated command/result snapshot is
@@ -511,7 +518,8 @@ the card goes out via the OS share sheet.
   imports `package:flutter_test/flutter_test.dart`, which the standalone Dart
   test runner cannot compile, so it fails on that import. That is a runner
   mismatch, not a code defect; the correct command is `flutter test
-  test/tool/release_env_guard_test.dart` (33/33 in the sweep). Local
+  test/tool/release_env_guard_test.dart` (38/38 after adding provider-base URL
+  coverage). Local
   analyzer/test/build status is therefore clean - the release remains blocked
   by owner/proxy/store/signing/privacy-URL decisions (see §5a), not by
   engineering or local test status.
@@ -559,6 +567,6 @@ the card goes out via the OS share sheet.
   owner scope; not a blocker.
 - **The build remains not-submittable today** because P0-2 (keystore), P0-3,
   P0-4 (hosted URL), P0-5, P0-10, and P0-11 (key rotation) are open, plus the
-  production proxy host (§5a-10) and a resolvable share URL (§5a-9) — but
-  every blocker is now an owner/secret/legal/backend/console item, not an
-  engineering artifact.
+  exact no-key host/rate-limit sign-off (§5a-10) and a resolvable share URL
+  (§5a-9) — but every blocker is now an owner/secret/legal/backend/console
+  item, not an engineering artifact.

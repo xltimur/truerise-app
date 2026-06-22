@@ -17,7 +17,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 ///
 /// `RECTIFY_PROXY_APP_ID` is a **public app identifier**, not a
 /// secret (see §9.5). Empty string is acceptable in tests / debug
-/// builds — the production proxy gates traffic server-side anyway.
+/// builds — the no-key public host / optional proxy applies server-side
+/// anti-abuse independently of this identifier.
 /// `proxyPath` is the rectification endpoint path on whichever
 /// proxy / provider URL is configured; isolated here so a schema
 /// migration is a one-line override (§9.3 — DTO + mapper stay put).
@@ -34,19 +35,22 @@ class RectifyBuildConfig {
 
   factory RectifyBuildConfig.fromEnvironment() {
     return const RectifyBuildConfig(
-      // Default points at an explicitly-invalid host so an unconfigured
-      // release build fails fast (DNS error → NoNetworkFailure) instead
-      // of silently leaking traffic. Configure with --dart-define.
+      // Oleg-provided public Astrology API host. It supports the same
+      // rectification endpoint as the provider API and is protected against
+      // bulk spam for public access. The app still enforces the local
+      // 3-per-24h free-attempt quota in no-key mode.
       proxyBaseUrl: String.fromEnvironment(
         'RECTIFY_PROXY_BASE_URL',
-        defaultValue: 'https://proxy.invalid.example',
+        defaultValue: 'https://api-public.astrology-api.io',
       ),
       proxyAppId: String.fromEnvironment('RECTIFY_PROXY_APP_ID'),
       proxyPath: String.fromEnvironment(
         'RECTIFY_PROXY_PATH',
-        defaultValue: '/v1/rectification',
+        defaultValue: '/api/v3/rectification/search',
       ),
       // Provider-direct mode: user supplies their own astrology-api.io key.
+      // Keep this on the canonical provider host: the public no-key host uses
+      // owner-billed auth bypass and ignores invalid Authorization values.
       // Base URL and path are public config — not secrets.
       providerBaseUrl: String.fromEnvironment(
         'RECTIFY_PROVIDER_BASE_URL',
@@ -188,9 +192,9 @@ final proApiKeyProvider = FutureProvider<String?>((ref) async {
 ///
 /// [proApiKeyProvider] is a `FutureProvider`: until the secure-storage
 /// read settles it reports `loading`. A consumer that collapses that
-/// `loading` state to "no key" routes the very first submission to the
-/// unconfigured proxy placeholder (`POST /v1/rectification` on
-/// `proxy.invalid.example`) instead of the live provider endpoint.
+/// `loading` state to "no key" can route the very first submission through
+/// no-key/public-host mode instead of provider-direct mode, which changes
+/// quota semantics.
 ///
 /// The bundled `.env` key ([envApiKeyProvider]) is resolved
 /// synchronously — `dotenv.load()` runs before `runApp` — so fall back
@@ -209,8 +213,8 @@ final activeApiKeyProvider = Provider<String?>((ref) {
 /// (`docs/implementation-plan.md` §9.5).
 ///
 /// Selects base URL based on auth mode:
-///   - providerDirect → config.providerBaseUrl (https://api.astrology-api.io)
-///   - proxy          → config.proxyBaseUrl
+///   - providerDirect → config.providerBaseUrl
+///   - proxy/no-key   → config.proxyBaseUrl
 ///
 /// Rebuilds when the Pro key changes, disposing old sockets cleanly.
 final dioProvider = Provider<Dio>((ref) {

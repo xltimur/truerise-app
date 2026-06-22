@@ -1,13 +1,18 @@
-# Rectify Proxy Contract (Mobile <-> Backend Handoff)
+# Rectify Proxy Contract (Optional Mobile <-> Backend Handoff)
 
-Owner contract for the production rectification proxy. Audience: Oleg /
-backend. The mobile app is already built against this contract; anything
-the proxy changes here requires a coordinated app release.
+Owner contract for an optional production rectification proxy. Audience:
+Oleg / backend. As of 2026-06-22, Oleg confirmed
+`https://api-public.astrology-api.io` for owner-billed public no-key app access,
+so the mobile app defaults to that host and path
+`/api/v3/rectification/search`. This document remains the handoff contract if
+the owner later wants stronger backend-controlled quota, device attestation, or
+server-side provider-key storage.
 
 ## 1. Endpoint
 
-- `POST /v1/rectification` is the path the app currently expects
-  (build-time default).
+- Public no-key default: `POST /api/v3/rectification/search` on
+  `https://api-public.astrology-api.io`.
+- Optional owner-controlled proxy path: `POST /v1/rectification`.
 - If the final proxy path differs, that is fine: the release build must
   then be given the real path via the `RECTIFY_PROXY_PATH` dart-define.
   No code change needed, but the value must be supplied before release.
@@ -18,23 +23,43 @@ the proxy changes here requires a coordinated app release.
 | Mode | Network | Hits proxy | Quota applies |
 |---|---|---|---|
 | Demo | None (fully offline) | No | No |
-| Proxy (default free tier) | HTTPS to proxy | Yes | Yes |
+| Public no-key (default free tier) | HTTPS to api-public.astrology-api.io | No | Yes, local UX quota |
+| Owner proxy (optional hard quota) | HTTPS to proxy | Yes | Yes, server-enforced |
 | Provider-direct (user's own key) | HTTPS to api.astrology-api.io | No | No |
 
 - Demo mode never makes a network call of any kind.
+- No-key mode uses the Oleg-provided public host without an Authorization
+  header. Oleg confirmed this owner-billed mode is intended for the mobile app
+  and has service-side protection against mass requests. The app keeps the
+  local 3-per-24h quota, but this is not a true backend-controlled per-device
+  guarantee.
 - A user-entered provider API key switches the app to provider-direct
   mode: requests go straight to the provider with the user's key as
-  Bearer, bypassing the proxy and its shared quota entirely.
-- The shared provider API key lives ONLY on the proxy, server-side. It
-  is never bundled in, sent to, or visible from the app.
+  Bearer, bypassing the local free quota entirely.
+- Provider-direct must stay on the canonical provider host by default. A
+  2026-06-22 bounded invalid-key check against `api-public.astrology-api.io`
+  returned `HTTP 200` with `x-auth-bypass: true`, meaning that host ignored the
+  invalid Authorization value and used owner-billed bypass instead.
+- Before release, run one owner-approved valid-key call against the canonical
+  provider host to confirm that `POST /api/v3/rectification/search` accepts the
+  same request schema with a real Bearer token. That check should be bounded
+  because it consumes provider credits.
+- If an owner-controlled proxy is introduced later, the shared provider API key
+  lives ONLY on the proxy, server-side. It is never bundled in, sent to, or
+  visible from the app.
 
 ## 3. Quota
 
-- Free tier: 3 live requests per rolling 24 hours per client.
+- Current app UX quota: 3 live requests per rolling 24 hours per client.
 - The quota and all anti-abuse limits MUST be enforced server-side using
   backend-controlled signals: caller IP, a per-install / device signal
   or fingerprint, and optionally Play Integrity (Android), App Attest
-  (iOS), or Firebase App Check.
+  (iOS), or Firebase App Check if the owner needs a hard quota.
+- The public host's service-side mass-request protection is owner/provider
+  asserted, not specified in the current OpenAPI contract: bounded checks found
+  no documented `429` schema and no `RateLimit-*` / `X-RateLimit-*` headers on
+  root/OpenAPI responses. Do not load-test the paid endpoint to force 429;
+  request exact limits from the owner/provider instead.
 - The app keeps a local 3-per-24h counter, but it is a UX / release
   guard only. It is trivially reset (reinstall, clear data, "Delete all
   data") and MUST NOT be treated as real protection.
@@ -110,13 +135,12 @@ as needed for rate limiting.
 
 ## 8. Release env vars (app side, for reference)
 
-The mobile release build is configured via dart-defines; backend must
-supply the final values:
+The mobile release build is configured via dart-defines:
 
-- `RECTIFY_PROXY_BASE_URL`: real HTTPS proxy host (no trailing path).
-  Unconfigured builds default to an invalid host and fail fast.
+- `RECTIFY_PROXY_BASE_URL`: no-key live base host (no trailing path).
+  Defaults to `https://api-public.astrology-api.io`.
 - `RECTIFY_PROXY_PATH`: rectification endpoint path; defaults to
-  `/v1/rectification`. Required only if the final path differs.
+  `/api/v3/rectification/search`. Required only if the final path differs.
 - `RECTIFY_PROXY_APP_ID`: public app identifier sent as
-  `X-Rectify-App-Id`. Not a secret, but must match what the proxy
-  expects.
+  `X-Rectify-App-Id`. Not a secret; useful for an owner-controlled proxy if
+  one is introduced.

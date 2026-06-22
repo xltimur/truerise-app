@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:rectify/data/api/api_client.dart';
 import 'package:rectify/data/api/rectification_api.dart';
 import 'package:rectify/data/repos/rectification_repository.dart';
 import 'package:rectify/data/secure/secure_key_store.dart';
@@ -13,10 +14,8 @@ import '../helpers/fake_history_repository.dart';
 ///
 /// `proApiKeyProvider` is a `FutureProvider`; before this fix the Dio /
 /// API providers collapsed its `loading` state to "no key" and pinned
-/// the very first submission to the proxy placeholder
-/// (`POST /v1/rectification` on `proxy.invalid.example`, which fails
-/// with a `connectionError`). With a key in the bundled `.env`, the
-/// data layer must reach the live endpoint
+/// the very first submission to no-key public-host mode. With a key in
+/// the bundled `.env`, the data layer must reach the live endpoint
 /// `https://api.astrology-api.io/api/v3/rectification/search` instead —
 /// synchronously, without waiting on the async secure-storage read.
 ///
@@ -26,11 +25,14 @@ import '../helpers/fake_history_repository.dart';
 Future<ProviderContainer> _container({
   required String? envKey,
   String? storedKey,
+  RectifyBuildConfig? buildConfig,
 }) async {
   SharedPreferences.setMockInitialValues(<String, Object>{});
   final prefs = await SharedPreferences.getInstance();
   final container = ProviderContainer(
     overrides: [
+      if (buildConfig != null)
+        buildConfigProvider.overrideWithValue(buildConfig),
       envApiKeyProvider.overrideWithValue(envKey),
       secureKeyStoreProvider.overrideWithValue(
         InMemorySecureKeyStore(seed: storedKey),
@@ -64,7 +66,7 @@ void main() {
         expect(
           (api as HttpRectificationApi).path,
           '/api/v3/rectification/search',
-          reason: 'must not fall back to the proxy /v1/rectification path',
+          reason: 'must not leave provider-direct mode during startup',
         );
       },
     );
@@ -75,6 +77,11 @@ void main() {
         final container = await _container(envKey: 'ask_test_env_key');
         final dio = container.read(dioProvider);
         expect(dio.options.baseUrl, 'https://api.astrology-api.io');
+        expect(
+          dio.interceptors.whereType<AuthInterceptor>(),
+          isNotEmpty,
+          reason: 'provider-direct mode must attach the user/bundled key',
+        );
       },
     );
 
@@ -114,6 +121,31 @@ void main() {
         );
       },
     );
+
+    test(
+      'provider-direct mode uses the provider path when paths differ',
+      () async {
+        final container = await _container(
+          envKey: 'ask_test_env_key',
+          buildConfig: const RectifyBuildConfig(
+            proxyBaseUrl: 'https://api-public.astrology-api.io',
+            proxyAppId: '',
+            proxyPath: '/proxy-only',
+            providerBaseUrl: 'https://api.astrology-api.io',
+            providerPath: '/provider-only',
+            env: 'test',
+          ),
+        );
+
+        final api =
+            container.read(rectificationApiProvider) as HttpRectificationApi;
+        expect(api.path, '/provider-only');
+        expect(
+          container.read(dioProvider).options.baseUrl,
+          'https://api.astrology-api.io',
+        );
+      },
+    );
   });
 
   group('auth-mode precedence', () {
@@ -134,21 +166,25 @@ void main() {
       );
     });
 
-    test('with no key anywhere the API falls back to proxy mode', () async {
+    test('with no key anywhere the API uses the public no-key host', () async {
       final container = await _container(envKey: null);
       await container.read(proApiKeyProvider.future);
 
       expect(container.read(activeApiKeyProvider), isNull);
       final api =
           container.read(rectificationApiProvider) as HttpRectificationApi;
-      expect(api.path, '/v1/rectification');
+      expect(api.path, '/api/v3/rectification/search');
       expect(
         container.read(dioProvider).options.baseUrl,
-        'https://proxy.invalid.example',
+        'https://api-public.astrology-api.io',
       );
-      // No-key submissions go through the proxy (which holds the provider
-      // credential server-side); the repository must keep the local
-      // free-attempt quota enforced and never bypass it.
+      expect(
+        container.read(dioProvider).interceptors.whereType<AuthInterceptor>(),
+        isEmpty,
+        reason: 'public no-key mode must not send Authorization',
+      );
+      // No-key submissions go through the public API host. The repository
+      // must keep the local free-attempt quota enforced and never bypass it.
       final repo = container.read(rectificationRepositoryProvider);
       expect(
         (repo as LiveRectificationRepository).liveQuotaStore,
@@ -156,6 +192,29 @@ void main() {
         reason: 'proxy-mode attempts must be counted against the free quota',
       );
       expect(repo.bypassLiveQuota, isFalse);
+    });
+
+    test('no-key mode uses the proxy/no-key path when paths differ', () async {
+      final container = await _container(
+        envKey: null,
+        buildConfig: const RectifyBuildConfig(
+          proxyBaseUrl: 'https://api-public.astrology-api.io',
+          proxyAppId: '',
+          proxyPath: '/proxy-only',
+          providerBaseUrl: 'https://api.astrology-api.io',
+          providerPath: '/provider-only',
+          env: 'test',
+        ),
+      );
+      await container.read(proApiKeyProvider.future);
+
+      final api =
+          container.read(rectificationApiProvider) as HttpRectificationApi;
+      expect(api.path, '/proxy-only');
+      expect(
+        container.read(dioProvider).options.baseUrl,
+        'https://api-public.astrology-api.io',
+      );
     });
   });
 }

@@ -34,7 +34,8 @@ evidence: `docs/release-verification-report-2026-06-16.md`.
 - Trademark / доступность имени "TrueRise".
 
 Бэкенд:
-- Поднять production proxy, подтвердить host + контракт.
+- Подтвердить no-key live API host (`api-public.astrology-api.io`) и его лимиты
+  или поднять owner-controlled proxy по контракту.
 - Серверный анти-абьюз / квота (локальный счётчик - это только UX, не защита).
 
 Юристы:

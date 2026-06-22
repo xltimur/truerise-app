@@ -4,7 +4,13 @@ This document covers everything a developer needs to understand, test, and
 debug the live rectification API integration.
 
 The DTOs and mappers in `lib/data/api/` are aligned to the live OpenAPI
-spec verified at <https://api.astrology-api.io/api/v3/openapi.json>.
+spec. Oleg provided the public owner-billed host
+<https://api-public.astrology-api.io> for no-key app traffic; its
+`/api/v3/openapi.json` spec matches the provider API shape. User-key
+provider-direct traffic stays on the canonical provider host,
+<https://api.astrology-api.io>, because bounded checks showed the public host
+can ignore invalid `Authorization` values and still return an owner-billed
+auth-bypass response.
 
 ---
 
@@ -13,13 +19,20 @@ spec verified at <https://api.astrology-api.io/api/v3/openapi.json>.
 | Property | Value |
 |---|---|
 | Method | `POST` |
-| URL | `https://api.astrology-api.io/api/v3/rectification/search` |
+| No-key URL | `https://api-public.astrology-api.io/api/v3/rectification/search` |
+| User-key URL | `https://api.astrology-api.io/api/v3/rectification/search` |
 | Content-Type | `application/json` |
-| Auth | `Authorization: Bearer <user-api-key>` |
+| Auth | No-key mode sends no `Authorization` header and uses the public host auth bypass. User-key mode sends `Authorization: Bearer <user-api-key>` to the canonical provider host. |
 | Cost | 15 credits per request |
 
-Interactive docs: <https://api.astrology-api.io/rapidoc>  
-OpenAPI JSON: <https://api.astrology-api.io/api/v3/openapi.json>
+Public host docs: <https://api-public.astrology-api.io/rapidoc><br>
+Public host OpenAPI JSON: <https://api-public.astrology-api.io/api/v3/openapi.json>
+
+**Release check:** before submission, run one owner-approved bounded valid-key
+request against the canonical `https://api.astrology-api.io` host as well. The
+public host OpenAPI was reachable and matched the payload shape, but
+provider-direct/user-key mode now depends on the canonical host accepting the
+same path and schema with a real Bearer token.
 
 The category enum is also discoverable at runtime via
 `GET /api/v3/rectification/glossary/event-categories` (0 credits).
@@ -35,13 +48,20 @@ astrology-api.io key in Settings.
 - `lib/providers/core_providers.dart` → `proApiKeyProvider` reads the key asynchronously.
 - When the key is present, `dioProvider` sets `baseUrl = config.providerBaseUrl` and
   `AuthInterceptor` adds `Authorization: Bearer <key>` to every request header.
+- Provider-direct defaults to `https://api.astrology-api.io`. Do not route
+  user-key mode to `https://api-public.astrology-api.io` unless the provider
+  explicitly changes that host to validate user keys: on 2026-06-22, a bounded
+  invalid-key POST returned `HTTP 200` with `x-auth-bypass: true`, showing the
+  public host ignored the invalid `Authorization` value and used owner-billed
+  bypass instead.
 - The key **never** appears in: SharedPreferences, Drift columns, log lines, or the POST body.
-- When no key is configured, the app runs in **proxy** auth mode:
+- When no key is configured, the app runs in **proxy/no-key** auth mode:
   `dioProvider` targets `RECTIFY_PROXY_BASE_URL` + `RECTIFY_PROXY_PATH`
-  with no `Authorization` header (the proxy holds the provider credential
-  server-side), and `LiveRectificationRepository.submit()` still submits,
-  gated by the local free-attempt quota. No-key users are never blocked
-  with `MissingApiKeyFailure`.
+  with no `Authorization` header. By default this is Oleg's public,
+  owner-billed host `https://api-public.astrology-api.io` +
+  `/api/v3/rectification/search`; `LiveRectificationRepository.submit()`
+  still submits, gated by the local free-attempt quota. No-key users are
+  never blocked with `MissingApiKeyFailure`.
 
 ### Bundled review key + release guard (2026-06-12)
 
@@ -65,26 +85,30 @@ Two guards enforce this locally:
   `--android-project-arg=truerise.allowBundledApiKey=true`
   `--android-project-arg=truerise.bundledApiKeyPurpose=review-capped`.
   The same task decodes the build's `--dart-define`s and also blocks the
-  placeholder share/proxy URLs. Debug/profile builds and `flutter test`
-  are unaffected.
+  placeholder share URL or unsafe API base URLs. Debug/profile builds and
+  `flutter test` are unaffected.
 - **iOS / manual preflight:** there is no Gradle hook on the iOS side; run
 
   ```bash
   dart run tool/release_env_guard.dart \
     --share-url="$TRUERISE_SHARE_URL" \
     --proxy-base-url="$RECTIFY_PROXY_BASE_URL" \
+    --provider-base-url="$RECTIFY_PROVIDER_BASE_URL" \
     --allow-bundled-key --purpose=review-capped
   ```
 
   before `flutter build ipa`. Same semantics: non-zero exit on an
-  unacknowledged bundled key or placeholder share/proxy URL;
+  unacknowledged bundled key, placeholder share URL, or unsafe API base URL;
   `--allow-bundled-key --purpose=review-capped` acknowledges a capped
   review key (omit both once `ASTRO_API_KEY` is removed from `.env`).
   Output is always redacted.
 
 A public build therefore needs either **no bundled key** (remove
 `ASTRO_API_KEY` from `.env`) or an **explicitly acknowledged low-budget
-capped review key**.
+capped review key**. Because provider-direct now targets the canonical
+provider host, any bundled review key is actually authenticated and can consume
+that key's credits; it is no longer silently ignored by the public no-key host's
+auth-bypass behavior.
 
 ---
 
@@ -289,7 +313,12 @@ support reproductions. The DTO ignores `density`, `metadata`,
   documents this as `400`. `mapDioException` maps a documented `400`/`422`
   to `BadRequestFailure`; the 4-minute grid keeps the over-cap case from
   arising at all.
-- **Rate limiting:** 429 → `RateLimitedFailure` in the app.
+- **Rate limiting:** 429 → `RateLimitedFailure` in the app. Oleg stated the
+  public host has service-side anti-abuse protection for mass requests, but the
+  2026-06-22 bounded checks did not expose `RateLimit-*` / `X-RateLimit-*`
+  headers on root/OpenAPI responses or a documented `429` schema in OpenAPI.
+  Do not load-test the paid endpoint to force 429; get concrete limits from the
+  owner/provider if release notes need exact numbers.
 - **Timeout:** 30s default (`config.requestTimeout`). Large event lists
   may be slow on the first request.
 - **Credentials:** The user-supplied key is never rotated automatically. If

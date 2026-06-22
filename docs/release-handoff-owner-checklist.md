@@ -48,7 +48,8 @@ submission - only the owner inputs in sections 2-6.
   in-app `PrivacyPolicyScreen`. Owner-hosted URL still required (section 5). P0-4.
 - **Release guards** - `tool/release_env_guard.dart` (+ the Android
   `validateReleaseBundledEnv` Gradle task) block a public release that ships the
-  placeholder proxy/share URLs or an unacknowledged bundled API key.
+  placeholder share URL, an unsafe API/proxy URL, or an unacknowledged bundled
+  API key.
 - **Share payload localized + privacy-safe** (EN/DE/ES/FR/PT) - emits only
   time, rising sign, confidence, brand, share URL; no birth data, events, or
   coordinates. Text share and share-card image both shipped.
@@ -148,20 +149,23 @@ the "no tracking" declaration).
 
 Non-secret release config is supplied at build time via `--dart-define`
 (`README.md` "Environment configuration"). None of these values are secrets;
-the real provider/billing credentials live only on the proxy, server-side.
+the no-key public host is owner-billed, while user-key mode sends the user's
+own key to the canonical provider host.
 
-**Proxy (backend) - `docs/proxy-contract.md`:**
+**No-key live API / optional proxy - `docs/proxy-contract.md`:**
 
-- `RECTIFY_PROXY_BASE_URL` - real HTTPS proxy host, host-only origin (no path).
-  Default `https://proxy.invalid.example` is a placeholder and **blocks** a
-  public release.
+- `RECTIFY_PROXY_BASE_URL` - no-key live API host, host-only origin (no path).
+  Default `https://api-public.astrology-api.io` is Oleg's owner-billed public
+  Astrology API host for mobile no-key calls.
 - `RECTIFY_PROXY_PATH` - rectification endpoint path; default
-  `/v1/rectification`. Only required if the final path differs.
+  `/api/v3/rectification/search`. Only required if the final path differs.
 - `RECTIFY_PROXY_APP_ID` - public app id sent as `X-Rectify-App-Id` (not a
-  secret; must match what the proxy expects).
-- Backend must enforce the free-tier quota (3 live requests / rolling 24h)
-  server-side and return the documented 429 shape. The on-device counter is UX
-  only, not real protection.
+  secret; mainly useful if an owner-controlled proxy is introduced).
+- The app enforces the local free-tier quota (3 live requests / rolling 24h).
+  Oleg stated the public host has service-side protection against mass
+  requests, but exact limits were not visible in OpenAPI/headers. If the owner
+  needs explicit hard quota/device attestation under our control, add an
+  owner-controlled proxy using the documented 429 shape.
 
 **Share / privacy URLs:**
 
@@ -228,9 +232,13 @@ Roughly dependency-ordered; items 3-8 can run in parallel once 1-2 are decided.
    `TRUERISE_PRIVACY_POLICY_URL` and use the same URL in both consoles.
 5. **Legal sign-off + console entry** of Apple privacy labels and Play Data
    Safety (P0-5), using the section 4 drafts.
-6. **Stand up the production proxy** per `docs/proxy-contract.md`; confirm host +
-   endpoint path; supply `RECTIFY_PROXY_BASE_URL` (+ `RECTIFY_PROXY_PATH` if it
-   differs) at build time.
+6. **Confirm the no-key live API host**: keep Oleg's public
+   `https://api-public.astrology-api.io` host, or stand up an owner-controlled
+   proxy per `docs/proxy-contract.md`; confirm host + endpoint path and supply
+   `RECTIFY_PROXY_BASE_URL` (+ `RECTIFY_PROXY_PATH` if it differs) at build time.
+   Also approve one bounded valid-key call against
+   `https://api.astrology-api.io` to confirm provider-direct mode and verify
+   that any bundled review key is capped/budgeted for real credit consumption.
 7. **Resolvable share URL** - register/own `truerise.app` or supply the real
    `TRUERISE_SHARE_URL`.
 8. **Rotate the demo/review key** (P0-11) to a low-budget capped key, or remove

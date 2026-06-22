@@ -28,27 +28,36 @@
 //   --allow-default-share-url --share-url-purpose=owner-confirmed
 //       Required together to release the default placeholder URL.
 //
-// The guard also gates the release proxy base URL:
+// The guard also gates the release no-key API base URL:
 //
 //   --proxy-base-url=<url>
-//       The RECTIFY_PROXY_BASE_URL the release will ship. When omitted, the
-//       default placeholder https://proxy.invalid.example is assumed and
-//       blocks the release: a public build must route through a real
-//       owner-controlled proxy. A custom URL must be a host-only HTTPS
-//       origin - host required, no path beyond an optional trailing '/',
-//       no userinfo, no query, no fragment - because RECTIFY_PROXY_PATH
-//       carries the endpoint path separately, and so the URL cannot
-//       smuggle credentials or tracking identifiers into the shipped
-//       config.
+//       The RECTIFY_PROXY_BASE_URL the release will ship for no-key live
+//       calls. When omitted, the Oleg-provided public Astrology API host
+//       https://api-public.astrology-api.io is assumed. A custom URL must be
+//       a host-only HTTPS origin - host required, no path beyond an optional
+//       trailing '/', no userinfo, no query, no fragment - because
+//       RECTIFY_PROXY_PATH carries the endpoint path separately, and so the
+//       URL cannot smuggle credentials or tracking identifiers into the
+//       shipped config.
 //
 //   --allow-default-proxy-url --proxy-url-purpose=local-test-only
-//       Required together to accept the placeholder, and ONLY for
-//       local/test builds that never reach users.
+//       Legacy no-op acknowledgement kept for older local commands; the
+//       default public API host no longer needs it.
+//
+// The guard also validates the provider-direct base URL:
+//
+//   --provider-base-url=<url>
+//       The RECTIFY_PROVIDER_BASE_URL the release will ship for user-key live
+//       calls. When omitted, https://api.astrology-api.io is assumed. A custom
+//       URL must be a host-only HTTPS origin for the same reason as the
+//       no-key API base URL: RECTIFY_PROVIDER_PATH carries the endpoint path
+//       separately, and the base URL cannot smuggle credentials or tracking
+//       identifiers into shipped config.
 //
 // The key VALUE is never read into the output: all messages are redacted.
 // Rejected custom share URLs are likewise never echoed, since their query,
 // fragment, or userinfo parts may carry identifiers. Rejected custom proxy
-// URLs are never echoed either: their parts may carry credentials.
+// and provider URLs are never echoed either: their parts may carry credentials.
 // Android release builds run the same check via the
 // `validateReleaseBundledEnv` Gradle task; for iOS (no Gradle) run this
 // script manually before `flutter build ipa`.
@@ -70,9 +79,12 @@ const String defaultShareUrl = 'https://truerise.app';
 /// The only acknowledgement purpose accepted for the default share URL.
 const String requiredShareUrlPurpose = 'owner-confirmed';
 
-/// Default RECTIFY_PROXY_BASE_URL placeholder assumed when --proxy-base-url
-/// is omitted.
-const String defaultProxyBaseUrl = 'https://proxy.invalid.example';
+/// Default RECTIFY_PROXY_BASE_URL assumed when --proxy-base-url is omitted.
+const String defaultProxyBaseUrl = 'https://api-public.astrology-api.io';
+
+/// Default RECTIFY_PROVIDER_BASE_URL assumed when --provider-base-url is
+/// omitted.
+const String defaultProviderBaseUrl = 'https://api.astrology-api.io';
 
 /// The only acknowledgement purpose accepted for the default proxy URL.
 const String requiredProxyUrlPurpose = 'local-test-only';
@@ -97,6 +109,51 @@ bool envContainsBundledKey(String envContent) {
     if (value.isNotEmpty) return true;
   }
   return false;
+}
+
+/// Decides whether [providerBaseUrl] may ship in a public release.
+///
+/// The default [defaultProviderBaseUrl] is the canonical provider host for
+/// user-key/provider-direct mode and may ship. A custom URL passes only when it
+/// is a host-only HTTPS origin, matching [evaluateProxyUrlGate].
+({int exitCode, String message}) evaluateProviderUrlGate({
+  required String providerBaseUrl,
+}) {
+  if (providerBaseUrl == defaultProviderBaseUrl) {
+    return (
+      exitCode: 0,
+      message:
+          'OK: default provider API host $defaultProviderBaseUrl accepted '
+          'for user-key live calls.',
+    );
+  }
+  final uri = Uri.tryParse(providerBaseUrl);
+  final isBareHttpsOrigin =
+      uri != null &&
+      uri.scheme == 'https' &&
+      uri.host.isNotEmpty &&
+      uri.userInfo.isEmpty &&
+      (uri.path.isEmpty || uri.path == '/') &&
+      !uri.hasQuery &&
+      !uri.hasFragment;
+  if (!isBareHttpsOrigin) {
+    return (
+      exitCode: 1,
+      message:
+          'BLOCKED: the custom RECTIFY_PROVIDER_BASE_URL value (redacted) '
+          'is not a host-only HTTPS origin. It must use https://, name a '
+          'host, and carry no path (a single trailing "/" is allowed), no '
+          'userinfo, no query, and no fragment - RECTIFY_PROVIDER_PATH '
+          'carries the endpoint path separately - so the shipped config '
+          'cannot leak credentials or tracking identifiers.',
+    );
+  }
+  return (
+    exitCode: 0,
+    message:
+        'OK: custom provider base URL accepted (host-only HTTPS origin, '
+        'no path, no userinfo, no query, no fragment).',
+  );
 }
 
 /// Pure decision core. Returns the process exit code plus the (always
@@ -213,11 +270,10 @@ bool envContainsBundledKey(String envContent) {
 
 /// Decides whether [proxyBaseUrl] may ship in a public release.
 ///
-/// The default placeholder [defaultProxyBaseUrl] blocks the release - a
-/// public build must route through a real owner-controlled proxy - unless
-/// the explicit local/test-only acknowledgement pair is given. A custom URL
-/// passes only when it is a host-only HTTPS origin: a host, no path beyond
-/// an optional trailing '/', and no userinfo, query, or fragment.
+/// The default [defaultProxyBaseUrl] is Oleg's public Astrology API host for
+/// no-key live calls and may ship. A custom URL passes only when it is a
+/// host-only HTTPS origin: a host, no path beyond an optional trailing '/',
+/// and no userinfo, query, or fragment.
 /// RECTIFY_PROXY_PATH carries the endpoint path separately, so a path here
 /// is always a misconfiguration. Rejected custom URLs are never echoed:
 /// their parts may hold credentials or tracking identifiers.
@@ -227,26 +283,16 @@ bool envContainsBundledKey(String envContent) {
   required String? proxyUrlPurpose,
 }) {
   if (proxyBaseUrl == defaultProxyBaseUrl) {
-    if (allowDefaultProxyUrl && proxyUrlPurpose == requiredProxyUrlPurpose) {
-      return (
-        exitCode: 0,
-        message:
-            'ACKNOWLEDGED: default placeholder proxy URL $defaultProxyBaseUrl '
-            'accepted for purpose "$requiredProxyUrlPurpose". This build must '
-            'never ship to users.',
-      );
-    }
+    final legacyAckSupplied = allowDefaultProxyUrl || proxyUrlPurpose != null;
+    final legacyMessage = legacyAckSupplied
+        ? ' Legacy proxy acknowledgement was supplied but is no longer '
+              'required.'
+        : '';
     return (
-      exitCode: 1,
+      exitCode: 0,
       message:
-          'BLOCKED: the release would ship the default placeholder '
-          'RECTIFY_PROXY_BASE_URL $defaultProxyBaseUrl. Pass '
-          '--proxy-base-url=<https-url> with the real owner-controlled proxy '
-          'URL, or - ONLY for a local/test build that never reaches users - '
-          'acknowledge the placeholder explicitly with '
-          '--allow-default-proxy-url '
-          '--proxy-url-purpose=$requiredProxyUrlPurpose. No other purpose '
-          'is accepted.',
+          'OK: default public API host $defaultProxyBaseUrl accepted for '
+          'no-key live calls.$legacyMessage',
     );
   }
   final uri = Uri.tryParse(proxyBaseUrl);
@@ -292,6 +338,7 @@ bool envContainsBundledKey(String envContent) {
   var proxyBaseUrl = defaultProxyBaseUrl;
   var allowDefaultProxyUrl = false;
   String? proxyUrlPurpose;
+  var providerBaseUrl = defaultProviderBaseUrl;
 
   for (final arg in args) {
     if (arg.startsWith('--env-file=')) {
@@ -312,6 +359,8 @@ bool envContainsBundledKey(String envContent) {
       allowDefaultProxyUrl = true;
     } else if (arg.startsWith('--proxy-url-purpose=')) {
       proxyUrlPurpose = arg.substring('--proxy-url-purpose='.length);
+    } else if (arg.startsWith('--provider-base-url=')) {
+      providerBaseUrl = arg.substring('--provider-base-url='.length);
     } else {
       return (
         exitCode: 2,
@@ -324,7 +373,8 @@ bool envContainsBundledKey(String envContent) {
             '--share-url-purpose=$requiredShareUrlPurpose] '
             '[--proxy-base-url=<https-url>] '
             '[--allow-default-proxy-url '
-            '--proxy-url-purpose=$requiredProxyUrlPurpose]',
+            '--proxy-url-purpose=$requiredProxyUrlPurpose] '
+            '[--provider-base-url=<https-url>]',
       );
     }
   }
@@ -343,6 +393,11 @@ bool envContainsBundledKey(String envContent) {
   );
   if (proxyUrlResult.exitCode != 0) return proxyUrlResult;
 
+  final providerUrlResult = evaluateProviderUrlGate(
+    providerBaseUrl: providerBaseUrl,
+  );
+  if (providerUrlResult.exitCode != 0) return providerUrlResult;
+
   final envFile = File(envFilePath);
   final keyPresent =
       envFile.existsSync() && envContainsBundledKey(envFile.readAsStringSync());
@@ -358,7 +413,7 @@ bool envContainsBundledKey(String envContent) {
     exitCode: 0,
     message:
         '${keyResult.message}\n${shareUrlResult.message}\n'
-        '${proxyUrlResult.message}',
+        '${proxyUrlResult.message}\n${providerUrlResult.message}',
   );
 }
 
