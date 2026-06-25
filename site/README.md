@@ -1,142 +1,101 @@
-# TrueRise Static Landing Site
+# TrueRise Static Site
 
-## What this is
+Static HTML/CSS pages for `https://truerise.com.ua`.
 
-Plain HTML/CSS static pages for https://truerise.app.
-No build step. No npm. No external dependencies until explicitly approved.
-This directory is completely independent from the iOS and Android app builds.
-Only the contents of site/ are deployed; site/ itself is not part of iOS or
-Android builds.
+No build step, backend, analytics, CDN, iframe, external font request, or remote
+script is used. This folder is separate from the Flutter iOS and Android app.
+
+## Pages
+
+| URL                                            | File / directory                         | Purpose                         |
+|------------------------------------------------|------------------------------------------|---------------------------------|
+| `https://truerise.com.ua/`                     | `index.html`                             | English landing page            |
+| `https://truerise.com.ua/uk/`                  | `uk/index.html`                          | Ukrainian landing page          |
+| `https://truerise.com.ua/privacy/`             | `privacy/index.html`                     | English privacy policy          |
+| `https://truerise.com.ua/uk/privacy/`          | `uk/privacy/index.html`                  | Ukrainian privacy policy        |
+| `https://truerise.com.ua/support/`             | `support/index.html`                     | English support page            |
+| `https://truerise.com.ua/uk/support/`          | `uk/support/index.html`                  | Ukrainian support page          |
+| `https://truerise.com.ua/*birth-time*`         | guide directories                        | SEO guide pages in English      |
+| `https://truerise.com.ua/uk/*chas*`            | `uk/` guide directories                  | SEO guide pages in Ukrainian    |
+| `https://truerise.com.ua/sitemap.xml`          | `sitemap.xml`                            | XML sitemap for search engines  |
+| `https://truerise.com.ua/robots.txt`           | `robots.txt`                             | Crawler directives              |
+
+Legacy `privacy.html`, `support.html`, and `404.html` stay available for store
+review links and point search engines to the canonical slash URLs.
 
 ## Deployment
 
-Deploy the contents of `site/` (not the `site/` directory itself) to the
-web root of https://truerise.app. Every file in `site/` maps directly to
-the URL it implies:
+Deploy the contents of `site/`, not the `site/` directory itself, to the
+document root for `https://truerise.com.ua`.
 
-```
-site/index.html    -> https://truerise.app/
-site/privacy.html  -> https://truerise.app/privacy
-site/support.html  -> https://truerise.app/support
-site/404.html      -> https://truerise.app/404   (configure as error page)
-site/robots.txt    -> https://truerise.app/robots.txt
+**Correct upload target (verify path at deploy time):**
+
+```text
+/home/fv534148/truerise.com.ua/www/
 ```
 
-No build step is required before deploying.
+> **WARNING — do NOT deploy into:**
+> - `/home/fv534148/zootopia.kh.ua/` or any subdirectory of it
+> - any WordPress installation directory (`wp-content/`, `wp-includes/`, etc.)
+> - any folder belonging to an unrelated hosting account or domain
+>
+> Uploading to the wrong target would overwrite or contaminate an unrelated site.
 
-## URL structure
+Upload only public files:
 
-| URL                            | File             | Purpose                              |
-|--------------------------------|------------------|--------------------------------------|
-| `https://truerise.app/`        | `index.html`     | Marketing landing page               |
-| `https://truerise.app/privacy` | `privacy.html`   | Privacy policy (required for stores) |
-| `https://truerise.app/support` | `support.html`   | Support contact page                 |
-| `https://truerise.app/404`     | `404.html`       | Custom 404 error page                |
-
-## File/directory layout
-
+```text
+index.html
+privacy.html
+support.html
+404.html
+robots.txt
+sitemap.xml
+assets/
+404/
+privacy/
+support/
+uk/
+how-to-find-birth-time/
+natal-chart-time-accuracy/
+what-is-birth-time-rectification/
 ```
-site/
-  index.html          <- public landing / share destination
-  privacy.html        <- privacy policy draft page
-  support.html        <- support and FAQ page
-  404.html            <- custom 404
-  robots.txt          <- search crawler rules
-  assets/
-    styles.css        <- single shared stylesheet
-    fonts/            <- self-hosted Inter, Source Serif 4, JetBrains Mono
-    img/              <- brandmark.svg, favicon.svg (rising-sun motif), og-card.png (1200x630, navy bg)
-  README.md           <- this file
-```
 
-## Owner / legal placeholders
+Do not upload this README unless the hosting setup needs it.
 
-The following placeholders appear in `docs/privacy-policy.md` and must be
-filled before the privacy page goes live. Each placeholder is quoted in full
-so the privacy page author knows exactly what to supply.
+## Store Review Checklist
 
-All [OWNER/LEGAL: ...] strings must be replaced with real values before any
-page referencing them is published.
+- `https://truerise.com.ua/privacy.html` and
+  `https://truerise.com.ua/privacy/` must be reachable before submission.
+- `https://truerise.com.ua/support.html` and
+  `https://truerise.com.ua/support/` must be reachable before submission.
+- `support@truerise.com.ua` must be a working mailbox or forwarder before
+  submission. (Owner action: create the mailbox or forwarder at the hosting
+  provider after DNS is configured.)
+- The privacy page must stay aligned with the app's store privacy labels.
+- If the app later adds analytics, crash reporting, advertising, accounts, a new
+  geocoder, or a different calculation provider flow, update the privacy page
+  before shipping that build.
 
-1. **Privacy policy header / controller section**
+## Local Checks
 
-        [OWNER/LEGAL: insert the publisher's legal name, postal address, and the
-        jurisdiction whose law governs this policy.]
+From the repository root:
 
-2. **Location data section**
-
-        [OWNER/LEGAL: if a future release adds a network-based
-        geocoder, disclose that transmission here and update the app-store privacy
-        labels accordingly.]
-
-3. **Calculation provider section**
-
-        [OWNER/LEGAL: name the calculation provider and link to its privacy policy;
-        confirm whether requests go directly to the provider or through a
-        TrueRise-operated backend; and state the provider's data-retention period, its
-        processing region(s), and whether a data-processing agreement is in place. Do
-        not publish this section as final until these are confirmed.]
-
-4. **Analytics/crash section**
-
-        [OWNER/LEGAL: if a future release adds analytics or crash reporting, update this
-        policy and the store privacy labels **before** shipping that release.]
-
-5. **Data retention section**
-
-        [OWNER/LEGAL: state the calculation provider's retention period and how a user
-        can request deletion of anything the provider may retain, or confirm that the
-        provider does not retain request content.]
-
-6. **Children's privacy section**
-
-        [OWNER/LEGAL: confirm the minimum age stated here
-        matches both the inside-the-app gate and the app-store age rating.]
-
-7. **International transfers section**
-
-        [OWNER/LEGAL: depending on where the calculation provider processes data, your
-        information may be transferred across borders when you run a live calculation.
-        State the regions and safeguards once the provider data-flow arrangement is
-        confirmed.]
-
-8. **Rights / deletion section**
-
-        [OWNER/LEGAL: add the jurisdiction-specific
-        rights language and the contact method/process for exercising these rights.]
-
-9. **Contact section**
-
-        [OWNER/LEGAL: insert a privacy contact email address and, if required in your
-        jurisdiction, a postal address.]
-
-10. **Support page / footer**
-
-        [OWNER/LEGAL: support email]
-
-## Local checks
-
-From the repository root, serve the folder with:
-
-```
+```bash
 python3 -m http.server 8080 --directory site
 ```
 
-Then open:
+Open:
 
-- `http://localhost:8080/`
-- `http://localhost:8080/privacy.html`
-- `http://localhost:8080/support.html`
-- `http://localhost:8080/404.html`
+```text
+http://localhost:8080/
+http://localhost:8080/uk/
+http://localhost:8080/privacy.html
+http://localhost:8080/privacy/
+http://localhost:8080/support.html
+http://localhost:8080/support/
+http://localhost:8080/404.html
+http://localhost:8080/sitemap.xml
+```
 
-Check that:
-
-- There are no external font, analytics, CDN, iframe, or remote script
-  requests.
-- There is no monetization or key-entry copy.
-- The service disclaimer appears in HTML pages and includes entertainment and
-  not medical/scientific/legal/financial guarantee language.
-- Owner/legal placeholders remain visible in `privacy.html`, `support.html`,
-  and this README until owner/legal review supplies real values.
-- Inter and JetBrains Mono are copied from app TTF assets. Source Serif 4 is
-  a local WOFF generated from the app TTF to keep whole-tree text greps clean.
+Before deployment, scan the folder for remote scripts, third-party embeds,
+commerce wording, and internal review tokens. The expected result is no matches.

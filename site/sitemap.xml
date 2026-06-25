@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <url>
+    <loc>https://truerise.com.ua/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://truerise.com.ua/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://truerise.com.ua/uk/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://truerise.com.ua/"/>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://truerise.com.ua/uk/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://truerise.com.ua/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://truerise.com.ua/uk/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://truerise.com.ua/"/>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://truerise.com.ua/support/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://truerise.com.ua/support/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://truerise.com.ua/uk/support/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://truerise.com.ua/support/"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://truerise.com.ua/uk/support/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://truerise.com.ua/support/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://truerise.com.ua/uk/support/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://truerise.com.ua/support/"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://truerise.com.ua/privacy/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://truerise.com.ua/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://truerise.com.ua/uk/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://truerise.com.ua/privacy/"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://truerise.com.ua/uk/privacy/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://truerise.com.ua/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://truerise.com.ua/uk/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://truerise.com.ua/privacy/"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://truerise.com.ua/what-is-birth-time-rectification/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://truerise.com.ua/what-is-birth-time-rectification/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://truerise.com.ua/uk/rektyfikatsiya-chasu-narodzhennya/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://truerise.com.ua/what-is-birth-time-rectification/"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://truerise.com.ua/uk/rektyfikatsiya-chasu-narodzhennya/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://truerise.com.ua/what-is-birth-time-rectification/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://truerise.com.ua/uk/rektyfikatsiya-chasu-narodzhennya/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://truerise.com.ua/what-is-birth-time-rectification/"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://truerise.com.ua/how-to-find-birth-time/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://truerise.com.ua/how-to-find-birth-time/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://truerise.com.ua/uk/yak-diznatysya-chas-narodzhennya/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://truerise.com.ua/how-to-find-birth-time/"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://truerise.com.ua/uk/yak-diznatysya-chas-narodzhennya/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://truerise.com.ua/how-to-find-birth-time/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://truerise.com.ua/uk/yak-diznatysya-chas-narodzhennya/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://truerise.com.ua/how-to-find-birth-time/"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://truerise.com.ua/natal-chart-time-accuracy/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://truerise.com.ua/natal-chart-time-accuracy/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://truerise.com.ua/uk/tochnist-chasu-narodzhennya-natalna-karta/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://truerise.com.ua/natal-chart-time-accuracy/"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://truerise.com.ua/uk/tochnist-chasu-narodzhennya-natalna-karta/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://truerise.com.ua/natal-chart-time-accuracy/"/>
+    <xhtml:link rel="alternate" hreflang="uk" href="https://truerise.com.ua/uk/tochnist-chasu-narodzhennya-natalna-karta/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://truerise.com.ua/natal-chart-time-accuracy/"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+</urlset>

@@ -1,11 +1,12 @@
 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="64" height="64" rx="14" fill="#1B2735"/>
-  <!-- horizon line -->
-  <line x1="8" y1="42" x2="56" y2="42" stroke="#FBF8F2" stroke-width="2" stroke-linecap="round"/>
-  <!-- rising-sun half-circle -->
-  <path d="M 13 42 A 19 19 0 0 1 51 42" fill="#B66A3F"/>
-  <!-- three tick marks below horizon -->
-  <line x1="20" y1="47" x2="20" y2="51" stroke="#FBF8F2" stroke-width="1.8" stroke-linecap="round"/>
-  <line x1="32" y1="47" x2="32" y2="51" stroke="#FBF8F2" stroke-width="1.8" stroke-linecap="round"/>
-  <line x1="44" y1="47" x2="44" y2="51" stroke="#FBF8F2" stroke-width="1.8" stroke-linecap="round"/>
+  <rect width="64" height="64" fill="#1B2735"/>
+  <path d="M12 39a20 20 0 0 1 40 0H12Z" fill="#303038"/>
+  <path d="M20 39a12 12 0 0 1 24 0H20Z" fill="#B66A3F"/>
+  <path d="M12 39a20 20 0 0 1 40 0" stroke="#B1AC9F" stroke-width="2.4" stroke-linecap="round"/>
+  <line x1="14" y1="39" x2="50" y2="39" stroke="#FBF8F2" stroke-width="2.4" stroke-linecap="round"/>
+  <line x1="17" y1="44" x2="17" y2="47" stroke="#FBF8F2" stroke-width="2" stroke-linecap="round"/>
+  <line x1="26" y1="44" x2="26" y2="48" stroke="#FBF8F2" stroke-width="2" stroke-linecap="round"/>
+  <line x1="32" y1="44" x2="32" y2="49" stroke="#FBF8F2" stroke-width="2" stroke-linecap="round"/>
+  <line x1="40" y1="44" x2="40" y2="48" stroke="#FBF8F2" stroke-width="2" stroke-linecap="round"/>
+  <line x1="48" y1="44" x2="48" y2="47" stroke="#FBF8F2" stroke-width="2" stroke-linecap="round"/>
 </svg>
