@@ -45,8 +45,8 @@ decision remain owner work (see the checklist at the end).
 ## 1. Decision summary
 
 - **Public brand:** **TrueRise** — one word, English, kept in every locale; the
-  descriptor tail carries the search intent. (Bundle/codename stays `rectify` /
-  `com.rectify.rectify` pending the owner's bundle-ID decision.)
+  descriptor tail carries the search intent. Internal codename stays `rectify`;
+  first-publish app identity is `ua.com.truerise.app`.
 - **Positioning:** a focused **birth-time calculation tool** that estimates an
   unknown birth time from the user's own life events and returns candidate times
   with an **honest confidence score** and per-event evidence. The copy still
@@ -86,11 +86,9 @@ decision remain owner work (see the checklist at the end).
   1. **Hosted privacy-policy URL** (publish `docs/privacy-policy.md`, fill its
      `[OWNER/LEGAL]` blanks) — required in both listings.
   2. **Support URL** (and Play's required support email / contact).
-  3. **Bundle/package-ID decision** — recommended first-publish rebrand is
-     `app.astrolium.truerise` (fallbacks `com.astrolium.truerise` and
-     `com.truerise.app`; see `docs/bundle-id-recommendation.md`), decided
-     *before* the first store record (immutable after). Code stays
-     `com.rectify.rectify` until explicit owner approval.
+  3. **Bundle/package ID** — final first-publish ID is
+     `ua.com.truerise.app`; create the first App Store Connect / Play Console
+     records with this exact value.
   4. **Release signing** — Android upload keystore + Play App Signing; iOS
      distribution profile.
   5. **Screenshots** — pre-Appeeky raw/reference captures already exist in the
@@ -434,9 +432,8 @@ problem-first message; not required to submit.
 - [ ] **Hosted privacy-policy URL** live (publish `docs/privacy-policy.md`, fill
       all `[OWNER/LEGAL]` blanks) and entered in both consoles.
 - [ ] **Support URL** (+ Play support email/contact) provided.
-- [ ] **Bundle/package-ID decision** made and applied *before* the first store
-      record (recommended `app.astrolium.truerise`, fallbacks in
-      `docs/bundle-id-recommendation.md` — immutable after).
+- [x] **Bundle/package-ID decision** made and applied locally:
+      `ua.com.truerise.app` (immutable after first store record/upload).
 - [ ] **Release signing** configured (Android upload keystore + Play App Signing;
       iOS distribution profile); release no longer debug-signed.
 - [ ] **Screenshots** — pre-Appeeky raw/reference captures exist

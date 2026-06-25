@@ -21,12 +21,14 @@
 //
 //   --share-url=<url>
 //       The share URL the release will ship. When omitted, the default
-//       placeholder https://truerise.app is assumed. A custom URL must be
-//       bare HTTPS - host only, no userinfo, no query, no fragment - so it
-//       cannot smuggle tracking/personal identifiers into share copy.
+//       https://truerise.com.ua is used (the owner-confirmed primary domain;
+//       passes without explicit acknowledgement). A custom URL must be bare
+//       HTTPS - host only, no userinfo, no query, no fragment - so it cannot
+//       smuggle tracking/personal identifiers into share copy.
 //
 //   --allow-default-share-url --share-url-purpose=owner-confirmed
-//       Required together to release the default placeholder URL.
+//       Legacy no-op flags kept for backwards compatibility; no longer
+//       required because the default is the owned primary domain.
 //
 // The guard also gates the release no-key API base URL:
 //
@@ -73,10 +75,14 @@ const String guardedKeyName = 'ASTRO_API_KEY';
 /// The only acknowledgement purpose the guard accepts.
 const String requiredPurpose = 'review-capped';
 
-/// Default share/invite URL placeholder assumed when --share-url is omitted.
-const String defaultShareUrl = 'https://truerise.app';
+/// Default share/invite URL assumed when --share-url is omitted.
+/// Owner-confirmed primary domain; passes the release gate without
+/// explicit acknowledgement.
+const String defaultShareUrl = 'https://truerise.com.ua';
 
-/// The only acknowledgement purpose accepted for the default share URL.
+/// Legacy acknowledgement purpose constant; kept for backwards compatibility
+/// with scripts that pass --share-url-purpose=owner-confirmed. No longer
+/// required because the default is the owned primary domain.
 const String requiredShareUrlPurpose = 'owner-confirmed';
 
 /// Default RECTIFY_PROXY_BASE_URL assumed when --proxy-base-url is omitted.
@@ -212,34 +218,28 @@ bool envContainsBundledKey(String envContent) {
 
 /// Decides whether [shareUrl] may ship in a public release.
 ///
-/// The default placeholder [defaultShareUrl] needs the explicit owner
-/// confirmation pair. A custom URL passes only when it is bare HTTPS with a
-/// host and carries no userinfo, query, or fragment. Rejected custom URLs
-/// are never echoed: their parts may hold tracking/personal identifiers.
+/// The default [defaultShareUrl] is the owner-confirmed primary domain and
+/// passes without explicit acknowledgement. Legacy flags
+/// (--allow-default-share-url / --share-url-purpose) are accepted as no-ops.
+/// A custom URL passes only when it is bare HTTPS with a host and carries no
+/// userinfo, query, or fragment. Rejected custom URLs are never echoed: their
+/// parts may hold tracking/personal identifiers.
 ({int exitCode, String message}) evaluateShareUrlGate({
   required String shareUrl,
   required bool allowDefaultShareUrl,
   required String? shareUrlPurpose,
 }) {
   if (shareUrl == defaultShareUrl) {
-    if (allowDefaultShareUrl && shareUrlPurpose == requiredShareUrlPurpose) {
-      return (
-        exitCode: 0,
-        message:
-            'ACKNOWLEDGED: default placeholder share URL $defaultShareUrl '
-            'accepted for purpose "$requiredShareUrlPurpose".',
-      );
-    }
+    final legacyAckSupplied = allowDefaultShareUrl || shareUrlPurpose != null;
+    final legacyMessage = legacyAckSupplied
+        ? ' Legacy share URL acknowledgement was supplied but is no longer '
+              'required.'
+        : '';
     return (
-      exitCode: 1,
+      exitCode: 0,
       message:
-          'BLOCKED: the release would ship the default placeholder share '
-          'URL $defaultShareUrl. Pass --share-url=<https-url> with the real '
-          'owner-controlled URL, or - ONLY if the owner confirms shipping '
-          'the placeholder - acknowledge it explicitly with '
-          '--allow-default-share-url '
-          '--share-url-purpose=$requiredShareUrlPurpose. No other purpose '
-          'is accepted.',
+          'OK: default share URL $defaultShareUrl accepted as the '
+          'owner-confirmed primary domain.$legacyMessage',
     );
   }
   final uri = Uri.tryParse(shareUrl);
@@ -324,10 +324,100 @@ bool envContainsBundledKey(String envContent) {
   );
 }
 
+/// Decides whether the geocoding configuration may ship in a public release.
+///
+/// When both [geocodingBaseUrl] and [geocodingPublicKey] are empty, the app
+/// uses the native iOS/Android geocoder and keeps StubGeocodingService only
+/// as the last offline fallback.
+///
+/// A base URL must be a host-only HTTPS origin (same rules as
+/// [evaluateProxyUrlGate]). A public key must be a public client token;
+/// values starting with `sk.` are rejected as private server-side secrets
+/// and their value is never echoed.
+({int exitCode, String message}) evaluateGeocodingGate({
+  required String geocodingBaseUrl,
+  required String geocodingPublicKey,
+}) {
+  final hasBaseUrl = geocodingBaseUrl.isNotEmpty;
+  final hasPublicKey = geocodingPublicKey.isNotEmpty;
+
+  if (!hasBaseUrl && !hasPublicKey) {
+    return (
+      exitCode: 0,
+      message:
+          'OK: no explicit RECTIFY_GEOCODING_* config supplied; release '
+          'uses native platform geocoding and falls back to the offline stub '
+          'only if the platform lookup is unavailable. Configure '
+          'RECTIFY_GEOCODING_BASE_URL or RECTIFY_GEOCODING_PUBLIC_KEY for '
+          'owner-controlled HTTP geocoding.',
+    );
+  }
+
+  // Reject private server-side tokens (sk.*); they must never ship in a
+  // client-side bundle. The value is never printed.
+  if (hasPublicKey && geocodingPublicKey.startsWith('sk.')) {
+    return (
+      exitCode: 1,
+      message:
+          'BLOCKED: RECTIFY_GEOCODING_PUBLIC_KEY (value redacted) appears to '
+          'be a private server-side token (begins with sk.). Only public, '
+          'URL/bundle-id-restricted client tokens (pk.*) may ship in a '
+          'released app.',
+    );
+  }
+
+  if (hasBaseUrl) {
+    final uri = Uri.tryParse(geocodingBaseUrl);
+    final isBareHttpsOrigin =
+        uri != null &&
+        uri.scheme == 'https' &&
+        uri.host.isNotEmpty &&
+        uri.userInfo.isEmpty &&
+        (uri.path.isEmpty || uri.path == '/') &&
+        !uri.hasQuery &&
+        !uri.hasFragment;
+    if (!isBareHttpsOrigin) {
+      return (
+        exitCode: 1,
+        message:
+            'BLOCKED: the custom RECTIFY_GEOCODING_BASE_URL value (redacted) '
+            'is not a host-only HTTPS origin. It must use https://, name a '
+            'host, and carry no path (a single trailing "/" is allowed), no '
+            'userinfo, no query, and no fragment, so the shipped config '
+            'cannot leak credentials or tracking identifiers.',
+      );
+    }
+  }
+
+  if (hasPublicKey && hasBaseUrl) {
+    return (
+      exitCode: 0,
+      message:
+          'OK: geocoding configured with both a Nominatim-compatible base '
+          'URL and a public client key (value redacted).',
+    );
+  }
+  if (hasPublicKey) {
+    return (
+      exitCode: 0,
+      message:
+          'OK: geocoding configured with a public client key (value redacted).',
+    );
+  }
+  return (
+    exitCode: 0,
+    message:
+        'OK: geocoding configured with a host-only HTTPS base URL '
+        '(Nominatim-compatible proxy/self-hosted endpoint).',
+  );
+}
+
 /// Parses [args], reads the env file, and returns the guard outcome.
 /// A missing env file counts as "no key" (nothing can be bundled).
-/// The share-url gate runs first, then the proxy-url gate; the bundled-key
-/// gate is unchanged.
+/// Gates run in order: share URL → proxy URL → provider URL → geocoding →
+/// bundled key. The geocoding gate allows missing explicit HTTP geocoding
+/// config because the app can use native platform geocoding, while still
+/// rejecting unsafe explicit geocoding values.
 ({int exitCode, String message}) runGuard(List<String> args) {
   var envFilePath = '.env';
   var allowBundledKey = false;
@@ -339,6 +429,8 @@ bool envContainsBundledKey(String envContent) {
   var allowDefaultProxyUrl = false;
   String? proxyUrlPurpose;
   var providerBaseUrl = defaultProviderBaseUrl;
+  var geocodingBaseUrl = '';
+  var geocodingPublicKey = '';
 
   for (final arg in args) {
     if (arg.startsWith('--env-file=')) {
@@ -361,6 +453,10 @@ bool envContainsBundledKey(String envContent) {
       proxyUrlPurpose = arg.substring('--proxy-url-purpose='.length);
     } else if (arg.startsWith('--provider-base-url=')) {
       providerBaseUrl = arg.substring('--provider-base-url='.length);
+    } else if (arg.startsWith('--geocoding-base-url=')) {
+      geocodingBaseUrl = arg.substring('--geocoding-base-url='.length);
+    } else if (arg.startsWith('--geocoding-public-key=')) {
+      geocodingPublicKey = arg.substring('--geocoding-public-key='.length);
     } else {
       return (
         exitCode: 2,
@@ -370,11 +466,13 @@ bool envContainsBundledKey(String envContent) {
             '[--allow-bundled-key --purpose=$requiredPurpose] '
             '[--share-url=<https-url>] '
             '[--allow-default-share-url '
-            '--share-url-purpose=$requiredShareUrlPurpose] '
+            '--share-url-purpose=$requiredShareUrlPurpose (legacy no-ops)] '
             '[--proxy-base-url=<https-url>] '
             '[--allow-default-proxy-url '
             '--proxy-url-purpose=$requiredProxyUrlPurpose] '
-            '[--provider-base-url=<https-url>]',
+            '[--provider-base-url=<https-url>] '
+            '[--geocoding-base-url=<https-url>] '
+            '[--geocoding-public-key=<pk-token>]',
       );
     }
   }
@@ -398,6 +496,12 @@ bool envContainsBundledKey(String envContent) {
   );
   if (providerUrlResult.exitCode != 0) return providerUrlResult;
 
+  final geocodingResult = evaluateGeocodingGate(
+    geocodingBaseUrl: geocodingBaseUrl,
+    geocodingPublicKey: geocodingPublicKey,
+  );
+  if (geocodingResult.exitCode != 0) return geocodingResult;
+
   final envFile = File(envFilePath);
   final keyPresent =
       envFile.existsSync() && envContainsBundledKey(envFile.readAsStringSync());
@@ -413,7 +517,8 @@ bool envContainsBundledKey(String envContent) {
     exitCode: 0,
     message:
         '${keyResult.message}\n${shareUrlResult.message}\n'
-        '${proxyUrlResult.message}\n${providerUrlResult.message}',
+        '${proxyUrlResult.message}\n${providerUrlResult.message}\n'
+        '${geocodingResult.message}',
   );
 }
 

@@ -87,9 +87,10 @@
 > quotes, trademark clearance, or store approvals are asserted anywhere in this
 > document; all such items are routed to Section 12 as owner decisions.
 >
-> **Brand convention.** *TrueRise* is the public brand; *Rectify* /
-> `com.rectify.rectify` is the current internal codename + bundle baseline
-> (`README.md` title "TrueRise (codename rectify)"). **[VERIFIED]**
+> **Brand convention.** *TrueRise* is the public brand; *Rectify* is the
+> internal codename (`README.md` title "TrueRise (codename rectify)"). The
+> active first-publish app identity is `ua.com.truerise.app`. **[VERIFIED
+> 2026-06-23]**
 
 ---
 
@@ -181,7 +182,7 @@ with the owner decisions that gate submission.
 | Analytics / crash reporting | **None wired** (no analytics SDK, no crash reporting) | `pubspec.yaml` (no firebase/sentry/posthog/amplitude); privacy screen text **[VERIFIED]** |
 | iOS platform config | `CFBundleDisplayName=TrueRise` (2026-06; was `Rectify` at original audit), `CFBundleName=rectify`; no `NS*UsageDescription`; no ATS block; portrait+landscape | `ios/Runner/Info.plist` **[VERIFIED]** |
 | Android platform config | `android:label="TrueRise"` (2026-06; was `rectify` at original audit); only `INTERNET` permission; release signing requires owner `android/key.properties` (debug-signing fallback removed 2026-06-12; was debug-signed at original audit) | `android/app/src/main/AndroidManifest.xml`, `android/app/build.gradle.kts` **[VERIFIED]** |
-| Bundle identity | `namespace` + `applicationId` = `com.rectify.rectify`; version `1.0.0+1` | `android/app/build.gradle.kts`, `pubspec.yaml` **[VERIFIED]** |
+| Bundle identity | `namespace` + `applicationId` = `ua.com.truerise.app`; version `1.0.0+1` | `android/app/build.gradle.kts`, `pubspec.yaml` **[VERIFIED 2026-06-23]** |
 | App icon | Real icon assets in repo (2026-06): iOS appiconset incl. 1024² + Android adaptive icon; was stock Flutter glyph at original audit | `ios/Runner/Assets.xcassets/AppIcon.appiconset/`, `android/app/src/main/res/mipmap-*` **[VERIFIED]** |
 | Localization | l10n pipeline in repo (`l10n.yaml`, `flutter gen-l10n` via `pubspec.yaml`) with EN/DE/ES/FR/PT ARBs + generated `AppLocalizations`; native-speaker review and per-locale console character recount remain owner scope | `l10n.yaml`, `pubspec.yaml`, `lib/l10n/app_{en,de,es,fr,pt}.arb` **[VERIFIED 2026-06]** |
 | Demo/review key | `.env` bundled as an asset; key recoverable from the binary | `pubspec.yaml` assets, `README.md` **[VERIFIED]** |
@@ -235,7 +236,7 @@ Each item below blocks first submission. ID maps to Run 4
 | --- | --- | --- | --- | --- |
 | P0-1 | **Public display name = TrueRise** across iOS `CFBundleDisplayName`, Android `android:label`, in-app title, Settings version row, privacy copy | G1 | **[DONE 2026-06]**: `Info.plist` and `AndroidManifest.xml` now carry TrueRise; in-app strings brand via `l10n.dart appBrandName`. *(Original audit: "Rectify  v1.0.0" at `settings_screen.dart:157`, "What Rectify stores" in `privacy_policy_screen.dart`.)* Store-name/trademark confirmation remains owner scope | Impl Run A **[done]** + owner name confirm |
 | P0-2 | **Release signing** — generate upload keystore (Android) + distribution signing (iOS); Android debug-signing fallback already removed | G5 | Android wiring **[DONE 2026-06-12]**: `build.gradle.kts` release reads `android/key.properties` (validates `storePassword`/`keyPassword`/`keyAlias`/`storeFile`; absolute or `android/`-relative path; no debug fallback; release tasks fail with instructions when missing). Owner upload keystore + Play App Signing + iOS distribution signing still pending | Impl Run A + owner secrets |
-| P0-3 | **Bundle-ID decision** — current ID is `com.rectify.rectify`; recommendation is `app.astrolium.truerise` (primary, `docs/bundle-id-recommendation.md`), to be decided **before first publish** (irreversible after) | G5 | `build.gradle.kts` `applicationId` **[VERIFIED]** | Owner decision (Sec. 12) → Impl Run A |
+| P0-3 | **Bundle-ID decision** — final first-publish ID is `ua.com.truerise.app` (derived from `truerise.com.ua` reverse-DNS + `.app` suffix) | G5 | `android/app/build.gradle.kts`, `ios/Runner.xcodeproj/project.pbxproj`, `docs/bundle-id-recommendation.md`, `test/tool/release_identity_test.dart` **[VERIFIED 2026-06-23]** | Done locally; create Apple/Google records with this exact ID |
 | P0-4 | **Hosted privacy-policy URL** reachable + linked in both listings | G2 | App wiring **[DONE 2026-06-12]**: `TRUERISE_PRIVACY_POLICY_URL` public dart-define; valid bare HTTPS URL opens from Settings via `url_launcher` (`LaunchMode.inAppBrowserView`); empty default / unsafe URL / launch failure falls back to in-app `PrivacyPolicyScreen`. Owner-hosted canonical public URL still pending; same URL must go into build define + store listings | Owner hosting + Legal |
 | P0-5 | **Apple App Privacy labels + Play Data Safety** authored to match real data flow (incl. third-party transmission of birth data + life-event text + precise location in live mode) | G3 | **[PARTIAL — authored prep]**: `docs/apple-privacy-labels.md` + `docs/play-data-safety.md` map each form to the verified data flow (`rectification_request_dto.dart` fields) and the no-analytics posture (`pubspec.yaml`) — drafts are guidance only, not console entries **[VERIFIED data basis]** | Owner + Legal / console entry (Sec. 4/5/9) |
 | P0-6 | **Age gate / age rating** — in-app 18+ gate **[DONE 2026-06]**: birth-date picker `lastDate` uses `CalculationFlowState.latestAllowedBirthDate(now)` (`birth_data_screen.dart`; logic in `calculation_flow_state.dart`). Remaining owner action: complete the store age-rating questionnaire consistent with the 18+ gate | G6 | Picker floor wired in `birth_data_screen.dart`; age-gate (18+) tests in `test/features/calculation_flow/calculation_flow_controller_test.dart` **[VERIFIED present]** | Owner store age-rating questionnaire |
@@ -263,10 +264,11 @@ of it blocks an English Tier 0 submission). The privacy-safe share-card image
   `Rectify` at original audit). `CFBundleName` is still `rectify` — the short
   internal name, less user-visible; align it for consistency if desired.
   **[VERIFIED — resolved]**
-- **Bundle identifier.** Currently `com.rectify.rectify`; recommended rebrand
-  is `app.astrolium.truerise` (`docs/bundle-id-recommendation.md`). Decide
-  **before** the first App Store Connect record exists — the bundle ID is
-  immutable post-creation. **[VERIFIED / owner decision]**
+- **Bundle identifier.** `ua.com.truerise.app` is now set in the Runner target
+  and must be used for the first App Store Connect record. Do not create a
+  record with legacy `com.rectify.rectify`; Apple treats the bundle ID as a
+  locked app identity after build/upload workflow begins. **[VERIFIED
+  2026-06-23]**
 - **Version / build.** `1.0.0 (1)` is fine for a first submission; bump the
   build number on each upload. **[VERIFIED]**
 - **Privacy usage strings.** `Info.plist` has **no** `NS*UsageDescription`
@@ -328,8 +330,9 @@ labels and hosted policy to be accurate about the third-party transmission.
 
 - **Application label.** `android:label` is now **TrueRise** (2026-06; was
   `rectify` at original audit). **[VERIFIED — resolved]**
-- **Application ID.** `com.rectify.rectify`; same immutability caveat as iOS —
-  decide before first upload. **[VERIFIED / owner decision]**
+- **Application ID.** `ua.com.truerise.app`; same immutability caveat as iOS —
+  use this exact package for the first Play Console app/upload. **[VERIFIED
+  2026-06-23]**
 - **Release signing.** Gradle wiring done 2026-06-12: debug-signing fallback
   removed; release requires owner `android/key.properties` + keystore.
   Remaining: provide the real upload key and enroll in Play App Signing.
@@ -841,11 +844,10 @@ closing summary.
 > are collected as an owner/legal checklist in
 > `docs/privacy-gdpr-dpa-checklist.md` (draft, not legal advice).
 
-1. **Bundle ID:** current ID stays `com.rectify.rectify` until explicit owner
-   approval. Recommendation is in `docs/bundle-id-recommendation.md`: primary
-   `app.astrolium.truerise`; fallbacks `com.astrolium.truerise` (if only
-   `astrolium.com` is controlled) or `com.truerise.app`. *Irreversible after
-   first publish.* **[decision — awaiting owner]**
+1. **Bundle ID:** final ID is `ua.com.truerise.app` and is implemented locally
+   for iOS + Android. Create the first App Store Connect / Play Console records
+   with this exact value. *Irreversible after first publish/build upload.*
+   **[done locally — owner console action remains]**
 2. **Age-gate cutoff & store age rating:** PRD says "born before 2008"; confirm
    the exact floor and the resulting iOS/Play age rating. **[decision]**
 3. **Hosted privacy-policy ownership + content:** who hosts, and confirm it
@@ -894,7 +896,7 @@ closing summary.
 | --- | --- | --- |
 | iOS display name = Rectify; no usage strings; no ATS | `ios/Runner/Info.plist` | VERIFIED |
 | Android label = rectify; only INTERNET permission | `android/app/src/main/AndroidManifest.xml` | VERIFIED |
-| Release debug-signed; appId `com.rectify.rectify` | `android/app/build.gradle.kts` | VERIFIED |
+| Release signing now requires owner `android/key.properties`; appId `ua.com.truerise.app` | `android/app/build.gradle.kts` | VERIFIED 2026-06-23 |
 | `name: rectify`; placeholder description; no url_launcher/share_plus/analytics/flutter_localizations; `objective_c` pin; `.env` asset | `pubspec.yaml` | VERIFIED |
 | TrueRise = brand, rectify = codename; debug signing; live HTTPS endpoint; demo `.env` key recoverable | `README.md` | VERIFIED |
 | Share is text-only, PII-free (time/ascendant/confidence only) | `lib/core/sharing/share_copy_builder.dart` | VERIFIED |

@@ -96,7 +96,10 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: RoutePaths.settings,
                 name: RouteNames.settings,
-                builder: (context, state) => const SettingsScreen(),
+                builder: (context, state) => SettingsScreen(
+                  initialFocusApiKey:
+                      state.uri.queryParameters['focus'] == 'api-key',
+                ),
               ),
             ],
           ),

@@ -36,7 +36,11 @@ abstract final class ShareCopyBuilder {
 
     if (candidates.isNotEmpty) {
       final top = candidates.first;
-      final timeStr = AppDateFormat.clockTime(top.time, timeFormat);
+      final timeStr = AppDateFormat.clockTime(
+        top.time,
+        timeFormat,
+        localeName: l10n.localeName,
+      );
       final confidence = l10n.shareCardConfidence(
         (top.confidence * 100).round(),
       );

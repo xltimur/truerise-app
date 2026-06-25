@@ -5,14 +5,15 @@ import 'package:rectify/core/update/update_policy.dart';
 
 /// Pins the pure decision rule that maps (installed version, hosted
 /// version info, dismissal state, resolved store URL) to one of three
-/// outcomes: no prompt, a dismissible soft prompt, or the force gate.
+/// outcomes: no prompt, a blocking latest-version prompt, or the force
+/// gate.
 ///
 /// Invariants:
 ///   * `minimumVersion > current` forces the gate — but only when a valid
-///     store URL exists; without one the gate would trap the user, so it
-///     degrades to a dismissible soft prompt.
-///   * `latestVersion > current` yields a soft prompt, shown at most once
-///     per advertised version (dismissal is remembered by tag).
+///     store URL exists; without one the gate would trap the user, so the
+///     app stays silent.
+///   * `latestVersion > current` yields a blocking update prompt when a
+///     valid store URL exists.
 ///   * Anything else — including equal versions — yields no prompt.
 void main() {
   UpdateInfo info({String? latest, String? minimum}) {
@@ -44,12 +45,12 @@ void main() {
       expect(d.urgency, UpdateUrgency.none);
     });
 
-    test('soft prompt already dismissed for this advertised version', () {
+    test('newer version without a store URL stays silent', () {
       final d = UpdatePolicy.decide(
         current: current,
         info: info(latest: '1.3.0'),
         dismissedTag: '1.3.0',
-        storeUrl: store,
+        storeUrl: null,
       );
       expect(d.urgency, UpdateUrgency.none);
     });
@@ -87,15 +88,16 @@ void main() {
       expect(d.urgency, UpdateUrgency.soft);
     });
 
-    test('soft prompt survives a missing store URL (informational, '
-        'no update action)', () {
+    test('dismissedTag does not mute a newer version because the prompt '
+        'is no longer dismissible', () {
       final d = UpdatePolicy.decide(
         current: current,
         info: info(latest: '1.3.0'),
-        storeUrl: null,
+        dismissedTag: '1.3.0',
+        storeUrl: store,
       );
       expect(d.urgency, UpdateUrgency.soft);
-      expect(d.storeUrl, isNull);
+      expect(d.storeUrl, store);
     });
   });
 
@@ -129,19 +131,18 @@ void main() {
       expect(d.urgency, UpdateUrgency.none);
     });
 
-    test('degrades to a dismissible soft prompt when no valid store URL '
-        'is configured — never trap the user', () {
+    test('stays silent when no valid store URL is configured — never trap '
+        'the user', () {
       final d = UpdatePolicy.decide(
         current: current,
         info: info(minimum: '1.3.0'),
         storeUrl: null,
       );
-      expect(d.urgency, UpdateUrgency.soft);
+      expect(d.urgency, UpdateUrgency.none);
       expect(d.storeUrl, isNull);
-      expect(d.promptTag, '1.3.0');
     });
 
-    test('degraded force respects a prior dismissal of the same tag', () {
+    test('missing store URL stays silent even with an old dismissal tag', () {
       final d = UpdatePolicy.decide(
         current: current,
         info: info(minimum: '1.3.0'),

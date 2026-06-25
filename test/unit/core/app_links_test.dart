@@ -41,9 +41,9 @@ void main() {
     test('accepts representative owner-supplied bare HTTPS URLs', () {
       // Stand-ins for whatever the owner bakes in via
       // --dart-define=TRUERISE_SHARE_URL=... before release.
-      expect(AppLinks.isPrivacySafeShareUrl('https://truerise.app'), isTrue);
+      expect(AppLinks.isPrivacySafeShareUrl('https://example.com'), isTrue);
       expect(
-        AppLinks.isPrivacySafeShareUrl('https://get.truerise.app'),
+        AppLinks.isPrivacySafeShareUrl('https://get.example.com'),
         isTrue,
       );
       expect(
@@ -55,8 +55,8 @@ void main() {
     });
 
     test('rejects non-HTTPS schemes', () {
-      expect(AppLinks.isPrivacySafeShareUrl('http://truerise.app'), isFalse);
-      expect(AppLinks.isPrivacySafeShareUrl('ftp://truerise.app'), isFalse);
+      expect(AppLinks.isPrivacySafeShareUrl('http://example.com'), isFalse);
+      expect(AppLinks.isPrivacySafeShareUrl('ftp://example.com'), isFalse);
     });
 
     test(
@@ -64,12 +64,12 @@ void main() {
       () {
         expect(
           AppLinks.isPrivacySafeShareUrl(
-            'https://truerise.app/?utm_source=share',
+            'https://example.com/?utm_source=share',
           ),
           isFalse,
         );
         expect(
-          AppLinks.isPrivacySafeShareUrl('https://truerise.app?ref=abc123'),
+          AppLinks.isPrivacySafeShareUrl('https://example.com?ref=abc123'),
           isFalse,
         );
       },
@@ -77,21 +77,21 @@ void main() {
 
     test('rejects a URL carrying a fragment', () {
       expect(
-        AppLinks.isPrivacySafeShareUrl('https://truerise.app/#promo'),
+        AppLinks.isPrivacySafeShareUrl('https://example.com/#promo'),
         isFalse,
       );
     });
 
     test('rejects a URL embedding userinfo (could carry an identifier)', () {
       expect(
-        AppLinks.isPrivacySafeShareUrl('https://user@truerise.app'),
+        AppLinks.isPrivacySafeShareUrl('https://user@example.com'),
         isFalse,
       );
     });
 
     test('rejects empty, scheme-less, or hostless input', () {
       expect(AppLinks.isPrivacySafeShareUrl(''), isFalse);
-      expect(AppLinks.isPrivacySafeShareUrl('truerise.app'), isFalse);
+      expect(AppLinks.isPrivacySafeShareUrl('example.com'), isFalse);
       expect(AppLinks.isPrivacySafeShareUrl('https:///path'), isFalse);
     });
   });
@@ -128,7 +128,7 @@ void main() {
         isTrue,
       );
       expect(
-        AppLinks.isPrivacySafeStoreUrl('https://truerise.app/get'),
+        AppLinks.isPrivacySafeStoreUrl('https://example.com/get'),
         isTrue,
       );
     });
@@ -151,7 +151,7 @@ void main() {
         isFalse,
       );
       expect(
-        AppLinks.isPrivacySafeStoreUrl('https://truerise.app?id=app.truerise'),
+        AppLinks.isPrivacySafeStoreUrl('https://example.com?id=app.truerise'),
         isFalse,
       );
     });

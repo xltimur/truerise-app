@@ -25,7 +25,7 @@
   "birthDataLabelHelper": "Se muestra en tu lista de historial.",
   "birthDataLabelHint": "p. ej. Mi hora de nacimiento",
   "birthDataSearching": "Buscando…",
-  "birthDataNoMatches": "Sin coincidencias. La demo acepta el nombre escrito.",
+  "birthDataNoMatches": "Ciudad no encontrada. Prueba con otra ortografía.",
 
   "timeWindowTitle": "¿Conoces una hora de nacimiento aproximada?",
   "timeWindowModeApprox": "Tengo una hora aproximada",
@@ -259,7 +259,9 @@
   "settingsLanguageSpanish": "Español",
   "settingsLanguageFrench": "Français",
   "settingsLanguagePortuguese": "Português",
+  "settingsLanguageUkrainian": "Українська",
   "settingsApiKeyHelper": "¿Ya tienes una clave de la Astrology API? Añádela aquí.",
+  "settingsApiKeyGetLink": "Obtén una clave en",
   "settingsApiKeyConfigured": "Clave de API añadida",
   "settingsApiKeyAdd": "Añadir clave",
   "settingsApiKeyRemove": "Eliminar clave",

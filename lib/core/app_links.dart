@@ -11,43 +11,29 @@
 /// [shareUrl] follows the same `String.fromEnvironment` build-config pattern
 /// used for the (public, non-secret) proxy/provider URLs in
 /// `lib/providers/core_providers.dart`. The owner can point every share/invite
-/// surface at the real landing/store URL **without a code change**:
+/// surface at a different landing/store URL **without a code change**:
 ///
 /// ```sh
 /// flutter build ipa \
-///   --dart-define=TRUERISE_SHARE_URL=https://truerise.app
+///   --dart-define=TRUERISE_SHARE_URL=https://truerise.com.ua
 /// ```
 ///
 /// `TRUERISE_SHARE_URL` is a **public** value (it ends up in shared text), not
 /// a secret - do not route secrets through it.
 ///
-/// ## Owner-confirm-before-release - the default is a placeholder
+/// ## Default - owner-confirmed primary domain
 ///
 /// When no `--dart-define` override is supplied, [shareUrl] falls back to
-/// [defaultShareUrl] (`https://truerise.app`). That default is a **brand
-/// placeholder**: at this stage the host is **not** proven to be registered,
-/// owned, or DNS-resolvable (a `curl` against it currently does not resolve).
-/// Shipping it as-is would hand recipients a broken link.
-///
-/// **Release gate:** before publication the owner must provide or confirm a
-/// resolvable landing/store URL - either by registering/owning `truerise.app`
-/// or by passing `--dart-define=TRUERISE_SHARE_URL=...` with the real URL. The
-/// default present in source is **not** proof of ownership or resolution. See
-/// `docs/publication-readiness-current-status.md` section 5a.
-///
-/// Replacement path when the listings go live:
-///   1. Point the build define / [defaultShareUrl] at the live marketing page
-///      (which should itself redirect to the correct store per platform), or
-///   2. Add platform-specific `appStoreUrl` / `playStoreUrl` constants and
-///      update [shareUrl] to pick the right one (e.g. via `Platform`).
+/// [defaultShareUrl] (`https://truerise.com.ua`). This is the owner-purchased
+/// primary domain for TrueRise. DNS and hosting setup are still pending as
+/// external owner actions; the local release blocker is closed.
 ///
 /// Whatever is configured must stay a bare HTTPS URL with no tracking params
 /// and no personal data - see [isPrivacySafeShareUrl].
 abstract final class AppLinks {
   /// Compile-time default used when no `TRUERISE_SHARE_URL` override is
-  /// supplied. **Placeholder** - owner must confirm it is owned/resolvable, or
-  /// override it, before release (see the class doc's release gate).
-  static const String defaultShareUrl = 'https://truerise.app';
+  /// supplied. Owner-confirmed primary domain for TrueRise.
+  static const String defaultShareUrl = 'https://truerise.com.ua';
 
   /// The single source of truth for the public, privacy-safe link embedded in
   /// shareable result copy (`ShareCopyBuilder`) and invite copy
@@ -66,6 +52,10 @@ abstract final class AppLinks {
   /// destination directly; it is the **same value** as [shareUrl] so there is
   /// exactly one source of truth.
   static const String landing = shareUrl;
+
+  /// Public provider site where users can create or copy their own Astrology
+  /// API key. This is not a secret and is safe to display in Settings.
+  static const String astrologyApiKeyUrl = 'https://astrology-api.io/';
 
   /// Pure, side-effect-free check that a candidate share/invite URL is
   /// privacy-safe to embed in shared text.

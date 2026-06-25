@@ -30,7 +30,7 @@ evidence: `docs/release-verification-report-2026-06-16.md`.
 - Bundle ID - финальное решение (после создания первой записи в сторе изменить нельзя).
 - Подпись релиза: Android upload keystore + Play App Signing; iOS distribution cert/profile.
 - Ротация встроенного demo/review API-ключа на capped-ключ с лимитом бюджета (или удалить).
-- Зарезолвящийся share-URL: truerise.app сейчас placeholder, домен надо оформить или дать реальный URL.
+- Share-URL: домен truerise.com.ua куплен, код обновлён. Остаётся: настройка DNS, HTTPS-сертификат, загрузка сайта, создание почты/форвардера support@truerise.com.ua на хостинге.
 - Trademark / доступность имени "TrueRise".
 
 Бэкенд:
@@ -61,7 +61,7 @@ evidence: `docs/release-verification-report-2026-06-16.md`.
 4. Хостинг privacy policy + URL.
 5. Sign-off юристов по privacy-формам.
 6. Production proxy (бэкенд).
-7. Реальный share-URL.
+7. Хостинг share-URL: DNS + HTTPS + сайт + почта для truerise.com.ua.
 8. Ротация demo/review-ключа.
 9. Категория Lifestyle + возрастные анкеты + support URL в консолях.
 

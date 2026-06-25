@@ -4,8 +4,12 @@
 import 'package:flutter/material.dart' show TimeOfDay;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:rectify/data/models/birth_data.dart';
+import 'package:rectify/data/models/calculation_request.dart';
 import 'package:rectify/data/models/event_category.dart';
 import 'package:rectify/data/models/geo_place.dart';
+import 'package:rectify/data/models/life_event.dart';
+import 'package:rectify/data/models/time_window.dart';
 import 'package:rectify/data/models/time_window_mode.dart';
 import 'package:rectify/data/repos/draft_repository.dart';
 import 'package:rectify/data/repos/rectification_repository.dart';
@@ -43,6 +47,42 @@ const _kyiv = GeoPlace(
   country: 'Ukraine',
   latitude: 50.4501,
   longitude: 30.5234,
+);
+
+CalculationRequest _readyRequest({required bool isDemo}) => CalculationRequest(
+  id: 'stale-draft-${isDemo ? 'demo' : 'real'}',
+  isDemo: isDemo,
+  birthData: BirthData(
+    birthDate: DateTime.utc(1990, 5, 14),
+    birthCity: 'Kyiv, Ukraine',
+    birthLatitude: 50.4501,
+    birthLongitude: 30.5234,
+  ),
+  timeWindow: TimeWindow.approximate(
+    time: const TimeOfDay(hour: 7, minute: 30),
+    windowMinutes: 120,
+  ),
+  events: const <LifeEvent>[
+    LifeEvent(
+      id: 'evt-1',
+      category: EventCategory.marriage,
+      year: 2018,
+      sortOrder: 0,
+    ),
+    LifeEvent(
+      id: 'evt-2',
+      category: EventCategory.careerChange,
+      year: 2015,
+      sortOrder: 1,
+    ),
+    LifeEvent(
+      id: 'evt-3',
+      category: EventCategory.relocation,
+      year: 2012,
+      sortOrder: 2,
+    ),
+  ],
+  createdAt: DateTime.utc(2026, 6, 23),
 );
 
 void _populateThreeEvents(CalculationFlowController controller) {
@@ -91,6 +131,46 @@ void main() {
       state.isDemo,
       isTrue,
       reason: 'demoModeDefault=true should seed the draft as a demo run',
+    );
+  });
+
+  group('Demo mode setting sync', () {
+    test(
+      'restores a stale real draft as demo when settings now say demo',
+      () {
+        drafts.write(_readyRequest(isDemo: false));
+        final container = _container(
+          prefs: prefs,
+          rectifier: rectifier,
+          drafts: drafts,
+        );
+        addTearDown(container.dispose);
+
+        final state = container.read(calculationFlowControllerProvider);
+        expect(state.isDemo, isTrue);
+        expect(drafts.read()?.isDemo, isTrue);
+      },
+    );
+
+    test(
+      'restores a stale demo draft as real when settings now say real',
+      () async {
+        SharedPreferences.setMockInitialValues(<String, Object>{
+          'settings.demo_mode_default': false,
+        });
+        final livePrefs = await SharedPreferences.getInstance();
+        drafts.write(_readyRequest(isDemo: true));
+        final container = _container(
+          prefs: livePrefs,
+          rectifier: rectifier,
+          drafts: drafts,
+        );
+        addTearDown(container.dispose);
+
+        final state = container.read(calculationFlowControllerProvider);
+        expect(state.isDemo, isFalse);
+        expect(drafts.read()?.isDemo, isFalse);
+      },
     );
   });
 
@@ -540,6 +620,78 @@ void main() {
         _kyiv.longitude,
       );
     });
+
+    test(
+      'live submission produces a result with isDemo=false',
+      () async {
+        final container = _container(
+          prefs: livePrefs,
+          rectifier: rectifier,
+          drafts: drafts,
+        );
+        addTearDown(container.dispose);
+        final controller = container.read(
+          calculationFlowControllerProvider.notifier,
+        );
+
+        controller.setBirthDate(DateTime.utc(1990, 5, 14));
+        controller.selectGeoPlace(_kyiv);
+        _populateThreeEvents(controller);
+
+        final result = await controller.submit();
+        expect(result.isOk, isTrue);
+        expect(rectifier.submissions.single.isDemo, isFalse);
+
+        final saved = await history.findById(
+          rectifier.submissions.single.id,
+        );
+        expect(saved.isOk, isTrue);
+        expect(
+          saved.valueOrNull?.result.isDemo,
+          isFalse,
+          reason: 'a live result must never be persisted with isDemo=true',
+        );
+      },
+    );
+
+    test(
+      'reset() after a demo run seeds the new draft from current '
+      'settings, not from the old isDemo flag',
+      () async {
+        final container = _container(
+          prefs: livePrefs,
+          rectifier: rectifier,
+          drafts: drafts,
+        );
+        addTearDown(container.dispose);
+        final controller = container.read(
+          calculationFlowControllerProvider.notifier,
+        );
+
+        // Manually flip the draft to demo (simulates a user who
+        // had demo on and then turned it off in Settings).
+        expect(
+          container.read(calculationFlowControllerProvider).isDemo,
+          isFalse,
+        );
+        controller.setIsDemo(value: true);
+        expect(
+          container.read(calculationFlowControllerProvider).isDemo,
+          isTrue,
+        );
+
+        // reset() must re-read demoModeDefault (false in livePrefs),
+        // not preserve the old state.isDemo = true.
+        controller.reset();
+        expect(
+          container.read(calculationFlowControllerProvider).isDemo,
+          isFalse,
+          reason:
+              'reset() should seed isDemo from settings, not from '
+              'the previous draft',
+        );
+      },
+    );
 
     test('typing after selecting a place clears coords and re-blocks the '
         'live flow', () {

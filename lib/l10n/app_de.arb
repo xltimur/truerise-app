@@ -25,7 +25,7 @@
   "birthDataLabelHelper": "Wird in deinem Verlauf angezeigt.",
   "birthDataLabelHint": "z. B. Meine Geburtszeit",
   "birthDataSearching": "Suche läuft…",
-  "birthDataNoMatches": "Keine Treffer. Die Demo akzeptiert den eingetippten Namen.",
+  "birthDataNoMatches": "Keine Stadt gefunden. Versuche eine andere Schreibweise.",
 
   "timeWindowTitle": "Kennst du eine ungefähre Geburtszeit?",
   "timeWindowModeApprox": "Ich habe eine ungefähre Zeit",
@@ -259,7 +259,9 @@
   "settingsLanguageSpanish": "Español",
   "settingsLanguageFrench": "Français",
   "settingsLanguagePortuguese": "Português",
+  "settingsLanguageUkrainian": "Українська",
   "settingsApiKeyHelper": "Hast du bereits einen Astrology-API-Schlüssel? Füge ihn hier hinzu.",
+  "settingsApiKeyGetLink": "Schlüssel erhalten unter",
   "settingsApiKeyConfigured": "API-Schlüssel hinzugefügt",
   "settingsApiKeyAdd": "Schlüssel hinzufügen",
   "settingsApiKeyRemove": "Schlüssel entfernen",

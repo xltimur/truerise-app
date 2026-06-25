@@ -39,8 +39,8 @@ class _RecordingFetcher extends UpdateInfoFetcher {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  const validCheckUrl = 'https://updates.truerise.app/version.json';
-  const storeUrl = 'https://truerise.app/get';
+  const validCheckUrl = 'https://updates.example.com/version.json';
+  const storeUrl = 'https://truerise.com.ua/get';
 
   /// A payload that advertises a newer version than the installed
   /// `1.0.0+1`, so any silent outcome below is attributable to the guard
@@ -97,8 +97,8 @@ void main() {
     test('an invalid configured URL resolves to none without '
         'calling the fetcher', () async {
       const invalidUrls = <String>[
-        'http://updates.truerise.app/version.json',
-        'https://updates.truerise.app/version.json?token=abc',
+        'http://updates.example.com/version.json',
+        'https://updates.example.com/version.json?token=abc',
         'not a url',
       ];
       for (final url in invalidUrls) {

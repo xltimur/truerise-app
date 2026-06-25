@@ -7,13 +7,13 @@ import '../../tool/release_env_guard.dart';
 /// Obviously-fake key used to prove redaction; never a real credential.
 const String _fakeKey = 'fake-test-key-A1B2C3-not-real';
 
-/// Default share/invite URL placeholder; releasing it requires explicit
-/// owner confirmation.
-const String _defaultShareUrl = 'https://truerise.app';
+/// Default share/invite URL; the owner-confirmed primary domain.
+/// Passes the release gate without explicit acknowledgement.
+const String _defaultShareUrl = 'https://truerise.com.ua';
 
 /// Owner-controlled custom share URL: bare HTTPS, no query, fragment, or
 /// userinfo, so it carries no tracking/personal identifiers.
-const String _safeShareUrl = 'https://get.truerise.app';
+const String _safeShareUrl = 'https://get.example.com';
 
 /// Satisfies the share-url gate in tests that are about other gates.
 const String _safeShareUrlArg = '--share-url=$_safeShareUrl';
@@ -27,13 +27,23 @@ const String _defaultProviderUrl = 'https://api.astrology-api.io';
 
 /// Owner-controlled proxy base URL: bare HTTPS, no query, fragment, or
 /// userinfo.
-const String _safeProxyUrl = 'https://proxy.truerise.app';
+const String _safeProxyUrl = 'https://proxy.example.com';
 
 /// Owner-controlled provider-compatible base URL: bare HTTPS origin.
-const String _safeProviderUrl = 'https://provider.truerise.app';
+const String _safeProviderUrl = 'https://provider.example.com';
 
 /// Satisfies the proxy-url gate in tests that are about other gates.
 const String _safeProxyUrlArg = '--proxy-base-url=$_safeProxyUrl';
+
+/// Safe geocoding public key: a pk.* public client token.
+const String _safeGeocodingPublicKey = 'pk.test-geocoding-key';
+
+/// Safe geocoding base URL: host-only HTTPS origin for Nominatim proxy.
+const String _safeGeocodingBaseUrl = 'https://geo.example.com';
+
+/// Satisfies the geocoding gate in tests that are about other gates.
+const String _safeGeocodingArg =
+    '--geocoding-public-key=$_safeGeocodingPublicKey';
 
 void main() {
   late Directory tempDir;
@@ -60,6 +70,7 @@ void main() {
         '--env-file=$path',
         _safeShareUrlArg,
         _safeProxyUrlArg,
+        _safeGeocodingArg,
       ]);
 
       expect(result.exitCode, isNot(0));
@@ -79,6 +90,7 @@ void main() {
         '--env-file=$path',
         _safeShareUrlArg,
         _safeProxyUrlArg,
+        _safeGeocodingArg,
       ]);
 
       expect(result.exitCode, isNot(0));
@@ -90,6 +102,7 @@ void main() {
         '--env-file=${tempDir.path}/does-not-exist',
         _safeShareUrlArg,
         _safeProxyUrlArg,
+        _safeGeocodingArg,
       ]);
 
       expect(result.exitCode, 0);
@@ -103,6 +116,7 @@ void main() {
           '--env-file=$path',
           _safeShareUrlArg,
           _safeProxyUrlArg,
+          _safeGeocodingArg,
         ]).exitCode,
         0,
       );
@@ -115,6 +129,7 @@ void main() {
           '--env-file=$empty',
           _safeShareUrlArg,
           _safeProxyUrlArg,
+          _safeGeocodingArg,
         ]).exitCode,
         0,
       );
@@ -125,6 +140,7 @@ void main() {
           '--env-file=$quotedEmpty',
           _safeShareUrlArg,
           _safeProxyUrlArg,
+          _safeGeocodingArg,
         ]).exitCode,
         0,
       );
@@ -135,6 +151,7 @@ void main() {
           '--env-file=$commented',
           _safeShareUrlArg,
           _safeProxyUrlArg,
+          _safeGeocodingArg,
         ]).exitCode,
         0,
       );
@@ -152,6 +169,7 @@ void main() {
         '--purpose=review-capped',
         _safeShareUrlArg,
         _safeProxyUrlArg,
+        _safeGeocodingArg,
       ]);
 
       expect(result.exitCode, 0);
@@ -168,6 +186,7 @@ void main() {
         '--allow-bundled-key',
         _safeShareUrlArg,
         _safeProxyUrlArg,
+        _safeGeocodingArg,
       ]);
 
       expect(result.exitCode, isNot(0));
@@ -184,6 +203,7 @@ void main() {
         '--purpose=production',
         _safeShareUrlArg,
         _safeProxyUrlArg,
+        _safeGeocodingArg,
       ]);
 
       expect(result.exitCode, isNot(0));
@@ -199,13 +219,27 @@ void main() {
       envPath = await writeEnv('OTHER_SETTING=1\n');
     });
 
-    test('blocks release when --share-url is omitted, treating it as the '
-        'default placeholder', () {
-      final result = runGuard(['--env-file=$envPath', _safeProxyUrlArg]);
+    test('passes when --share-url is omitted: default is the owned primary '
+        'domain and requires no explicit acknowledgement', () {
+      final result = runGuard([
+        '--env-file=$envPath',
+        _safeProxyUrlArg,
+        _safeGeocodingArg,
+      ]);
 
-      expect(result.exitCode, isNot(0));
+      expect(result.exitCode, 0);
       expect(result.message, contains(_defaultShareUrl));
-      expect(result.message, contains('--allow-default-share-url'));
+    });
+
+    test('passes when the default URL is passed explicitly', () {
+      final result = runGuard([
+        '--env-file=$envPath',
+        '--share-url=$_defaultShareUrl',
+        _safeProxyUrlArg,
+        _safeGeocodingArg,
+      ]);
+
+      expect(result.exitCode, 0);
     });
 
     test('passes with a custom bare HTTPS share URL', () {
@@ -213,6 +247,7 @@ void main() {
         '--env-file=$envPath',
         '--share-url=$_safeShareUrl',
         _safeProxyUrlArg,
+        _safeGeocodingArg,
       ]);
 
       expect(result.exitCode, 0);
@@ -255,7 +290,7 @@ void main() {
     test('blocks a non-HTTPS share URL', () {
       final result = runGuard([
         '--env-file=$envPath',
-        '--share-url=http://get.truerise.app',
+        '--share-url=http://get.example.com',
         _safeProxyUrlArg,
       ]);
 
@@ -265,7 +300,7 @@ void main() {
     test('blocks a share URL with userinfo', () {
       final result = runGuard([
         '--env-file=$envPath',
-        '--share-url=https://trk-u-77@get.truerise.app',
+        '--share-url=https://trk-u-77@get.example.com',
         _safeProxyUrlArg,
       ]);
 
@@ -280,64 +315,43 @@ void main() {
     });
 
     test(
-      'allows the omitted/default share URL with both '
-      '--allow-default-share-url and --share-url-purpose=owner-confirmed',
+      'legacy --allow-default-share-url + --share-url-purpose=owner-confirmed '
+      'flags are accepted as no-ops and the message notes they are no longer '
+      'required',
       () {
         final result = runGuard([
           '--env-file=$envPath',
           '--allow-default-share-url',
           '--share-url-purpose=owner-confirmed',
           _safeProxyUrlArg,
+          _safeGeocodingArg,
         ]);
 
         expect(result.exitCode, 0);
-        expect(result.message, contains('owner-confirmed'));
+        expect(result.message, contains('no longer required'));
       },
     );
 
-    test('accepts the same confirmation when the default URL is passed '
-        'explicitly', () {
+    test('legacy --allow-default-share-url alone is a no-op', () {
       final result = runGuard([
         '--env-file=$envPath',
-        '--share-url=$_defaultShareUrl',
         '--allow-default-share-url',
-        '--share-url-purpose=owner-confirmed',
         _safeProxyUrlArg,
+        _safeGeocodingArg,
       ]);
 
       expect(result.exitCode, 0);
     });
 
-    test('fails to confirm the default without a purpose', () {
-      final result = runGuard([
-        '--env-file=$envPath',
-        '--allow-default-share-url',
-        _safeProxyUrlArg,
-      ]);
-
-      expect(result.exitCode, isNot(0));
-      expect(result.message, contains('owner-confirmed'));
-    });
-
-    test('fails to confirm the default with a wrong purpose', () {
-      final result = runGuard([
-        '--env-file=$envPath',
-        '--allow-default-share-url',
-        '--share-url-purpose=marketing',
-        _safeProxyUrlArg,
-      ]);
-
-      expect(result.exitCode, isNot(0));
-    });
-
-    test('fails to confirm the default with a purpose but no allow flag', () {
+    test('legacy --share-url-purpose alone is a no-op', () {
       final result = runGuard([
         '--env-file=$envPath',
         '--share-url-purpose=owner-confirmed',
         _safeProxyUrlArg,
+        _safeGeocodingArg,
       ]);
 
-      expect(result.exitCode, isNot(0));
+      expect(result.exitCode, 0);
     });
   });
 
@@ -352,7 +366,11 @@ void main() {
     test(
       'passes when --proxy-base-url is omitted, using the public default',
       () {
-        final result = runGuard(['--env-file=$envPath', _safeShareUrlArg]);
+        final result = runGuard([
+          '--env-file=$envPath',
+          _safeShareUrlArg,
+          _safeGeocodingArg,
+        ]);
 
         expect(result.exitCode, 0);
         expect(result.message, contains(_defaultProxyUrl));
@@ -364,6 +382,7 @@ void main() {
         '--env-file=$envPath',
         _safeShareUrlArg,
         '--proxy-base-url=$_defaultProxyUrl',
+        _safeGeocodingArg,
       ]);
 
       expect(result.exitCode, 0);
@@ -375,6 +394,7 @@ void main() {
         '--env-file=$envPath',
         _safeShareUrlArg,
         '--proxy-base-url=$_safeProxyUrl',
+        _safeGeocodingArg,
       ]);
 
       expect(result.exitCode, 0);
@@ -402,7 +422,7 @@ void main() {
       final result = runGuard([
         '--env-file=$envPath',
         _safeShareUrlArg,
-        '--proxy-base-url=https://trk-pu-77@proxy.truerise.app',
+        '--proxy-base-url=https://trk-pu-77@proxy.example.com',
       ]);
 
       expect(result.exitCode, isNot(0));
@@ -429,7 +449,7 @@ void main() {
       final result = runGuard([
         '--env-file=$envPath',
         _safeShareUrlArg,
-        '--proxy-base-url=http://proxy.truerise.app',
+        '--proxy-base-url=http://proxy.example.com',
       ]);
 
       expect(result.exitCode, isNot(0));
@@ -459,6 +479,7 @@ void main() {
         '--env-file=$envPath',
         _safeShareUrlArg,
         '--proxy-base-url=$_safeProxyUrl/',
+        _safeGeocodingArg,
       ]);
 
       expect(result.exitCode, 0);
@@ -472,6 +493,7 @@ void main() {
           _safeShareUrlArg,
           '--allow-default-proxy-url',
           '--proxy-url-purpose=local-test-only',
+          _safeGeocodingArg,
         ]);
 
         expect(result.exitCode, 0);
@@ -484,6 +506,7 @@ void main() {
         '--env-file=$envPath',
         _safeShareUrlArg,
         '--allow-default-proxy-url',
+        _safeGeocodingArg,
       ]);
 
       expect(result.exitCode, 0);
@@ -495,6 +518,7 @@ void main() {
         _safeShareUrlArg,
         '--allow-default-proxy-url',
         '--proxy-url-purpose=production',
+        _safeGeocodingArg,
       ]);
 
       expect(result.exitCode, 0);
@@ -505,6 +529,7 @@ void main() {
         '--env-file=$envPath',
         _safeShareUrlArg,
         '--proxy-url-purpose=local-test-only',
+        _safeGeocodingArg,
       ]);
 
       expect(result.exitCode, 0);
@@ -525,6 +550,7 @@ void main() {
         '--env-file=$envPath',
         _safeShareUrlArg,
         _safeProxyUrlArg,
+        _safeGeocodingArg,
       ]);
 
       expect(result.exitCode, 0);
@@ -537,6 +563,7 @@ void main() {
         _safeShareUrlArg,
         _safeProxyUrlArg,
         '--provider-base-url=$_safeProviderUrl',
+        _safeGeocodingArg,
       ]);
 
       expect(result.exitCode, 0);
@@ -566,7 +593,7 @@ void main() {
         '--env-file=$envPath',
         _safeShareUrlArg,
         _safeProxyUrlArg,
-        '--provider-base-url=https://trk-vu-77@provider.truerise.app',
+        '--provider-base-url=https://trk-vu-77@provider.example.com',
       ]);
 
       expect(result.exitCode, isNot(0));
@@ -595,6 +622,167 @@ void main() {
             'carries the endpoint path separately',
       );
       expect(result.message, contains('redacted'));
+    });
+  });
+
+  group('geocoding gate', () {
+    late String envPath;
+
+    setUp(() async {
+      // Key-free env so only the geocoding gate decides the outcome.
+      envPath = await writeEnv('OTHER_SETTING=1\n');
+    });
+
+    test(
+      'passes when neither geocoding base URL nor public key is supplied',
+      () {
+        final result = runGuard([
+          '--env-file=$envPath',
+          _safeShareUrlArg,
+          _safeProxyUrlArg,
+        ]);
+
+        expect(result.exitCode, 0);
+        expect(
+          result.message,
+          contains('native platform geocoding'),
+          reason:
+              'missing explicit geocoding config must use native geocoding, '
+              'not silently rely only on the offline stub',
+        );
+        expect(
+          result.message,
+          contains('RECTIFY_GEOCODING'),
+          reason: 'message must still name the optional explicit config keys',
+        );
+      },
+    );
+
+    test('passes when a safe geocoding proxy base URL is supplied', () {
+      final result = runGuard([
+        '--env-file=$envPath',
+        _safeShareUrlArg,
+        _safeProxyUrlArg,
+        '--geocoding-base-url=$_safeGeocodingBaseUrl',
+      ]);
+
+      expect(result.exitCode, 0);
+      expect(
+        result.message,
+        contains('geocoding'),
+        reason: 'passing message must confirm geocoding is configured',
+      );
+    });
+
+    test('passes when a pk.* public key is supplied', () {
+      final result = runGuard([
+        '--env-file=$envPath',
+        _safeShareUrlArg,
+        _safeProxyUrlArg,
+        '--geocoding-public-key=$_safeGeocodingPublicKey',
+      ]);
+
+      expect(result.exitCode, 0);
+      expect(result.message, contains('redacted'));
+      expect(
+        result.message,
+        isNot(contains(_safeGeocodingPublicKey)),
+        reason: 'public key value must never be echoed',
+      );
+    });
+
+    test('passes when both a base URL and a public key are supplied', () {
+      final result = runGuard([
+        '--env-file=$envPath',
+        _safeShareUrlArg,
+        _safeProxyUrlArg,
+        '--geocoding-base-url=$_safeGeocodingBaseUrl',
+        '--geocoding-public-key=$_safeGeocodingPublicKey',
+      ]);
+
+      expect(result.exitCode, 0);
+    });
+
+    test('blocks a sk.* private token and redacts its value', () {
+      const skToken = 'sk.eyJ1IjoiZXhhbXBsZSJ9.secret';
+      final result = runGuard([
+        '--env-file=$envPath',
+        _safeShareUrlArg,
+        _safeProxyUrlArg,
+        '--geocoding-public-key=$skToken',
+      ]);
+
+      expect(result.exitCode, isNot(0));
+      expect(
+        result.message,
+        isNot(contains(skToken)),
+        reason: 'private token value must never be printed',
+      );
+      expect(result.message, contains('redacted'));
+      expect(
+        result.message,
+        contains('sk.'),
+        reason:
+            'message must describe the disqualifying prefix without '
+            'printing the full value',
+      );
+    });
+
+    test('blocks a geocoding base URL carrying a path and redacts it', () {
+      final result = runGuard([
+        '--env-file=$envPath',
+        _safeShareUrlArg,
+        _safeProxyUrlArg,
+        '--geocoding-base-url=$_safeGeocodingBaseUrl/search',
+      ]);
+
+      expect(result.exitCode, isNot(0));
+      expect(
+        result.message,
+        isNot(contains('/search')),
+        reason: 'path segments must never be printed',
+      );
+      expect(result.message, contains('redacted'));
+    });
+
+    test('blocks a geocoding base URL with userinfo and redacts it', () {
+      const urlWithUser = 'https://user@geo.example.com';
+      final result = runGuard([
+        '--env-file=$envPath',
+        _safeShareUrlArg,
+        _safeProxyUrlArg,
+        '--geocoding-base-url=$urlWithUser',
+      ]);
+
+      expect(result.exitCode, isNot(0));
+      expect(
+        result.message,
+        isNot(contains('user@')),
+        reason: 'userinfo may carry credentials and must never be printed',
+      );
+      expect(result.message, contains('redacted'));
+    });
+
+    test('blocks a non-HTTPS geocoding base URL', () {
+      final result = runGuard([
+        '--env-file=$envPath',
+        _safeShareUrlArg,
+        _safeProxyUrlArg,
+        '--geocoding-base-url=http://geo.example.com',
+      ]);
+
+      expect(result.exitCode, isNot(0));
+    });
+
+    test('accepts a geocoding base URL with only a trailing slash', () {
+      final result = runGuard([
+        '--env-file=$envPath',
+        _safeShareUrlArg,
+        _safeProxyUrlArg,
+        '--geocoding-base-url=$_safeGeocodingBaseUrl/',
+      ]);
+
+      expect(result.exitCode, 0);
     });
   });
 

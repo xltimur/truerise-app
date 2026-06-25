@@ -10,6 +10,7 @@ import 'app_localizations_en.dart';
 import 'app_localizations_es.dart';
 import 'app_localizations_fr.dart';
 import 'app_localizations_pt.dart';
+import 'app_localizations_uk.dart';
 
 // ignore_for_file: type=lint
 
@@ -102,6 +103,7 @@ abstract class AppLocalizations {
     Locale('es'),
     Locale('fr'),
     Locale('pt'),
+    Locale('uk'),
   ];
 
   /// Primary button label that advances to the next step in a multi-step flow.
@@ -236,10 +238,10 @@ abstract class AppLocalizations {
   /// **'Searching…'**
   String get birthDataSearching;
 
-  /// Shown when no city matches the query; the demo still accepts the free-typed name.
+  /// Shown when the geocoder returns no results for the typed query.
   ///
   /// In en, this message translates to:
-  /// **'No matches. Demo accepts the typed name.'**
+  /// **'No city found. Try a different spelling.'**
   String get birthDataNoMatches;
 
   /// Title of step 2 (time window) of the calculation flow.
@@ -1485,11 +1487,23 @@ abstract class AppLocalizations {
   /// **'Português'**
   String get settingsLanguagePortuguese;
 
+  /// Radio option label for Ukrainian. An endonym held constant across all locales.
+  ///
+  /// In en, this message translates to:
+  /// **'Українська'**
+  String get settingsLanguageUkrainian;
+
   /// Helper text in the Settings API-key card for users who already hold an Astrology API key. Must not read as a purchase or signup prompt.
   ///
   /// In en, this message translates to:
   /// **'Already have an Astrology API key? Add it here.'**
   String get settingsApiKeyHelper;
+
+  /// Short label before the public astrology-api.io URL in Settings and the API-key dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Get a key at'**
+  String get settingsApiKeyGetLink;
 
   /// Status line in the Settings API-key card when a key is stored. The key itself is never echoed back into the UI.
   ///
@@ -1682,8 +1696,14 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['de', 'en', 'es', 'fr', 'pt'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>[
+    'de',
+    'en',
+    'es',
+    'fr',
+    'pt',
+    'uk',
+  ].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -1702,6 +1722,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       return AppLocalizationsFr();
     case 'pt':
       return AppLocalizationsPt();
+    case 'uk':
+      return AppLocalizationsUk();
   }
 
   throw FlutterError(

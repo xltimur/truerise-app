@@ -171,6 +171,7 @@ class _ResultBody extends ConsumerWidget {
     final topFormatted = AppDateFormat.clockParts(
       top.time,
       settings.timeFormat,
+      localeName: l10n.localeName,
     );
 
     return SingleChildScrollView(
@@ -217,6 +218,7 @@ class _ResultBody extends ConsumerWidget {
                   final formatted = AppDateFormat.clockParts(
                     candidate.time,
                     settings.timeFormat,
+                    localeName: l10n.localeName,
                   );
                   return CandidateCard(
                     time: formatted.time,

@@ -33,6 +33,11 @@ class _BirthDataScreenState extends ConsumerState<BirthDataScreen> {
   late final TextEditingController _labelController;
   List<GeoPlace> _suggestions = const <GeoPlace>[];
   bool _searching = false;
+  // `true` after a completed search that returned zero results; keeps the
+  // "No city found" panel visible so the user understands why Continue is
+  // disabled. Reset when the field is cleared, a new search starts, or a
+  // suggestion is selected.
+  bool _noResults = false;
   Timer? _debounce;
 
   @override
@@ -60,10 +65,14 @@ class _BirthDataScreenState extends ConsumerState<BirthDataScreen> {
       setState(() {
         _suggestions = const <GeoPlace>[];
         _searching = false;
+        _noResults = false;
       });
       return;
     }
-    setState(() => _searching = true);
+    setState(() {
+      _searching = true;
+      _noResults = false;
+    });
     _debounce = Timer(const Duration(milliseconds: 180), () async {
       final geocoder = ref.read(geocodingServiceProvider);
       final hits = await geocoder.search(value);
@@ -71,6 +80,7 @@ class _BirthDataScreenState extends ConsumerState<BirthDataScreen> {
       setState(() {
         _suggestions = hits;
         _searching = false;
+        _noResults = hits.isEmpty;
       });
     });
   }
@@ -81,7 +91,10 @@ class _BirthDataScreenState extends ConsumerState<BirthDataScreen> {
     _cityController.selection = TextSelection.fromPosition(
       TextPosition(offset: place.displayName.length),
     );
-    setState(() => _suggestions = const <GeoPlace>[]);
+    setState(() {
+      _suggestions = const <GeoPlace>[];
+      _noResults = false;
+    });
     FocusScope.of(context).unfocus();
   }
 
@@ -114,6 +127,7 @@ class _BirthDataScreenState extends ConsumerState<BirthDataScreen> {
       firstDate: firstDate,
       lastDate: lastAllowed,
       helpText: context.l10n.birthDataDateLabel,
+      locale: Localizations.localeOf(context),
     );
     if (picked == null) return;
     ref
@@ -121,9 +135,9 @@ class _BirthDataScreenState extends ConsumerState<BirthDataScreen> {
         .setBirthDate(DateTime.utc(picked.year, picked.month, picked.day));
   }
 
-  String _formattedDate(DateTime? date) {
+  String _formattedDate(DateTime? date, String localeName) {
     if (date == null) return '';
-    return AppDateFormat.longDate(date);
+    return AppDateFormat.longDate(date, localeName: localeName);
   }
 
   @override
@@ -149,6 +163,7 @@ class _BirthDataScreenState extends ConsumerState<BirthDataScreen> {
     return CalcStepScaffold(
       step: CalculationFlowStep.birth,
       title: context.l10n.birthDataTitle,
+      isDemo: flow.isDemo,
       onBack: () => context.go(RoutePaths.home),
       primaryAction: PrimaryButton(
         label: context.l10n.commonContinue,
@@ -167,7 +182,10 @@ class _BirthDataScreenState extends ConsumerState<BirthDataScreen> {
           DatePickerField(
             label: context.l10n.birthDataDateLabel,
             placeholder: context.l10n.birthDataDatePlaceholder,
-            formattedValue: _formattedDate(flow.birthDate),
+            formattedValue: _formattedDate(
+              flow.birthDate,
+              context.l10n.localeName,
+            ),
             onTap: _pickDate,
           ),
           const SizedBox(height: AppSpacing.s4),
@@ -183,7 +201,7 @@ class _BirthDataScreenState extends ConsumerState<BirthDataScreen> {
             ),
             onChanged: _onCityChanged,
           ),
-          if (_searching || _suggestions.isNotEmpty)
+          if (_searching || _suggestions.isNotEmpty || _noResults)
             Padding(
               padding: const EdgeInsets.only(top: AppSpacing.s2),
               child: _SuggestionsPanel(

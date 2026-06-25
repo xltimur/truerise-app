@@ -378,7 +378,11 @@ class _ShareImageButton extends ConsumerWidget {
       onPressed: () async {
         final svc = ref.read(shareServiceProvider);
         final top = saved.result.candidates.first;
-        final parts = AppDateFormat.clockParts(top.time, settings.timeFormat);
+        final parts = AppDateFormat.clockParts(
+          top.time,
+          settings.timeFormat,
+          localeName: l10n.localeName,
+        );
         final card = StoryCardData(
           brand: appBrandName,
           time: parts.meridiem.isEmpty

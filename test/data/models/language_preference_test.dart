@@ -25,6 +25,11 @@ void main() {
       expect(LanguagePreference.spanish.locale, const Locale('es'));
       expect(LanguagePreference.french.locale, const Locale('fr'));
       expect(LanguagePreference.portuguese.locale, const Locale('pt'));
+      expect(LanguagePreference.ukrainian.locale, const Locale('uk'));
+    });
+
+    test('ukrainian tag round-trips through fromTag', () {
+      expect(LanguagePreference.fromTag('uk'), LanguagePreference.ukrainian);
     });
   });
 }

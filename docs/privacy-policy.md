@@ -59,13 +59,13 @@ keeps the raw response it receives for a live calculation in that local
 database. None of this on-device content is uploaded to a server run by us (we
 run none for your content).
 
-## City search runs on your device
+## City search
 
-In this release, the birthplace you type is matched against a small built-in,
-on-device list to fill in coordinates. **Your city search text is not sent to
-any geocoding service.** [OWNER/LEGAL: if a future release adds a network-based
-geocoder, disclose that transmission here and update the app-store privacy
-labels accordingly.]
+To turn a birthplace into coordinates, the app may send the city search text to
+the device's native geocoding service or to the configured geocoding
+provider/proxy. If those lookups are unavailable, the app can fall back to a
+small built-in list. [OWNER/LEGAL: confirm final wording and app-store privacy
+labels for native/platform and configured geocoding transmission.]
 
 ## Demo mode is offline
 

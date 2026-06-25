@@ -9,6 +9,7 @@ void main() {
     Locale('es'),
     Locale('fr'),
     Locale('pt'),
+    Locale('uk'),
   ];
 
   group('resolveAppLocale', () {
@@ -53,6 +54,16 @@ void main() {
       // de-AT (Austrian German) should resolve to de, not fall through.
       final result = resolveAppLocale([const Locale('de', 'AT')], supported);
       expect(result.languageCode, 'de');
+    });
+
+    test('Ukrainian device locale resolves to Ukrainian', () {
+      final result = resolveAppLocale([const Locale('uk')], supported);
+      expect(result.languageCode, 'uk');
+    });
+
+    test('region-tagged uk-UA device locale resolves to Ukrainian', () {
+      final result = resolveAppLocale([const Locale('uk', 'UA')], supported);
+      expect(result.languageCode, 'uk');
     });
   });
 }

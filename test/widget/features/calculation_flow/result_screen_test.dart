@@ -7,8 +7,10 @@ import 'package:rectify/app/router.dart';
 import 'package:rectify/data/demo/demo_response.dart';
 import 'package:rectify/data/models/birth_data.dart';
 import 'package:rectify/data/models/calculation_request.dart';
+import 'package:rectify/data/models/calculation_result.dart';
 import 'package:rectify/data/models/candidate_time.dart';
 import 'package:rectify/data/models/event_category.dart';
+import 'package:rectify/data/models/evidence_item.dart';
 import 'package:rectify/data/models/life_event.dart';
 import 'package:rectify/data/models/saved_calculation.dart';
 import 'package:rectify/data/models/time_window.dart';
@@ -102,6 +104,60 @@ SavedCalculation _seedDemoCalculation({
   return SavedCalculation(request: request, result: result);
 }
 
+SavedCalculation _seedLiveCalculation({
+  String id = 'live-saved-1',
+  String label = 'Live result',
+}) {
+  final request = CalculationRequest(
+    id: id,
+    isDemo: false,
+    birthData: BirthData(
+      birthDate: DateTime.utc(1990, 5, 14),
+      birthCity: 'Kyiv, Ukraine',
+      birthLatitude: 50.4501,
+      birthLongitude: 30.5234,
+    ),
+    timeWindow: TimeWindow.approximate(
+      time: const TimeOfDay(hour: 7, minute: 0),
+      windowMinutes: 120,
+    ),
+    events: <LifeEvent>[
+      const LifeEvent(
+        id: 'evt-1',
+        category: EventCategory.marriage,
+        year: 2018,
+        month: 6,
+        sortOrder: 0,
+      ),
+      const LifeEvent(
+        id: 'evt-2',
+        category: EventCategory.careerChange,
+        year: 2015,
+        month: 9,
+        sortOrder: 1,
+      ),
+      const LifeEvent(
+        id: 'evt-3',
+        category: EventCategory.relocation,
+        year: 2012,
+        month: 3,
+        sortOrder: 2,
+      ),
+    ],
+    createdAt: DateTime.utc(2026, 5, 20, 12),
+    label: label,
+  );
+  final result = CalculationResult(
+    requestId: id,
+    candidates: demoCandidates,
+    evidence: const <EvidenceItem>[],
+    isDemo: false,
+    completedAt: DateTime.utc(2026, 5, 20, 12),
+    method: 'test_live',
+  );
+  return SavedCalculation(request: request, result: result);
+}
+
 void main() {
   testWidgets(
     'renders hero time, confidence, DEMO pill, secondary candidates, '
@@ -157,6 +213,45 @@ void main() {
 
       // Demo upgrade nudge appears at the bottom of demo results.
       expect(find.byKey(resultDemoNudgeKey), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'live result has no DEMO pill, demo share prompt, or demo nudge',
+    (tester) async {
+      final seeded = _seedLiveCalculation();
+      final prefs = await _prefs();
+      final history = FakeHistoryRepository([seeded]);
+      final rectifier = FakeRectificationRepository(history: history);
+      final drafts = InMemoryDraftRepository();
+      addTearDown(drafts.dispose);
+
+      await tester.pumpWidget(
+        _harness(
+          prefs: prefs,
+          history: history,
+          rectifier: rectifier,
+          drafts: drafts,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(MaterialApp)),
+      );
+      container
+          .read(routerProvider)
+          .go(RoutePaths.calcResultFor(seeded.request.id));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ResultScreen), findsOneWidget);
+      expect(find.byType(DemoPill), findsNothing);
+      expect(find.byKey(resultDemoNudgeKey), findsNothing);
+      expect(find.byKey(resultDemoSharePromptKey), findsNothing);
+
+      // Live result still shows the hero card and CTAs.
+      expect(find.byType(HeroResultCard), findsOneWidget);
+      expect(find.text('See how we got this'), findsOneWidget);
     },
   );
 

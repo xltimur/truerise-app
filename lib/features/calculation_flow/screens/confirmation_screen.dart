@@ -42,7 +42,7 @@ class ConfirmationScreen extends ConsumerWidget {
     final birthDate = flow.birthDate;
     final birthLine = birthDate == null
         ? l10n.confirmationDatePending
-        : AppDateFormat.longDate(birthDate);
+        : AppDateFormat.longDate(birthDate, localeName: l10n.localeName);
     final cityLine = flow.birthCity.trim().isEmpty
         ? '—'
         : flow.birthCity.trim();
@@ -51,7 +51,11 @@ class ConfirmationScreen extends ConsumerWidget {
     final windowLine = switch (flow.timeWindowMode) {
       TimeWindowMode.unknown => l10n.confirmationFullDayWindow,
       TimeWindowMode.approximate => l10n.confirmationWindowApprox(
-        AppDateFormat.clockTime(flow.approximateTime, timeFormat),
+        AppDateFormat.clockTime(
+          flow.approximateTime,
+          timeFormat,
+          localeName: l10n.localeName,
+        ),
         _formatWindow(l10n, flow.windowMinutes),
       ),
     };
@@ -61,6 +65,7 @@ class ConfirmationScreen extends ConsumerWidget {
     return CalcStepScaffold(
       step: CalculationFlowStep.confirm,
       title: l10n.confirmationTitle,
+      isDemo: flow.isDemo,
       onBack: () {
         controller.back();
         context.go(RoutePaths.calcEvents);
@@ -147,6 +152,7 @@ class ConfirmationScreen extends ConsumerWidget {
                           AppDateFormat.optionalMonthYear(
                             event.month,
                             event.year,
+                            localeName: l10n.localeName,
                           ),
                           style: AppTypography.bodySm.copyWith(
                             color: AppColors.inkSoft,

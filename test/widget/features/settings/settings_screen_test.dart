@@ -97,10 +97,10 @@ Future<ProviderContainer> _pumpOnSettings(
   // an 800×600 surface where the lower rows (Delete all / Privacy /
   // version) live below the fold and never enter the lazy ListView.
   // Stretch the surface so every row is built and findable without
-  // scrolling, then restore on tear-down. The Language section (6 radio
+  // scrolling, then restore on tear-down. The Language section (7 radio
   // rows) pushes the lower rows further down, so the surface is tall
   // enough to build them all.
-  await tester.binding.setSurfaceSize(const Size(420, 1800));
+  await tester.binding.setSurfaceSize(const Size(420, 2000));
   addTearDown(() => tester.binding.setSurfaceSize(null));
 
   await tester.pumpWidget(app);
@@ -196,7 +196,7 @@ void main() {
     expect(find.textContaining('7:14 AM'), findsNothing);
   });
 
-  testWidgets('renders the language section with Auto and 5 endonyms', (
+  testWidgets('renders the language section with Auto and 6 endonyms', (
     tester,
   ) async {
     final prefs = await _prefs();
@@ -210,6 +210,7 @@ void main() {
     expect(find.text('Español'), findsOneWidget);
     expect(find.text('Français'), findsOneWidget);
     expect(find.text('Português'), findsOneWidget);
+    expect(find.text('Українська'), findsOneWidget);
 
     // Default is Auto (device-driven) — nothing manual persisted yet.
     expect(
@@ -261,6 +262,10 @@ void main() {
         find.text('Already have an Astrology API key? Add it here.'),
         findsOneWidget,
       );
+      expect(
+        find.text('Get a key at ${AppLinks.astrologyApiKeyUrl}'),
+        findsOneWidget,
+      );
       expect(find.text('Add key'), findsOneWidget);
 
       await tester.tap(find.text('Add key'));
@@ -268,6 +273,13 @@ void main() {
 
       expect(find.text('Astrology API key'), findsOneWidget);
       expect(find.text('Save key'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(Dialog),
+          matching: find.text('Get a key at ${AppLinks.astrologyApiKeyUrl}'),
+        ),
+        findsOneWidget,
+      );
 
       await tester.enterText(find.byType(TextField), '  user-key-123  ');
       await tester.tap(find.text('Save key'));
@@ -381,7 +393,7 @@ void main() {
         tester,
         _wrap(
           prefs,
-          privacyPolicyUrl: 'https://truerise.app/privacy',
+          privacyPolicyUrl: 'https://truerise.com.ua/privacy.html',
           privacyLauncher: launcher,
         ),
       );
@@ -389,7 +401,7 @@ void main() {
       await tester.tap(find.text('Privacy Policy'));
       await tester.pumpAndSettle();
 
-      expect(launcher.opened, ['https://truerise.app/privacy']);
+      expect(launcher.opened, ['https://truerise.com.ua/privacy.html']);
       expect(find.byType(PrivacyPolicyScreen), findsNothing);
     },
   );
@@ -406,7 +418,7 @@ void main() {
         tester,
         _wrap(
           prefs,
-          privacyPolicyUrl: 'https://truerise.app/privacy?utm_source=app',
+          privacyPolicyUrl: 'https://truerise.com.ua/privacy.html?utm_source=app',  // query string makes it invalid
           privacyLauncher: launcher,
         ),
       );
@@ -428,7 +440,7 @@ void main() {
         tester,
         _wrap(
           prefs,
-          privacyPolicyUrl: 'https://truerise.app/privacy',
+          privacyPolicyUrl: 'https://truerise.com.ua/privacy.html',
           privacyLauncher: launcher,
         ),
       );
@@ -436,7 +448,7 @@ void main() {
       await tester.tap(find.text('Privacy Policy'));
       await tester.pumpAndSettle();
 
-      expect(launcher.opened, ['https://truerise.app/privacy']);
+      expect(launcher.opened, ['https://truerise.com.ua/privacy.html']);
       expect(find.byType(PrivacyPolicyScreen), findsOneWidget);
     },
   );

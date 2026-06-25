@@ -216,7 +216,7 @@ class CalculationErrorScreen extends ConsumerWidget {
           if (isRateLimited) {
             // Keep the draft alive: after adding a key in Settings the
             // user can resubmit the same calculation.
-            context.go(RoutePaths.settings);
+            context.go(RoutePaths.settingsApiKeyFocus);
             return;
           }
           controller.reset();

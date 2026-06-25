@@ -1,4 +1,4 @@
-package com.rectify.rectify
+package ua.com.truerise.app
 
 import android.content.Intent
 import io.flutter.embedding.android.FlutterActivity

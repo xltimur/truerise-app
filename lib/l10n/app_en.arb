@@ -101,9 +101,9 @@
   "@birthDataSearching": {
     "description": "Shown while city suggestions are loading."
   },
-  "birthDataNoMatches": "No matches. Demo accepts the typed name.",
+  "birthDataNoMatches": "No city found. Try a different spelling.",
   "@birthDataNoMatches": {
-    "description": "Shown when no city matches the query; the demo still accepts the free-typed name."
+    "description": "Shown when the geocoder returns no results for the typed query."
   },
 
   "timeWindowTitle": "Do you know an approximate birth time?",
@@ -554,7 +554,7 @@
   "@shareCopyGetApp": {
     "description": "Call-to-action line appended to the privacy-safe shared text, inviting the recipient to try the app via a public landing/store link. {url} is a non-secret public URL with no tracking parameters or personal data; keep it verbatim.",
     "placeholders": {
-      "url": { "type": "String", "example": "https://truerise.app" }
+      "url": { "type": "String", "example": "https://truerise.com.ua" }
     }
   },
   "inviteCopyHeadline": "Try {brand} — find your real birth time",
@@ -572,7 +572,7 @@
   "@inviteCopyGetApp": {
     "description": "Link line of the 'Invite a friend' message. {url} is a non-secret public landing/store link with no tracking parameters or personal data; keep it verbatim.",
     "placeholders": {
-      "url": { "type": "String", "example": "https://truerise.app" }
+      "url": { "type": "String", "example": "https://truerise.com.ua" }
     }
   },
   "resultSaveToHistory": "Save to history",
@@ -1100,9 +1100,17 @@
   "@settingsLanguagePortuguese": {
     "description": "Radio option label for Portuguese. An endonym held constant across all locales."
   },
+  "settingsLanguageUkrainian": "Українська",
+  "@settingsLanguageUkrainian": {
+    "description": "Radio option label for Ukrainian. An endonym held constant across all locales."
+  },
   "settingsApiKeyHelper": "Already have an Astrology API key? Add it here.",
   "@settingsApiKeyHelper": {
     "description": "Helper text in the Settings API-key card for users who already hold an Astrology API key. Must not read as a purchase or signup prompt."
+  },
+  "settingsApiKeyGetLink": "Get a key at",
+  "@settingsApiKeyGetLink": {
+    "description": "Short label before the public astrology-api.io URL in Settings and the API-key dialog."
   },
   "settingsApiKeyConfigured": "API key added",
   "@settingsApiKeyConfigured": {

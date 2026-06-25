@@ -138,6 +138,8 @@ flutter run \
   --dart-define=RECTIFY_PROXY_BASE_URL="$RECTIFY_PROXY_BASE_URL" \
   --dart-define=RECTIFY_PROXY_PATH="$RECTIFY_PROXY_PATH" \
   --dart-define=RECTIFY_PROXY_APP_ID="$RECTIFY_PROXY_APP_ID" \
+  --dart-define=RECTIFY_GEOCODING_BASE_URL="$RECTIFY_GEOCODING_BASE_URL" \
+  --dart-define=RECTIFY_GEOCODING_PUBLIC_KEY="$RECTIFY_GEOCODING_PUBLIC_KEY" \
   --dart-define=TRUERISE_SHARE_URL="$TRUERISE_SHARE_URL" \
   --dart-define=TRUERISE_PRIVACY_POLICY_URL="$TRUERISE_PRIVACY_POLICY_URL"
 ```
@@ -153,6 +155,8 @@ dart run tool/release_env_guard.dart \
   --share-url="$TRUERISE_SHARE_URL" \
   --proxy-base-url="$RECTIFY_PROXY_BASE_URL" \
   --provider-base-url="$RECTIFY_PROVIDER_BASE_URL" \
+  --geocoding-base-url="$RECTIFY_GEOCODING_BASE_URL" \
+  --geocoding-public-key="$RECTIFY_GEOCODING_PUBLIC_KEY" \
   --allow-bundled-key --purpose=review-capped
 ```
 
@@ -162,6 +166,8 @@ flutter build appbundle --release \
   --dart-define=RECTIFY_PROXY_BASE_URL="$RECTIFY_PROXY_BASE_URL" \
   --dart-define=RECTIFY_PROXY_PATH="$RECTIFY_PROXY_PATH" \
   --dart-define=RECTIFY_PROXY_APP_ID="$RECTIFY_PROXY_APP_ID" \
+  --dart-define=RECTIFY_GEOCODING_BASE_URL="$RECTIFY_GEOCODING_BASE_URL" \
+  --dart-define=RECTIFY_GEOCODING_PUBLIC_KEY="$RECTIFY_GEOCODING_PUBLIC_KEY" \
   --dart-define=TRUERISE_SHARE_URL="$TRUERISE_SHARE_URL" \
   --dart-define=TRUERISE_PRIVACY_POLICY_URL="$TRUERISE_PRIVACY_POLICY_URL" \
   --android-project-arg=truerise.allowBundledApiKey=true \
@@ -189,8 +195,8 @@ Public configuration keys (full reference: `docs/implementation-plan.md`
 | `TRUERISE_PRIVACY_POLICY_URL` | Optional public (non-secret) hosted privacy-policy page opened from Settings. Must be a bare HTTPS URL (no query/fragment/userinfo). Default is empty = disabled: the Settings row keeps the bundled in-app `PrivacyPolicyScreen`, which is also the fallback for unsafe values or launch failures. |
 | `RECTIFY_PROVIDER_BASE_URL` | Provider-direct base URL for user/bundled API-key mode (default: `https://api.astrology-api.io`). |
 | `RECTIFY_PROVIDER_PATH` | Provider-direct endpoint path (default: `/api/v3/rectification/search`). |
-| `RECTIFY_GEOCODING_BASE_URL` | Public geocoding provider URL. |
-| `RECTIFY_GEOCODING_PUBLIC_KEY` | URL/bundle-id-restricted `pk.…` token only. |
+| `RECTIFY_GEOCODING_BASE_URL` | Optional geocoding provider/proxy base URL. With no public key this must be a Nominatim-compatible owner proxy/self-hosted endpoint. Empty uses native iOS/Android geocoding before the offline fallback. |
+| `RECTIFY_GEOCODING_PUBLIC_KEY` | URL/bundle-id-restricted Mapbox-style `pk.…` token only. Empty keeps geocoding on the configured proxy/self-hosted endpoint, or native iOS/Android geocoding when no base URL is configured. |
 
 **Security boundary** (see `docs/implementation-plan.md` §9.7 and the
 note at the top of Appendix B): every `--dart-define` value is compiled

@@ -133,6 +133,8 @@ void main() {
             proxyPath: '/proxy-only',
             providerBaseUrl: 'https://api.astrology-api.io',
             providerPath: '/provider-only',
+            geocodingBaseUrl: '',
+            geocodingPublicKey: '',
             env: 'test',
           ),
         );
@@ -203,6 +205,8 @@ void main() {
           proxyPath: '/proxy-only',
           providerBaseUrl: 'https://api.astrology-api.io',
           providerPath: '/provider-only',
+          geocodingBaseUrl: '',
+          geocodingPublicKey: '',
           env: 'test',
         ),
       );

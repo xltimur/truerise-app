@@ -213,11 +213,11 @@ V1.5 (gated on the V1.5 cut), P2 (later). "Owner" is the lead function.
 
 | # | Feature / gap | Evidence source | Current status | Growth | ASO/store | Policy risk | Complexity | Phase | Owner notes |
 |---|---|---|---|---|---|---|---|---|---|
-| G1 | Display-name -> "TrueRise" (`CFBundleDisplayName`, `android:label`) | Run 3 Section 1; `ios/Runner/Info.plist`, `android/.../AndroidManifest.xml` [VERIFIED still "Rectify"/"rectify" at Run 4 baseline; TrueRise applied since - see status note] | MISSING (Run 4) -> DONE (A.1) | Med | High | Low | Low (config) | P0 | Config only, not a code edit. Bundle id stays `com.rectify.rectify` |
+| G1 | Display-name -> "TrueRise" (`CFBundleDisplayName`, `android:label`) | Run 3 Section 1; `ios/Runner/Info.plist`, `android/.../AndroidManifest.xml` [VERIFIED still "Rectify"/"rectify" at Run 4 baseline; TrueRise applied since - see status note] | MISSING (Run 4) -> DONE (A.1) | Med | High | Low | Low (config) | P0 | Config only, not a code edit. Bundle/package ID is now `ua.com.truerise.app` |
 | G2 | Hosted privacy-policy URL (replace/augment in-app screen) | PRD Section 13; qa-phase8 Section 6; Run 3 Section 11 #12 | PARTIAL (in-app screen exists; app wiring done 2026-06-12, config-gated `TRUERISE_PRIVACY_POLICY_URL`) | Low | High (both stores require) | High if absent | Low (Legal publishes URL; no code left) | P0 | Legal publishes canonical URL; same URL goes in build define + listings |
 | G3 | App Store privacy labels + Play Data Safety form | PRD Section 13; store policy | PARTIAL (authored prep - `docs/apple-privacy-labels.md` + `docs/play-data-safety.md` map the verified data flow to each form; was MISSING at the Run 4 baseline) | Low | High | High if wrong | Low-Med (form, no code) | P0 | Must match actual data flow (on-device + proxy/provider); owner/legal sign-off + actual console entry remain (both docs are "guidance, not a submission") |
 | G4 | Real app icon (not default Flutter glyph) | qa-phase8 Section 6 (Run 4 baseline; icon assets landed since - see status note) | MISSING (Run 4) -> DONE (A.3) | Low | High (listing quality) | Low | Low-Med (design + `flutter_launcher_icons`) | P0 | Blocks store, not demo |
-| G5 | Bundle-id + release-signing lock | qa-phase8 Section 5.3 / Section 6 | OPEN (Android signing wiring done 2026-06-12; owner keystore + bundle-id confirm remain) | Low | High (submission) | Low | Low | P0 | Decide bundle id per `docs/bundle-id-recommendation.md` (recommended `app.astrolium.truerise`; `com.rectify.rectify` stays until owner approval); owner provisions upload keystore + iOS distribution signing |
+| G5 | Bundle-id + release-signing lock | qa-phase8 Section 5.3 / Section 6 | PARTIAL (bundle/package ID implemented 2026-06-23; Android signing wiring done 2026-06-12; owner keystore + iOS signing remain) | Low | High (submission) | Low | Low | P0 | Final ID is `ua.com.truerise.app`; owner provisions upload keystore + iOS distribution signing |
 | G6 | COPPA age gate (born before 2008) | PRD Section 13 | UNVERIFIED (Run 4) -> DONE (A.1) | Low | Med | High if missing | Low | P0 | Implemented: 18+ floor via `CalculationFlowState.latestAllowedBirthDate` / `lastDate` in `birth_data_screen.dart`; tests in `test/features/calculation_flow/calculation_flow_controller_test.dart` |
 | G7 | Store metadata (category **Lifestyle** on both stores post-Appeeky, title/subtitle/keywords) | Run 3 Sections 4-6, 12; refreshed 2026-06-15 from the Appeeky audit (`docs/store-listing-en.md` Section 1/3.4) | READY (doc) | Med | High | Med (4.3(b)) | Low (console, no code) | P0 | Copy from Run 3 Option H (DE uses Option C); category is **Lifestyle** on both stores post-Appeeky - the earlier Utilities/Tools category leg is superseded historical context (`docs/store-listing-en.md` Section 1/3.4) |
 | G8 | Store screenshots (hero -> evidence -> demo -> share) | Run 3 Section 8 | DONE, raw (A.5 EN + D.4 localized; was MISSING at Run 4) | Med | High | Low | Med (design) | P0 | Raw captures in `screenshots/store/{en,de,fr,es,pt-BR}/` (5 frames per locale); remaining: device-frame/caption compositing, other device sizes if required, console upload, owner/design review. Lead with the tool, not zodiac art |
@@ -250,8 +250,8 @@ Run 1 D4 P0 criterion (c) "required by store policy."
   `CFBundleDisplayName` (iOS) and `android:label` (Android) to "TrueRise". Today
   the installed icon reads "Rectify"/"rectify" while every marketing surface and
   the in-app share tagline say "TrueRise" [VERIFIED `ios/Runner/Info.plist`,
-  `android/app/src/main/AndroidManifest.xml`]. Keep `com.rectify.rectify` and
-  `CFBundleName=rectify`. This is the single highest-confusion-risk pre-launch
+  `android/app/src/main/AndroidManifest.xml`]. Keep `CFBundleName=rectify` as
+  the internal codename. This is the single highest-confusion-risk pre-launch
   item and the cheapest to fix. *(Current state: DONE - `CFBundleDisplayName`
   and `android:label` are "TrueRise" since Impl Run A.1; final public-name /
   trademark approval remains an owner item.)*
@@ -270,10 +270,9 @@ Run 1 D4 P0 criterion (c) "required by store policy."
   clock-quadrant mark before submission. *(Current state: DONE - iOS
   appiconset + Android adaptive icon assets are in the repo since Impl Run A.3;
   store icon/screenshot review remains owner scope.)*
-- **G5 - Bundle id + signing.** Decide the bundle id per
-  `docs/bundle-id-recommendation.md` (recommended `app.astrolium.truerise`;
-  `com.rectify.rectify` stays in code until owner approval); provision release
-  signing (store-submission scope per qa-phase8 Section 5.3).
+- **G5 - Bundle id + signing.** Bundle/package ID is implemented as
+  `ua.com.truerise.app`; provision release signing (store-submission scope per
+  qa-phase8 Section 5.3).
 - **G6 - COPPA age gate.** PRD Section 13 requires a born-before-2008 gate on
   the date picker. *(Current state: DONE since Impl Run A.1 - the 18+ floor is
   enforced via `CalculationFlowState.latestAllowedBirthDate` / `lastDate` in
@@ -499,7 +498,7 @@ forms), not app code.
 | Privacy policy | Hosted URL (G2) | PARTIAL (app wiring done, config-gated) | Legal publishes; build with `TRUERISE_PRIVACY_POLICY_URL` + add URL to listings |
 | Data safety | Apple labels + Play Data Safety (G3) | PARTIAL (authored prep - `docs/apple-privacy-labels.md` + `docs/play-data-safety.md` map the real flow) | Owner/legal sign-off + console entry |
 | App icon | Default Flutter glyph (G4) | DONE (A.3 - iOS appiconset + Android adaptive icon in repo) | Store icon review at submission |
-| Bundle id / signing | Lock + provision (G5) | OPEN (Android gradle wiring done 2026-06-12 - no debug fallback, reads `android/key.properties`; owner keystore + bundle-id confirm + iOS signing remain) | Owner: keystore + Play App Signing + iOS distribution signing; decide bundle id (`docs/bundle-id-recommendation.md`) |
+| Bundle id / signing | Lock + provision (G5) | PARTIAL (Bundle/package ID `ua.com.truerise.app` implemented 2026-06-23; Android gradle wiring done 2026-06-12 - no debug fallback, reads `android/key.properties`; owner keystore + iOS signing remain) | Owner: keystore + Play App Signing + iOS distribution signing |
 | Age gate | COPPA born-before-2008 (G6) | DONE (A.1 - 18+ floor in the date picker, `birth_data_screen.dart`) | None in app; keep store age-rating answers consistent with the 18+ gate |
 | Analytics / attribution | None wired (G13/G14) | MISSING | Privacy-bound decision; can launch without, but launch blind |
 | Review-risk: 4.3(b) | Utility framing, no fortune lexicon | MITIGATED (Run 3 Section 7) | Hold metadata + screenshot discipline |
@@ -562,8 +561,8 @@ us the loop is worth the investment, and (c) a pixel-level privacy review.
 
 ### Impl Run A - acceptance
 - [ ] Installed app icon label reads "TrueRise" on both iOS and Android (manual
-  device/simulator check); `CFBundleName=rectify` and `com.rectify.rectify`
-  unchanged.
+  device/simulator check); `CFBundleName=rectify` unchanged and app identity is
+  `ua.com.truerise.app`.
 - [ ] Privacy-policy link opens the hosted URL (manual); in-app fallback still
   reachable.
 - [ ] Date picker rejects DOB after 2007-12-31 (widget test).

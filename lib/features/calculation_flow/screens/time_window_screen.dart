@@ -83,8 +83,8 @@ class TimeWindowScreen extends ConsumerWidget {
     final loTime = TimeOfDay(hour: lo ~/ 60, minute: lo % 60);
     final hiTime = TimeOfDay(hour: hi ~/ 60, minute: hi % 60);
     return l10n.timeWindowRangeCopy(
-      AppDateFormat.clockTime(loTime, format),
-      AppDateFormat.clockTime(hiTime, format),
+      AppDateFormat.clockTime(loTime, format, localeName: l10n.localeName),
+      AppDateFormat.clockTime(hiTime, format, localeName: l10n.localeName),
     );
   }
 
@@ -101,6 +101,7 @@ class TimeWindowScreen extends ConsumerWidget {
     return CalcStepScaffold(
       step: CalculationFlowStep.window,
       title: context.l10n.timeWindowTitle,
+      isDemo: flow.isDemo,
       onBack: () {
         controller.back();
         context.go(RoutePaths.calcBirth);
@@ -140,6 +141,7 @@ class TimeWindowScreen extends ConsumerWidget {
               formattedValue: AppDateFormat.clockTime(
                 flow.approximateTime,
                 timeFormat,
+                localeName: context.l10n.localeName,
               ),
               onTap: () => _pickTime(context, ref, flow.approximateTime),
             ),

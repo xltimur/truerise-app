@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+    "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  ExportOptions.app-store.example.plist
+  Template for flutter build ipa App Store export.
+
+  OWNER STEPS BEFORE FIRST IPA EXPORT
+  ====================================
+  1. Use the final Bundle ID `ua.com.truerise.app`
+     (see docs/bundle-id-recommendation.md). The decision is IRREVERSIBLE
+     after the first App Store Connect record/build is created.
+  2. Confirm your 10-character Apple Developer Team ID.
+     Find it at: Xcode -> Preferences -> Accounts -> team name -> Team ID column,
+     or at developer.apple.com -> Membership -> Team ID.
+  3. Create an App Store distribution provisioning profile in Xcode / App Store Connect.
+     Certificates, Identifiers & Profiles -> Profiles -> App Store Distribution.
+  4. Copy this file to ios/ExportOptions.plist (git-ignored):
+         cp ios/ExportOptions.app-store.example.plist ios/ExportOptions.plist
+  5. Replace every <owner-...> placeholder below with real values.
+  6. Run the iOS preflight:
+         dart run tool/ios_release_preflight.dart
+  7. Build the IPA:
+         flutter build ipa --release --export-options-plist ios/ExportOptions.plist
+
+  SECURITY NOTE
+  =============
+  ios/ExportOptions.plist is git-ignored because it contains your Team ID and
+  provisioning profile names. Never commit it. The example template (this file)
+  is intentionally tracked so engineering can see the expected structure.
+-->
+<plist version="1.0">
+<dict>
+
+    <!-- Distribution method for App Store Connect upload. -->
+    <key>method</key>
+    <string>app-store-connect</string>
+
+    <!-- Your 10-character Apple Developer Team ID (alphanumeric, e.g. AB1CD23EF4). -->
+    <key>teamID</key>
+    <string>OWNER-10CHAR-TEAM-ID</string>
+
+    <!--
+      Map each bundle ID to its App Store distribution provisioning profile name.
+      The profile name appears in Xcode -> Preferences -> Accounts -> Manage Certificates,
+      or in App Store Connect -> Certificates, Identifiers & Profiles -> Profiles.
+    -->
+    <key>provisioningProfiles</key>
+    <dict>
+        <!-- Final first-publish Bundle ID. -->
+        <key>ua.com.truerise.app</key>
+        <!-- Replace with the exact App Store distribution provisioning profile name. -->
+        <string>OWNER-APP-STORE-DISTRIBUTION-PROFILE-NAME</string>
+    </dict>
+
+    <!--
+      Distribution signing certificate.
+      Format: "Apple Distribution: Display Name (TEAMID)"
+      Find the exact string in Keychain Access -> My Certificates.
+    -->
+    <key>signingCertificate</key>
+    <string>Apple Distribution: OWNER-DISPLAY-NAME (OWNER-10CHAR-TEAM-ID)</string>
+
+    <!-- Manual signing gives explicit control over profile selection. -->
+    <key>signingStyle</key>
+    <string>manual</string>
+
+    <!-- Upload dSYM symbol files to App Store Connect for crash symbolication. -->
+    <key>uploadSymbols</key>
+    <true/>
+
+    <!-- Remove Swift standard library symbols not referenced by the app. -->
+    <key>stripSwiftSymbols</key>
+    <true/>
+
+    <!--
+      Set to false: flutter build ipa manages version/build via pubspec.yaml.
+      Setting to true would let Xcode auto-increment the build number.
+    -->
+    <key>manageAppVersionAndBuildNumber</key>
+    <false/>
+
+</dict>
+</plist>

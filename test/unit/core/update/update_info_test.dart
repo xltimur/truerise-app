@@ -13,7 +13,7 @@ void main() {
       final info = UpdateInfo.tryParse(<String, Object?>{
         'latestVersion': '1.2.0+7',
         'minimumVersion': '1.1.0',
-        'storeUrl': 'https://truerise.app/get',
+        'storeUrl': 'https://truerise.com.ua/get',
         'appStoreUrl': 'https://apps.apple.com/app/id123456789',
         'playStoreUrl':
             'https://play.google.com/store/apps/details?id=app.truerise',
@@ -67,7 +67,7 @@ void main() {
   group('UpdateInfo.storeUrlFor', () {
     UpdateInfo full() => UpdateInfo.tryParse(<String, Object?>{
       'latestVersion': '9.9.9',
-      'storeUrl': 'https://truerise.app/get',
+      'storeUrl': 'https://truerise.com.ua/get',
       'appStoreUrl': 'https://apps.apple.com/app/id123456789',
       'playStoreUrl':
           'https://play.google.com/store/apps/details?id=app.truerise',
@@ -91,12 +91,12 @@ void main() {
         'is missing', () {
       final info = UpdateInfo.tryParse(<String, Object?>{
         'latestVersion': '9.9.9',
-        'storeUrl': 'https://truerise.app/get',
+        'storeUrl': 'https://truerise.com.ua/get',
       })!;
-      expect(info.storeUrlFor(TargetPlatform.iOS), 'https://truerise.app/get');
+      expect(info.storeUrlFor(TargetPlatform.iOS), 'https://truerise.com.ua/get');
       expect(
         info.storeUrlFor(TargetPlatform.android),
-        'https://truerise.app/get',
+        'https://truerise.com.ua/get',
       );
     });
 
@@ -104,10 +104,10 @@ void main() {
         'falls back to a safe generic one', () {
       final info = UpdateInfo.tryParse(<String, Object?>{
         'latestVersion': '9.9.9',
-        'storeUrl': 'https://truerise.app/get',
+        'storeUrl': 'https://truerise.com.ua/get',
         'appStoreUrl': 'https://apps.apple.com/app/id1?utm_source=push',
       })!;
-      expect(info.storeUrlFor(TargetPlatform.iOS), 'https://truerise.app/get');
+      expect(info.storeUrlFor(TargetPlatform.iOS), 'https://truerise.com.ua/get');
     });
 
     test('returns null when every candidate is unsafe', () {

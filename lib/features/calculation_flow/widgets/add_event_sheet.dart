@@ -124,7 +124,10 @@ class _AddEventSheetState extends State<AddEventSheet> {
       options: <BottomSheetOption<int>>[
         BottomSheetOption<int>(value: 0, label: l10n.addEventNoMonth),
         for (var i = 1; i <= 12; i++)
-          BottomSheetOption<int>(value: i, label: AppDateFormat.monthAbbrev(i)),
+          BottomSheetOption<int>(
+            value: i,
+            label: AppDateFormat.monthAbbrev(i, localeName: l10n.localeName),
+          ),
       ],
     );
     if (picked == null) return;
@@ -219,7 +222,10 @@ class _AddEventSheetState extends State<AddEventSheet> {
                           label: l10n.addEventMonth,
                           value: _month == null
                               ? ''
-                              : AppDateFormat.monthAbbrev(_month!),
+                              : AppDateFormat.monthAbbrev(
+                                  _month!,
+                                  localeName: l10n.localeName,
+                                ),
                           placeholder: l10n.addEventMonth,
                           onTap: _pickMonth,
                         ),

@@ -29,6 +29,8 @@ class RectifyBuildConfig {
     required this.proxyPath,
     required this.providerBaseUrl,
     required this.providerPath,
+    required this.geocodingBaseUrl,
+    required this.geocodingPublicKey,
     required this.env,
     this.requestTimeout = const Duration(seconds: 30),
   });
@@ -60,6 +62,10 @@ class RectifyBuildConfig {
         'RECTIFY_PROVIDER_PATH',
         defaultValue: '/api/v3/rectification/search',
       ),
+      geocodingBaseUrl: String.fromEnvironment('RECTIFY_GEOCODING_BASE_URL'),
+      geocodingPublicKey: String.fromEnvironment(
+        'RECTIFY_GEOCODING_PUBLIC_KEY',
+      ),
       env: String.fromEnvironment('RECTIFY_ENV', defaultValue: 'dev'),
     );
   }
@@ -75,6 +81,16 @@ class RectifyBuildConfig {
   /// Endpoint path used in providerDirect mode.
   /// Defaults to /api/v3/rectification/search.
   final String providerPath;
+
+  /// Base URL for explicit HTTP city search. With [geocodingPublicKey] set
+  /// this defaults externally to a Mapbox-compatible host; without a key it is
+  /// treated as a Nominatim-compatible proxy/self-hosted endpoint. Empty means
+  /// the app uses native platform geocoding before the offline fallback.
+  final String geocodingBaseUrl;
+
+  /// Public, app-restricted client token for client-side geocoding providers.
+  /// Must never be a private server-side secret.
+  final String geocodingPublicKey;
 
   final String env;
   final Duration requestTimeout;

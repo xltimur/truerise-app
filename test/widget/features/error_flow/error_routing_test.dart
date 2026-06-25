@@ -16,6 +16,7 @@ import 'package:rectify/data/secure/secure_key_store.dart';
 import 'package:rectify/features/calculation_flow/state/calculation_flow_controller.dart';
 import 'package:rectify/features/error_flow/error_routing.dart';
 import 'package:rectify/features/error_flow/error_screen.dart';
+import 'package:rectify/features/settings/settings_screen.dart';
 import 'package:rectify/providers/core_providers.dart';
 import 'package:rectify/providers/repo_providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -431,8 +432,8 @@ void main() {
     );
 
     testWidgets(
-      'rate limited: secondary opens settings without clearing the draft '
-      'or resubmitting',
+      'rate limited: secondary opens settings focused on the API-key card '
+      'without clearing the draft or resubmitting',
       (tester) async {
         final history = FakeHistoryRepository();
         final rectifier = FakeRectificationRepository(history: history)
@@ -468,7 +469,19 @@ void main() {
         await tester.tap(find.byKey(errorSecondaryActionKey));
         await tester.pumpAndSettle();
 
-        expect(location(container), RoutePaths.settings);
+        expect(location(container), RoutePaths.settingsApiKeyFocus);
+        expect(find.byKey(settingsApiKeyCardKey), findsOneWidget);
+        final cardTop = tester.getTopLeft(
+          find.byKey(settingsApiKeyCardKey),
+        );
+        final viewportHeight =
+            tester.view.physicalSize.height / tester.view.devicePixelRatio;
+        expect(cardTop.dy, greaterThanOrEqualTo(0));
+        expect(
+          cardTop.dy,
+          lessThan(viewportHeight),
+          reason: 'API-key card should be immediately visible after routing',
+        );
         expect(
           drafts.read(),
           isNotNull,

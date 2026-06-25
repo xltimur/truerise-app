@@ -10,25 +10,34 @@ import 'package:rectify/app/app.dart';
 import 'package:rectify/app/route_names.dart';
 import 'package:rectify/app/router.dart';
 import 'package:rectify/data/models/event_category.dart';
+import 'package:rectify/data/models/geo_place.dart';
 import 'package:rectify/data/repos/draft_repository.dart';
 import 'package:rectify/data/secure/secure_key_store.dart';
 import 'package:rectify/features/calculation_flow/screens/loading_screen.dart';
 import 'package:rectify/features/calculation_flow/state/calculation_flow_controller.dart';
 import 'package:rectify/providers/core_providers.dart';
 import 'package:rectify/providers/repo_providers.dart';
+import 'package:rectify/widgets/chips/demo_pill.dart';
 import 'package:rectify/widgets/feedback/breath_ring_loader.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../helpers/fake_history_repository.dart';
 import '../../../helpers/fake_rectification_repository.dart';
 
-Future<SharedPreferences> _prefs() async {
+Future<SharedPreferences> _prefs({bool demo = true}) async {
   SharedPreferences.setMockInitialValues(<String, Object>{
     'settings.onboarding_done': true,
-    'settings.demo_mode_default': true,
+    'settings.demo_mode_default': demo,
   });
   return SharedPreferences.getInstance();
 }
+
+const _kyiv = GeoPlace(
+  displayName: 'Kyiv, Ukraine',
+  country: 'Ukraine',
+  latitude: 50.4501,
+  longitude: 30.5234,
+);
 
 ProviderScope _harness({
   required SharedPreferences prefs,
@@ -245,6 +254,74 @@ void main() {
       expect(
         container.read(calculationFlowControllerProvider).label,
         'still editable',
+      );
+    },
+  );
+
+  testWidgets(
+    'live mode: no DemoPill and live title are shown when demo is off',
+    (tester) async {
+      final prefs = await _prefs(demo: false);
+      final history = FakeHistoryRepository();
+      final rectifier = FakeRectificationRepository(history: history);
+      rectifier.blocker = Completer<void>();
+      final drafts = InMemoryDraftRepository();
+      addTearDown(drafts.dispose);
+
+      await tester.pumpWidget(
+        _harness(
+          prefs: prefs,
+          history: history,
+          rectifier: rectifier,
+          drafts: drafts,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(MaterialApp)),
+      );
+      final controller = container.read(
+        calculationFlowControllerProvider.notifier,
+      );
+      controller
+        ..setBirthDate(DateTime.utc(1990, 5, 14))
+        ..selectGeoPlace(_kyiv)
+        ..addEvent(category: EventCategory.marriage, year: 2018)
+        ..addEvent(category: EventCategory.careerChange, year: 2015)
+        ..addEvent(category: EventCategory.relocation, year: 2012);
+
+      expect(
+        container.read(calculationFlowControllerProvider).isDemo,
+        isFalse,
+        reason: 'demo is off in settings, draft must be live',
+      );
+
+      container.read(routerProvider).go(RoutePaths.calcLoading);
+      await tester.pump();
+      await tester.pump();
+
+      // Live mode must show the live title, never the demo title or pill.
+      expect(find.byType(DemoPill), findsNothing);
+      expect(
+        find.text('Calculating your probable birth time…'),
+        findsOneWidget,
+      );
+      expect(find.text('Running demo calculation…'), findsNothing);
+
+      // Release and let the result land.
+      rectifier.blocker!.complete();
+      await tester.pumpAndSettle();
+
+      // Result must not carry isDemo=true.
+      final saved = await history.findById(
+        rectifier.submissions.single.id,
+      );
+      expect(saved.isOk, isTrue);
+      expect(
+        saved.valueOrNull?.result.isDemo,
+        isFalse,
+        reason: 'live result persisted to history must have isDemo=false',
       );
     },
   );

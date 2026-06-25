@@ -54,3 +54,7 @@ app.*.map.json
 .env.prod
 .env.*.local
 
+# iOS release export options (contains team ID and provisioning profile names).
+# The example template ios/ExportOptions.app-store.example.plist is tracked.
+ios/ExportOptions.plist
+

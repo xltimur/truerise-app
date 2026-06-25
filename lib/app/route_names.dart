@@ -48,6 +48,7 @@ abstract final class RoutePaths {
   static const String home = '/';
   static const String newCalculation = '/new';
   static const String settings = '/settings';
+  static const String settingsApiKeyFocus = '/settings?focus=api-key';
   static const String settingsPrivacy = '/settings/privacy';
   static const String widgetGallery = '/widget_gallery';
 

@@ -6,7 +6,9 @@ import 'package:rectify/data/models/time_format.dart';
 
 void main() {
   setUpAll(() async {
-    await initializeDateFormatting('en');
+    for (final locale in <String>['de', 'en', 'es', 'fr', 'pt', 'uk']) {
+      await initializeDateFormatting(locale);
+    }
   });
 
   group('AppDateFormat.clockTime', () {
@@ -115,6 +117,35 @@ void main() {
       expect(
         AppDateFormat.optionalMonthYear(6, 2026, localeName: 'en'),
         'Jun 2026',
+      );
+    });
+
+    test('date helpers honor every supported non-English locale', () {
+      final date = DateTime(1990, 5, 14);
+
+      expect(
+        AppDateFormat.longDate(date, localeName: 'de'),
+        contains('Mai'),
+      );
+      expect(
+        AppDateFormat.longDate(date, localeName: 'es').toLowerCase(),
+        contains('mayo'),
+      );
+      expect(
+        AppDateFormat.longDate(date, localeName: 'fr').toLowerCase(),
+        contains('mai'),
+      );
+      expect(
+        AppDateFormat.longDate(date, localeName: 'pt').toLowerCase(),
+        contains('maio'),
+      );
+      expect(
+        AppDateFormat.longDate(date, localeName: 'uk').toLowerCase(),
+        contains('трав'),
+      );
+      expect(
+        AppDateFormat.monthAbbrev(1, localeName: 'uk').toLowerCase(),
+        startsWith('січ'),
       );
     });
   });

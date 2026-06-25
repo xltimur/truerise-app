@@ -1,7 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:rectify/app/route_names.dart';
 import 'package:rectify/core/app_links.dart';
 import 'package:rectify/core/sharing/invite_copy_builder.dart';
@@ -24,9 +25,28 @@ import 'package:rectify/widgets/inputs/input_field.dart';
 import 'package:rectify/widgets/inputs/labeled_toggle.dart';
 import 'package:rectify/widgets/inputs/radio_group.dart' as rectify;
 import 'package:rectify/widgets/nav/top_nav.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 @visibleForTesting
 const Key settingsInviteButtonKey = ValueKey<String>('settings-invite-button');
+
+@visibleForTesting
+const Key settingsApiKeyCardKey = ValueKey<String>('settings-api-key-card');
+
+@visibleForTesting
+const Key settingsApiKeyWebsiteLinkKey = ValueKey<String>(
+  'settings-api-key-website-link',
+);
+
+Future<void> _openAstrologyApiKeyWebsite() async {
+  final uri = Uri.parse(AppLinks.astrologyApiKeyUrl);
+  try {
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  } on Object {
+    // Non-blocking helper link: if the platform cannot open the browser,
+    // the visible URL remains on screen for manual copy.
+  }
+}
 
 /// Settings screen (`docs/ascii-wireframes.md` Screen 9,
 /// `docs/design-system.md` §10.7, `docs/mvp-scope.md` M11).
@@ -34,8 +54,49 @@ const Key settingsInviteButtonKey = ValueKey<String>('settings-invite-button');
 /// Grouped list of `bg.surface` cards. Each section ends with a 24pt
 /// gap; the destructive "Delete all data" action sits in its own card
 /// with a clear danger affordance.
-class SettingsScreen extends ConsumerWidget {
-  const SettingsScreen({super.key});
+class SettingsScreen extends ConsumerStatefulWidget {
+  const SettingsScreen({super.key, this.initialFocusApiKey = false});
+
+  final bool initialFocusApiKey;
+
+  @override
+  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  final GlobalKey _apiKeySectionAnchorKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialFocusApiKey) {
+      _scheduleApiKeyScroll();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant SettingsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialFocusApiKey && !oldWidget.initialFocusApiKey) {
+      _scheduleApiKeyScroll();
+    }
+  }
+
+  void _scheduleApiKeyScroll() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final context = _apiKeySectionAnchorKey.currentContext;
+      if (context == null) return;
+      unawaited(
+        Scrollable.ensureVisible(
+          context,
+          alignment: 0.08,
+          duration: const Duration(milliseconds: 320),
+          curve: Curves.easeOutCubic,
+        ),
+      );
+    });
+  }
 
   Future<void> _openDeleteAllSheet(BuildContext context, WidgetRef ref) =>
       DeleteAllDataSheet.show(context);
@@ -94,7 +155,7 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final settings = ref.watch(settingsControllerProvider);
     final controller = ref.read(settingsControllerProvider.notifier);
     final l10n = context.l10n;
@@ -103,6 +164,7 @@ class SettingsScreen extends ConsumerWidget {
       backgroundColor: AppColors.bgApp,
       appBar: TopNav(title: l10n.settingsTitle),
       body: ListView(
+        cacheExtent: 1600,
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.screenEdge,
           AppSpacing.s5,
@@ -173,38 +235,56 @@ class SettingsScreen extends ConsumerWidget {
                   value: LanguagePreference.portuguese,
                   label: l10n.settingsLanguagePortuguese,
                 ),
+                rectify.RadioOption<LanguagePreference>(
+                  value: LanguagePreference.ukrainian,
+                  label: l10n.settingsLanguageUkrainian,
+                ),
               ],
               onChanged: controller.setLanguagePreference,
             ),
           ),
           const SizedBox(height: AppSpacing.sectionGap),
-          _SectionLabel(l10n.settingsSectionApiKey),
-          AppCard(
+          KeyedSubtree(
+            key: _apiKeySectionAnchorKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                Text(
-                  l10n.settingsApiKeyHelper,
-                  style: AppTypography.bodySm.copyWith(
-                    color: AppColors.inkSoft,
+                _SectionLabel(l10n.settingsSectionApiKey),
+                AppCard(
+                  key: settingsApiKeyCardKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      Text(
+                        l10n.settingsApiKeyHelper,
+                        style: AppTypography.bodySm.copyWith(
+                          color: AppColors.inkSoft,
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.s3),
+                      _ApiKeyWebsiteLink(
+                        label: l10n.settingsApiKeyGetLink,
+                        onTap: _openAstrologyApiKeyWebsite,
+                      ),
+                      const SizedBox(height: AppSpacing.s4),
+                      if (settings.proApiKeyConfigured) ...<Widget>[
+                        Text(
+                          l10n.settingsApiKeyConfigured,
+                          style: AppTypography.bodyMd,
+                        ),
+                        const SizedBox(height: AppSpacing.s3),
+                        SecondaryButton(
+                          label: l10n.settingsApiKeyRemove,
+                          onPressed: controller.clearProApiKey,
+                        ),
+                      ] else
+                        SecondaryButton(
+                          label: l10n.settingsApiKeyAdd,
+                          onPressed: () => _openAddKeyDialog(context, ref),
+                        ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: AppSpacing.s4),
-                if (settings.proApiKeyConfigured) ...<Widget>[
-                  Text(
-                    l10n.settingsApiKeyConfigured,
-                    style: AppTypography.bodyMd,
-                  ),
-                  const SizedBox(height: AppSpacing.s3),
-                  SecondaryButton(
-                    label: l10n.settingsApiKeyRemove,
-                    onPressed: controller.clearProApiKey,
-                  ),
-                ] else
-                  SecondaryButton(
-                    label: l10n.settingsApiKeyAdd,
-                    onPressed: () => _openAddKeyDialog(context, ref),
-                  ),
               ],
             ),
           ),
@@ -304,6 +384,58 @@ class _SectionLabel extends StatelessWidget {
   }
 }
 
+class _ApiKeyWebsiteLink extends StatelessWidget {
+  const _ApiKeyWebsiteLink({
+    required this.label,
+    required this.onTap,
+  });
+
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: '$label ${AppLinks.astrologyApiKeyUrl}',
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          key: settingsApiKeyWebsiteLinkKey,
+          onTap: onTap,
+          borderRadius: AppRadius.brSm,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.s2),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const Padding(
+                  padding: EdgeInsets.only(top: 2),
+                  child: Icon(
+                    AppIcons.externalLink,
+                    size: 16,
+                    color: AppColors.accentClay,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.s2),
+                Expanded(
+                  child: Text(
+                    '$label ${AppLinks.astrologyApiKeyUrl}',
+                    style: AppTypography.bodySm.copyWith(
+                      color: AppColors.accentClay,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// Modal that collects an Astrology API key. Pops with the trimmed key;
 /// an all-whitespace entry keeps the dialog open. The field is obscured
 /// and the dialog never re-renders a stored key (§9.5).
@@ -347,6 +479,11 @@ class _ApiKeyDialogState extends State<_ApiKeyDialog> {
               obscureText: true,
               autofocus: true,
               onSubmitted: (_) => _save(),
+            ),
+            const SizedBox(height: AppSpacing.s3),
+            _ApiKeyWebsiteLink(
+              label: l10n.settingsApiKeyGetLink,
+              onTap: _openAstrologyApiKeyWebsite,
             ),
             const SizedBox(height: AppSpacing.s4),
             PrimaryButton(label: l10n.settingsApiKeySave, onPressed: _save),

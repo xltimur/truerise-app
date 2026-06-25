@@ -85,7 +85,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get birthDataNoMatches =>
-      'Keine Treffer. Die Demo akzeptiert den eingetippten Namen.';
+      'Keine Stadt gefunden. Versuche eine andere Schreibweise.';
 
   @override
   String get timeWindowTitle => 'Kennst du eine ungefähre Geburtszeit?';
@@ -896,8 +896,14 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsLanguagePortuguese => 'Português';
 
   @override
+  String get settingsLanguageUkrainian => 'Українська';
+
+  @override
   String get settingsApiKeyHelper =>
       'Hast du bereits einen Astrology-API-Schlüssel? Füge ihn hier hinzu.';
+
+  @override
+  String get settingsApiKeyGetLink => 'Schlüssel erhalten unter';
 
   @override
   String get settingsApiKeyConfigured => 'API-Schlüssel hinzugefügt';

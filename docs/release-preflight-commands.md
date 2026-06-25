@@ -16,7 +16,7 @@ defect - report the command to run locally.
 
 > **Important - guard argument form.** `tool/release_env_guard.dart` accepts
 > value flags only in the **`--flag=value`** (equals) form, e.g.
-> `--share-url=https://truerise.app`. The space form
+> `--share-url=https://truerise.com.ua`. The space form
 > (`--share-url https://...`) is rejected as an unknown argument (exit 2).
 > Older revisions of `README.md`, `docs/api-integration.md`, and
 > `docs/store-submission-readiness.md` section 11.1 used the space form; those
@@ -65,24 +65,34 @@ dart run tool/release_env_guard.dart \
   --share-url="$TRUERISE_SHARE_URL" \
   --proxy-base-url="$RECTIFY_PROXY_BASE_URL" \
   --provider-base-url="$RECTIFY_PROVIDER_BASE_URL" \
+  --geocoding-base-url="$RECTIFY_GEOCODING_BASE_URL" \
+  --geocoding-public-key="$RECTIFY_GEOCODING_PUBLIC_KEY" \
   --allow-bundled-key --purpose=review-capped
 ```
 
-Expected (`exit 0`): four OK/ACKNOWLEDGED lines -
+Expected (`exit 0`): five OK/ACKNOWLEDGED lines -
 
 ```
 ACKNOWLEDGED: bundled ASTRO_API_KEY (value redacted) accepted for purpose "review-capped". ...
 OK: custom share URL accepted (bare HTTPS, no userinfo, no query, no fragment).
 OK: custom proxy base URL accepted (host-only HTTPS origin, no path, ...).
 OK: default/custom provider base URL accepted (...).
+OK: geocoding configured with a public client key (value redacted).
 ```
 
 - `$TRUERISE_SHARE_URL` / `$RECTIFY_PROXY_BASE_URL` /
-  `$RECTIFY_PROVIDER_BASE_URL` must be **bare** HTTPS (API/provider/proxy:
-  host-only origin, no path). Anything with a path/query/fragment/userinfo is
-  rejected (exit 1, value redacted). When omitted, `RECTIFY_PROXY_BASE_URL`
-  defaults to `https://api-public.astrology-api.io` and
-  `RECTIFY_PROVIDER_BASE_URL` defaults to `https://api.astrology-api.io`.
+  `$RECTIFY_PROVIDER_BASE_URL` / `$RECTIFY_GEOCODING_BASE_URL` must be
+  **bare** HTTPS origins (host only, no path). Anything with a
+  path/query/fragment/userinfo is rejected (exit 1, value redacted). When
+  omitted, `RECTIFY_PROXY_BASE_URL` defaults to
+  `https://api-public.astrology-api.io` and `RECTIFY_PROVIDER_BASE_URL`
+  defaults to `https://api.astrology-api.io`. Geocoding has no HTTP default;
+  when neither `--geocoding-base-url` nor `--geocoding-public-key` is supplied,
+  the app uses native iOS/Android geocoding and keeps the offline stub only as
+  a last fallback.
+- `$RECTIFY_GEOCODING_PUBLIC_KEY` must be a public client token (`pk.*`).
+  Private server-side tokens (`sk.*`) are rejected and their value is never
+  echoed.
 - **Drop** `--allow-bundled-key --purpose=review-capped` once `ASTRO_API_KEY`
   has been removed from `.env`; with no bundled key the guard prints
   `OK: no bundled ASTRO_API_KEY found`.
@@ -91,24 +101,22 @@ OK: default/custom provider base URL accepted (...).
 
 | Command | Exit | Why |
 | --- | --- | --- |
-| `dart run tool/release_env_guard.dart` (no args) | `1` | default placeholder share URL `https://truerise.app` -> BLOCKED (share gate runs first) |
-| `... --share-url=https://truerise.app` (default API host omitted) | `1` | BLOCKED: `https://truerise.app` is still the default share placeholder unless explicitly owner-confirmed |
-| `... --share-url=https://x.example --proxy-base-url=https://p.example` (bundled key present, no ack) | `1` | BLOCKED: tracked `.env` bundles a non-empty `ASTRO_API_KEY` without acknowledgement |
+| `dart run tool/release_env_guard.dart` (no args, no other issues) | `0` | passes; no explicit geocoding config means native platform geocoding, then offline fallback only if native lookup is unavailable |
+| `... --geocoding-public-key=pk.my-token` (no other issues) | `0` | all gates pass; geocoding is configured with a public client key |
+| `... --geocoding-public-key=sk.secret` | `1` | BLOCKED: private server-side token (`sk.*`) must not ship in a client build; value redacted |
+| `... --geocoding-base-url=https://geo.example.com/v1` | `1` | BLOCKED: geocoding base URL must be host-only (path must be absent or just `/`) |
+| `... --share-url=https://x.example --proxy-base-url=https://p.example --geocoding-public-key=pk.x` (bundled key present, no ack) | `1` | BLOCKED: tracked `.env` bundles a non-empty `ASTRO_API_KEY` without acknowledgement |
 | `... --allow-bundled-key` (no `--purpose`) | `1` | BLOCKED: `--allow-bundled-key` requires `--purpose=review-capped` |
-| `... --share-url=https://truerise.app?utm=x` | `1` | BLOCKED: custom share URL not bare HTTPS (query present; value redacted) |
+| `... --share-url=https://truerise.com.ua?utm=x` | `1` | BLOCKED: custom share URL not bare HTTPS (query present; value redacted) |
 | `... --proxy-base-url=https://p.example/v1` | `1` | BLOCKED: proxy URL must be host-only (path belongs in `RECTIFY_PROXY_PATH`) |
 | `... --provider-base-url=https://p.example/v1` | `1` | BLOCKED: provider URL must be host-only (path belongs in `RECTIFY_PROVIDER_PATH`) |
 | `... --share-url https://x.example` (space form) | `2` | usage error: `--share-url` is an unknown argument; use `--share-url=...` |
 
-Placeholder-acknowledgement escape hatch for the share URL:
+Legacy share URL acknowledgement flags (`--allow-default-share-url` /
+`--share-url-purpose=owner-confirmed`) are accepted as no-ops; no longer
+required because the default is the owned primary domain.
 
-```bash
-# Ship the placeholder share URL on purpose (owner-confirmed):
-dart run tool/release_env_guard.dart \
-  --allow-default-share-url --share-url-purpose=owner-confirmed
-```
-
-Legacy proxy-placeholder acknowledgement flags are accepted but no longer
+Legacy proxy-placeholder acknowledgement flags are likewise accepted but no longer
 required; the default no-key API host is `https://api-public.astrology-api.io`.
 
 ---
@@ -190,7 +198,76 @@ Notes:
 
 ---
 
-## 6. Release builds (only after section 2 passes and owner inputs land)
+## 6. iOS local release preflight
+
+`tool/ios_release_preflight.dart` checks iOS-specific App Store readiness items
+that can be verified locally without touching Apple servers. Run it before every
+`flutter build ipa` attempt.
+
+### 6.1 Audit / review mode (before owner signing material is available)
+
+Use this mode to see the full picture of what is still missing without blocking
+on items the owner must supply:
+
+```bash
+export PATH="$HOME/development/flutter/bin:$PATH"
+dart run tool/ios_release_preflight.dart \
+  --allow-missing-export-options \
+  --privacy-policy-url=https://truerise.com.ua/privacy.html \
+  --share-url=https://truerise.com.ua
+```
+
+Expected outcome with the current working tree (before the owner supplies
+signing material): exits **1 (blocked)** because `DEVELOPMENT_TEAM` is absent
+from `ios/Runner.xcodeproj/project.pbxproj` and `CODE_SIGN_IDENTITY[sdk=iphoneos*]`
+is still `"iPhone Developer"` in the Release/Profile build configurations.
+The Bundle ID is expected to pass as `ua.com.truerise.app`; the ExportOptions
+blocker is suppressed by `--allow-missing-export-options`.
+
+### 6.2 Final mode (after all owner inputs are in place)
+
+Once the owner has:
+- Set DEVELOPMENT_TEAM in Xcode (Runner target -> Signing & Capabilities),
+- Set CODE_SIGN_IDENTITY to "iPhone Distribution" (or automatic signing),
+- Copied `ios/ExportOptions.app-store.example.plist` to
+  `ios/ExportOptions.plist` and filled in real team / profile values,
+- Confirmed that `site/privacy.html` and `site/support.html` will be deployed
+  to `https://truerise.com.ua/privacy.html` and
+  `https://truerise.com.ua/support.html`:
+
+```bash
+dart run tool/ios_release_preflight.dart \
+  --privacy-policy-url=https://truerise.com.ua/privacy.html \
+  --share-url=https://truerise.com.ua
+```
+
+Expected outcome: **exit 0**, all checks print OK or ACKNOWLEDGED lines.
+
+### 6.3 iOS preflight test
+
+The preflight tool has focused tests covering all checks. The release identity
+guard verifies the active iOS/Android package IDs:
+
+```bash
+flutter test test/tool/ios_release_preflight_test.dart
+flutter test test/tool/release_identity_test.dart
+```
+
+Expected: all tests pass.
+
+### 6.4 ExportOptions template
+
+`ios/ExportOptions.app-store.example.plist` is the template the owner copies
+to `ios/ExportOptions.plist` (git-ignored, must not be committed). See the
+comments inside for the exact owner steps. Key fields:
+
+- `teamID` - 10-character Apple Developer Team ID
+- `provisioningProfiles` - bundle ID mapped to distribution profile name
+- `signingCertificate` - exact name from Keychain Access
+
+---
+
+## 7. Release builds (only after section 2 passes and owner inputs land)
 
 Reference only - these need the owner keystore (Android) / distribution signing
 (iOS) and real `--dart-define` values. Full reference: `README.md`
@@ -204,6 +281,8 @@ flutter build appbundle --release \
   --dart-define=RECTIFY_PROXY_BASE_URL="$RECTIFY_PROXY_BASE_URL" \
   --dart-define=RECTIFY_PROXY_PATH="$RECTIFY_PROXY_PATH" \
   --dart-define=RECTIFY_PROXY_APP_ID="$RECTIFY_PROXY_APP_ID" \
+  --dart-define=RECTIFY_GEOCODING_BASE_URL="$RECTIFY_GEOCODING_BASE_URL" \
+  --dart-define=RECTIFY_GEOCODING_PUBLIC_KEY="$RECTIFY_GEOCODING_PUBLIC_KEY" \
   --dart-define=TRUERISE_SHARE_URL="$TRUERISE_SHARE_URL" \
   --dart-define=TRUERISE_PRIVACY_POLICY_URL="$TRUERISE_PRIVACY_POLICY_URL" \
   --android-project-arg=truerise.allowBundledApiKey=true \
@@ -222,7 +301,7 @@ flutter build appbundle --release \
 
 ---
 
-## 7. One-shot preflight summary
+## 8. One-shot preflight summary
 
 ```bash
 export PATH="$HOME/development/flutter/bin:$PATH"
@@ -233,9 +312,22 @@ dart run tool/release_env_guard.dart \
   --share-url="$TRUERISE_SHARE_URL" \
   --proxy-base-url="$RECTIFY_PROXY_BASE_URL" \
   --provider-base-url="$RECTIFY_PROVIDER_BASE_URL" \
+  --geocoding-base-url="$RECTIFY_GEOCODING_BASE_URL" \
+  --geocoding-public-key="$RECTIFY_GEOCODING_PUBLIC_KEY" \
   --allow-bundled-key --purpose=review-capped              # expect: exit 0
+dart run tool/ios_release_preflight.dart \
+  --allow-missing-export-options \
+  --privacy-policy-url=https://truerise.com.ua/privacy.html \
+  --share-url=https://truerise.com.ua                      # audit mode; blocked items are owner-gated
 ```
 
-If all four are clean and the owner inputs in
+Current state (2026-06-23): the iOS preflight exits 1 in audit mode because
+`DEVELOPMENT_TEAM` and `CODE_SIGN_IDENTITY` (iPhone Distribution) are still
+missing from the pbxproj. Both are owner/Xcode actions. All other iOS checks
+pass (project file present, Bundle ID is `ua.com.truerise.app`, site HTML files
+present locally). See
+`docs/release-handoff-owner-checklist.md` for the full owner action list.
+
+If all checks are clean and the owner inputs in
 `docs/release-handoff-owner-checklist.md` sections 2-6 are satisfied, the
 release is ready to build and submit (English Tier 0, Lifestyle).

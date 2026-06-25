@@ -3,6 +3,37 @@
 **Reconciled 2026-06-15 (post-Appeeky) - current release-readiness state of the
 repository working tree. Updates and supersedes the 2026-06-12 framing.**
 
+**Live Apple release update — 2026-06-23.** The iOS identity and first upload
+artifact are now created:
+
+- Apple Developer team: `Mykosa OU` / `T29RJZB64F`.
+- App ID / Bundle ID registered: `TrueRise` / `ua.com.truerise.app`
+  (`KK4KPN5JC3`).
+- App Store Connect app record created: `TrueRise`, Apple ID `6783427864`,
+  iOS version `1.0` in Prepare for Submission.
+- Apple Distribution certificate created: `DB3Y7P32VL`
+  (`Apple Distribution: Mykosa OU (T29RJZB64F)`, expires 2027-06-23) and
+  installed in the local build keychain.
+- App Store provisioning profile created: `TrueRise App Store 2026`
+  (`5W2G2N7MR7`, UUID `aed63669-5b84-4b8f-9ef8-a7b8e81610a1`) for
+  `T29RJZB64F.ua.com.truerise.app`; installed locally.
+- `flutter build ipa --release --export-options-plist ios/ExportOptions.plist`
+  succeeds and produced `build/ios/ipa/rectify.ipa` (App Settings Validation:
+  version `1.0.0`, build `1`, display name `TrueRise`, bundle
+  `ua.com.truerise.app`).
+
+The remaining upload blocker is no longer signing/profile creation. App Store
+Connect API access is not enabled for the current role: the API page says only
+the Account Holder can request access and the "Request Access" button is
+disabled. Upload therefore needs either an Account Holder-created App Store
+Connect API key (`.p8` + Key ID + Issuer ID), or a signed-in Xcode/Transporter
+Apple ID/app-specific-password path. The older Apple Developer Program License
+Agreement reminder still needs Account Holder action by 2026-07-07. A direct
+Xcode upload attempt with `destination=upload` was also tried; it reached the
+signed archive and then failed at `IDEDistributionUploadAccountStep` because no
+Xcode account with App Store Connect access exists locally for team
+`T29RJZB64F`.
+
 > **What this document is.** A current-state, evidence-based reconciliation of
 > publication readiness, read from the repository **working tree on
 > 2026-06-15** after the post-Appeeky ASO/category and screenshot-caption
@@ -67,9 +98,9 @@ console work only** — see §5.
 
 | # | Blocker | Run 6 (2026-06-02, historical) | Current (2026-06-15) | Evidence read this run | What still remains |
 | --- | --- | --- | --- | --- | --- |
-| P0-1 | Public display name = TrueRise | gap | **[DONE — VERIFIED]** | `ios/Runner/Info.plist` `CFBundleDisplayName=TrueRise`; `android/.../AndroidManifest.xml` `android:label="TrueRise"`; `lib/l10n/l10n.dart:11` `appBrandName='TrueRise'`; no user-facing "Rectify" in `lib/features/settings`. (Run A.1) | none — `CFBundleName=rectify` + `com.rectify.rectify` retained as codename **by design** |
-| P0-2 | Release signing (not debug) | debug-signed | **[PARTIAL - wiring done, owner secrets pending]** (2026-06-12) | `android/app/build.gradle.kts` release now reads `android/key.properties` (no debug fallback); release tasks fail with an actionable error when it is missing/incomplete; debug builds unaffected | owner provides real upload keystore + Play App Signing enrollment; iOS distribution cert/profile still owner-side |
-| P0-3 | Bundle-ID decision | owner | **[OWNER]** (unchanged) | `build.gradle.kts` `applicationId = "com.rectify.rectify"` | owner decision before first publish (irreversible after); current id stays `com.rectify.rectify` until explicit owner approval; recommended first-publish rebrand is `app.astrolium.truerise`, fallbacks in `docs/bundle-id-recommendation.md` |
+| P0-1 | Public display name = TrueRise | gap | **[DONE — VERIFIED]** | `ios/Runner/Info.plist` `CFBundleDisplayName=TrueRise`; `android/.../AndroidManifest.xml` `android:label="TrueRise"`; `lib/l10n/l10n.dart:11` `appBrandName='TrueRise'`; no user-facing "Rectify" in `lib/features/settings`. (Run A.1) | none — `CFBundleName=rectify` retained as internal codename **by design** |
+| P0-2 | Release signing (not debug) | debug-signed | **[PARTIAL - iOS local signing done, upload auth pending]** (2026-06-23) | `android/app/build.gradle.kts` release now reads `android/key.properties` (no debug fallback); release tasks fail with an actionable error when it is missing/incomplete; debug builds unaffected. iOS Runner Release/Profile now use Team `T29RJZB64F`, manual `Apple Distribution`, and provisioning profile `TrueRise App Store 2026`; `flutter build ipa --release --export-options-plist ios/ExportOptions.plist` succeeds and produced `build/ios/ipa/rectify.ipa`. `tool/ios_release_preflight.dart` now accepts manual distribution signing + profile specifier. A direct Xcode upload attempt failed only at the App Store Connect account step. | Android: owner provides real upload keystore + Play App Signing enrollment. iOS upload: Account Holder/API access or signed-in Xcode/Transporter auth is still needed to upload the IPA. |
+| P0-3 | Bundle-ID decision | owner | **[DONE — VERIFIED]** (2026-06-23) | `android/app/build.gradle.kts` `applicationId = "ua.com.truerise.app"` + `namespace = "ua.com.truerise.app"`; iOS Runner `PRODUCT_BUNDLE_IDENTIFIER = ua.com.truerise.app`; `test/tool/release_identity_test.dart` guards both platforms | none locally; create Apple/Google store records with `ua.com.truerise.app` after owner account/signing blockers are cleared |
 | P0-4 | Hosted privacy-policy URL | absent | **[PARTIAL - wiring done, owner URL pending]** (2026-06-12) | Policy **content authored**: `docs/privacy-policy.md` (Run A.2). App wiring **done**: `url_launcher` in `pubspec.yaml`; the public, non-secret `--dart-define=TRUERISE_PRIVACY_POLICY_URL` (`AppLinks.privacyPolicyUrl`) opens a valid bare-HTTPS URL from Settings via `LaunchMode.inAppBrowserView`; empty default, unsafe values, and launch failures all fall back to the bundled in-app `PrivacyPolicyScreen` | owner/legal publishes the canonical public privacy-policy URL, builds with that URL in the dart-define, and uses the same URL in the store consoles/listing |
 | P0-5 | Apple privacy labels + Play Data Safety | not authored | **[PARTIAL — authored prep]** | `docs/apple-privacy-labels.md`, `docs/play-data-safety.md` (Run A.2) map verified data flow to each form; in-app privacy copy now discloses live transmission (Run A.1) | owner/legal sign-off + actual console entry (both docs are explicitly "guidance, not a submission, not legal advice") |
 | P0-6 | Age gate / age rating | absent | **[DONE — VERIFIED]** (gate) | `lib/features/calculation_flow/screens/birth_data_screen.dart:94,115` — picker `lastDate = CalculationFlowState.latestAllowedBirthDate(now)` (18+ floor, clamped). (Run A.1) | store age-rating questionnaire is a console/owner step |
@@ -79,9 +110,12 @@ console work only** — see §5.
 | P0-10 | Category positioning | owner | **[OWNER]** | Post-Appeeky recommendation is **Lifestyle** on both the App Store and Google Play, documented in `store-listing-en.md` Sec. 1 / Sec. 3.4 and `store-listing-tier1-localized.md` (those docs carry the earlier non-Lifestyle category rationale only as explicitly superseded historical context). A 2026-06-15 Appeeky recheck still showed TrueRise's category field as **Utilities**; that is stale third-party / source metadata, **not** a recommendation reversal - Lifestyle stands (`docs/competitor-aso-research.md` Sec. 15.4) | owner selects/confirms the final category in the store consoles |
 | P0-11 | Demo/review key hygiene | owner | **[PARTIAL - release guard added, owner rotation pending]** (2026-06-12) | `pubspec.yaml` still bundles `.env` as an asset, but Android release/bundle tasks now fail (redacted message) on an unacknowledged `ASTRO_API_KEY` unless acknowledged via `--android-project-arg=truerise.allowBundledApiKey=true --android-project-arg=truerise.bundledApiKeyPurpose=review-capped` on `flutter build appbundle`; iOS/manual preflight: `dart run tool/release_env_guard.dart --share-url="$TRUERISE_SHARE_URL" --proxy-base-url="$RECTIFY_PROXY_BASE_URL" --provider-base-url="$RECTIFY_PROVIDER_BASE_URL" --allow-bundled-key --purpose=review-capped` (see `docs/api-integration.md`) | owner rotates the current embedded key (treat as throwaway) to a low-budget capped review key - or removes it - before public build |
 
-**P0 tally:** 5 fully resolved in-repo (P0-1, P0-6, P0-7, P0-8, P0-9), 4
+**P0 tally:** 6 fully resolved in-repo (P0-1, P0-3, P0-6, P0-7, P0-8, P0-9), 4
 partial with the in-repo artifact done and an owner/legal/console remainder
-(P0-2, P0-4, P0-5, P0-11), 2 purely owner decision/console (P0-3, P0-10).
+(P0-2, P0-4, P0-5, P0-11), 1 purely owner decision/console (P0-10), plus the
+Apple agreement/account gate outside the repo. As of 2026-06-23, the iOS IPA is
+locally built; the remaining iOS gate is upload authentication/API access, not
+certificate/profile creation.
 
 ### 2a. Additional release-readiness work in-repo (through 2026-06-15)
 
@@ -92,6 +126,22 @@ syncs continued through `c724109`, all before this status sync; the earlier
 "local/uncommitted, pending the Codex-gated commit flow" caveat no longer
 applies):
 
+- **iOS release preflight added (2026-06-23)** -
+  `tool/ios_release_preflight.dart` locally checks the Runner pbxproj for
+  bundle ID (must be final ID `ua.com.truerise.app`; legacy
+  `com.rectify.rectify` is blocked),
+  DEVELOPMENT_TEAM presence, code-signing identity (blocks "iPhone Developer"
+  without "iPhone Distribution"), ExportOptions.plist existence (can be
+  suppressed via `--allow-missing-export-options` for audit mode), and
+  `site/privacy.html` / `site/support.html` presence. Focused tests at
+  `test/tool/ios_release_preflight_test.dart` cover all check branches; the
+  release identity guard lives at `test/tool/release_identity_test.dart`.
+  Template `ios/ExportOptions.app-store.example.plist` added;
+  `ios/ExportOptions.plist` added to `.gitignore`. Current run (2026-06-23):
+  project file found, Bundle ID correct, Team `T29RJZB64F` present,
+  `Apple Distribution` signing and `TrueRise App Store 2026` profile specifier
+  present, ExportOptions present, and site HTML files present locally. The
+  remaining iOS block is upload authentication/API access, not local signing.
 - **No-key live API guard + optional proxy contract** —
   `tool/release_env_guard.dart` (run by the Android release Gradle task; manual
   for iOS) allows Oleg's confirmed public no-key host
@@ -113,9 +163,10 @@ applies):
 - **Onboarding demo/real mode** — every onboarding exit explicitly persists
   the mode its CTA advertises (demo vs. real calculation).
 - **Share URL** — build-configurable via `--dart-define=TRUERISE_SHARE_URL`
-  and release-guarded (the guard rejects non-bare-HTTPS values and requires
-  explicit acknowledgement to ship the placeholder). A resolvable final URL
-  remains owner (§5a).
+  and release-guarded (the guard rejects non-bare-HTTPS custom values). The
+  default is now `https://truerise.com.ua` (owner-purchased primary domain);
+  the local blocker is closed (2026-06-23). DNS/hosting/mailbox setup remains
+  owner/hosting scope (§5a).
 - **UX / hygiene set** — share copy honors the 12h/24h time-format setting,
   low-confidence results get refine-input guidance, loading Cancel + error
   retry hardened, compliant in-app review prompt, P2 dependency/file hygiene
@@ -151,7 +202,7 @@ applies):
 | G2 — hosted privacy-policy URL | PARTIAL (in-app only) | **[PARTIAL]** — content authored (`privacy-policy.md`); app wiring done 2026-06-12 (config-gated `TRUERISE_PRIVACY_POLICY_URL`, in-app fallback); owner hosting + console/listing URL still pending | A.2 |
 | G3 — Apple labels + Play Data Safety | MISSING | **[PARTIAL — authored prep]** — `apple-privacy-labels.md` + `play-data-safety.md`; console entry remains owner/legal | A.2 |
 | G4 — real app icon | MISSING | **[DONE — VERIFIED]** | A.3 |
-| G5 — bundle-id + release signing | OPEN | **[OWNER]** — bundle-id decision + signing material still pending (Android gradle wiring done 2026-06-12: release requires owner `key.properties`, no debug fallback) | — |
+| G5 — bundle-id + release signing | OPEN | **[PARTIAL]** — bundle ID is final in both native projects and iOS signing/profile/IPA export are done; Android still needs owner upload keystore and iOS upload still needs App Store Connect account/API authentication | — |
 | G6 — COPPA / age gate | UNVERIFIED | **[DONE — VERIFIED]** — 18+ gate enforced in the date picker | A.1 |
 | G7 — store metadata | READY (doc) | **[DONE]** — finalized EN (`store-listing-en.md`) + localized drafts (`store-listing-tier1-localized.md`), both refreshed 2026-06-15 from the Appeeky audit (post-Appeeky **Lifestyle** category + 5-frame caption plan; see §2 P0-8/P0-9/P0-10); `pubspec` description updated | A.4, D.3 |
 | G8 — store screenshots | MISSING | **[DONE — raw]** — EN + de/fr/es/pt-BR raw frames captured | A.5, D.4 |
@@ -206,19 +257,19 @@ screenshot-caption documentation alignment) is detailed per-stage in
 These block first submission and **cannot be delegated to engineering** without
 an owner input first. Roughly in dependency order:
 
-1. **Bundle-ID decision** (P0-3 / G5) — the app id remains `com.rectify.rectify`
-   until the owner explicitly approves a change. Recommended first-publish
-   rebrand: `app.astrolium.truerise`; fallback options are documented in
-   `docs/bundle-id-recommendation.md`. This is an owner decision before first
-   publish, not an engineering change to make without approval. Irreversible
-   after the first store record is created; gates App Store Connect / Play
-   record creation.
+1. **Apple Developer agreement / account access** — the Account Holder must
+   accept the updated Apple Developer Program License Agreement before App
+   Store Connect, Certificates/Identifiers/Profiles, and App Store Connect API
+   work can proceed.
 2. **Release signing material** (P0-2 / G5) — generate the Android upload
    keystore (+ enroll in Play App Signing) and the iOS distribution
    certificate/profile. Owner secrets. (Android gradle wiring landed
    2026-06-12: release builds read `android/key.properties` and refuse to
    fall back to debug signing; only the keystore itself is still missing.)
-3. **Host the privacy policy** at a canonical URL (P0-4 / G2) — owner hosting of
+3. **Create store records with final ID** — use `ua.com.truerise.app` for the
+   App Store Connect Bundle ID / app record and Google Play package. Do not use
+   `com.rectify.rectify`.
+4. **Host the privacy policy** at a canonical URL (P0-4 / G2) — owner hosting of
    `docs/privacy-policy.md`'s content; legal review of provider naming/retention.
    App wiring is already done (2026-06-12): once the URL exists, build with the
    public `--dart-define=TRUERISE_PRIVACY_POLICY_URL=…` and use the same URL in
@@ -238,19 +289,18 @@ an owner input first. Roughly in dependency order:
    lock — `store-submission-readiness.md` §12).
 8. **Console character re-count** + **native-speaker review** of localized
    copy/captions (gates the localized listings, not the EN Tier 0 listing).
-9. **Resolvable share/invite landing URL** (added Impl Run S4.1, 2026-06-04).
-   Every share/invite surface embeds `AppLinks.shareUrl`, whose default is the
-   **placeholder** `https://truerise.app` — a `curl` against that host
-   currently does **not** resolve, so shipping as-is hands recipients a broken
-   link. The link is now owner-configurable at build time via the public,
-   non-secret `--dart-define=TRUERISE_SHARE_URL=…` (no code change needed).
-   **Owner action before publication:** either register/own `truerise.app` and
-   confirm it resolves, or build with `TRUERISE_SHARE_URL` set to the real
-   resolvable landing/store URL. The default present in source is **not** proof
-   of ownership or DNS resolution. (Whatever URL is chosen must stay a bare
+9. **Resolvable share/invite landing URL** (updated 2026-06-23).
+   Every share/invite surface embeds `AppLinks.shareUrl`, whose default is
+   `https://truerise.com.ua` — the **owner-purchased primary domain**. The
+   local release blocker is now closed: code, site, and default URLs all use
+   `truerise.com.ua`; the release guard accepts the default without explicit
+   acknowledgement. **Remaining external owner/hosting actions:** DNS
+   configuration for `truerise.com.ua`, HTTPS certificate provisioning,
+   document root deployment (upload `site/` contents to the web root), and
+   `support@truerise.com.ua` mailbox/forwarder creation. Until DNS and hosting
+   are live, the URL is not reachable by recipients. The link must stay a bare
    HTTPS URL with no tracking params — enforced by
-   `AppLinks.isPrivacySafeShareUrl`, its tests, and the release guard, which
-   refuses the placeholder without explicit owner acknowledgement.)
+   `AppLinks.isPrivacySafeShareUrl`, its tests, and the release guard.
 10. **No-key live API host** (owner/backend). Oleg provided
     `https://api-public.astrology-api.io` as an owner-billed public Astrology
     API host for no-key mobile calls. The app now defaults no-key live calls to

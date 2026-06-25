@@ -50,8 +50,8 @@ because the same screens are already being edited for extraction.
 **Brand rule, up front:** "TrueRise" is the global brand and stays English in
 every locale. It is never placed in an ARB value for translation. Localized
 **descriptors** (the ASO-bearing tail, e.g. "Birth Time Finder") *are*
-translated. "Rectify" / `com.rectify.rectify` remains the internal codename and
-bundle ID and is never user-facing translation surface.
+translated. "Rectify" remains the internal codename and is never user-facing
+translation surface; the store package identity is `ua.com.truerise.app`.
 
 **Locale priority `[PROPOSED]`:** DE > FR > ES > PT-BR for credibility-and-effort
 reasons (Section 3). Tier 1 success is measured against growth-thesis hypothesis
@@ -150,8 +150,9 @@ important guardrail for the translation runs.
    localized hook (e.g. DE "Geburtszeit finden", FR "Trouvez votre heure de
    naissance"). The brand + descriptor pattern is: `TrueRise - <localized
    descriptor>`.
-3. **"Rectify" / `com.rectify.rectify` is internal only `[VERIFIED codename
-   usage in code; PROPOSED policy]`.** It is the codename and bundle/package ID.
+3. **"Rectify" is internal only `[VERIFIED codename
+   usage in code; PROPOSED policy]`.** It is the project codename, while the
+   store bundle/package ID is `ua.com.truerise.app`.
    Note the *existing* user-visible string `'Rectify'` is still hardcoded in at
    least three places — `app.dart:15` (`title:`), the History top nav, the
    Settings version line, and the Privacy Policy body `[VERIFIED]`. That is the

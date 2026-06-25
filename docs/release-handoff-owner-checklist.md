@@ -10,6 +10,18 @@ authoritative source doc for each item.
 a derived, condensed handoff - if anything here disagrees with that file, the
 status doc wins.
 
+**Apple update — 2026-06-23.** The iOS App ID, App Store Connect record,
+distribution certificate, App Store provisioning profile, and local IPA build
+are now done. The built IPA is `build/ios/ipa/rectify.ipa` (display name
+`TrueRise`, bundle `ua.com.truerise.app`, version `1.0.0`, build `1`). The
+remaining Apple blocker is upload authentication: App Store Connect API access
+is not enabled for this account role, and the API page says only the Account
+Holder can request it. Upload needs either an Account Holder-created API key
+(`.p8` + Key ID + Issuer ID) or a signed-in Xcode/Transporter Apple ID /
+app-specific-password path. A direct Xcode upload attempt was also tried and
+failed before upload because no Xcode account with App Store Connect access was
+available for team `T29RJZB64F`.
+
 **Local verification commands** for everything below live in
 `docs/release-preflight-commands.md`. The latest dated run of those commands and
 its exact results (2026-06-16: analyze clean, 648 tests green, release guard and
@@ -40,9 +52,12 @@ submission - only the owner inputs in sections 2-6.
 - **Raw 6.7" screenshots** for en/de/fr/es/pt-BR in
   `screenshots/store/<locale>/` (5 frames each + manifest + README); see
   section 6 for what remains. P0-9.
-- **Release-signing wiring (Android)** - release reads `android/key.properties`
+- **Release-signing wiring** - Android release reads `android/key.properties`
   with no debug-signing fallback; tasks fail with an actionable message when it
-  is missing. Owner keystore still required (section 5). P0-2.
+  is missing. iOS Release/Profile now use Team `T29RJZB64F`, manual
+  `Apple Distribution`, and `TrueRise App Store 2026`; local IPA build succeeds.
+  Android keystore and iOS upload authentication are still required (section 5).
+  P0-2.
 - **Privacy-policy app wiring** - `--dart-define=TRUERISE_PRIVACY_POLICY_URL`
   opens a validated bare-HTTPS URL from Settings, falling back to the bundled
   in-app `PrivacyPolicyScreen`. Owner-hosted URL still required (section 5). P0-4.
@@ -50,6 +65,15 @@ submission - only the owner inputs in sections 2-6.
   `validateReleaseBundledEnv` Gradle task) block a public release that ships the
   placeholder share URL, an unsafe API/proxy URL, or an unacknowledged bundled
   API key.
+- **iOS release preflight** - `tool/ios_release_preflight.dart` locally checks
+  the pbxproj (bundle ID, DEVELOPMENT_TEAM, code-signing identity), the
+  ExportOptions.plist presence, and site HTML file existence. Focused tests at
+  `test/tool/ios_release_preflight_test.dart` cover all check branches.
+  ExportOptions template at `ios/ExportOptions.app-store.example.plist`.
+- **Share URL code blocker closed (2026-06-23)** - the default share URL in
+  code, site, and release guard is now `https://truerise.com.ua`. No code
+  change needed for the share URL. External DNS/HTTPS/site-upload/mailbox
+  remain owner/hosting actions (see section 5).
 - **Share payload localized + privacy-safe** (EN/DE/ES/FR/PT) - emits only
   time, rising sign, confidence, brand, share URL; no birth data, events, or
   coordinates. Text share and share-card image both shipped.
@@ -70,13 +94,15 @@ backend, legal, or console action - none is an engineering artifact. IDs map to
 | # | Input | Type | Source / detail |
 | --- | --- | --- | --- |
 | P0-3 | Bundle-ID decision (before first store record; irreversible after) | Owner decision | `docs/bundle-id-recommendation.md` - section 5 below |
-| P0-2 | Android upload keystore + Play App Signing; iOS distribution cert/profile | Owner secrets | section 5 below; `README.md` "Android signing" |
+| P0-2 | Android upload keystore + Play App Signing; iOS upload authentication | Owner secrets + Apple auth | Android section 5 below; iOS IPA is locally built, but upload needs an App Store Connect API key (`.p8` + Key ID + Issuer ID) from the Account Holder or signed-in Xcode/Transporter credentials |
+| iOS-A | App Store Connect API access / upload auth | Account Holder / Apple | Current role cannot request API access; App Store Connect shows "Only the Account Holder can request access" and the button is disabled; Xcode upload also failed with no App Store Connect account for team `T29RJZB64F` |
+| iOS-B | Upload the existing IPA after auth exists | Owner / release operator | `xcrun altool --upload-app --type ios -f build/ios/ipa/rectify.ipa --apiKey <KEY_ID> --apiIssuer <ISSUER_ID>` or use Xcode Organizer/Transporter after signing in with an account that has upload access |
 | P0-4 | Host the privacy policy at a canonical public URL | Owner hosting + legal | publish `docs/privacy-policy.md` content (fill `[OWNER/LEGAL]` blanks) |
 | P0-5 | Apple privacy labels + Play Data Safety: legal sign-off + console entry | Owner + legal + console | section 4 below |
 | P0-10 | Confirm category = Lifestyle in both consoles | Owner / console | `docs/store-listing-en.md` section 1 / 3.4 |
 | P0-11 | Rotate the bundled demo/review key to a low-budget capped key (or remove it) | Owner secret rotation | `docs/api-integration.md` "Bundled review key" |
 | - | Production proxy host + contract confirmation | Backend / owner | `docs/proxy-contract.md` - section 5 below |
-| - | Resolvable share/invite landing URL (`truerise.app` is an unverified placeholder) | Owner / DNS | section 5 below |
+| - | Resolvable share/invite landing URL (`truerise.com.ua` owned; DNS + hosting + support mailbox still pending) | Owner / hosting | section 5 below |
 | - | Support URL + Play support email/contact | Owner | required listing fields |
 | - | Trademark clearance + App Store name availability for "TrueRise" | Owner / legal | gates metadata lock |
 | - | Console character re-count + native-speaker review of localized copy/captions | Owner / content | gates localized (not EN Tier 0) listings |
@@ -169,20 +195,23 @@ own key to the canonical provider host.
 
 **Share / privacy URLs:**
 
-- `TRUERISE_SHARE_URL` - real resolvable bare-HTTPS landing/store URL. Default
-  `https://truerise.app` is an **unverified placeholder** (a `curl` does not
-  resolve it today); register/own it or supply the real URL. Must be bare HTTPS,
-  no query/fragment/userinfo.
+- `TRUERISE_SHARE_URL` - bare-HTTPS landing/store URL. Default
+  `https://truerise.com.ua` is the **owner-purchased primary domain**; the local
+  release blocker is closed. DNS configuration, HTTPS certificate, document
+  root, and support mailbox/forwarder setup remain external owner/hosting
+  actions before the link is actually reachable. Must be bare HTTPS, no
+  query/fragment/userinfo.
 - `TRUERISE_PRIVACY_POLICY_URL` - the same canonical privacy URL used in the
   store consoles; bare HTTPS. Empty default keeps the in-app fallback screen.
 
-**Signing - `README.md` "Android signing":**
+**Signing / upload - `README.md` "Android signing":**
 
 - Android: create `android/key.properties` (`storePassword`, `keyPassword`,
   `keyAlias`, `storeFile`) + the `.jks`/`.keystore`; enroll in Play App Signing.
   Both files stay git-ignored.
-- iOS: distribution certificate + provisioning profile in Xcode / App Store
-  Connect.
+- iOS: distribution certificate and provisioning profile are created locally for
+  `ua.com.truerise.app`. Upload remains blocked until App Store Connect API
+  access or Xcode/Transporter credentials are provided.
 
 **Demo/review key - `docs/api-integration.md`:**
 
@@ -220,31 +249,40 @@ own key to the canonical provider host.
 
 Roughly dependency-ordered; items 3-8 can run in parallel once 1-2 are decided.
 
-1. **Bundle-ID decision** (P0-3). Recommended first-publish rebrand
-   `app.astrolium.truerise` (fallbacks `com.astrolium.truerise`,
-   `com.truerise.app`); code stays `com.rectify.rectify` until explicit
-   approval. Irreversible after the first store record - gates record creation.
-2. **Trademark clearance + name availability** for "TrueRise" - gates metadata
+1. **Apple Developer agreement / account access.** MYKYTA / the Account Holder
+   must accept the updated Apple Developer Program License Agreement before the
+   team can maintain access to App Store Connect, Certificates/Identifiers/
+   Profiles, or App Store Connect API.
+2. **Use the final app identity in both stores.** The local code now uses
+   `ua.com.truerise.app` for iOS Bundle ID and Android package. Create the
+   App Store Connect app record / Google Play app with this ID only.
+3. **Trademark clearance + name availability** for "TrueRise" - gates metadata
    lock.
-3. **Release signing material** (P0-2) - Android upload keystore + Play App
+4. **Release signing material** (P0-2) - Android upload keystore + Play App
    Signing enrollment; iOS distribution cert/profile.
-4. **Host the privacy policy** (P0-4) at a canonical URL; build with
+5. **Host the privacy policy** (P0-4) at a canonical URL; build with
    `TRUERISE_PRIVACY_POLICY_URL` and use the same URL in both consoles.
-5. **Legal sign-off + console entry** of Apple privacy labels and Play Data
+6. **Legal sign-off + console entry** of Apple privacy labels and Play Data
    Safety (P0-5), using the section 4 drafts.
-6. **Confirm the no-key live API host**: keep Oleg's public
+7. **Confirm the no-key live API host**: keep Oleg's public
    `https://api-public.astrology-api.io` host, or stand up an owner-controlled
    proxy per `docs/proxy-contract.md`; confirm host + endpoint path and supply
    `RECTIFY_PROXY_BASE_URL` (+ `RECTIFY_PROXY_PATH` if it differs) at build time.
    Also approve one bounded valid-key call against
    `https://api.astrology-api.io` to confirm provider-direct mode and verify
    that any bundled review key is capped/budgeted for real credit consumption.
-7. **Resolvable share URL** - register/own `truerise.app` or supply the real
-   `TRUERISE_SHARE_URL`.
+7. **Resolvable share URL** - `truerise.com.ua` is purchased; configure DNS,
+   HTTPS, document root, and support mailbox/forwarder at the hosting provider
+   (`support@truerise.com.ua`). No code change needed.
 8. **Rotate the demo/review key** (P0-11) to a low-budget capped key, or remove
    it from `.env`.
 9. **Confirm category = Lifestyle** (P0-10), complete age-rating questionnaires
    consistent with the 18+ gate, provide the support URL/email.
-10. **Run the preflight** (`docs/release-preflight-commands.md`), build the
+10. **iOS Signing & Capabilities** (iOS-A) - in Xcode, set DEVELOPMENT_TEAM
+    and enable "Automatically manage signing" (or set CODE_SIGN_IDENTITY to
+    "iPhone Distribution"); commit the updated `ios/Runner.xcodeproj/project.pbxproj`.
+11. **ExportOptions.plist** (iOS-B) - copy the template and fill in real values;
+    kept git-ignored so it never lands in source control.
+12. **Run the preflight** (`docs/release-preflight-commands.md`), build the
     release artifacts, finalize screenshots, and submit **English Tier 0** under
     Lifestyle; follow with localized listings after native-speaker review.

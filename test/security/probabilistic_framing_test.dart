@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:rectify/core/sharing/share_copy_builder.dart';
 import 'package:rectify/data/models/saved_calculation.dart';
 import 'package:rectify/l10n/app_localizations_en.dart';
@@ -24,7 +25,9 @@ void main() {
   /// failure names the exact offending string.
   late final Map<String, String> corpus;
 
-  setUpAll(() {
+  setUpAll(() async {
+    await initializeDateFormatting('en');
+
     final saved = SavedCalculation(
       request: sampleRequest(),
       result: sampleResult(),

@@ -33,11 +33,9 @@ Console at submission (Section 11).
 globally), presented with a descriptive functional tail that carries the search
 weight - e.g. App Store title "TrueRise: Birth Time Finder" and subtitle
 "Rectify your birth time." Keep `rectify` as the internal codename and project
-name (no change). (Bundle-ID guidance superseded 2026-06-12: recommended
-first-publish ID is `app.astrolium.truerise`, fallbacks
-`com.astrolium.truerise` / `com.truerise.app` - see
-`docs/bundle-id-recommendation.md`; code stays `com.rectify.rectify` until
-owner approval.)
+name (no change). Bundle/package ID guidance was resolved 2026-06-23: final
+first-publish ID is `ua.com.truerise.app` (see
+`docs/bundle-id-recommendation.md`).
 
 **Why.**
 
@@ -77,14 +75,12 @@ display/launcher labels still read "Rectify"/"rectify". That finding is now
 | In-app share copy | "Calculated with TrueRise ..." | TrueRise |
 | iOS `CFBundleDisplayName` (home-screen icon label) | `TrueRise` | **TrueRise** |
 | Android `android:label` (launcher label) | `TrueRise` | **TrueRise** |
-| iOS `CFBundleName` / project / bundle ID | `rectify` / `com.rectify.rectify` | rectify |
+| iOS `CFBundleName` / project / bundle ID | `rectify` / `ua.com.truerise.app` | rectify + final store ID |
 
 So the **installed app icon now reads "TrueRise" on both iOS and Android**,
-matching the brand/marketing surface. The remaining gap is internal-only:
-`CFBundleName`, the project codename, and the shipped bundle ID stay
-`rectify` / `com.rectify.rectify`. The bundle-ID migration (recommended
-`app.astrolium.truerise`, see `docs/bundle-id-recommendation.md`) remains
-**pending owner approval** and is intentionally not made here.
+matching the brand/marketing surface. The remaining internal-only codename is
+`CFBundleName` / project name `rectify`; the shipped store identity is now
+`ua.com.truerise.app`.
 
 **Decision asked of leadership:** confirm `TrueRise` as the public store name
 (pending the clearance items in Section 11; the display-name alignment is
@@ -130,9 +126,8 @@ the descriptor line, not as the brand** (Section 3).
 - **Internal codename / project (do not change):** `rectify`,
   `CFBundleName=rectify`. Already in place; keeps git history, CI, and the
   keychain service name stable.
-- **Shipped bundle ID (owner decision pending):** currently
-  `com.rectify.rectify`; recommended first-publish rebrand is
-  `app.astrolium.truerise`, fallbacks in `docs/bundle-id-recommendation.md`.
+- **Shipped bundle/package ID:** `ua.com.truerise.app`, implemented for first
+  App Store Connect / Play Console records.
 - **Home-screen display name (aligned as of 2026-06-12):**
   `CFBundleDisplayName` (iOS) and `android:label` (Android) are set to
   `TrueRise` - see Section 1 and Section 11.
@@ -624,7 +619,7 @@ measurable branded installs (Run 1 H3). Use **Option C** verbatim for the German
   (unchanged).
 - `android/app/src/main/AndroidManifest.xml` - `android:label="rectify"` at
   Run 3 time; since updated to `TrueRise` (re-verified 2026-06-12).
-- `android/app/build.gradle.kts` - `applicationId = "com.rectify.rectify"`.
+- `android/app/build.gradle.kts` - `applicationId = "ua.com.truerise.app"`.
 - `README.md` - title "TrueRise (codename `rectify`)".
 
 **Run 2 external sources (cited there, not re-fetched here):** see

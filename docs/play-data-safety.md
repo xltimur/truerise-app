@@ -38,7 +38,7 @@ declare collection based on live-mode behavior.
 | Live mode transmits over **HTTPS** to a third-party calculation provider | `lib/data/api/rectification_api.dart`; `https://…` base URLs | High |
 | Transmitted: birth date; birth time + search window; city text; lat/lon; per-event category, date, optional free-text description | `lib/data/api/dto/rectification_request_dto.dart`, `lib/data/api/mappers.dart` | High |
 | Birthplace **coordinates** are precise lat/lon (4 decimals) | `docs/api-integration.md`, `lib/data/models/geo_place.dart` | High |
-| Geocoding is an **on-device stub** — search text not transmitted | `lib/features/calculation_flow/geocoding/geocoding_service.dart` | High |
+| Geocoding may transmit typed city search text to the configured provider/proxy or to the device's native geocoding service; the on-device stub is only a last fallback | `lib/features/calculation_flow/geocoding/geocoding_service.dart` | High |
 | Secure storage holds **only** the user-supplied provider key | `lib/data/secure/secure_key_store.dart` | High |
 | Local-only DB + prefs; raw response stored locally | `lib/data/db/tables.dart`, `lib/data/prefs/settings_store.dart` | High |
 | **No** analytics / crash / ads / tracking SDKs | full `pubspec.yaml`; no `firebase_*`, `sentry`, `*_ads`, advertising-ID libs | High |

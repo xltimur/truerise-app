@@ -11,7 +11,7 @@ import 'package:rectify/core/update/app_version.dart';
 /// {
 ///   "latestVersion": "1.2.0+7",
 ///   "minimumVersion": "1.1.0",
-///   "storeUrl": "https://truerise.app/get",
+///   "storeUrl": "https://truerise.com.ua/get",
 ///   "appStoreUrl": "https://apps.apple.com/app/id123456789",
 ///   "playStoreUrl": "https://play.google.com/store/apps/details?id=app.truerise",
 ///   "message": "Optional note shown in the prompt.",

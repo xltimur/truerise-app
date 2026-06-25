@@ -12,7 +12,8 @@ enum LanguagePreference {
   german('de'),
   spanish('es'),
   french('fr'),
-  portuguese('pt');
+  portuguese('pt'),
+  ukrainian('uk');
 
   const LanguagePreference(this.tag);
 

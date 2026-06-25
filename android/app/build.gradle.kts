@@ -43,7 +43,7 @@ val releaseSigningProblem: String? = run {
 }
 
 android {
-    namespace = "com.rectify.rectify"
+    namespace = "ua.com.truerise.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -53,10 +53,7 @@ android {
     }
 
     defaultConfig {
-        // First-publish bundle id is owner-gated: keep `com.rectify.rectify`
-        // until the owner explicitly approves a change. Recommended candidate
-        // is `app.astrolium.truerise` (see docs/bundle-id-recommendation.md).
-        applicationId = "com.rectify.rectify"
+        applicationId = "ua.com.truerise.app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -89,6 +86,7 @@ android {
             }
         }
     }
+
 }
 
 if (releaseSigningProblem != null) {
@@ -119,9 +117,10 @@ if (releaseSigningProblem != null) {
 // this task fails unless the owner explicitly acknowledges the bundled key
 // as a low-budget, capped, rotatable review key. The key value itself is
 // never read into any message. The task also gates the release share/invite
-// URL: the default placeholder needs explicit owner confirmation, and a
-// custom TRUERISE_SHARE_URL must be bare HTTPS (host only, no userinfo, no
-// query, no fragment) so shipped share copy cannot leak tracking/personal
+// URL: the default https://truerise.com.ua is the owner-confirmed primary
+// domain and passes without explicit acknowledgement; a custom
+// TRUERISE_SHARE_URL must be bare HTTPS (host only, no userinfo, no query,
+// no fragment) so shipped share copy cannot leak tracking/personal
 // identifiers. The task also gates RECTIFY_PROXY_BASE_URL: the default
 // Oleg-provided public Astrology API host is allowed for no-key live calls,
 // and a custom API/proxy URL must be a host-only HTTPS origin (no path beyond
@@ -134,8 +133,9 @@ if (releaseSigningProblem != null) {
 // `tool/release_env_guard.dart`, which is the manual preflight for iOS
 // builds.
 
-// Default share/invite URL placeholder, mirrored from the Dart guard.
-val defaultShareUrl = "https://truerise.app"
+// Default share/invite URL, mirrored from the Dart guard.
+// Owner-confirmed primary domain; passes without explicit acknowledgement.
+val defaultShareUrl = "https://truerise.com.ua"
 
 // Default RECTIFY_PROXY_BASE_URL, mirrored from the Dart guard.
 val defaultProxyBaseUrl = "https://api-public.astrology-api.io"
@@ -199,8 +199,8 @@ val validateReleaseBundledEnv = tasks.register("validateReleaseBundledEnv") {
     group = "verification"
     description =
         "Blocks release builds whose bundled env carries an unacknowledged " +
-            "ASTRO_API_KEY or whose share URL, no-key API base URL, or " +
-            "provider base URL release config is unvetted."
+            "ASTRO_API_KEY or whose share URL, no-key API base URL, " +
+            "provider base URL, or explicit geocoding config is unvetted."
     doLast {
         // Share URL gate: prefer the Flutter dart-define, then the direct
         // Gradle property, then the default placeholder.
@@ -209,24 +209,10 @@ val validateReleaseBundledEnv = tasks.register("validateReleaseBundledEnv") {
             ?: (findProperty("truerise.shareUrl") as? String)
             ?: defaultShareUrl
         if (shareUrl == defaultShareUrl) {
-            val allowDefault =
-                findProperty("truerise.allowDefaultShareUrl") == "true"
-            val sharePurpose = findProperty("truerise.shareUrlPurpose")
-            if (!(allowDefault && sharePurpose == "owner-confirmed")) {
-                throw GradleException(
-                    "Release blocked: the release would ship the default " +
-                        "placeholder share URL $defaultShareUrl. Pass the real " +
-                        "owner-controlled URL via " +
-                        "--dart-define=TRUERISE_SHARE_URL=<https-url> (or " +
-                        "-Ptruerise.shareUrl=<https-url> for direct Gradle " +
-                        "verification), or - ONLY if the owner confirms " +
-                        "shipping the placeholder - acknowledge it explicitly " +
-                        "with:\n" +
-                        "  -Ptruerise.allowDefaultShareUrl=true " +
-                        "-Ptruerise.shareUrlPurpose=owner-confirmed\n" +
-                        "No other purpose is accepted."
-                )
-            }
+            // The default is the owner-confirmed primary domain; it passes
+            // without explicit acknowledgement. Legacy flags
+            // (truerise.allowDefaultShareUrl / truerise.shareUrlPurpose)
+            // are accepted but no longer required.
         } else if (!isBareHttpsUrl(shareUrl)) {
             throw GradleException(
                 "Release blocked: the custom TRUERISE_SHARE_URL value " +
@@ -276,6 +262,34 @@ val validateReleaseBundledEnv = tasks.register("validateReleaseBundledEnv") {
                     "no fragment - RECTIFY_PROVIDER_PATH carries the endpoint " +
                     "path separately - so the shipped config cannot leak " +
                     "credentials or tracking identifiers."
+            )
+        }
+        // Geocoding configuration gate.
+        // Empty explicit config is allowed: live mode uses native platform
+        // geocoding and keeps StubGeocodingService as the last offline
+        // fallback. A private sk.* token must never ship in a client binary.
+        val geocodingBaseUrl = dartDefines
+            ?.let { dartDefineValue(it, "RECTIFY_GEOCODING_BASE_URL") }
+            ?: ""
+        val geocodingPublicKey = dartDefines
+            ?.let { dartDefineValue(it, "RECTIFY_GEOCODING_PUBLIC_KEY") }
+            ?: ""
+        if (geocodingPublicKey.isNotEmpty() && geocodingPublicKey.startsWith("sk.")) {
+            throw GradleException(
+                "Release blocked: RECTIFY_GEOCODING_PUBLIC_KEY (value redacted) " +
+                    "appears to be a private server-side token (begins with sk.). " +
+                    "Only public, URL/bundle-id-restricted client tokens (pk.*) " +
+                    "may ship in a released app."
+            )
+        }
+        if (geocodingBaseUrl.isNotEmpty() && !isBareHttpsOriginUrl(geocodingBaseUrl)) {
+            throw GradleException(
+                "Release blocked: the custom RECTIFY_GEOCODING_BASE_URL value " +
+                    "(redacted) is not a host-only HTTPS origin. It must use " +
+                    "https://, name a host, and carry no path (a single trailing " +
+                    "\"/\" is allowed), no userinfo, no query, and no fragment, " +
+                    "so the shipped config cannot leak credentials or tracking " +
+                    "identifiers."
             )
         }
         val envFile = rootProject.file("../.env")

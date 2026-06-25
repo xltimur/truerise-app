@@ -132,7 +132,11 @@ class _EvidenceBody extends ConsumerWidget {
     }
 
     final top = candidates.first;
-    final topTimeLabel = AppDateFormat.clockTime(top.time, settings.timeFormat);
+    final topTimeLabel = AppDateFormat.clockTime(
+      top.time,
+      settings.timeFormat,
+      localeName: l10n.localeName,
+    );
     final strongCount = evidence
         .where(
           (item) =>
@@ -182,7 +186,11 @@ class _EvidenceBody extends ConsumerWidget {
                     ? _iconFor(event.category)
                     : AppIcons.eventOther;
                 final date = event != null
-                    ? AppDateFormat.optionalMonthYear(event.month, event.year)
+                    ? AppDateFormat.optionalMonthYear(
+                        event.month,
+                        event.year,
+                        localeName: l10n.localeName,
+                      )
                     : '';
                 return EvidenceCard(
                   icon: icon,

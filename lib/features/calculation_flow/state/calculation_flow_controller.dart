@@ -42,13 +42,19 @@ class CalculationFlowController extends Notifier<CalculationFlowState> {
 
   @override
   CalculationFlowState build() {
-    final demoDefault = ref.read(
+    final demoDefault = ref.watch(
       settingsControllerProvider.select((s) => s.demoModeDefault),
     );
 
     final existing = _drafts.read();
     if (existing != null) {
-      return CalculationFlowState.fromRequest(existing);
+      final restored = CalculationFlowState.fromRequest(
+        existing,
+      ).copyWith(isDemo: demoDefault);
+      if (existing.isDemo != demoDefault && restored.readyToSubmit) {
+        _drafts.write(restored.toRequest());
+      }
+      return restored;
     }
     return CalculationFlowState.initial(
       id: _uuid.v4(),
@@ -196,10 +202,13 @@ class CalculationFlowController extends Notifier<CalculationFlowState> {
   /// a successful demo write.
   void reset() {
     _drafts.clear();
+    final demoDefault = ref.read(
+      settingsControllerProvider.select((s) => s.demoModeDefault),
+    );
     state = CalculationFlowState.initial(
       id: _uuid.v4(),
       createdAt: _now(),
-      isDemo: state.isDemo,
+      isDemo: demoDefault,
     );
   }
 

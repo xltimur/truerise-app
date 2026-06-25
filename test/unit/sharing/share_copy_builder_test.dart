@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' show TimeOfDay;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:rectify/core/app_links.dart';
 import 'package:rectify/core/sharing/share_copy_builder.dart';
 import 'package:rectify/data/models/saved_calculation.dart';
@@ -46,6 +47,12 @@ const List<String> _piiTokens = <String>[
 ];
 
 void main() {
+  setUpAll(() async {
+    for (final locale in _locales.keys) {
+      await initializeDateFormatting(locale);
+    }
+  });
+
   group('ShareCopyBuilder.build privacy guarantees (English)', () {
     late String copy;
 

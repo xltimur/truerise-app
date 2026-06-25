@@ -6,7 +6,6 @@ import 'package:rectify/core/update/app_version.dart';
 import 'package:rectify/core/update/store_launcher.dart';
 import 'package:rectify/core/update/update_info_fetcher.dart';
 import 'package:rectify/core/update/update_policy.dart';
-import 'package:rectify/data/prefs/update_prompt_store.dart';
 import 'package:rectify/providers/core_providers.dart';
 import 'package:rectify/providers/settings_controller.dart';
 
@@ -24,11 +23,6 @@ final updateInfoFetcherProvider = Provider<UpdateInfoFetcher>((ref) {
   ref.onDispose(fetcher.close);
   return fetcher;
 });
-
-/// Persists the per-version soft-prompt dismissal.
-final updatePromptStoreProvider = Provider<UpdatePromptStore>(
-  (ref) => UpdatePromptStore(ref.watch(sharedPreferencesProvider)),
-);
 
 /// Opens the public store page; overridden with a fake in widget tests.
 final storeLauncherProvider = Provider<StoreLauncher>(
@@ -69,7 +63,6 @@ final appUpdateDecisionProvider = FutureProvider<UpdateDecision>((ref) async {
   );
   if (demoDefault) return const UpdateDecision.none();
 
-  final promptStore = ref.watch(updatePromptStoreProvider);
   final fetcher = ref.watch(updateInfoFetcherProvider);
 
   final current = await ref.watch(currentAppVersionProvider.future);
@@ -83,7 +76,6 @@ final appUpdateDecisionProvider = FutureProvider<UpdateDecision>((ref) async {
     current: current,
     info: info,
     storeUrl: info.storeUrlFor(platform),
-    dismissedTag: promptStore.dismissedTag(),
     message: info.messageFor(platform),
   );
 });

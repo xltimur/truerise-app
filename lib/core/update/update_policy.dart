@@ -7,8 +7,7 @@ enum UpdateUrgency {
   /// Up to date (or no usable information) — show nothing.
   none,
 
-  /// A newer version exists — show a dismissible prompt, at most once per
-  /// advertised version.
+  /// A newer version exists — show a blocking update prompt.
   soft,
 
   /// The installed version is below the owner-declared minimum — show the
@@ -31,34 +30,33 @@ class UpdateDecision {
   final UpdateUrgency urgency;
 
   /// Privacy-safe public store URL for the Update action, or `null` when
-  /// none is configured (the prompt is then informational only).
+  /// none is configured.
   final String? storeUrl;
 
-  /// Optional owner-supplied note from the hosted JSON; the UI falls back
-  /// to its localized copy when absent.
+  /// Optional owner-supplied note from the hosted JSON. The blocking
+  /// update modal intentionally uses app-localized copy instead.
   final String? message;
 
-  /// Tag recorded on dismissal so the same advertised version is never
-  /// re-prompted (soft prompts only).
+  /// Raw advertised version tag for diagnostics and tests.
   final String? promptTag;
 }
 
 /// Pure, deterministic update rule — no clock, no platform, no I/O, so it
 /// is fully unit-testable (mirrors `ReviewPolicy`).
 abstract final class UpdatePolicy {
-  /// Maps the installed [current] version, the hosted [info], the
-  /// remembered soft-dismissal [dismissedTag], and the platform-resolved
-  /// [storeUrl] / [message] to a decision.
+  /// Maps the installed [current] version, the hosted [info], and the
+  /// platform-resolved [storeUrl] / [message] to a decision.
   ///
   /// `minimumVersion > current` forces the gate, but **only** when a valid
   /// store URL exists — a gate without an Update action would trap the
-  /// user, so it degrades to a dismissible soft prompt instead. Soft
-  /// prompts are muted once their [UpdateInfo.promptTag] has been
-  /// dismissed; the force gate ignores dismissals.
+  /// user, so it stays silent instead. A newer [UpdateInfo.latestVersion]
+  /// also needs a valid store URL because the prompt is no longer
+  /// dismissible.
   static UpdateDecision decide({
     required AppVersion current,
     required UpdateInfo info,
     required String? storeUrl,
+    // Retained for older call sites/tests; dismissals no longer mute prompts.
     String? dismissedTag,
     String? message,
   }) {
@@ -77,11 +75,9 @@ abstract final class UpdatePolicy {
 
     final hasNewer = belowMinimum || (latest != null && latest > current);
     if (!hasNewer) return const UpdateDecision.none();
+    if (storeUrl == null) return const UpdateDecision.none();
 
     final tag = info.promptTag;
-    if (tag != null && tag == dismissedTag) {
-      return const UpdateDecision.none();
-    }
     return UpdateDecision(
       urgency: UpdateUrgency.soft,
       storeUrl: storeUrl,

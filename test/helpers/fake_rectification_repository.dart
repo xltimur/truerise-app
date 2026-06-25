@@ -6,6 +6,7 @@ import 'package:rectify/core/result.dart';
 import 'package:rectify/data/demo/demo_response.dart';
 import 'package:rectify/data/models/calculation_request.dart';
 import 'package:rectify/data/models/calculation_result.dart';
+import 'package:rectify/data/models/evidence_item.dart';
 import 'package:rectify/data/repos/history_repository.dart';
 import 'package:rectify/data/repos/rectification_repository.dart';
 import 'package:rectify/l10n/app_localizations_en.dart';
@@ -57,11 +58,23 @@ class FakeRectificationRepository implements RectificationRepository {
     if (failureOverride != null) {
       return Result.err(failureOverride!);
     }
-    final result = buildDemoResult(
-      request,
-      now: DateTime.utc(2026, 5, 20, 12),
-      copy: demoCopy ?? DemoEvidenceCopy.fromL10n(AppLocalizationsEn()),
-    );
+    final CalculationResult result;
+    if (request.isDemo) {
+      result = buildDemoResult(
+        request,
+        now: DateTime.utc(2026, 5, 20, 12),
+        copy: demoCopy ?? DemoEvidenceCopy.fromL10n(AppLocalizationsEn()),
+      );
+    } else {
+      result = CalculationResult(
+        requestId: request.id,
+        candidates: demoCandidates,
+        evidence: const <EvidenceItem>[],
+        isDemo: false,
+        completedAt: DateTime.utc(2026, 5, 20, 12),
+        method: 'test_live',
+      );
+    }
     await _history?.save(request, result);
     return Result.ok(result);
   }

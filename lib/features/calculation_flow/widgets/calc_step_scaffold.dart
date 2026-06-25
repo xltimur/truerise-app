@@ -5,6 +5,7 @@ import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/spacing.dart';
 import 'package:rectify/theme/typography.dart';
+import 'package:rectify/widgets/chips/demo_pill.dart';
 import 'package:rectify/widgets/nav/stepper_header.dart';
 import 'package:rectify/widgets/nav/top_nav.dart';
 
@@ -12,9 +13,9 @@ import 'package:rectify/widgets/nav/top_nav.dart';
 /// (`docs/design-system.md` §10.1 + Screens 2–4).
 ///
 /// Renders the TopNav (with back arrow), the stepper bar (steps 1–3),
-/// a screen title, the body content, and a bottom-fixed primary CTA.
-/// Body content scrolls; the CTA stays pinned above the safe-area
-/// inset.
+/// an optional demo badge, a screen title, the body content, and a
+/// bottom-fixed primary CTA. Body content scrolls; the CTA stays pinned
+/// above the safe-area inset.
 class CalcStepScaffold extends StatelessWidget {
   const CalcStepScaffold({
     required this.step,
@@ -23,6 +24,7 @@ class CalcStepScaffold extends StatelessWidget {
     required this.primaryAction,
     this.onBack,
     this.secondaryAction,
+    this.isDemo = false,
     super.key,
   });
 
@@ -34,6 +36,7 @@ class CalcStepScaffold extends StatelessWidget {
   final Widget primaryAction;
   final Widget? secondaryAction;
   final VoidCallback? onBack;
+  final bool isDemo;
 
   bool get _showStepper =>
       step.indicatorPosition <= CalculationFlowStep.totalNumberedSteps;
@@ -68,6 +71,13 @@ class CalcStepScaffold extends StatelessWidget {
                         totalSteps: CalculationFlowStep.totalNumberedSteps,
                       ),
                       const SizedBox(height: AppSpacing.s6),
+                    ],
+                    if (isDemo) ...<Widget>[
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: DemoPill(),
+                      ),
+                      const SizedBox(height: AppSpacing.s3),
                     ],
                     Text(title, style: AppTypography.titleLg),
                     const SizedBox(height: AppSpacing.s5),

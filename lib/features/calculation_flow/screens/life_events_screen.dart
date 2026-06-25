@@ -38,8 +38,12 @@ class LifeEventsScreen extends ConsumerWidget {
     EventCategory.other => AppIcons.eventOther,
   };
 
-  String _formatDate(LifeEvent event) =>
-      AppDateFormat.optionalMonthYear(event.month, event.year);
+  String _formatDate(LifeEvent event, String localeName) =>
+      AppDateFormat.optionalMonthYear(
+        event.month,
+        event.year,
+        localeName: localeName,
+      );
 
   Future<void> _addEvent(BuildContext context, WidgetRef ref) async {
     final result = await AddEventSheet.show(context);
@@ -76,6 +80,7 @@ class LifeEventsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final flow = ref.watch(calculationFlowControllerProvider);
     final controller = ref.read(calculationFlowControllerProvider.notifier);
+    final l10n = context.l10n;
     final events = flow.events;
     final hasEvents = events.isNotEmpty;
 
@@ -85,23 +90,22 @@ class LifeEventsScreen extends ConsumerWidget {
     return CalcStepScaffold(
       step: CalculationFlowStep.events,
       title: hasEvents
-          ? context.l10n.lifeEventsTitleWithCount(events.length)
-          : context.l10n.lifeEventsTitle,
+          ? l10n.lifeEventsTitleWithCount(events.length)
+          : l10n.lifeEventsTitle,
+      isDemo: flow.isDemo,
       onBack: () {
         controller.back();
         context.go(RoutePaths.calcWindow);
       },
       secondaryAction: SecondaryButton(
         label: hasEvents
-            ? context.l10n.lifeEventsAddEvent
-            : context.l10n.lifeEventsAddFirstEvent,
+            ? l10n.lifeEventsAddEvent
+            : l10n.lifeEventsAddFirstEvent,
         icon: AppIcons.add,
         onPressed: () => _addEvent(context, ref),
       ),
       primaryAction: PrimaryButton(
-        label: flow.isDemo
-            ? context.l10n.lifeEventsContinueDemo
-            : context.l10n.commonContinue,
+        label: flow.isDemo ? l10n.lifeEventsContinueDemo : l10n.commonContinue,
         icon: AppIcons.forward,
         onPressed: canContinue
             ? () {
@@ -115,18 +119,18 @@ class LifeEventsScreen extends ConsumerWidget {
         children: <Widget>[
           if (!hasEvents) ...<Widget>[
             Text(
-              context.l10n.lifeEventsEmptyBody,
+              l10n.lifeEventsEmptyBody,
               style: AppTypography.bodyMd,
             ),
             const SizedBox(height: AppSpacing.s4),
             _GuidanceBanner(
-              text: context.l10n.lifeEventsGuidanceEmpty,
+              text: l10n.lifeEventsGuidanceEmpty,
             ),
             const SizedBox(height: AppSpacing.s7),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: AppSpacing.s7),
               child: Text(
-                context.l10n.lifeEventsNoEvents,
+                l10n.lifeEventsNoEvents,
                 textAlign: TextAlign.center,
                 style: AppTypography.bodyMd.copyWith(color: AppColors.inkSoft),
               ),
@@ -136,7 +140,7 @@ class LifeEventsScreen extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: AppSpacing.s4),
                 child: _GuidanceBanner(
-                  text: context.l10n.lifeEventsGuidanceCount(events.length),
+                  text: l10n.lifeEventsGuidanceCount(events.length),
                 ),
               ),
             for (var i = 0; i < events.length; i++)
@@ -145,10 +149,10 @@ class LifeEventsScreen extends ConsumerWidget {
                 child: EventCard(
                   icon: _iconFor(events[i].category),
                   category: eventCategoryLabel(
-                    context.l10n,
+                    l10n,
                     events[i].category,
                   ),
-                  date: _formatDate(events[i]),
+                  date: _formatDate(events[i], l10n.localeName),
                   onTap: () => _editEvent(context, ref, events[i]),
                   onDelete: () => controller.removeEvent(events[i].id),
                 ),

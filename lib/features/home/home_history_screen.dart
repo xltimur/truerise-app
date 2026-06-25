@@ -184,7 +184,11 @@ class _PopulatedHistory extends ConsumerWidget {
 
         final formatted = topCandidate == null
             ? (time: '—', meridiem: '')
-            : AppDateFormat.clockParts(topCandidate.time, settings.timeFormat);
+            : AppDateFormat.clockParts(
+                topCandidate.time,
+                settings.timeFormat,
+                localeName: l10n.localeName,
+              );
 
         final risingSign = topCandidate?.ascendant != null
             ? l10n.resultRisingSign(topCandidate!.ascendant!)
@@ -212,7 +216,10 @@ class _PopulatedHistory extends ConsumerWidget {
           },
           child: HistoryCard(
             label: label,
-            date: AppDateFormat.longDate(result.completedAt),
+            date: AppDateFormat.longDate(
+              result.completedAt,
+              localeName: l10n.localeName,
+            ),
             time: formatted.time,
             meridiem: formatted.meridiem,
             risingSign: risingSign,

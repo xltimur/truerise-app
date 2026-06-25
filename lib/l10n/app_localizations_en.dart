@@ -84,7 +84,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get birthDataSearching => 'Searching…';
 
   @override
-  String get birthDataNoMatches => 'No matches. Demo accepts the typed name.';
+  String get birthDataNoMatches => 'No city found. Try a different spelling.';
 
   @override
   String get timeWindowTitle => 'Do you know an approximate birth time?';
@@ -884,8 +884,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsLanguagePortuguese => 'Português';
 
   @override
+  String get settingsLanguageUkrainian => 'Українська';
+
+  @override
   String get settingsApiKeyHelper =>
       'Already have an Astrology API key? Add it here.';
+
+  @override
+  String get settingsApiKeyGetLink => 'Get a key at';
 
   @override
   String get settingsApiKeyConfigured => 'API key added';
