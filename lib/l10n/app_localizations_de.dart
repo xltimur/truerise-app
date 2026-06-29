@@ -26,7 +26,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String onboardingSlide1Body(String brand) {
-    return 'Die meisten kennen nur eine ungefähre Zeit – oder gar keine. $brand grenzt sie anhand von Ereignissen aus deinem Leben ein.';
+    return 'Die meisten kennen nur eine ungefähre Zeit oder gar keine. $brand grenzt sie anhand von Ereignissen aus deinem Leben ein.';
   }
 
   @override
@@ -36,14 +36,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get onboardingSlide2Body =>
-      '1. Gib dein Geburtsdatum und die ungefähre Zeit ein.\n2. Füge Ereignisse aus deinem Leben hinzu – Heirat, Jobwechsel, Umzüge und mehr.\n3. Wir berechnen die wahrscheinlichste Geburtszeit und zeigen dir, warum.\n\nJe mehr Ereignisse du hinzufügst, desto genauer wird das Ergebnis.';
+      '1. Gib dein Geburtsdatum und die ungefähre Zeit ein.\n2. Füge Lebensereignisse hinzu: Umzüge, Beziehungen, Jobwechsel und mehr.\n3. Wir berechnen die wahrscheinlichste Geburtszeit und zeigen dir, warum.\n\nJe mehr Ereignisse du hinzufügst, desto klarer kann das Ergebnis werden.';
 
   @override
   String get onboardingSlide3Title => 'Bereit, deine Geburtszeit zu finden?';
 
   @override
   String get onboardingSlide3Body =>
-      'Eine Demo zeigt dir zuerst ein Beispielergebnis – ganz ohne Konto.';
+      'Eine Demo zeigt dir zuerst ein Beispielergebnis. Ganz ohne Konto.';
 
   @override
   String get onboardingTryDemo => 'Erst Demo ausprobieren';
@@ -265,7 +265,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get confirmationDemoNote =>
-      'Demo-Modus – wir zeigen ein Beispielergebnis ohne Netzwerkanfrage.';
+      'Demo-Modus: Wir zeigen ein Beispielergebnis ohne Netzwerkanfrage.';
 
   @override
   String get loadingTitle =>
@@ -440,7 +440,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String shareCopyTagline(String brand) {
-    return 'Berechnet mit $brand — Geburtszeit-Korrektur';
+    return 'Berechnet mit $brand: Geburtszeit-Korrektur';
   }
 
   @override
@@ -450,7 +450,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String inviteCopyHeadline(String brand) {
-    return 'Probier $brand — finde deine echte Geburtszeit';
+    return 'Probier $brand: Schätze deine Geburtszeit';
   }
 
   @override
@@ -570,7 +570,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String confidenceBarSemantic(String label, int percent) {
-    return '$label – $percent Prozent';
+    return '$label: $percent Prozent';
   }
 
   @override
@@ -747,7 +747,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get errorTimeoutBody =>
-      'Die Berechnung wurde nicht rechtzeitig abgeschlossen. In öffentlichen WLANs kann das Netzwerk langsam sein – versuche es gleich noch einmal.';
+      'Die Berechnung wurde nicht rechtzeitig abgeschlossen. Öffentliches WLAN kann langsam sein. Versuche es gleich noch einmal.';
 
   @override
   String get errorNoInternetTitle => 'Netzwerk nicht erreichbar';
@@ -784,7 +784,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get errorServerBody =>
-      'Die Berechnung konnte gerade nicht abgeschlossen werden. Vielleicht ist es nur eine vorübergehende Störung – ein erneuter Versuch in Kürze lohnt sich.';
+      'Die Berechnung konnte gerade nicht abgeschlossen werden. Es kann eine vorübergehende Störung sein. Versuche es in Kürze noch einmal.';
 
   @override
   String get errorRateLimitedTitle => 'Berechnungslimit erreicht';
@@ -967,7 +967,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String privacyStoresBody(String brand) {
-    return 'Alles, was du eingibst – Geburtsdatum, Geburtsort, Lebensereignisse, Berechnungsergebnisse – wird nur auf diesem Gerät gespeichert. Nichts wird in ein $brand-Konto hochgeladen, denn wir betreiben keine Nutzerkonten. Das Löschen der App entfernt jedes Byte dieser Daten.';
+    return 'Dein Geburtsdatum, dein Geburtsort, deine Lebensereignisse und Ergebnisse bleiben auf diesem Gerät. Nichts wird in ein $brand-Konto hochgeladen, denn wir betreiben keine Nutzerkonten. Wenn du die App löschst, werden diese Daten entfernt.';
   }
 
   @override
@@ -975,14 +975,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get privacyDemoBody =>
-      'Demo-Berechnungen laufen vollständig auf diesem Gerät – es werden keine Netzwerkanfragen gestellt. Demo-Ergebnisse sind deutlich mit einem DEMO-Abzeichen gekennzeichnet, damit sie nicht mit echten Auswertungen verwechselt werden.';
+      'Demo-Berechnungen laufen vollständig auf diesem Gerät. Es werden keine Netzwerkanfragen gestellt. Demo-Ergebnisse sind mit einem DEMO-Abzeichen gekennzeichnet, damit sie nicht mit Live-Ergebnissen verwechselt werden.';
 
   @override
   String get privacyLiveTitle => 'Live-Berechnungen';
 
   @override
   String privacyLiveBody(String brand) {
-    return 'Bei einer Live-Berechnung (nicht Demo) werden dein Geburtsdatum und die ungefähre Zeit, die Koordinaten deines Geburtsorts und die Beschreibungen der von dir hinzugefügten Lebensereignisse über HTTPS an einen Drittanbieter zur Berechnung gesendet. Diese Daten werden ausschließlich übertragen, um deine korrigierte Geburtszeit zu berechnen – sie werden nicht für ein Profil verwendet und sind mit keinem $brand-Konto verknüpft, denn es gibt keine.';
+    return 'Eine Live-Berechnung (nicht Demo) sendet dein Geburtsdatum und die ungefähre Zeit, die Koordinaten deines Geburtsorts und die Beschreibungen deiner Lebensereignisse über HTTPS an einen Drittanbieter zur Berechnung. Diese Daten werden nur genutzt, um deine korrigierte Geburtszeit zu berechnen. Sie werden nicht für ein Profil verwendet und sind mit keinem $brand-Konto verknüpft, denn es gibt keine Konten.';
   }
 
   @override
@@ -1006,7 +1006,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get demoEvidenceStrongSaturn =>
-      'Saturn überschritt innerhalb des Fensters die Spitze des 10. Hauses – eine klassische Zeitsignatur für einen beruflichen Wendepunkt.';
+      'Saturn überschritt innerhalb des Fensters die Spitze des 10. Hauses, eine klassische Zeitsignatur für einen beruflichen Wendepunkt.';
 
   @override
   String get demoEvidenceModerateJupiter =>

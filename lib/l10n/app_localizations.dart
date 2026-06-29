@@ -139,7 +139,7 @@ abstract class AppLocalizations {
   /// Body of the first onboarding slide. {brand} is the product name, held constant across locales.
   ///
   /// In en, this message translates to:
-  /// **'Most people only know an approximate time — or nothing at all. {brand} narrows it down using events from your life.'**
+  /// **'Most people only know an approximate time, or nothing at all. {brand} narrows it down using events from your life.'**
   String onboardingSlide1Body(String brand);
 
   /// Headline of the second onboarding slide. {brand} is the product name, held constant across locales.
@@ -151,7 +151,7 @@ abstract class AppLocalizations {
   /// Body of the second onboarding slide: a numbered list describing how the calculation flow works.
   ///
   /// In en, this message translates to:
-  /// **'1. Enter your birth date and approximate time.\n2. Add events from your life — marriage, job changes, moves, more.\n3. We calculate the most probable birth time and show you why.\n\nThe more events you add, the more accurate the result.'**
+  /// **'1. Enter your birth date and approximate time.\n2. Add life events you remember: moves, relationships, job changes, and more.\n3. We calculate the most probable birth time and show you why.\n\nThe more events you add, the clearer the result can become.'**
   String get onboardingSlide2Body;
 
   /// Headline of the third onboarding slide.
@@ -523,7 +523,7 @@ abstract class AppLocalizations {
   /// Note shown on the confirmation step when running in offline demo mode.
   ///
   /// In en, this message translates to:
-  /// **'Demo mode — we\'ll show a sample result with no network request.'**
+  /// **'Demo mode: we\'ll show a sample result with no network request.'**
   String get confirmationDemoNote;
 
   /// Main heading on the calculation loading screen for a real calculation.
@@ -832,10 +832,10 @@ abstract class AppLocalizations {
   /// **'My {brand} rectification result:'**
   String shareCopyHeadline(String brand);
 
-  /// Attribution line in the privacy-safe shared text, naming the app and what it does. {brand} is the product name, held constant across locales. Honest-confidence tone: the app estimates a probable time, never a certainty — keep any hedging in translation.
+  /// Attribution line in the privacy-safe shared text, naming the app and what it does. {brand} is the product name, held constant across locales. Honest-confidence tone: the app estimates a probable time, never a certainty; keep any hedging in translation.
   ///
   /// In en, this message translates to:
-  /// **'Calculated with {brand} — birth-time rectification'**
+  /// **'Calculated with {brand}: birth-time rectification'**
   String shareCopyTagline(String brand);
 
   /// Call-to-action line appended to the privacy-safe shared text, inviting the recipient to try the app via a public landing/store link. {url} is a non-secret public URL with no tracking parameters or personal data; keep it verbatim.
@@ -844,10 +844,10 @@ abstract class AppLocalizations {
   /// **'Find your birth time: {url}'**
   String shareCopyGetApp(String url);
 
-  /// First line of the privacy-safe 'Invite a friend' message shared from Settings. A soft, opt-in invitation — never a referral or reward. {brand} is the product name, held constant across locales. The message reads no saved calculation and contains no birth date, city, coordinates, life events, labels, or API ids.
+  /// First line of the privacy-safe 'Invite a friend' message shared from Settings. A soft, opt-in invitation, never a referral or reward. {brand} is the product name, held constant across locales. The message reads no saved calculation and contains no birth date, city, coordinates, life events, labels, or API ids.
   ///
   /// In en, this message translates to:
-  /// **'Try {brand} — find your real birth time'**
+  /// **'Try {brand}: estimate your birth time'**
   String inviteCopyHeadline(String brand);
 
   /// Second line of the 'Invite a friend' message, explaining honestly what the app does (a probable estimate, not a certainty). Carries no personal data and no referral/reward language.
@@ -898,7 +898,7 @@ abstract class AppLocalizations {
   /// **'Start a new calculation'**
   String get resultStartNewCalculation;
 
-  /// Title of the optional, neutral in-app review invitation shown after the user successfully shares a result. {brand} is the product name, held constant across locales. Compliance: must stay neutral — no star count, no reward, no pressure, and no 'are you happy?' sentiment question that would gate who reaches the store.
+  /// Title of the optional, neutral in-app review invitation shown after the user successfully shares a result. {brand} is the product name, held constant across locales. Compliance: must stay neutral; no star count, no reward, no pressure, and no 'are you happy?' sentiment question that would gate who reaches the store.
   ///
   /// In en, this message translates to:
   /// **'Review {brand}?'**
@@ -916,7 +916,7 @@ abstract class AppLocalizations {
   /// **'Leave a review'**
   String get reviewPromptConfirm;
 
-  /// Neutral dismiss action on the review invitation. Declining simply closes the dialog — nothing is gated and no consolation feedback form is shown (no sentiment routing).
+  /// Neutral dismiss action on the review invitation. Declining simply closes the dialog; nothing is gated and no consolation feedback form is shown (no sentiment routing).
   ///
   /// In en, this message translates to:
   /// **'Not now'**
@@ -1024,10 +1024,10 @@ abstract class AppLocalizations {
   /// **'Confidence'**
   String get confidenceBarLabel;
 
-  /// Screen-reader label for the confidence bar, e.g. Confidence — 82 percent.
+  /// Screen-reader label for the confidence bar, e.g. Confidence: 82 percent.
   ///
   /// In en, this message translates to:
-  /// **'{label} — {percent} percent'**
+  /// **'{label}: {percent} percent'**
   String confidenceBarSemantic(String label, int percent);
 
   /// Match-strength label: strong support.
@@ -1256,7 +1256,7 @@ abstract class AppLocalizations {
   /// Body of the timeout error screen.
   ///
   /// In en, this message translates to:
-  /// **'The calculation didn\'t finish in time. Networks can be slow on public Wi-Fi — give it another try in a moment.'**
+  /// **'The calculation didn\'t finish in time. Public Wi-Fi can be slow. Try again in a moment.'**
   String get errorTimeoutBody;
 
   /// Title of the no-internet error screen.
@@ -1316,7 +1316,7 @@ abstract class AppLocalizations {
   /// Body of the server (5xx) error screen.
   ///
   /// In en, this message translates to:
-  /// **'The calculation couldn\'t be completed just now. It may be a temporary hiccup — it\'s worth another try shortly.'**
+  /// **'The calculation couldn\'t be completed just now. It may be temporary. Try again in a little while.'**
   String get errorServerBody;
 
   /// Title of the rate-limit (HTTP 429) error screen.
@@ -1553,7 +1553,7 @@ abstract class AppLocalizations {
   /// **'Privacy Policy'**
   String get settingsPrivacyPolicy;
 
-  /// Label for the opt-in 'Invite a friend' row in the Settings about section. Opens the native share sheet with a privacy-safe, branded invite — no referral code, reward, contacts access, or tracking.
+  /// Label for the opt-in 'Invite a friend' row in the Settings about section. Opens the native share sheet with a privacy-safe, branded invite and no referral code, reward, contacts access, or tracking.
   ///
   /// In en, this message translates to:
   /// **'Invite a friend'**
@@ -1598,7 +1598,7 @@ abstract class AppLocalizations {
   /// Privacy section body about local storage. {brand} is the product name, held constant across locales.
   ///
   /// In en, this message translates to:
-  /// **'Everything you enter — birth date, birth city, life events, calculation results — is stored on this device only. Nothing is uploaded to a {brand} account, because we do not run user accounts. Deleting the app removes every byte of that data.'**
+  /// **'Your birth date, birth city, life events, and results stay on this device. Nothing is uploaded to a {brand} account, because we do not run user accounts. Deleting the app removes this data.'**
   String privacyStoresBody(String brand);
 
   /// Privacy section heading about demo mode.
@@ -1610,7 +1610,7 @@ abstract class AppLocalizations {
   /// Privacy section body about offline demo calculations.
   ///
   /// In en, this message translates to:
-  /// **'Demo calculations run entirely on this device — no network calls are made. Demo results are clearly labelled with a DEMO pill so they do not get mixed up with real readings.'**
+  /// **'Demo calculations run entirely on this device. They make no network calls. Demo results are marked with a DEMO pill so they do not get mixed up with live results.'**
   String get privacyDemoBody;
 
   /// Privacy section heading about live (networked) calculations.
@@ -1622,7 +1622,7 @@ abstract class AppLocalizations {
   /// Privacy section body about what a live calculation transmits. {brand} is the product name, held constant across locales.
   ///
   /// In en, this message translates to:
-  /// **'Running a live (non-demo) calculation sends your birth date and approximate time, your birthplace coordinates, and the descriptions of the life events you add to a third-party calculation provider over HTTPS. That data is transmitted solely to compute your rectified birth time — it is not used to build a profile and is not tied to any {brand} account, because there are none.'**
+  /// **'A live (non-demo) calculation sends your birth date and approximate time, birthplace coordinates, and life-event descriptions to a third-party calculation provider over HTTPS. The data is used only to calculate your rectified birth time. It is not used to build a profile and is not tied to any {brand} account, because there are no accounts.'**
   String privacyLiveBody(String brand);
 
   /// Privacy section heading about deleting local data.
@@ -1658,7 +1658,7 @@ abstract class AppLocalizations {
   /// Demo evidence explanation, strong match (rank 2). Astrology prose shown on the evidence screen for an offline sample result. Sensitive register: use indication wording, not proof wording.
   ///
   /// In en, this message translates to:
-  /// **'Saturn crossed the 10th-house cusp inside the window — a classic timing signature for a career pivot.'**
+  /// **'Saturn crossed the 10th-house cusp inside the window, a classic timing signature for a career pivot.'**
   String get demoEvidenceStrongSaturn;
 
   /// Demo evidence explanation, moderate match (rank 1). Astrology prose shown on the evidence screen for an offline sample result. Sensitive register: use indication wording, not proof wording.

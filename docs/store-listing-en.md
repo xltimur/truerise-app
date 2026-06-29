@@ -135,12 +135,12 @@ day-one rank target - `rising sign` is held by incumbents with far more reviews
 - **Conservative alternative (recommended verbatim for a future German front and
   for the most review-cautious posture):** `Estimate your birth time` (~24) -
   leads with the probabilistic verb.
-- **Brand-echo alternative:** `Find your real birth time` (~25).
+- **Brand-echo alternative:** `Find your birth time` (~20).
 
 ### 2.3 Promotional Text — limit 170 (updatable without review)
 
 ```
-Estimate your unknown birth time from the life events you remember — privately, on your device. Share the result, never your private data.
+Estimate your unknown birth time from life events you remember. Private, on your device. Share the result without sharing your birth data.
 ```
 
 (~138 chars.) Promo text is editable any time, so it carries the
@@ -150,33 +150,33 @@ privacy/shareable hook. Plain alternative (no share angle):
 ### 2.4 Full Description
 
 ```
-Do you know your exact birth time? Most people don't — and without it, your rising sign and house placements are guesswork. TrueRise estimates your most likely birth time from the life events you already remember, and shows you the evidence behind every candidate.
+Do you know your exact birth time? Most people don't. Without it, your rising sign and house placements are guesswork. TrueRise estimates your most likely birth time from the life events you already remember, then shows the evidence behind every candidate.
 
 HOW IT WORKS
 - Enter an approximate birth window (or "I don't know") and your birthplace.
-- Add a few dated life events — moves, relationships, career changes, family milestones, and more.
+- Add a few dated life events: moves, relationships, career changes, family milestones, and more.
 - TrueRise scores candidate times using astrological timing methods (transits and progressions) and ranks them by confidence.
 - Open "See how we got this" to review, event by event, why each candidate scored the way it did.
 
 HONEST BY DESIGN
-Rectification is an estimate, not a certainty. Every result is shown as a most-likely time with a confidence score and a few alternative candidates — never a guaranteed answer, and never a prediction about your future. The more dated events you add, the stronger the estimate.
+Rectification is an estimate, not a certainty. Every result is shown as a most-likely time with a confidence score and a few alternative candidates. It is never a guaranteed answer and never a prediction about your future. The more dated events you add, the clearer the estimate can become.
 
 PRIVATE BY DEFAULT
 - Your birth details and life events are stored on your device.
 - No account, no sign-up, no profile.
 - Demo mode runs the whole flow offline, with no network and no key, so you can try it before entering anything real.
 - One tap in Settings erases all your data.
-- A live calculation sends your birth and event details to a calculation provider over a secure connection, only to compute your result — never for advertising or tracking.
+- A live calculation sends your birth and event details to a calculation provider over a secure connection only to compute your result. It is never used for advertising or tracking.
 
 SHARE WITHOUT OVERSHARING
-Share your result as a short line — your estimated time, rising sign, and confidence — with no birth date, birthplace, or life events attached. Your insight travels; your private data stays with you.
+Share your result as a short line: your estimated time, rising sign, and confidence. No birth date, birthplace, or life events attached. Share the result while your private data stays with you.
 
 WHO IT'S FOR
-Anyone with an unknown or uncertain birth time who wants their rising sign and house placements — a focused birth-time calculator, not a horoscope feed.
+Anyone with an unknown or uncertain birth time who wants their rising sign and house placements. TrueRise is a focused birth-time calculator, not a horoscope feed.
 
 TrueRise provides astrological birth-time estimates for personal interest. It does not provide medical, psychological, legal, or financial advice, and its results are not deterministic.
 
-Try the free, offline demo — no birth time needed to start.
+Try the free, offline demo. No birth time needed to start.
 ```
 
 (Well under the 4000 limit. Leads with the calculation function and probabilistic
@@ -222,7 +222,7 @@ rectification,ascendant,rising,calculator,unknown,approximate,accurate,natal,cha
 ```
 TrueRise is a utility that estimates an unknown birth time from user-entered life events and returns candidate times with an honest confidence score. It is not a horoscope or fortune-telling app and makes no deterministic or predictive claims.
 
-NO PAYMENT OR KEY REQUIRED TO REVIEW: enable Settings > Demo mode, which runs the full input > result > evidence flow entirely OFFLINE (no network, no API key, no purchase, and no live quota consumed). Demo results are clearly labeled "Demo — not a real calculation."
+NO PAYMENT OR KEY REQUIRED TO REVIEW: enable Settings > Demo mode, which runs the full input > result > evidence flow entirely OFFLINE (no network, no API key, no purchase, and no live quota consumed). Demo results are clearly marked with a DEMO pill.
 
 LIVE MODE (optional): a live calculation sends the user's birth date, approximate birth time/window, birthplace text and coordinates (when available), and life-event categories/dates/descriptions to a third-party calculation provider over HTTPS, solely to compute the result. It is not linked to any identity (the app has no accounts) and is not used for tracking. The no-key live path uses the owner-billed public provider host and is locally guarded to 3 live requests per rolling 24-hour window; Demo mode is offline and does not count against this quota. A user who enters their own provider API key in Settings calls the canonical provider host directly with that key and is not subject to the no-key quota.
 
@@ -256,14 +256,14 @@ Estimate your birth time, rising sign & natal chart from life events.
 verb `estimate` and names the three deliverables (birth time, rising sign, natal
 chart) plus the method (life events) (`docs/aso-naming-strategy.md` §14.3).
 
-- **Earlier launch default:** `Estimate your unknown birth time from real life events. Private, on-device.` (~75) - intent + method + privacy.
-- **Evidence-forward alternative:** `Find your most likely birth time from your life events — with evidence.` (~70).
+- **Earlier launch default:** `Estimate your birth time from life events. Private, on-device.` (~62) - intent + method + privacy.
+- **Evidence-forward alternative:** `Find your most likely birth time from your life events, with evidence.` (~70).
 - **Question-hook alternative:** `Don't know your birth time? Estimate it from your life events, privately.` (~73).
 
 ### 3.3 Full description — limit 4000 (first ~250 chars are the hook)
 
 ```
-You don't know your exact birth time — so your rising sign and houses are uncertain. TrueRise estimates your most likely birth time from the real events of your life, and shows the evidence behind every candidate, with a confidence score. No exact time needed to start.
+You don't know your exact birth time, so your rising sign and houses are uncertain. TrueRise estimates your most likely birth time from the life events you remember, then shows the evidence behind every candidate with a confidence score. No exact time needed to start.
 
 HOW IT WORKS
 - Enter an approximate birth window (or mark it unknown) plus your birthplace.
@@ -275,24 +275,24 @@ WHY IT'S DIFFERENT
 Most astrology apps demand an exact birth time and treat an unknown one as a dead end. TrueRise is the tool for that exact moment: it estimates the time instead of asking you to guess. The more dated events you add, the stronger the estimate.
 
 HONEST CONFIDENCE, NOT CERTAINTY
-Birth-time rectification is a probabilistic estimate. Results are always shown as a most-likely time with a confidence score and a few alternatives — never a guaranteed answer, and never a prediction about your future.
+Birth-time rectification is a probabilistic estimate. Results are always shown as a most-likely time with a confidence score and a few alternatives. They are never a guaranteed answer and never a prediction about your future.
 
 PRIVATE BY DEFAULT
 - Your birth details and life events stay on your device.
 - No account and no sign-up.
-- Demo mode runs the entire flow offline — no network, no key — so you can try it first.
+- Demo mode runs the entire flow offline with no network and no key, so you can try it first.
 - Delete everything in one tap from Settings.
 - A live calculation sends your details to a calculation provider over a secure (HTTPS) connection solely to compute your result; there is no advertising, analytics, or tracking.
 
 SHARE WITHOUT OVERSHARING
-Share your result as a short line — estimated time, rising sign, and confidence — with no birth date, birthplace, or life events included. Your insight is shareable; your private data is not.
+Share your result as a short line: estimated time, rising sign, and confidence. No birth date, birthplace, or life events included. Share the result while your private data stays with you.
 
 WHO IT'S FOR
-Anyone with an unknown or uncertain birth time who wants their rising sign and house placements — a focused birth-time calculator, not a horoscope feed.
+Anyone with an unknown or uncertain birth time who wants their rising sign and house placements. TrueRise is a focused birth-time calculator, not a horoscope feed.
 
 TrueRise provides astrological birth-time estimates for personal interest. It does not offer medical, psychological, legal, or financial advice, and its results are not deterministic.
 
-Try the free demo — offline, private, no birth time required.
+Try the free demo. Offline, private, no birth time required.
 ```
 
 ### 3.4 Suggested category, tags, and search phrases
@@ -314,11 +314,11 @@ Try the free demo — offline, private, no birth time required.
 ```
 TrueRise is a birth-time calculation tool that estimates an unknown birth time from user-entered life events, returning candidate times with a confidence score. No deterministic, predictive, medical, legal, or financial claims are made.
 
-TEST WITHOUT LIVE CREDITS OR PAYMENT: Settings > Demo mode runs the complete flow OFFLINE (no network, no key, no purchase, no live quota consumed); demo results are labeled "Demo — not a real calculation." The Play pre-launch report can be run in Demo mode.
+TEST WITHOUT LIVE CREDITS OR PAYMENT: Settings > Demo mode runs the complete flow OFFLINE (no network, no key, no purchase, no live quota consumed); demo results are marked with a DEMO pill. The Play pre-launch report can be run in Demo mode.
 
 LIVE MODE (optional) transmits birth date, approximate birth time/window, birthplace text + coordinates (when available), and life-event categories/dates/descriptions to a third-party calculation provider over HTTPS, solely to compute the result; not linked to identity (no accounts), not used for tracking. The Data safety form should match this flow (see docs/play-data-safety.md): encrypted in transit = yes; in-app deletion = yes. The no-key live path uses the owner-billed public provider host and is locally guarded to 3 live requests per rolling 24-hour window; Demo mode is offline and does not count against this quota. A user who enters their own provider API key in Settings calls the canonical provider host directly with that key and is not subject to the no-key quota.
 
-PRIVACY & DATA: on-device storage; no analytics/crash/ads/tracking SDKs; only the INTERNET permission is declared; no device Location permission (coordinates are a selected birthplace, not GPS). Privacy policy: [OWNER: hosted URL]. Target audience: adults; in-app 18+ gate — set the content rating consistently.
+PRIVACY & DATA: on-device storage; no analytics/crash/ads/tracking SDKs; only the INTERNET permission is declared; no device Location permission (coordinates are a selected birthplace, not GPS). Privacy policy: [OWNER: hosted URL]. Target audience: adults; in-app 18+ gate. Set the content rating consistently.
 ```
 
 ---

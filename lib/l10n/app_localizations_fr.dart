@@ -26,7 +26,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String onboardingSlide1Body(String brand) {
-    return 'La plupart des gens ne connaissent qu\'une heure approximative — ou rien du tout. $brand la précise à partir des événements de votre vie.';
+    return 'La plupart des gens ne connaissent qu\'une heure approximative, ou rien du tout. $brand la précise à partir des événements de votre vie.';
   }
 
   @override
@@ -36,7 +36,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get onboardingSlide2Body =>
-      '1. Saisissez votre date et votre heure de naissance approximative.\n2. Ajoutez des événements de votre vie — mariage, changements professionnels, déménagements, etc.\n3. Nous calculons l\'heure de naissance la plus probable et vous expliquons pourquoi.\n\nPlus vous ajoutez d\'événements, plus le résultat est précis.';
+      '1. Saisissez votre date et votre heure de naissance approximative.\n2. Ajoutez les événements dont vous vous souvenez : déménagements, relations, changements professionnels, etc.\n3. Nous calculons l\'heure de naissance la plus probable et vous expliquons pourquoi.\n\nPlus vous ajoutez d\'événements, plus le résultat peut devenir clair.';
 
   @override
   String get onboardingSlide3Title =>
@@ -267,7 +267,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get confirmationDemoNote =>
-      'Mode démo — nous afficherons un exemple de résultat sans requête réseau.';
+      'Mode démo : nous afficherons un exemple de résultat sans requête réseau.';
 
   @override
   String get loadingTitle => 'Calcul de votre heure de naissance probable…';
@@ -442,7 +442,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String shareCopyTagline(String brand) {
-    return 'Calculé avec $brand — rectification de l\'heure de naissance';
+    return 'Calculé avec $brand : rectification de l\'heure de naissance';
   }
 
   @override
@@ -452,7 +452,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String inviteCopyHeadline(String brand) {
-    return 'Essayez $brand — trouvez votre vraie heure de naissance';
+    return 'Essayez $brand : estimez votre heure de naissance';
   }
 
   @override
@@ -571,7 +571,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String confidenceBarSemantic(String label, int percent) {
-    return '$label — $percent pour cent';
+    return '$label : $percent pour cent';
   }
 
   @override
@@ -748,7 +748,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get errorTimeoutBody =>
-      'Le calcul ne s\'est pas terminé à temps. Le réseau peut être lent sur le Wi-Fi public — réessayez dans un instant.';
+      'Le calcul ne s\'est pas terminé à temps. Le Wi-Fi public peut être lent. Réessayez dans un instant.';
 
   @override
   String get errorNoInternetTitle => 'Impossible d\'atteindre le réseau';
@@ -784,7 +784,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get errorServerBody =>
-      'Le calcul n\'a pas pu être terminé à l\'instant. Il s\'agit peut-être d\'un problème temporaire — il vaut la peine de réessayer sous peu.';
+      'Le calcul n\'a pas pu être terminé à l\'instant. Il s\'agit peut-être d\'un problème temporaire. Réessayez sous peu.';
 
   @override
   String get errorRateLimitedTitle => 'Limite de calculs atteinte';
@@ -967,7 +967,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String privacyStoresBody(String brand) {
-    return 'Tout ce que vous saisissez — date de naissance, ville de naissance, événements de vie, résultats de calcul — est stocké uniquement sur cet appareil. Rien n\'est téléversé vers un compte $brand, car nous ne gérons pas de comptes utilisateur. Supprimer l\'application efface chaque octet de ces données.';
+    return 'Votre date de naissance, votre ville de naissance, vos événements de vie et vos résultats restent sur cet appareil. Rien n\'est téléversé vers un compte $brand, car nous ne gérons pas de comptes utilisateur. Supprimer l\'application efface ces données.';
   }
 
   @override
@@ -975,14 +975,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get privacyDemoBody =>
-      'Les calculs de démonstration s\'exécutent entièrement sur cet appareil — aucun appel réseau n\'est effectué. Les résultats de démo sont clairement signalés par une pastille DEMO afin de ne pas être confondus avec de vraies lectures.';
+      'Les calculs de démonstration s\'exécutent entièrement sur cet appareil. Aucun appel réseau n\'est effectué. Les résultats de démo sont signalés par une pastille DEMO afin de ne pas être confondus avec des résultats en direct.';
 
   @override
   String get privacyLiveTitle => 'Calculs en direct';
 
   @override
   String privacyLiveBody(String brand) {
-    return 'Lancer un calcul en direct (hors démo) envoie votre date de naissance et votre heure approximative, les coordonnées de votre lieu de naissance et les descriptions des événements de vie que vous ajoutez à un fournisseur de calcul tiers via HTTPS. Ces données sont transmises uniquement pour calculer votre heure de naissance rectifiée — elles ne servent pas à constituer un profil et ne sont liées à aucun compte $brand, car il n\'en existe aucun.';
+    return 'Un calcul en direct (hors démo) envoie votre date de naissance et votre heure approximative, les coordonnées de votre lieu de naissance et les descriptions de vos événements de vie à un fournisseur de calcul tiers via HTTPS. Ces données servent uniquement à calculer votre heure de naissance rectifiée. Elles ne servent pas à constituer un profil et ne sont liées à aucun compte $brand, car il n\'existe pas de comptes.';
   }
 
   @override
@@ -1006,7 +1006,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get demoEvidenceStrongSaturn =>
-      'Saturne a franchi la cuspide de la maison 10 dans la fenêtre — une signature de datation classique pour un virage de carrière.';
+      'Saturne a franchi la cuspide de la maison 10 dans la fenêtre, une signature de datation classique pour un virage de carrière.';
 
   @override
   String get demoEvidenceModerateJupiter =>

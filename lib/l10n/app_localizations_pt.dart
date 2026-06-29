@@ -26,7 +26,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String onboardingSlide1Body(String brand) {
-    return 'A maioria das pessoas só conhece um horário aproximado — ou não conhece nenhum. O $brand o restringe usando eventos da sua vida.';
+    return 'A maioria das pessoas só conhece um horário aproximado, ou não conhece nenhum. O $brand o restringe usando eventos da sua vida.';
   }
 
   @override
@@ -36,7 +36,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get onboardingSlide2Body =>
-      '1. Informe sua data de nascimento e o horário aproximado.\n2. Adicione eventos da sua vida — casamento, mudanças de emprego, mudanças de cidade e muito mais.\n3. Calculamos o horário de nascimento mais provável e mostramos o porquê.\n\nQuanto mais eventos você adicionar, mais preciso será o resultado.';
+      '1. Informe sua data de nascimento e o horário aproximado.\n2. Adicione eventos de que você se lembra: mudanças de cidade, relações, mudanças de emprego e mais.\n3. Calculamos o horário de nascimento mais provável e mostramos o porquê.\n\nQuanto mais eventos você adicionar, mais claro o resultado pode ficar.';
 
   @override
   String get onboardingSlide3Title =>
@@ -268,7 +268,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get confirmationDemoNote =>
-      'Modo de demonstração — vamos mostrar um resultado de exemplo sem requisição de rede.';
+      'Modo de demonstração: vamos mostrar um resultado de exemplo sem requisição de rede.';
 
   @override
   String get loadingTitle => 'Calculando seu horário de nascimento provável…';
@@ -443,7 +443,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String shareCopyTagline(String brand) {
-    return 'Calculado com $brand — retificação do horário de nascimento';
+    return 'Calculado com $brand: retificação do horário de nascimento';
   }
 
   @override
@@ -453,7 +453,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String inviteCopyHeadline(String brand) {
-    return 'Experimente o $brand — descubra seu horário de nascimento real';
+    return 'Experimente o $brand: estime seu horário de nascimento';
   }
 
   @override
@@ -573,7 +573,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String confidenceBarSemantic(String label, int percent) {
-    return '$label — $percent por cento';
+    return '$label: $percent por cento';
   }
 
   @override
@@ -748,7 +748,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get errorTimeoutBody =>
-      'O cálculo não terminou a tempo. A rede pode ficar lenta em Wi-Fi público — tente novamente em instantes.';
+      'O cálculo não terminou a tempo. Wi-Fi público pode ficar lento. Tente novamente em instantes.';
 
   @override
   String get errorNoInternetTitle => 'Não foi possível acessar a rede';
@@ -783,7 +783,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get errorServerBody =>
-      'O cálculo não pôde ser concluído agora. Pode ser um problema temporário — vale a pena tentar de novo em breve.';
+      'O cálculo não pôde ser concluído agora. Pode ser um problema temporário. Tente de novo em breve.';
 
   @override
   String get errorRateLimitedTitle => 'Limite de cálculos atingido';
@@ -966,7 +966,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String privacyStoresBody(String brand) {
-    return 'Tudo o que você informa — data de nascimento, cidade de nascimento, eventos da vida, resultados de cálculos — é armazenado somente neste dispositivo. Nada é enviado para uma conta do $brand, porque não trabalhamos com contas de usuário. Excluir o app remove cada byte desses dados.';
+    return 'Sua data de nascimento, cidade de nascimento, eventos da vida e resultados ficam neste dispositivo. Nada é enviado para uma conta do $brand, porque não trabalhamos com contas de usuário. Excluir o app remove esses dados.';
   }
 
   @override
@@ -974,14 +974,14 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get privacyDemoBody =>
-      'Os cálculos de demonstração rodam inteiramente neste dispositivo — nenhuma chamada de rede é feita. Os resultados de demonstração são claramente identificados com uma etiqueta DEMO para que não se misturem com leituras reais.';
+      'Os cálculos de demonstração rodam inteiramente neste dispositivo. Nenhuma chamada de rede é feita. Os resultados de demonstração são identificados com uma etiqueta DEMO para que não se misturem com resultados ao vivo.';
 
   @override
   String get privacyLiveTitle => 'Cálculos ao vivo';
 
   @override
   String privacyLiveBody(String brand) {
-    return 'Fazer um cálculo ao vivo (não de demonstração) envia sua data de nascimento e horário aproximado, as coordenadas do seu local de nascimento e as descrições dos eventos da vida que você adiciona para um provedor de cálculo de terceiros por HTTPS. Esses dados são transmitidos somente para calcular seu horário de nascimento retificado — não são usados para criar um perfil e não são vinculados a nenhuma conta do $brand, porque não existem contas.';
+    return 'Um cálculo ao vivo (não de demonstração) envia sua data de nascimento e horário aproximado, as coordenadas do seu local de nascimento e as descrições dos seus eventos da vida para um provedor de cálculo de terceiros por HTTPS. Esses dados são usados somente para calcular seu horário de nascimento retificado. Eles não criam um perfil e não são vinculados a nenhuma conta do $brand, porque não existem contas.';
   }
 
   @override
@@ -1005,7 +1005,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get demoEvidenceStrongSaturn =>
-      'Saturno cruzou a cúspide da casa 10 dentro da janela — uma assinatura de tempo clássica para uma virada na carreira.';
+      'Saturno cruzou a cúspide da casa 10 dentro da janela, uma assinatura de tempo clássica para uma virada na carreira.';
 
   @override
   String get demoEvidenceModerateJupiter =>

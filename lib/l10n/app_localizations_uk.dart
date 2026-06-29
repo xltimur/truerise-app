@@ -26,7 +26,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String onboardingSlide1Body(String brand) {
-    return 'Більшість знають лише приблизний час — або зовсім нічого. $brand звужує його за допомогою подій з вашого життя.';
+    return 'Більшість знають лише приблизний час або зовсім нічого. $brand звужує його за допомогою подій з вашого життя.';
   }
 
   @override
@@ -36,14 +36,14 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get onboardingSlide2Body =>
-      '1. Введіть дату народження та приблизний час.\n2. Додайте події з вашого життя — шлюб, зміну роботи, переїзд тощо.\n3. Ми обчислюємо найімовірніший час народження та пояснюємо чому.\n\nЧим більше подій ви додасте, тим точнішим буде результат.';
+      '1. Введіть дату народження та приблизний час.\n2. Додайте події, які пам\'ятаєте: переїзди, стосунки, зміни роботи тощо.\n3. Ми обчислюємо найімовірніший час народження та пояснюємо чому.\n\nЧим більше подій ви додасте, тим яснішим може бути результат.';
 
   @override
   String get onboardingSlide3Title => 'Готові дізнатися свій час народження?';
 
   @override
   String get onboardingSlide3Body =>
-      'Демонстрація покаже вам зразок результату — без потреби в акаунті.';
+      'Демонстрація покаже вам зразок результату без потреби в акаунті.';
 
   @override
   String get onboardingTryDemo => 'Спробувати демо';
@@ -171,7 +171,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get lifeEventsGuidanceEmpty =>
-      'Додайте не менше 5 подій для реального розрахунку. 3 — для демо.';
+      'Додайте не менше 5 подій для реального розрахунку. Для демо достатньо 3.';
 
   @override
   String get lifeEventsNoEvents => 'Подій ще немає.';
@@ -265,7 +265,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get confirmationDemoNote =>
-      'Демо-режим — буде показано зразок результату без мережевого запиту.';
+      'Демо-режим: буде показано зразок результату без мережевого запиту.';
 
   @override
   String get loadingTitle => 'Обчислення найімовірнішого часу народження…';
@@ -370,7 +370,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get resultConfidenceExplainerBody =>
-      'Впевненість — це оцінка. Вона показує, наскільки ваші датовані життєві події підтверджують цей кандидатний час порівняно з іншими кандидатами у вибраному вікні часу народження.';
+      'Впевненість є оцінкою. Вона показує, наскільки ваші датовані життєві події підтверджують цей кандидатний час порівняно з іншими кандидатами у вибраному вікні часу народження.';
 
   @override
   String get resultConfidenceExplainerMethod =>
@@ -437,7 +437,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String shareCopyTagline(String brand) {
-    return 'Розраховано з $brand — ректифікація часу народження';
+    return 'Розраховано з $brand: ректифікація часу народження';
   }
 
   @override
@@ -447,7 +447,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String inviteCopyHeadline(String brand) {
-    return 'Спробуйте $brand — знайдіть свій справжній час народження';
+    return 'Спробуйте $brand: оцініть свій час народження';
   }
 
   @override
@@ -565,7 +565,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String confidenceBarSemantic(String label, int percent) {
-    return '$label — $percent відсотків';
+    return '$label: $percent відсотків';
   }
 
   @override
@@ -740,7 +740,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get errorTimeoutBody =>
-      'Розрахунок не завершився вчасно. З\'єднання може бути повільним у публічних мережах — спробуйте ще раз за мить.';
+      'Розрахунок не завершився вчасно. Публічні мережі можуть бути повільними. Спробуйте ще раз за мить.';
 
   @override
   String get errorNoInternetTitle => 'Немає доступу до мережі';
@@ -775,7 +775,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get errorServerBody =>
-      'Розрахунок не вдалося завершити зараз. Можливо, це тимчасова проблема — варто спробувати знову за короткий час.';
+      'Розрахунок не вдалося завершити зараз. Можливо, це тимчасова проблема. Спробуйте знову за короткий час.';
 
   @override
   String get errorRateLimitedTitle => 'Досягнуто ліміт розрахунків';
@@ -958,7 +958,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String privacyStoresBody(String brand) {
-    return 'Все, що ви вводите — дата народження, місто народження, життєві події, результати розрахунків — зберігається лише на цьому пристрої. Нічого не завантажується в акаунт $brand, оскільки ми не ведемо облікових записів. Видалення застосунку знищує кожен байт цих даних.';
+    return 'Дата народження, місто народження, життєві події та результати залишаються на цьому пристрої. Нічого не завантажується в акаунт $brand, оскільки ми не ведемо облікових записів. Видалення застосунку прибирає ці дані.';
   }
 
   @override
@@ -966,14 +966,14 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get privacyDemoBody =>
-      'Демо-розрахунки виконуються повністю на цьому пристрої — мережеві запити не надсилаються. Демо-результати чітко позначені значком ДЕМО, щоб їх не сплутали з реальними.';
+      'Демо-розрахунки виконуються повністю на цьому пристрої. Мережеві запити не надсилаються. Демо-результати позначені значком ДЕМО, щоб їх не сплутали з живими результатами.';
 
   @override
   String get privacyLiveTitle => 'Живі розрахунки';
 
   @override
   String privacyLiveBody(String brand) {
-    return 'Під час виконання живого (не демо) розрахунку ваша дата народження та приблизний час, координати місця народження і описи доданих вами подій надсилаються сторонньому постачальнику через HTTPS. Ці дані передаються виключно для обчислення ректифікованого часу народження — вони не використовуються для створення профілю і не прив\'язані до жодного акаунту $brand, оскільки таких немає.';
+    return 'Живий (не демо) розрахунок надсилає вашу дату народження та приблизний час, координати місця народження і описи ваших життєвих подій сторонньому постачальнику через HTTPS. Ці дані використовуються лише для обчислення ректифікованого часу народження. Вони не використовуються для створення профілю і не прив\'язані до акаунту $brand, оскільки акаунтів немає.';
   }
 
   @override
@@ -993,11 +993,11 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get demoEvidenceStrongVenus =>
-      'Синхронне повернення Венери збіглося з вікном кандидата — відповідає події у партнерській сфері.';
+      'Синхронне повернення Венери збіглося з вікном кандидата і відповідає події у партнерській сфері.';
 
   @override
   String get demoEvidenceStrongSaturn =>
-      'Сатурн перетнув вершину 10-го будинку в межах вікна — класична часова сигнатура для кар\'єрного повороту.';
+      'Сатурн перетнув вершину 10-го будинку в межах вікна, класична часова сигнатура для кар\'єрного повороту.';
 
   @override
   String get demoEvidenceModerateJupiter =>
@@ -1005,7 +1005,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get demoEvidenceModerateSolarArc =>
-      'Сонячна дуга до Марса перебувала в межах допуску вікна — правдоподібна для зазначеної події, але не виключна.';
+      'Сонячна дуга до Марса перебувала в межах допуску вікна. Це правдоподібно для зазначеної події, але не виключно для неї.';
 
   @override
   String get demoEvidenceWeakMercury =>

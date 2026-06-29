@@ -26,7 +26,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String onboardingSlide1Body(String brand) {
-    return 'Most people only know an approximate time — or nothing at all. $brand narrows it down using events from your life.';
+    return 'Most people only know an approximate time, or nothing at all. $brand narrows it down using events from your life.';
   }
 
   @override
@@ -36,7 +36,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingSlide2Body =>
-      '1. Enter your birth date and approximate time.\n2. Add events from your life — marriage, job changes, moves, more.\n3. We calculate the most probable birth time and show you why.\n\nThe more events you add, the more accurate the result.';
+      '1. Enter your birth date and approximate time.\n2. Add life events you remember: moves, relationships, job changes, and more.\n3. We calculate the most probable birth time and show you why.\n\nThe more events you add, the clearer the result can become.';
 
   @override
   String get onboardingSlide3Title => 'Ready to find your birth time?';
@@ -263,7 +263,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get confirmationDemoNote =>
-      'Demo mode — we\'ll show a sample result with no network request.';
+      'Demo mode: we\'ll show a sample result with no network request.';
 
   @override
   String get loadingTitle => 'Calculating your probable birth time…';
@@ -434,7 +434,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String shareCopyTagline(String brand) {
-    return 'Calculated with $brand — birth-time rectification';
+    return 'Calculated with $brand: birth-time rectification';
   }
 
   @override
@@ -444,7 +444,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String inviteCopyHeadline(String brand) {
-    return 'Try $brand — find your real birth time';
+    return 'Try $brand: estimate your birth time';
   }
 
   @override
@@ -562,7 +562,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String confidenceBarSemantic(String label, int percent) {
-    return '$label — $percent percent';
+    return '$label: $percent percent';
   }
 
   @override
@@ -737,7 +737,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorTimeoutBody =>
-      'The calculation didn\'t finish in time. Networks can be slow on public Wi-Fi — give it another try in a moment.';
+      'The calculation didn\'t finish in time. Public Wi-Fi can be slow. Try again in a moment.';
 
   @override
   String get errorNoInternetTitle => 'Can\'t reach the network';
@@ -772,7 +772,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorServerBody =>
-      'The calculation couldn\'t be completed just now. It may be a temporary hiccup — it\'s worth another try shortly.';
+      'The calculation couldn\'t be completed just now. It may be temporary. Try again in a little while.';
 
   @override
   String get errorRateLimitedTitle => 'Calculation limit reached';
@@ -954,7 +954,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String privacyStoresBody(String brand) {
-    return 'Everything you enter — birth date, birth city, life events, calculation results — is stored on this device only. Nothing is uploaded to a $brand account, because we do not run user accounts. Deleting the app removes every byte of that data.';
+    return 'Your birth date, birth city, life events, and results stay on this device. Nothing is uploaded to a $brand account, because we do not run user accounts. Deleting the app removes this data.';
   }
 
   @override
@@ -962,14 +962,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyDemoBody =>
-      'Demo calculations run entirely on this device — no network calls are made. Demo results are clearly labelled with a DEMO pill so they do not get mixed up with real readings.';
+      'Demo calculations run entirely on this device. They make no network calls. Demo results are marked with a DEMO pill so they do not get mixed up with live results.';
 
   @override
   String get privacyLiveTitle => 'Live calculations';
 
   @override
   String privacyLiveBody(String brand) {
-    return 'Running a live (non-demo) calculation sends your birth date and approximate time, your birthplace coordinates, and the descriptions of the life events you add to a third-party calculation provider over HTTPS. That data is transmitted solely to compute your rectified birth time — it is not used to build a profile and is not tied to any $brand account, because there are none.';
+    return 'A live (non-demo) calculation sends your birth date and approximate time, birthplace coordinates, and life-event descriptions to a third-party calculation provider over HTTPS. The data is used only to calculate your rectified birth time. It is not used to build a profile and is not tied to any $brand account, because there are no accounts.';
   }
 
   @override
@@ -993,7 +993,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get demoEvidenceStrongSaturn =>
-      'Saturn crossed the 10th-house cusp inside the window — a classic timing signature for a career pivot.';
+      'Saturn crossed the 10th-house cusp inside the window, a classic timing signature for a career pivot.';
 
   @override
   String get demoEvidenceModerateJupiter =>

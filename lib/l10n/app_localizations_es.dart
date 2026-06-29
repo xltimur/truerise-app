@@ -439,7 +439,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String shareCopyTagline(String brand) {
-    return 'Calculado con $brand — rectificación de la hora de nacimiento';
+    return 'Calculado con $brand: rectificación de la hora de nacimiento';
   }
 
   @override
@@ -449,7 +449,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String inviteCopyHeadline(String brand) {
-    return 'Prueba $brand: averigua tu verdadera hora de nacimiento';
+    return 'Prueba $brand: estima tu hora de nacimiento';
   }
 
   @override
@@ -779,7 +779,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get errorServerBody =>
-      'El cálculo no se pudo completar ahora mismo. Puede ser un problema temporal; vale la pena intentarlo de nuevo en breve.';
+      'El cálculo no se pudo completar ahora mismo. Puede ser un problema temporal; inténtalo de nuevo en breve.';
 
   @override
   String get errorRateLimitedTitle => 'Límite de cálculos alcanzado';

@@ -22,7 +22,7 @@
   "@onboardingSlide1Title": {
     "description": "Headline of the first onboarding slide explaining why birth time matters."
   },
-  "onboardingSlide1Body": "Most people only know an approximate time — or nothing at all. {brand} narrows it down using events from your life.",
+  "onboardingSlide1Body": "Most people only know an approximate time, or nothing at all. {brand} narrows it down using events from your life.",
   "@onboardingSlide1Body": {
     "description": "Body of the first onboarding slide. {brand} is the product name, held constant across locales.",
     "placeholders": {
@@ -36,7 +36,7 @@
       "brand": { "type": "String", "example": "TrueRise" }
     }
   },
-  "onboardingSlide2Body": "1. Enter your birth date and approximate time.\n2. Add events from your life — marriage, job changes, moves, more.\n3. We calculate the most probable birth time and show you why.\n\nThe more events you add, the more accurate the result.",
+  "onboardingSlide2Body": "1. Enter your birth date and approximate time.\n2. Add life events you remember: moves, relationships, job changes, and more.\n3. We calculate the most probable birth time and show you why.\n\nThe more events you add, the clearer the result can become.",
   "@onboardingSlide2Body": {
     "description": "Body of the second onboarding slide: a numbered list describing how the calculation flow works."
   },
@@ -316,7 +316,7 @@
       "count": { "type": "int" }
     }
   },
-  "confirmationDemoNote": "Demo mode — we'll show a sample result with no network request.",
+  "confirmationDemoNote": "Demo mode: we'll show a sample result with no network request.",
   "@confirmationDemoNote": {
     "description": "Note shown on the confirmation step when running in offline demo mode."
   },
@@ -543,9 +543,9 @@
       "brand": { "type": "String", "example": "TrueRise" }
     }
   },
-  "shareCopyTagline": "Calculated with {brand} — birth-time rectification",
+  "shareCopyTagline": "Calculated with {brand}: birth-time rectification",
   "@shareCopyTagline": {
-    "description": "Attribution line in the privacy-safe shared text, naming the app and what it does. {brand} is the product name, held constant across locales. Honest-confidence tone: the app estimates a probable time, never a certainty — keep any hedging in translation.",
+    "description": "Attribution line in the privacy-safe shared text, naming the app and what it does. {brand} is the product name, held constant across locales. Honest-confidence tone: the app estimates a probable time, never a certainty; keep any hedging in translation.",
     "placeholders": {
       "brand": { "type": "String", "example": "TrueRise" }
     }
@@ -557,9 +557,9 @@
       "url": { "type": "String", "example": "https://truerise.com.ua" }
     }
   },
-  "inviteCopyHeadline": "Try {brand} — find your real birth time",
+  "inviteCopyHeadline": "Try {brand}: estimate your birth time",
   "@inviteCopyHeadline": {
-    "description": "First line of the privacy-safe 'Invite a friend' message shared from Settings. A soft, opt-in invitation — never a referral or reward. {brand} is the product name, held constant across locales. The message reads no saved calculation and contains no birth date, city, coordinates, life events, labels, or API ids.",
+    "description": "First line of the privacy-safe 'Invite a friend' message shared from Settings. A soft, opt-in invitation, never a referral or reward. {brand} is the product name, held constant across locales. The message reads no saved calculation and contains no birth date, city, coordinates, life events, labels, or API ids.",
     "placeholders": {
       "brand": { "type": "String", "example": "TrueRise" }
     }
@@ -602,7 +602,7 @@
 
   "reviewPromptTitle": "Review {brand}?",
   "@reviewPromptTitle": {
-    "description": "Title of the optional, neutral in-app review invitation shown after the user successfully shares a result. {brand} is the product name, held constant across locales. Compliance: must stay neutral — no star count, no reward, no pressure, and no 'are you happy?' sentiment question that would gate who reaches the store.",
+    "description": "Title of the optional, neutral in-app review invitation shown after the user successfully shares a result. {brand} is the product name, held constant across locales. Compliance: must stay neutral; no star count, no reward, no pressure, and no 'are you happy?' sentiment question that would gate who reaches the store.",
     "placeholders": {
       "brand": { "type": "String", "example": "TrueRise" }
     }
@@ -620,7 +620,7 @@
   },
   "reviewPromptDismiss": "Not now",
   "@reviewPromptDismiss": {
-    "description": "Neutral dismiss action on the review invitation. Declining simply closes the dialog — nothing is gated and no consolation feedback form is shown (no sentiment routing)."
+    "description": "Neutral dismiss action on the review invitation. Declining simply closes the dialog; nothing is gated and no consolation feedback form is shown (no sentiment routing)."
   },
 
   "updateAvailableTitle": "Update available",
@@ -712,9 +712,9 @@
   "@confidenceBarLabel": {
     "description": "Default accessibility label prefix for the confidence bar."
   },
-  "confidenceBarSemantic": "{label} — {percent} percent",
+  "confidenceBarSemantic": "{label}: {percent} percent",
   "@confidenceBarSemantic": {
-    "description": "Screen-reader label for the confidence bar, e.g. Confidence — 82 percent.",
+    "description": "Screen-reader label for the confidence bar, e.g. Confidence: 82 percent.",
     "placeholders": {
       "label": { "type": "String" },
       "percent": { "type": "int" }
@@ -928,7 +928,7 @@
   "@errorTimeoutTitle": {
     "description": "Title of the timeout error screen."
   },
-  "errorTimeoutBody": "The calculation didn't finish in time. Networks can be slow on public Wi-Fi — give it another try in a moment.",
+  "errorTimeoutBody": "The calculation didn't finish in time. Public Wi-Fi can be slow. Try again in a moment.",
   "@errorTimeoutBody": {
     "description": "Body of the timeout error screen."
   },
@@ -968,7 +968,7 @@
   "@errorServerTitle": {
     "description": "Title of the server (5xx) error screen."
   },
-  "errorServerBody": "The calculation couldn't be completed just now. It may be a temporary hiccup — it's worth another try shortly.",
+  "errorServerBody": "The calculation couldn't be completed just now. It may be temporary. Try again in a little while.",
   "@errorServerBody": {
     "description": "Body of the server (5xx) error screen."
   },
@@ -1146,7 +1146,7 @@
   },
   "settingsInviteFriend": "Invite a friend",
   "@settingsInviteFriend": {
-    "description": "Label for the opt-in 'Invite a friend' row in the Settings about section. Opens the native share sheet with a privacy-safe, branded invite — no referral code, reward, contacts access, or tracking."
+    "description": "Label for the opt-in 'Invite a friend' row in the Settings about section. Opens the native share sheet with a privacy-safe, branded invite and no referral code, reward, contacts access, or tracking."
   },
 
   "deleteAllTitle": "Delete all data?",
@@ -1180,7 +1180,7 @@
       "brand": { "type": "String", "example": "TrueRise" }
     }
   },
-  "privacyStoresBody": "Everything you enter — birth date, birth city, life events, calculation results — is stored on this device only. Nothing is uploaded to a {brand} account, because we do not run user accounts. Deleting the app removes every byte of that data.",
+  "privacyStoresBody": "Your birth date, birth city, life events, and results stay on this device. Nothing is uploaded to a {brand} account, because we do not run user accounts. Deleting the app removes this data.",
   "@privacyStoresBody": {
     "description": "Privacy section body about local storage. {brand} is the product name, held constant across locales.",
     "placeholders": {
@@ -1191,7 +1191,7 @@
   "@privacyDemoTitle": {
     "description": "Privacy section heading about demo mode."
   },
-  "privacyDemoBody": "Demo calculations run entirely on this device — no network calls are made. Demo results are clearly labelled with a DEMO pill so they do not get mixed up with real readings.",
+  "privacyDemoBody": "Demo calculations run entirely on this device. They make no network calls. Demo results are marked with a DEMO pill so they do not get mixed up with live results.",
   "@privacyDemoBody": {
     "description": "Privacy section body about offline demo calculations."
   },
@@ -1199,7 +1199,7 @@
   "@privacyLiveTitle": {
     "description": "Privacy section heading about live (networked) calculations."
   },
-  "privacyLiveBody": "Running a live (non-demo) calculation sends your birth date and approximate time, your birthplace coordinates, and the descriptions of the life events you add to a third-party calculation provider over HTTPS. That data is transmitted solely to compute your rectified birth time — it is not used to build a profile and is not tied to any {brand} account, because there are none.",
+  "privacyLiveBody": "A live (non-demo) calculation sends your birth date and approximate time, birthplace coordinates, and life-event descriptions to a third-party calculation provider over HTTPS. The data is used only to calculate your rectified birth time. It is not used to build a profile and is not tied to any {brand} account, because there are no accounts.",
   "@privacyLiveBody": {
     "description": "Privacy section body about what a live calculation transmits. {brand} is the product name, held constant across locales.",
     "placeholders": {
@@ -1229,7 +1229,7 @@
   "@demoEvidenceStrongVenus": {
     "description": "Demo evidence explanation, strong match (rank 1). Astrology prose shown on the evidence screen for an offline sample result. Sensitive register: use indication wording, not proof wording."
   },
-  "demoEvidenceStrongSaturn": "Saturn crossed the 10th-house cusp inside the window — a classic timing signature for a career pivot.",
+  "demoEvidenceStrongSaturn": "Saturn crossed the 10th-house cusp inside the window, a classic timing signature for a career pivot.",
   "@demoEvidenceStrongSaturn": {
     "description": "Demo evidence explanation, strong match (rank 2). Astrology prose shown on the evidence screen for an offline sample result. Sensitive register: use indication wording, not proof wording."
   },
