@@ -21,7 +21,11 @@ abstract interface class ShareService {
   /// Shares [bytes] as a `image/png` attachment with an optional [text]
   /// caption. Returns `false` when the native share sheet could not be
   /// presented (e.g. plugin missing on a unit-test host).
-  Future<bool> shareImagePng(Uint8List bytes, {String? text});
+  Future<bool> shareImagePng(
+    Uint8List bytes, {
+    String? text,
+    Rect? sharePositionOrigin,
+  });
 }
 
 /// Riverpod provider — overrideable in tests with a fake implementation.
@@ -51,7 +55,11 @@ class PlatformShareService implements ShareService {
   }
 
   @override
-  Future<bool> shareImagePng(Uint8List bytes, {String? text}) async {
+  Future<bool> shareImagePng(
+    Uint8List bytes, {
+    String? text,
+    Rect? sharePositionOrigin,
+  }) async {
     try {
       final dir = await getTemporaryDirectory();
       final file = await File(
@@ -61,6 +69,7 @@ class PlatformShareService implements ShareService {
         ShareParams(
           files: <XFile>[XFile(file.path, mimeType: 'image/png')],
           text: text,
+          sharePositionOrigin: sharePositionOrigin,
         ),
       );
       return result.status != ShareResultStatus.unavailable;

@@ -266,6 +266,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Demo mode: we\'ll show a sample result with no network request.';
 
   @override
+  String get confirmationLiveDisclosure =>
+      'Live calculation sends your birth date, approximate time, birthplace coordinates, and life events to a third-party calculation provider over HTTPS. Demo mode stays offline.';
+
+  @override
   String get loadingTitle => 'Calculating your probable birth time…';
 
   @override
@@ -400,6 +404,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get resultDemoShareButton => 'Share sample';
+
+  @override
+  String get resultFriendShareLabel => 'Share with a friend';
+
+  @override
+  String get resultFriendShareTitle =>
+      'Know someone who doesn\'t know their birth time?';
+
+  @override
+  String get resultFriendShareBody =>
+      'Share TrueRise with them. Your result share never includes birth date, birthplace, or life events.';
+
+  @override
+  String get resultFriendShareButton => 'Share with a friend';
+
+  @override
+  String get resultSharePreviewTitle => 'What will be shared';
 
   @override
   String get resultFeedbackLabel => 'Result feedback';
@@ -969,7 +990,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String privacyLiveBody(String brand) {
-    return 'A live (non-demo) calculation sends your birth date and approximate time, birthplace coordinates, and life-event descriptions to a third-party calculation provider over HTTPS. The data is used only to calculate your rectified birth time. It is not used to build a profile and is not tied to any $brand account, because there are no accounts.';
+    return 'A live (non-demo) calculation sends your birth date and approximate time, birthplace coordinates, and life-event descriptions to a third-party calculation provider over HTTPS. City search may also use a geocoding service to find birthplace coordinates. The data is used only to calculate your rectified birth time. It is not used to build a profile and is not tied to any $brand account, because there are no accounts.';
   }
 
   @override

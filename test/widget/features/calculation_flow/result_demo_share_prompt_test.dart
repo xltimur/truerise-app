@@ -28,11 +28,15 @@ import '../../../helpers/fake_rectification_repository.dart';
 import '../../../helpers/fake_review_service.dart';
 import '../../../helpers/fake_share_service.dart';
 
-Future<SharedPreferences> _prefs({bool demoSharePromptSeen = false}) async {
+Future<SharedPreferences> _prefs({
+  bool demoSharePromptSeen = false,
+  bool realResultSharePromptSeen = false,
+}) async {
   SharedPreferences.setMockInitialValues(<String, Object>{
     'settings.onboarding_done': true,
     'settings.demo_mode_default': true,
     if (demoSharePromptSeen) 'share.demo_prompt_seen': true,
+    if (realResultSharePromptSeen) 'share.real_result_prompt_seen': true,
   });
   return SharedPreferences.getInstance();
 }
@@ -156,7 +160,7 @@ void main() {
     expect(find.byKey(resultDemoSharePromptKey), findsNothing);
   });
 
-  testWidgets('the share prompt is absent on a real (non-demo) result', (
+  testWidgets('a fresh real result shows the store-safe friend share prompt', (
     tester,
   ) async {
     final saved = SavedCalculation(
@@ -181,8 +185,59 @@ void main() {
     );
     await _openResult(tester, saved.request.id);
 
+    const friendShareBody =
+        'Share TrueRise with them. Your result share never includes '
+        'birth date, birthplace, or life events.';
     expect(find.byType(ResultScreen), findsOneWidget);
-    expect(find.byKey(resultDemoSharePromptKey), findsNothing);
+    expect(find.byKey(resultDemoSharePromptKey), findsOneWidget);
+    expect(
+      find.text("Know someone who doesn't know their birth time?"),
+      findsOneWidget,
+    );
+    expect(find.text(friendShareBody), findsOneWidget);
+    expect(find.text('What will be shared'), findsOneWidget);
+    expect(
+      find.textContaining('My TrueRise rectification result:'),
+      findsOneWidget,
+    );
+    expect(find.textContaining('Find your birth time:'), findsOneWidget);
+    expect(find.textContaining('Kyiv'), findsNothing);
+    expect(find.textContaining('1990'), findsNothing);
+    expect(find.text('Share with a friend'), findsOneWidget);
+    expect(prefs.getBool('share.real_result_prompt_seen'), isTrue);
+  });
+
+  testWidgets('the real result share prompt does not appear once seen', (
+    tester,
+  ) async {
+    final saved = SavedCalculation(
+      request: sampleRequest(),
+      result: sampleResult(isDemo: false),
+    );
+    final prefs = await _prefs(realResultSharePromptSeen: true);
+    final history = FakeHistoryRepository([saved]);
+    final rectifier = FakeRectificationRepository(history: history);
+    final drafts = InMemoryDraftRepository();
+    final shareService = FakeShareService();
+    addTearDown(drafts.dispose);
+
+    await tester.pumpWidget(
+      _harness(
+        prefs: prefs,
+        history: history,
+        rectifier: rectifier,
+        drafts: drafts,
+        shareService: shareService,
+      ),
+    );
+    await _openResult(tester, saved.request.id);
+
+    expect(find.byType(ResultScreen), findsOneWidget);
+    expect(
+      find.text("Know someone who doesn't know their birth time?"),
+      findsNothing,
+    );
+    expect(find.text('Share with a friend'), findsNothing);
   });
 
   testWidgets('tapping Share sample shares the PII-free summary', (
@@ -249,6 +304,78 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Copied to clipboard'), findsOneWidget);
+  });
+
+  testWidgets('tapping the real result prompt shares the PII-free summary', (
+    tester,
+  ) async {
+    final saved = SavedCalculation(
+      request: sampleRequest(),
+      result: sampleResult(isDemo: false),
+    );
+    final prefs = await _prefs();
+    final history = FakeHistoryRepository([saved]);
+    final rectifier = FakeRectificationRepository(history: history);
+    final drafts = InMemoryDraftRepository();
+    final shareService = FakeShareService();
+    addTearDown(drafts.dispose);
+
+    await tester.pumpWidget(
+      _harness(
+        prefs: prefs,
+        history: history,
+        rectifier: rectifier,
+        drafts: drafts,
+        shareService: shareService,
+      ),
+    );
+    await _openResult(tester, saved.request.id);
+
+    await tester.ensureVisible(find.text('Share with a friend'));
+    await tester.tap(find.text('Share with a friend'));
+    await tester.pumpAndSettle();
+
+    expect(shareService.shared, hasLength(1));
+    final sharedText = shareService.shared.first;
+    expect(sharedText, isNotEmpty);
+    expect(sharedText, isNot(contains('Kyiv')));
+    expect(sharedText, isNot(contains('Ukraine')));
+    expect(sharedText, isNot(contains('1990')));
+    expect(sharedText, isNot(contains('marriage')));
+    expect(sharedText, contains('TrueRise'));
+  });
+
+  testWidgets('the real result prompt never invites a review', (tester) async {
+    final saved = SavedCalculation(
+      request: sampleRequest(),
+      result: sampleResult(isDemo: false),
+    );
+    final prefs = await _prefs();
+    final history = FakeHistoryRepository([saved]);
+    final rectifier = FakeRectificationRepository(history: history);
+    final drafts = InMemoryDraftRepository();
+    final shareService = FakeShareService();
+    final reviewService = FakeReviewService();
+    addTearDown(drafts.dispose);
+
+    await tester.pumpWidget(
+      _harness(
+        prefs: prefs,
+        history: history,
+        rectifier: rectifier,
+        drafts: drafts,
+        shareService: shareService,
+        reviewService: reviewService,
+      ),
+    );
+    await _openResult(tester, saved.request.id);
+
+    await tester.ensureVisible(find.text('Share with a friend'));
+    await tester.tap(find.text('Share with a friend'));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(reviewInvitationDialogKey), findsNothing);
+    expect(reviewService.requestReviewCount, 0);
   });
 
   testWidgets('the demo share prompt never invites a review', (tester) async {

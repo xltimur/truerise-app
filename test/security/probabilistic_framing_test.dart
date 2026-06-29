@@ -56,6 +56,10 @@ void main() {
       'resultDemoShareLabel': l10n.resultDemoShareLabel,
       'resultDemoShareTitle': l10n.resultDemoShareTitle,
       'resultDemoShareButton': l10n.resultDemoShareButton,
+      'resultFriendShareLabel': l10n.resultFriendShareLabel,
+      'resultFriendShareTitle': l10n.resultFriendShareTitle,
+      'resultFriendShareBody': l10n.resultFriendShareBody,
+      'resultFriendShareButton': l10n.resultFriendShareButton,
       'resultFeedbackTitle': l10n.resultFeedbackTitle,
       'resultFeedbackYes': l10n.resultFeedbackYes,
       'resultFeedbackNotSure': l10n.resultFeedbackNotSure,
@@ -162,5 +166,49 @@ void main() {
             '"candidate", "sample") — none of these markers were found.',
       );
     });
+
+    test(
+      'share prompts contain no referral, reward, or forced-action language',
+      () {
+        final banned = <String, RegExp>{
+          'referral': RegExp(r'\breferral\b', caseSensitive: false),
+          'reward': RegExp(r'\breward(s|ed)?\b', caseSensitive: false),
+          'bonus': RegExp(r'\bbonus(es)?\b', caseSensitive: false),
+          'discount': RegExp(r'\bdiscount(s|ed)?\b', caseSensitive: false),
+          'coupon': RegExp(r'\bcoupon(s)?\b', caseSensitive: false),
+          'promo code': RegExp(r'\bpromo\s+code(s)?\b', caseSensitive: false),
+          'invite code': RegExp(r'\binvite\s+code(s)?\b', caseSensitive: false),
+          'unlock': RegExp(r'\bunlock(s|ed|ing)?\b', caseSensitive: false),
+          'must share': RegExp(r'\bmust\s+share\b', caseSensitive: false),
+          'contacts': RegExp(r'\bcontacts?\b', caseSensitive: false),
+        };
+        final sharePromptCorpus = <String, String>{
+          'resultDemoShareLabel': l10n.resultDemoShareLabel,
+          'resultDemoShareTitle': l10n.resultDemoShareTitle,
+          'resultDemoShareButton': l10n.resultDemoShareButton,
+          'resultFriendShareLabel': l10n.resultFriendShareLabel,
+          'resultFriendShareTitle': l10n.resultFriendShareTitle,
+          'resultFriendShareBody': l10n.resultFriendShareBody,
+          'resultFriendShareButton': l10n.resultFriendShareButton,
+        };
+        final offenders = <String>[];
+        sharePromptCorpus.forEach((label, text) {
+          banned.forEach((term, pattern) {
+            if (pattern.hasMatch(text)) {
+              offenders.add('$label: banned term "$term" in: "$text"');
+            }
+          });
+        });
+
+        expect(
+          offenders,
+          isEmpty,
+          reason:
+              'Share prompts must stay App Store / Google Play safe: no rewards, '
+              'referral codes, contacts access, or forced share wording. '
+              'Found:\n${offenders.join('\n')}',
+        );
+      },
+    );
   });
 }

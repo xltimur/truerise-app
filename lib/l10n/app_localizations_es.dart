@@ -268,6 +268,10 @@ class AppLocalizationsEs extends AppLocalizations {
       'Modo demo: mostraremos un resultado de muestra sin ninguna solicitud de red.';
 
   @override
+  String get confirmationLiveDisclosure =>
+      'Un cálculo en vivo envía tu fecha de nacimiento, hora aproximada, coordenadas del lugar de nacimiento y eventos de vida a un proveedor de cálculo externo por HTTPS. El modo demo permanece sin conexión.';
+
+  @override
   String get loadingTitle => 'Calculando tu hora de nacimiento probable…';
 
   @override
@@ -405,6 +409,23 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get resultDemoShareButton => 'Compartir ejemplo';
+
+  @override
+  String get resultFriendShareLabel => 'Compartir con un amigo';
+
+  @override
+  String get resultFriendShareTitle =>
+      '¿Conoces a alguien que no sabe su hora de nacimiento?';
+
+  @override
+  String get resultFriendShareBody =>
+      'Compártele TrueRise. El resultado compartido nunca incluye fecha de nacimiento, lugar de nacimiento ni eventos de vida.';
+
+  @override
+  String get resultFriendShareButton => 'Compartir con un amigo';
+
+  @override
+  String get resultSharePreviewTitle => 'Lo que se compartirá';
 
   @override
   String get resultFeedbackLabel => 'Comentarios del resultado';
@@ -977,7 +998,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String privacyLiveBody(String brand) {
-    return 'Ejecutar un cálculo en vivo (no demo) envía tu fecha de nacimiento y hora aproximada, las coordenadas de tu lugar de nacimiento y las descripciones de los eventos de vida que añadas a un proveedor de cálculo externo a través de HTTPS. Esos datos se transmiten únicamente para calcular tu hora de nacimiento rectificada: no se usan para crear un perfil y no están vinculados a ninguna cuenta de $brand, porque no existen.';
+    return 'Ejecutar un cálculo en vivo (no demo) envía tu fecha de nacimiento y hora aproximada, las coordenadas de tu lugar de nacimiento y las descripciones de los eventos de vida que añadas a un proveedor de cálculo externo a través de HTTPS. La búsqueda de ciudad también puede usar un servicio de geocodificación para encontrar coordenadas del lugar de nacimiento. Esos datos se transmiten únicamente para calcular tu hora de nacimiento rectificada: no se usan para crear un perfil y no están vinculados a ninguna cuenta de $brand, porque no existen.';
   }
 
   @override

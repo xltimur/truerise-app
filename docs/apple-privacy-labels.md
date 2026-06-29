@@ -77,7 +77,7 @@ Legend — **Collect?** = recommended answer · **Linked?** = linked to identity
 | **User Content — Other User Content** | **Yes** | No | No | App Functionality | The optional **free-text life-event descriptions** are user-generated content and **are transmitted** in live mode. Best-fit bucket. (The calc *label* is User Content too but stays on-device → not collected.) | High |
 | **User Content — Emails/Texts, Photos, Audio, Gameplay, Customer Support** | **No** | — | — | — | None of these surfaces exist. | High |
 | **Browsing History** | **No** | — | — | — | No web browsing. | High |
-| **Search History** | **No** | — | — | — | City search is on-device and not stored/transmitted. | High |
+| **Search History** | **`[OWNER/LEGAL]`** | No | No | App Functionality | City search/geocoding can transmit the typed birthplace query to a configured geocoding provider/proxy or to the device's native geocoding service. If Apple treats this as in-app search history, disclose it; otherwise document the rationale for classifying it under Location/Other Data instead. | Medium / decision |
 | **Identifiers — User ID / Device ID** | **No** | — | — | — | No per-user/-device identifier collected. The constant `X-Rectify-App-Id` proxy header is an app-level public ID shared by all installs, not a user/device identifier; no IDFA. | High (note app-id) |
 | **Purchases** | **No** | — | — | — | No IAP/purchase history. | High |
 | **Usage Data** | **No** | — | — | — | No analytics SDK; no product-interaction telemetry. | High |

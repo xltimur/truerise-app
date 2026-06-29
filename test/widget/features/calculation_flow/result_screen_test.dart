@@ -217,7 +217,7 @@ void main() {
   );
 
   testWidgets(
-    'live result has no DEMO pill, demo share prompt, or demo nudge',
+    'live result has no DEMO pill or demo nudge but shows friend share prompt',
     (tester) async {
       final seeded = _seedLiveCalculation();
       final prefs = await _prefs();
@@ -247,7 +247,8 @@ void main() {
       expect(find.byType(ResultScreen), findsOneWidget);
       expect(find.byType(DemoPill), findsNothing);
       expect(find.byKey(resultDemoNudgeKey), findsNothing);
-      expect(find.byKey(resultDemoSharePromptKey), findsNothing);
+      expect(find.byKey(resultDemoSharePromptKey), findsOneWidget);
+      expect(find.text('Share with a friend'), findsOneWidget);
 
       // Live result still shows the hero card and CTAs.
       expect(find.byType(HeroResultCard), findsOneWidget);

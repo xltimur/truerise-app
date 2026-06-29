@@ -268,6 +268,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Demo-Modus: Wir zeigen ein Beispielergebnis ohne Netzwerkanfrage.';
 
   @override
+  String get confirmationLiveDisclosure =>
+      'Eine Live-Berechnung sendet dein Geburtsdatum, die ungefähre Zeit, Geburtsort-Koordinaten und Lebensereignisse per HTTPS an einen Drittanbieter zur Berechnung. Der Demo-Modus bleibt offline.';
+
+  @override
   String get loadingTitle =>
       'Deine wahrscheinliche Geburtszeit wird berechnet…';
 
@@ -406,6 +410,23 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get resultDemoShareButton => 'Beispiel teilen';
+
+  @override
+  String get resultFriendShareLabel => 'Mit einem Freund teilen';
+
+  @override
+  String get resultFriendShareTitle =>
+      'Kennst du jemanden, der seine Geburtszeit nicht kennt?';
+
+  @override
+  String get resultFriendShareBody =>
+      'Teile TrueRise mit dieser Person. Dein geteiltes Ergebnis enthält nie Geburtsdatum, Geburtsort oder Lebensereignisse.';
+
+  @override
+  String get resultFriendShareButton => 'Mit einem Freund teilen';
+
+  @override
+  String get resultSharePreviewTitle => 'Das wird geteilt';
 
   @override
   String get resultFeedbackLabel => 'Ergebnis-Feedback';
@@ -982,7 +1003,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String privacyLiveBody(String brand) {
-    return 'Eine Live-Berechnung (nicht Demo) sendet dein Geburtsdatum und die ungefähre Zeit, die Koordinaten deines Geburtsorts und die Beschreibungen deiner Lebensereignisse über HTTPS an einen Drittanbieter zur Berechnung. Diese Daten werden nur genutzt, um deine korrigierte Geburtszeit zu berechnen. Sie werden nicht für ein Profil verwendet und sind mit keinem $brand-Konto verknüpft, denn es gibt keine Konten.';
+    return 'Eine Live-Berechnung (nicht Demo) sendet dein Geburtsdatum und die ungefähre Zeit, die Koordinaten deines Geburtsorts und die Beschreibungen deiner Lebensereignisse über HTTPS an einen Drittanbieter zur Berechnung. Die Stadtsuche kann außerdem einen Geocoding-Dienst nutzen, um Geburtsort-Koordinaten zu finden. Diese Daten werden nur genutzt, um deine korrigierte Geburtszeit zu berechnen. Sie werden nicht für ein Profil verwendet und sind mit keinem $brand-Konto verknüpft, denn es gibt keine Konten.';
   }
 
   @override

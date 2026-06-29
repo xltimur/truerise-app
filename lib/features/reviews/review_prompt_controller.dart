@@ -38,7 +38,7 @@ abstract final class ReviewPolicy {
 ///   * [shouldRequest] throttles asks to at most once per cooldown.
 ///
 /// The controller is intentionally UI-free so it can be unit-tested; the
-/// neutral pre-prompt dialog lives in `review_invitation.dart`.
+/// platform-owned review surface is requested from `review_invitation.dart`.
 class ReviewPromptController {
   ReviewPromptController({
     required this.store,

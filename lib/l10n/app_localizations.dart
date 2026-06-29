@@ -526,6 +526,12 @@ abstract class AppLocalizations {
   /// **'Demo mode: we\'ll show a sample result with no network request.'**
   String get confirmationDemoNote;
 
+  /// Short disclosure shown on the confirmation step before a real live calculation. It must name the data sent, the third-party calculation provider, HTTPS, and that demo mode stays offline.
+  ///
+  /// In en, this message translates to:
+  /// **'Live calculation sends your birth date, approximate time, birthplace coordinates, and life events to a third-party calculation provider over HTTPS. Demo mode stays offline.'**
+  String get confirmationLiveDisclosure;
+
   /// Main heading on the calculation loading screen for a real calculation.
   ///
   /// In en, this message translates to:
@@ -777,6 +783,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Share sample'**
   String get resultDemoShareButton;
+
+  /// Screen-reader label for the one-time post-result friend-share affordance container. Optional and dismissible; no reward, referral code, contacts access, tracking, or forced sharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Share with a friend'**
+  String get resultFriendShareLabel;
+
+  /// Title of the one-time post-result friend-share affordance. Store-safe: invitation only, no reward/referral/ratings pressure, and no forced action.
+  ///
+  /// In en, this message translates to:
+  /// **'Know someone who doesn\'t know their birth time?'**
+  String get resultFriendShareTitle;
+
+  /// Body of the one-time post-result friend-share affordance. Must reassure that shared result copy is privacy-safe and does not include birth date, birthplace, or life events. No reward/referral/tracking language.
+  ///
+  /// In en, this message translates to:
+  /// **'Share TrueRise with them. Your result share never includes birth date, birthplace, or life events.'**
+  String get resultFriendShareBody;
+
+  /// Button in the one-time post-result affordance. Opens the native share sheet with the existing privacy-safe result payload. No referral code, reward, contacts access, tracking, or unlock-by-share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share with a friend'**
+  String get resultFriendShareButton;
+
+  /// Small label above the exact text preview in the post-result share affordance. The preview shows the privacy-safe text before the native share sheet opens.
+  ///
+  /// In en, this message translates to:
+  /// **'What will be shared'**
+  String get resultSharePreviewTitle;
 
   /// Screen-reader label for the post-result plausibility feedback prompt container.
   ///
@@ -1622,7 +1658,7 @@ abstract class AppLocalizations {
   /// Privacy section body about what a live calculation transmits. {brand} is the product name, held constant across locales.
   ///
   /// In en, this message translates to:
-  /// **'A live (non-demo) calculation sends your birth date and approximate time, birthplace coordinates, and life-event descriptions to a third-party calculation provider over HTTPS. The data is used only to calculate your rectified birth time. It is not used to build a profile and is not tied to any {brand} account, because there are no accounts.'**
+  /// **'A live (non-demo) calculation sends your birth date and approximate time, birthplace coordinates, and life-event descriptions to a third-party calculation provider over HTTPS. City search may also use a geocoding service to find birthplace coordinates. The data is used only to calculate your rectified birth time. It is not used to build a profile and is not tied to any {brand} account, because there are no accounts.'**
   String privacyLiveBody(String brand);
 
   /// Privacy section heading about deleting local data.

@@ -372,48 +372,65 @@ class _ShareImageButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final settings = ref.watch(settingsControllerProvider);
-    return GhostButton(
-      label: l10n.resultShareImage,
-      icon: AppIcons.share,
-      onPressed: () async {
-        final svc = ref.read(shareServiceProvider);
-        final top = saved.result.candidates.first;
-        final parts = AppDateFormat.clockParts(
-          top.time,
-          settings.timeFormat,
-          localeName: l10n.localeName,
+    return Builder(
+      builder: (buttonContext) {
+        return GhostButton(
+          label: l10n.resultShareImage,
+          icon: AppIcons.share,
+          onPressed: () async {
+            final sharePositionOrigin = _sharePositionOrigin(buttonContext);
+            final svc = ref.read(shareServiceProvider);
+            final top = saved.result.candidates.first;
+            final parts = AppDateFormat.clockParts(
+              top.time,
+              settings.timeFormat,
+              localeName: l10n.localeName,
+            );
+            final card = StoryCardData(
+              brand: appBrandName,
+              time: parts.meridiem.isEmpty
+                  ? parts.time
+                  : '${parts.time} ${parts.meridiem}',
+              ascendant: top.ascendant != null
+                  ? l10n.resultRisingSign(top.ascendant!)
+                  : null,
+              confidenceLabel: l10n.shareCardConfidence(
+                (top.confidence * 100).round(),
+              ),
+              tagline: l10n.shareCardTagline,
+            );
+            final bytes = await StoryCardRenderer.render(card);
+            final caption = ShareCopyBuilder.build(
+              saved,
+              l10n,
+              timeFormat: settings.timeFormat,
+            );
+            final usedNative = await svc.shareImagePng(
+              bytes,
+              text: caption,
+              sharePositionOrigin: sharePositionOrigin,
+            );
+            if (!context.mounted) return;
+            if (usedNative) {
+              // Positive moment after a successful native image share.
+              await maybeInviteReview(context, ref);
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.resultShareImageUnavailable)),
+              );
+            }
+          },
         );
-        final card = StoryCardData(
-          brand: appBrandName,
-          time: parts.meridiem.isEmpty
-              ? parts.time
-              : '${parts.time} ${parts.meridiem}',
-          ascendant: top.ascendant != null
-              ? l10n.resultRisingSign(top.ascendant!)
-              : null,
-          confidenceLabel: l10n.shareCardConfidence(
-            (top.confidence * 100).round(),
-          ),
-          tagline: l10n.shareCardTagline,
-        );
-        final bytes = await StoryCardRenderer.render(card);
-        final caption = ShareCopyBuilder.build(
-          saved,
-          l10n,
-          timeFormat: settings.timeFormat,
-        );
-        final usedNative = await svc.shareImagePng(bytes, text: caption);
-        if (!context.mounted) return;
-        if (usedNative) {
-          // Positive moment after a successful native image share.
-          await maybeInviteReview(context, ref);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.resultShareImageUnavailable)),
-          );
-        }
       },
     );
+  }
+
+  Rect? _sharePositionOrigin(BuildContext context) {
+    final box = context.findRenderObject();
+    if (box is! RenderBox || !box.hasSize) {
+      return null;
+    }
+    return box.localToGlobal(Offset.zero) & box.size;
   }
 }
 
@@ -471,39 +488,46 @@ class _SaveToHistoryButtonState extends ConsumerState<_SaveToHistoryButton> {
   }
 }
 
-/// One-time, post-demo "share this sample" affordance (G10 share
-/// discoverability). Renders only on a demo result, and only the first
-/// time the user reaches one — it marks itself seen on display via the
-/// share-prompt store so it never nags again, on this or any later demo
-/// result. Its share reuses the exact PII-free [ShareCopyBuilder] /
-/// [ShareService] text payload as every other share entry point (no birth
-/// city/date, events, label, coordinates, or API ids).
+/// One-time, store-safe share affordance (G10 share discoverability).
+///
+/// Demo results keep the original "share this sample" prompt. Real results
+/// get a separate first-result friend-share prompt that is still optional,
+/// dismissible, and privacy-safe: it reuses the exact PII-free
+/// [ShareCopyBuilder] / [ShareService] text payload as every other share entry
+/// point (no birth city/date, events, label, coordinates, or API ids), adds no
+/// rewards/referral codes/tracking, and never touches contacts.
 ///
 /// Deliberately does NOT chain the S2 review invitation: a gentle one-time
 /// nudge is not the celebratory positive moment that flow is reserved for,
 /// and stacking a rating dialog on top would read as a dark pattern. It
 /// still honours the fallback contract — a clipboard fallback surfaces a
 /// SnackBar and is never treated as a success moment.
-class _DemoSharePrompt extends ConsumerStatefulWidget {
-  const _DemoSharePrompt({required this.saved});
+class _ResultSharePrompt extends ConsumerStatefulWidget {
+  const _ResultSharePrompt({required this.saved});
 
   final SavedCalculation saved;
 
   @override
-  ConsumerState<_DemoSharePrompt> createState() => _DemoSharePromptState();
+  ConsumerState<_ResultSharePrompt> createState() => _ResultSharePromptState();
 }
 
-class _DemoSharePromptState extends ConsumerState<_DemoSharePrompt> {
+class _ResultSharePromptState extends ConsumerState<_ResultSharePrompt> {
   bool _visible = false;
 
   @override
   void initState() {
     super.initState();
     final store = ref.read(sharePromptStoreProvider);
-    if (!store.demoSharePromptSeen()) {
+    if (widget.saved.result.isDemo && !store.demoSharePromptSeen()) {
       _visible = true;
       // Mark seen on display so the prompt is shown at most once, ever.
       unawaited(store.markDemoSharePromptSeen());
+    } else if (!widget.saved.result.isDemo &&
+        !store.realResultSharePromptSeen()) {
+      _visible = true;
+      // Separate from the demo flag: the real-result prompt is also shown
+      // once, without reopening the demo sample prompt.
+      unawaited(store.markRealResultSharePromptSeen());
     }
   }
 
@@ -531,12 +555,18 @@ class _DemoSharePromptState extends ConsumerState<_DemoSharePrompt> {
   Widget build(BuildContext context) {
     if (!_visible) return const SizedBox.shrink();
     final l10n = context.l10n;
+    final isDemo = widget.saved.result.isDemo;
+    final previewText = ShareCopyBuilder.build(
+      widget.saved,
+      l10n,
+      timeFormat: ref.watch(settingsControllerProvider).timeFormat,
+    );
     return Padding(
       key: resultDemoSharePromptKey,
       padding: const EdgeInsets.only(top: AppSpacing.s6),
       child: Semantics(
         container: true,
-        label: l10n.resultDemoShareLabel,
+        label: isDemo ? l10n.resultDemoShareLabel : l10n.resultFriendShareLabel,
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: AppColors.bgSurface,
@@ -552,7 +582,9 @@ class _DemoSharePromptState extends ConsumerState<_DemoSharePrompt> {
                   children: <Widget>[
                     Expanded(
                       child: Text(
-                        l10n.resultDemoShareTitle,
+                        isDemo
+                            ? l10n.resultDemoShareTitle
+                            : l10n.resultFriendShareTitle,
                         style: AppTypography.titleSm,
                       ),
                     ),
@@ -568,16 +600,69 @@ class _DemoSharePromptState extends ConsumerState<_DemoSharePrompt> {
                     ),
                   ],
                 ),
+                if (!isDemo) ...<Widget>[
+                  const SizedBox(height: AppSpacing.s2),
+                  Text(
+                    l10n.resultFriendShareBody,
+                    style: AppTypography.bodySm.copyWith(
+                      color: AppColors.inkSoft,
+                    ),
+                  ),
+                ],
+                const SizedBox(height: AppSpacing.s3),
+                _ShareTextPreview(
+                  title: l10n.resultSharePreviewTitle,
+                  text: previewText,
+                ),
                 const SizedBox(height: AppSpacing.s3),
                 GhostButton(
                   key: resultDemoSharePromptShareKey,
-                  label: l10n.resultDemoShareButton,
+                  label: isDemo
+                      ? l10n.resultDemoShareButton
+                      : l10n.resultFriendShareButton,
                   icon: AppIcons.share,
                   onPressed: _share,
                 ),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ShareTextPreview extends StatelessWidget {
+  const _ShareTextPreview({
+    required this.title,
+    required this.text,
+  });
+
+  final String title;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: AppColors.bgSurfaceSunken,
+        borderRadius: AppRadius.brXs,
+        border: Border.all(color: AppColors.inkLineSoft),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.s3),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(title, style: AppTypography.labelSm),
+            const SizedBox(height: AppSpacing.s2),
+            Text(
+              text,
+              maxLines: 6,
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.bodySm.copyWith(color: AppColors.inkBody),
+            ),
+          ],
         ),
       ),
     );

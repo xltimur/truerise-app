@@ -455,6 +455,49 @@ void main() {
   );
 
   testWidgets(
+    'image share passes the button rect as the iOS popover origin',
+    (tester) async {
+      final seeded = _seedDemoCalculation();
+      final prefs = await _prefs();
+      final history = FakeHistoryRepository([seeded]);
+      final rectifier = FakeRectificationRepository(history: history);
+      final drafts = InMemoryDraftRepository();
+      final shareService = FakeShareService();
+      addTearDown(drafts.dispose);
+
+      await tester.pumpWidget(
+        _harness(
+          prefs: prefs,
+          history: history,
+          rectifier: rectifier,
+          drafts: drafts,
+          shareService: shareService,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(MaterialApp)),
+      );
+      container
+          .read(routerProvider)
+          .go(RoutePaths.calcResultFor(seeded.request.id));
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.byKey(resultShareImageButtonKey));
+      await tester.tap(find.byKey(resultShareImageButtonKey));
+      await tester.runAsync(() => _waitForImageShare(shareService));
+      await tester.pumpAndSettle();
+
+      final origin = shareService.sharedImages.single.sharePositionOrigin;
+      expect(origin, isNotNull);
+      expect(origin, isNot(Rect.zero));
+      expect(origin!.width, greaterThan(0));
+      expect(origin.height, greaterThan(0));
+    },
+  );
+
+  testWidgets(
     'image share caption does not contain birth city or birth date',
     (tester) async {
       final seeded = _seedDemoCalculation();

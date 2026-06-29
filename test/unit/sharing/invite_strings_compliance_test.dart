@@ -17,6 +17,7 @@ void main() {
     'lib/l10n/app_es.arb',
     'lib/l10n/app_fr.arb',
     'lib/l10n/app_pt.arb',
+    'lib/l10n/app_uk.arb',
   ];
 
   // Every locale must define the invite affordance + the three invite copy
@@ -38,7 +39,9 @@ void main() {
     'recompensa|regalo|bono|cup[oó]n|descuento|'
     'pr[aä]mie|gutschein|rabatt|belohnung|geschenk|'
     'r[eé]compense|cadeau|r[eé]duction|'
-    r'presente|cupom)\b',
+    'presente|cupom|'
+    r'винагород\w*|бонус\w*|подарунок|подарунки|купон\w*|'
+    r'знижк\w*|промокод\w*|реферал\w*|зароб\w*)\b',
     caseSensitive: false,
   );
 
@@ -48,7 +51,8 @@ void main() {
     '★|⭐|'
     r'\b(5|five|fünf|cinco|cinq)[\s-]?'
     r'(stars?|sternen?|sterne|estrellas?|étoiles?|estrelas?)\b|'
-    r'\brate us\b',
+    r'\brate us\b|'
+    r'\b(5|п.?ять)[\s-]?(зірок|зірки|зірочок)\b',
     caseSensitive: false,
   );
 

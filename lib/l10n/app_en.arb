@@ -320,6 +320,10 @@
   "@confirmationDemoNote": {
     "description": "Note shown on the confirmation step when running in offline demo mode."
   },
+  "confirmationLiveDisclosure": "Live calculation sends your birth date, approximate time, birthplace coordinates, and life events to a third-party calculation provider over HTTPS. Demo mode stays offline.",
+  "@confirmationLiveDisclosure": {
+    "description": "Short disclosure shown on the confirmation step before a real live calculation. It must name the data sent, the third-party calculation provider, HTTPS, and that demo mode stays offline."
+  },
 
   "loadingTitle": "Calculating your probable birth time…",
   "@loadingTitle": {
@@ -498,6 +502,26 @@
   "resultDemoShareButton": "Share sample",
   "@resultDemoShareButton": {
     "description": "Button in the post-demo affordance that shares the privacy-safe sample result."
+  },
+  "resultFriendShareLabel": "Share with a friend",
+  "@resultFriendShareLabel": {
+    "description": "Screen-reader label for the one-time post-result friend-share affordance container. Optional and dismissible; no reward, referral code, contacts access, tracking, or forced sharing."
+  },
+  "resultFriendShareTitle": "Know someone who doesn't know their birth time?",
+  "@resultFriendShareTitle": {
+    "description": "Title of the one-time post-result friend-share affordance. Store-safe: invitation only, no reward/referral/ratings pressure, and no forced action."
+  },
+  "resultFriendShareBody": "Share TrueRise with them. Your result share never includes birth date, birthplace, or life events.",
+  "@resultFriendShareBody": {
+    "description": "Body of the one-time post-result friend-share affordance. Must reassure that shared result copy is privacy-safe and does not include birth date, birthplace, or life events. No reward/referral/tracking language."
+  },
+  "resultFriendShareButton": "Share with a friend",
+  "@resultFriendShareButton": {
+    "description": "Button in the one-time post-result affordance. Opens the native share sheet with the existing privacy-safe result payload. No referral code, reward, contacts access, tracking, or unlock-by-share."
+  },
+  "resultSharePreviewTitle": "What will be shared",
+  "@resultSharePreviewTitle": {
+    "description": "Small label above the exact text preview in the post-result share affordance. The preview shows the privacy-safe text before the native share sheet opens."
   },
   "resultFeedbackLabel": "Result feedback",
   "@resultFeedbackLabel": {
@@ -1199,7 +1223,7 @@
   "@privacyLiveTitle": {
     "description": "Privacy section heading about live (networked) calculations."
   },
-  "privacyLiveBody": "A live (non-demo) calculation sends your birth date and approximate time, birthplace coordinates, and life-event descriptions to a third-party calculation provider over HTTPS. The data is used only to calculate your rectified birth time. It is not used to build a profile and is not tied to any {brand} account, because there are no accounts.",
+  "privacyLiveBody": "A live (non-demo) calculation sends your birth date and approximate time, birthplace coordinates, and life-event descriptions to a third-party calculation provider over HTTPS. City search may also use a geocoding service to find birthplace coordinates. The data is used only to calculate your rectified birth time. It is not used to build a profile and is not tied to any {brand} account, because there are no accounts.",
   "@privacyLiveBody": {
     "description": "Privacy section body about what a live calculation transmits. {brand} is the product name, held constant across locales.",
     "placeholders": {

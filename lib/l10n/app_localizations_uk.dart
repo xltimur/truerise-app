@@ -268,6 +268,10 @@ class AppLocalizationsUk extends AppLocalizations {
       'Демо-режим: буде показано зразок результату без мережевого запиту.';
 
   @override
+  String get confirmationLiveDisclosure =>
+      'Живий розрахунок надсилає дату народження, приблизний час, координати місця народження та життєві події сторонньому постачальнику розрахунків через HTTPS. Демо-режим залишається офлайн.';
+
+  @override
   String get loadingTitle => 'Обчислення найімовірнішого часу народження…';
 
   @override
@@ -403,6 +407,23 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get resultDemoShareButton => 'Поділитися зразком';
+
+  @override
+  String get resultFriendShareLabel => 'Поділитися з другом';
+
+  @override
+  String get resultFriendShareTitle =>
+      'Знаєте когось, хто не знає свого часу народження?';
+
+  @override
+  String get resultFriendShareBody =>
+      'Поділіться з цією людиною TrueRise. Поширений результат ніколи не містить дати народження, місця народження або життєвих подій.';
+
+  @override
+  String get resultFriendShareButton => 'Поділитися з другом';
+
+  @override
+  String get resultSharePreviewTitle => 'Що буде поширено';
 
   @override
   String get resultFeedbackLabel => 'Відгук про результат';
@@ -973,7 +994,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String privacyLiveBody(String brand) {
-    return 'Живий (не демо) розрахунок надсилає вашу дату народження та приблизний час, координати місця народження і описи ваших життєвих подій сторонньому постачальнику через HTTPS. Ці дані використовуються лише для обчислення ректифікованого часу народження. Вони не використовуються для створення профілю і не прив\'язані до акаунту $brand, оскільки акаунтів немає.';
+    return 'Живий (не демо) розрахунок надсилає вашу дату народження та приблизний час, координати місця народження і описи ваших життєвих подій сторонньому постачальнику через HTTPS. Пошук міста також може використовувати сервіс геокодування, щоб знайти координати місця народження. Ці дані використовуються лише для обчислення ректифікованого часу народження. Вони не використовуються для створення профілю і не прив\'язані до акаунту $brand, оскільки акаунтів немає.';
   }
 
   @override

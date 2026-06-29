@@ -109,21 +109,9 @@ Future<void> _waitForImageShare(FakeShareService shareService) async {
   }
 }
 
-Future<void> _pumpUntilFound(
-  WidgetTester tester,
-  Finder finder, {
-  int maxTries = 40,
-}) async {
-  for (var i = 0; i < maxTries; i += 1) {
-    await tester.pump(const Duration(milliseconds: 50));
-    if (finder.evaluate().isNotEmpty) return;
-  }
-}
-
 void main() {
   testWidgets(
-    'successful native text share invites a review; confirming hands off '
-    'to the native review flow',
+    'successful native text share directly hands off to the native review flow',
     (tester) async {
       final seeded = _seedDemoCalculation();
       final prefs = await _prefs();
@@ -150,20 +138,14 @@ void main() {
       await tester.tap(find.byKey(resultShareButtonKey));
       await tester.pumpAndSettle();
 
-      expect(find.byKey(reviewInvitationDialogKey), findsOneWidget);
-      expect(reviewService.requestReviewCount, 0);
-
-      await tester.tap(find.byKey(reviewInvitationConfirmKey));
-      await tester.pumpAndSettle();
-
+      expect(find.byType(AlertDialog), findsNothing);
       expect(find.byKey(reviewInvitationDialogKey), findsNothing);
       expect(reviewService.requestReviewCount, 1);
     },
   );
 
   testWidgets(
-    'declining the invitation never calls the review flow and consumes '
-    'the cooldown',
+    'native review request consumes the cooldown',
     (tester) async {
       final seeded = _seedDemoCalculation();
       final prefs = await _prefs();
@@ -189,18 +171,18 @@ void main() {
       await tester.ensureVisible(find.byKey(resultShareButtonKey));
       await tester.tap(find.byKey(resultShareButtonKey));
       await tester.pumpAndSettle();
-      await tester.tap(find.byKey(reviewInvitationDismissKey));
-      await tester.pumpAndSettle();
 
-      expect(reviewService.requestReviewCount, 0);
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(find.byKey(reviewInvitationDialogKey), findsNothing);
+      expect(reviewService.requestReviewCount, 1);
 
-      // A second successful share must not re-prompt: the cooldown was
-      // recorded the moment the first invitation appeared.
+      // A second successful share must not re-request: the cooldown was
+      // recorded before the native handoff.
       await tester.tap(find.byKey(resultShareButtonKey));
       await tester.pumpAndSettle();
 
       expect(find.byKey(reviewInvitationDialogKey), findsNothing);
-      expect(reviewService.requestReviewCount, 0);
+      expect(reviewService.requestReviewCount, 1);
     },
   );
 
@@ -278,7 +260,7 @@ void main() {
   );
 
   testWidgets(
-    'successful native image share also invites a review',
+    'successful native image share also requests the native review flow',
     (tester) async {
       final seeded = _seedDemoCalculation();
       final prefs = await _prefs();
@@ -305,9 +287,10 @@ void main() {
       await tester.tap(find.byKey(resultShareImageButtonKey));
       await tester.runAsync(() => _waitForImageShare(shareService));
       await tester.pumpAndSettle();
-      await _pumpUntilFound(tester, find.byKey(reviewInvitationDialogKey));
 
-      expect(find.byKey(reviewInvitationDialogKey), findsOneWidget);
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(find.byKey(reviewInvitationDialogKey), findsNothing);
+      expect(reviewService.requestReviewCount, 1);
     },
   );
 }

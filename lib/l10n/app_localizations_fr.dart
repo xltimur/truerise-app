@@ -270,6 +270,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Mode démo : nous afficherons un exemple de résultat sans requête réseau.';
 
   @override
+  String get confirmationLiveDisclosure =>
+      'Un calcul en direct envoie votre date de naissance, heure approximative, coordonnées du lieu de naissance et événements de vie à un fournisseur de calcul tiers via HTTPS. Le mode démo reste hors ligne.';
+
+  @override
   String get loadingTitle => 'Calcul de votre heure de naissance probable…';
 
   @override
@@ -407,6 +411,23 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get resultDemoShareButton => 'Partager l\'exemple';
+
+  @override
+  String get resultFriendShareLabel => 'Partager avec un ami';
+
+  @override
+  String get resultFriendShareTitle =>
+      'Vous connaissez quelqu\'un qui ignore son heure de naissance ?';
+
+  @override
+  String get resultFriendShareBody =>
+      'Partagez TrueRise avec cette personne. Le résultat partagé n\'inclut jamais la date de naissance, le lieu de naissance ni les événements de vie.';
+
+  @override
+  String get resultFriendShareButton => 'Partager avec un ami';
+
+  @override
+  String get resultSharePreviewTitle => 'Ce qui sera partagé';
 
   @override
   String get resultFeedbackLabel => 'Retour sur le résultat';
@@ -982,7 +1003,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String privacyLiveBody(String brand) {
-    return 'Un calcul en direct (hors démo) envoie votre date de naissance et votre heure approximative, les coordonnées de votre lieu de naissance et les descriptions de vos événements de vie à un fournisseur de calcul tiers via HTTPS. Ces données servent uniquement à calculer votre heure de naissance rectifiée. Elles ne servent pas à constituer un profil et ne sont liées à aucun compte $brand, car il n\'existe pas de comptes.';
+    return 'Un calcul en direct (hors démo) envoie votre date de naissance et votre heure approximative, les coordonnées de votre lieu de naissance et les descriptions de vos événements de vie à un fournisseur de calcul tiers via HTTPS. La recherche de ville peut aussi utiliser un service de géocodage pour trouver les coordonnées du lieu de naissance. Ces données servent uniquement à calculer votre heure de naissance rectifiée. Elles ne servent pas à constituer un profil et ne sont liées à aucun compte $brand, car il n\'existe pas de comptes.';
   }
 
   @override

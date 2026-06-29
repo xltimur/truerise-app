@@ -8,6 +8,7 @@ import 'package:rectify/app/app.dart';
 import 'package:rectify/app/route_names.dart';
 import 'package:rectify/app/router.dart';
 import 'package:rectify/data/models/event_category.dart';
+import 'package:rectify/data/models/geo_place.dart';
 import 'package:rectify/data/models/time_window_mode.dart';
 import 'package:rectify/data/repos/draft_repository.dart';
 import 'package:rectify/data/secure/secure_key_store.dart';
@@ -20,10 +21,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../helpers/fake_history_repository.dart';
 import '../../../helpers/fake_rectification_repository.dart';
 
-Future<SharedPreferences> _prefs() async {
+Future<SharedPreferences> _prefs({bool demoModeDefault = true}) async {
   SharedPreferences.setMockInitialValues(<String, Object>{
     'settings.onboarding_done': true,
-    'settings.demo_mode_default': true,
+    'settings.demo_mode_default': demoModeDefault,
   });
   return SharedPreferences.getInstance();
 }
@@ -102,6 +103,72 @@ void main() {
       expect(find.text('Life events (3)'), findsOneWidget);
       // Demo CTA.
       expect(find.text('Calculate (demo)'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'live confirmation shows the provider disclosure before submit',
+    (tester) async {
+      final prefs = await _prefs(demoModeDefault: false);
+      final history = FakeHistoryRepository();
+      final rectifier = FakeRectificationRepository(history: history);
+      final drafts = InMemoryDraftRepository();
+      addTearDown(drafts.dispose);
+
+      await tester.pumpWidget(
+        _harness(
+          prefs: prefs,
+          history: history,
+          rectifier: rectifier,
+          drafts: drafts,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(MaterialApp)),
+      );
+      final controller = container.read(
+        calculationFlowControllerProvider.notifier,
+      );
+      controller
+        ..setBirthDate(DateTime.utc(1990, 5, 14))
+        ..selectGeoPlace(
+          const GeoPlace(
+            displayName: 'Kyiv, Ukraine',
+            country: 'Ukraine',
+            latitude: 50.4501,
+            longitude: 30.5234,
+          ),
+        )
+        ..setApproximateTime(const TimeOfDay(hour: 7, minute: 0))
+        ..setWindowMinutes(120)
+        ..setWindowMode(TimeWindowMode.approximate)
+        ..addEvent(category: EventCategory.marriage, year: 2018, month: 6)
+        ..addEvent(category: EventCategory.careerChange, year: 2015, month: 9)
+        ..addEvent(category: EventCategory.relocation, year: 2012);
+      await tester.pumpAndSettle();
+
+      container.read(routerProvider).go(RoutePaths.calcConfirm);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ConfirmationScreen), findsOneWidget);
+      expect(find.text('Calculate'), findsOneWidget);
+      expect(
+        find.textContaining('Live calculation sends your birth date'),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining('third-party calculation provider'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('HTTPS'), findsOneWidget);
+      expect(
+        find.text(
+          "Demo mode: we'll show a sample result with no network request.",
+        ),
+        findsNothing,
+      );
     },
   );
 }

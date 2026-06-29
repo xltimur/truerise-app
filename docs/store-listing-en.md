@@ -150,7 +150,7 @@ privacy/shareable hook. Plain alternative (no share angle):
 ### 2.4 Full Description
 
 ```
-Do you know your exact birth time? Most people don't. Without it, your rising sign and house placements are guesswork. TrueRise estimates your most likely birth time from the life events you already remember, then shows the evidence behind every candidate.
+Do you know your exact birth time? Most people don't. Without it, your rising sign and house placements are guesswork. TrueRise estimates your most likely birth time from the life events you already remember, then shows the evidence behind every candidate. This process is called birth-time rectification: estimating a likely birth time from real, dated life events.
 
 HOW IT WORKS
 - Enter an approximate birth window (or "I don't know") and your birthplace.
@@ -483,4 +483,4 @@ problem-first message; not required to submit.
   `docs/play-data-safety.md` (Run A.2) — authoritative data posture used in the
   reviewer notes (on-device storage; offline demo; live HTTPS transmission of
   birth/event data to a third-party provider; no accounts/analytics/tracking;
-  18+ gate; on-device geocoding). **Referenced, not changed.**
+  18+ gate; geocoding disclosure). **Referenced, not changed.**

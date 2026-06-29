@@ -24,14 +24,32 @@ void main() {
       expect(store.demoSharePromptSeen(), isTrue);
     });
 
+    test('realResultSharePromptSeen defaults to false', () async {
+      final prefs = await SharedPreferences.getInstance();
+      final store = SharePromptStore(prefs);
+
+      expect(store.realResultSharePromptSeen(), isFalse);
+    });
+
+    test('markRealResultSharePromptSeen flips the flag to true', () async {
+      final prefs = await SharedPreferences.getInstance();
+      final store = SharePromptStore(prefs);
+
+      await store.markRealResultSharePromptSeen();
+
+      expect(store.realResultSharePromptSeen(), isTrue);
+    });
+
     test('clear resets the flag', () async {
       final prefs = await SharedPreferences.getInstance();
       final store = SharePromptStore(prefs);
       await store.markDemoSharePromptSeen();
+      await store.markRealResultSharePromptSeen();
 
       await store.clear();
 
       expect(store.demoSharePromptSeen(), isFalse);
+      expect(store.realResultSharePromptSeen(), isFalse);
     });
 
     test('uses its own key namespace', () async {
@@ -43,6 +61,7 @@ void main() {
       // The review throttle key must be untouched by the share-prompt store.
       expect(prefs.getInt('review.last_prompt_at_ms'), isNull);
       expect(prefs.getBool('share.demo_prompt_seen'), isTrue);
+      expect(prefs.getBool('share.real_result_prompt_seen'), isNull);
     });
   });
 }

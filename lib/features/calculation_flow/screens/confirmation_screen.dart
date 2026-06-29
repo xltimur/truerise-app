@@ -12,6 +12,7 @@ import 'package:rectify/l10n/l10n.dart';
 import 'package:rectify/providers/settings_controller.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/icons.dart';
+import 'package:rectify/theme/radius.dart';
 import 'package:rectify/theme/spacing.dart';
 import 'package:rectify/theme/typography.dart';
 import 'package:rectify/widgets/buttons/buttons.dart';
@@ -166,12 +167,55 @@ class ConfirmationScreen extends ConsumerWidget {
           ),
           if (flow.isDemo) ...<Widget>[
             const SizedBox(height: AppSpacing.s4),
-            Text(
-              l10n.confirmationDemoNote,
-              style: AppTypography.bodySm.copyWith(color: AppColors.inkSoft),
+            _SubmissionDisclosure(
+              icon: AppIcons.check,
+              text: l10n.confirmationDemoNote,
+            ),
+          ] else ...<Widget>[
+            const SizedBox(height: AppSpacing.s4),
+            _SubmissionDisclosure(
+              icon: AppIcons.externalLink,
+              text: l10n.confirmationLiveDisclosure,
             ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+class _SubmissionDisclosure extends StatelessWidget {
+  const _SubmissionDisclosure({
+    required this.icon,
+    required this.text,
+  });
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: AppColors.bgSurfaceSunken,
+        borderRadius: AppRadius.brSm,
+        border: Border.all(color: AppColors.inkLine),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.s4),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Icon(icon, size: 18, color: AppColors.inkMuted),
+            const SizedBox(width: AppSpacing.s3),
+            Expanded(
+              child: Text(
+                text,
+                style: AppTypography.bodySm.copyWith(color: AppColors.inkMuted),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

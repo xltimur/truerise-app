@@ -15,6 +15,7 @@ void main() {
     'lib/l10n/app_es.arb',
     'lib/l10n/app_fr.arb',
     'lib/l10n/app_pt.arb',
+    'lib/l10n/app_uk.arb',
   ];
 
   const reviewKeys = <String>[
@@ -30,7 +31,8 @@ void main() {
     '★|⭐|'
     r'\b(5|five|fünf|cinco|cinq)[\s-]?'
     r'(stars?|sternen?|sterne|estrellas?|étoiles?|estrelas?)\b|'
-    r'\brate us\b',
+    r'\brate us\b|'
+    r'\b(5|п.?ять)[\s-]?(зірок|зірки|зірочок)\b',
     caseSensitive: false,
   );
 
@@ -42,6 +44,7 @@ void main() {
     'es': 'reseñ',
     'fr': 'avis',
     'pt': 'avali',
+    'uk': 'відгук',
   };
 
   Map<String, dynamic> readArb(String path) {

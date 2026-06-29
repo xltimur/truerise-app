@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:rectify/core/sharing/share_service.dart';
 
@@ -19,7 +20,8 @@ class FakeShareService implements ShareService {
   final List<String> shared = [];
 
   /// Image shares passed to [shareImagePng], in call order.
-  final List<({Uint8List bytes, String? text})> sharedImages = [];
+  final List<({Uint8List bytes, String? text, Rect? sharePositionOrigin})>
+  sharedImages = [];
 
   @override
   Future<bool> share(String text) async {
@@ -28,8 +30,16 @@ class FakeShareService implements ShareService {
   }
 
   @override
-  Future<bool> shareImagePng(Uint8List bytes, {String? text}) async {
-    sharedImages.add((bytes: bytes, text: text));
+  Future<bool> shareImagePng(
+    Uint8List bytes, {
+    String? text,
+    Rect? sharePositionOrigin,
+  }) async {
+    sharedImages.add((
+      bytes: bytes,
+      text: text,
+      sharePositionOrigin: sharePositionOrigin,
+    ));
     return returnsNative;
   }
 }

@@ -43,8 +43,8 @@ part 'result_screen_sections.dart';
 ///   - **Not found.** Empty state with a Home CTA when the id can't be
 ///     resolved (e.g. a stale link).
 ///   - **Loaded.** Hero card + confidence bar + up to 2 candidate cards
-///     + "See how we got this" / "Save to history" CTAs + (demo-only)
-///     bottom upgrade nudge.
+///     + "See how we got this" / "Save to history" CTAs + store-safe
+///     share nudge + (demo-only) bottom upgrade nudge.
 class ResultScreen extends ConsumerWidget {
   const ResultScreen({required this.resultId, super.key});
 
@@ -252,8 +252,8 @@ class _ResultBody extends ConsumerWidget {
           _ShareImageButton(key: resultShareImageButtonKey, saved: saved),
           const SizedBox(height: AppSpacing.s3),
           _SaveToHistoryButton(saved: saved),
+          _ResultSharePrompt(saved: saved),
           if (saved.result.isDemo) ...<Widget>[
-            _DemoSharePrompt(saved: saved),
             const SizedBox(height: AppSpacing.s7),
             const _DemoUpgradeNudge(key: resultDemoNudgeKey),
           ],
