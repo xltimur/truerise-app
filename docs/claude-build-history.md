@@ -6528,3 +6528,32 @@ Three interlocking gaps:
 - Android Gradle geocoding gate: the Kotlin check was added and the logic is correct, but `flutter build appbundle --release` requires a physical signing keystore and a device that can compile Gradle in release mode - not verifiable in this environment. The logic mirrors the already-tested Dart guard exactly. Residual risk: Kotlin syntax error that CI would catch.
 - iOS has no Gradle hook; `tool/release_env_guard.dart` is the only gate. Engineers must run the manual preflight (section 2 in `docs/release-preflight-commands.md`) before every `flutter build ipa`.
 - The stub's 14-city list is still the live-mode fallback if geocoding is misconfigured at runtime. The guards make this a hard release-time block rather than a silent user-facing failure.
+
+---
+
+## 2026-06-30 - activate hosted update metadata
+
+**Session:** codex-gpt-5
+
+**Artifacts changed:**
+- `site/version.json` - added the owner-hosted update metadata consumed by `TRUERISE_VERSION_CHECK_URL`.
+- `site/README.md` - documented `version.json` as a public static-site upload.
+- `test/unit/core/update/update_info_test.dart` - added a regression test that parses the real site JSON through `UpdateInfo.tryParse` and verifies the iOS/Android store URLs.
+
+**Summary:**
+
+Published `https://truerise.com.ua/version.json` to the live docroot `/home/fv534148/truerise.com.ua/www/` so already-built apps compiled with `TRUERISE_VERSION_CHECK_URL=https://truerise.com.ua/version.json` can resolve the current public release. The payload advertises `latestVersion: 1.0.2+3`, includes the App Store and Google Play URLs, and intentionally omits `minimumVersion` so the hosted gate does not raise a separate forced-minimum threshold.
+
+**Verification:**
+- RED: `flutter test test/unit/core/update/update_info_test.dart` failed on missing `site/version.json`.
+- GREEN: `flutter test test/unit/core/update/update_info_test.dart` -> 14/14 passed.
+- `python3 -m unittest test/site_seo_static_test.py` -> 7/7 passed.
+- `python3 -m json.tool site/version.json` -> parsed successfully.
+- `flutter analyze` -> No issues found.
+- Remote SHA-256 matched local: `99eb29286ffbda48bef96c980a8783b1c4de7f0ae8d171cc6329ab733f4fc0b2`.
+- Public endpoint: `https://truerise.com.ua/version.json` -> HTTP 200, `application/json`, 207 bytes.
+- Store links: App Store -> HTTP 200 after redirect; Google Play -> HTTP 200.
+
+**Remaining risks:**
+
+Users already on `1.0.2+3` will not see an update prompt, by design. The prompt appears only for installed builds older than the hosted `latestVersion`, and only in binaries that were compiled with the non-empty `TRUERISE_VERSION_CHECK_URL`.

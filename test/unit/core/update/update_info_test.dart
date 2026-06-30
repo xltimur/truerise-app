@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rectify/core/update/app_version.dart';
@@ -93,7 +96,10 @@ void main() {
         'latestVersion': '9.9.9',
         'storeUrl': 'https://truerise.com.ua/get',
       })!;
-      expect(info.storeUrlFor(TargetPlatform.iOS), 'https://truerise.com.ua/get');
+      expect(
+        info.storeUrlFor(TargetPlatform.iOS),
+        'https://truerise.com.ua/get',
+      );
       expect(
         info.storeUrlFor(TargetPlatform.android),
         'https://truerise.com.ua/get',
@@ -107,7 +113,10 @@ void main() {
         'storeUrl': 'https://truerise.com.ua/get',
         'appStoreUrl': 'https://apps.apple.com/app/id1?utm_source=push',
       })!;
-      expect(info.storeUrlFor(TargetPlatform.iOS), 'https://truerise.com.ua/get');
+      expect(
+        info.storeUrlFor(TargetPlatform.iOS),
+        'https://truerise.com.ua/get',
+      );
     });
 
     test('returns null when every candidate is unsafe', () {
@@ -152,6 +161,29 @@ void main() {
         'minimumVersion': '1.1.0',
       })!;
       expect(minimumOnly.promptTag, '1.1.0');
+    });
+  });
+
+  group('hosted release metadata', () {
+    test('site/version.json advertises the current public release safely', () {
+      final raw = File('site/version.json').readAsStringSync();
+      final payload = json.decode(raw);
+
+      expect(payload, isA<Map<String, Object?>>());
+      final jsonMap = Map<String, Object?>.from(payload as Map);
+      final info = UpdateInfo.tryParse(jsonMap);
+
+      expect(info, isNotNull);
+      expect(jsonMap['latestVersion'], '1.0.2+3');
+      expect(jsonMap, isNot(contains('minimumVersion')));
+      expect(
+        info!.storeUrlFor(TargetPlatform.iOS),
+        'https://apps.apple.com/app/truerise-birth-time-finder/id6783427864',
+      );
+      expect(
+        info.storeUrlFor(TargetPlatform.android),
+        'https://play.google.com/store/apps/details?id=ua.com.truerise.app',
+      );
     });
   });
 }

@@ -19,6 +19,7 @@ script is used. This folder is separate from the Flutter iOS and Android app.
 | `https://truerise.com.ua/uk/*chas*`            | `uk/` guide directories                  | SEO guide pages in Ukrainian    |
 | `https://truerise.com.ua/sitemap.xml`          | `sitemap.xml`                            | XML sitemap for search engines  |
 | `https://truerise.com.ua/robots.txt`           | `robots.txt`                             | Crawler directives              |
+| `https://truerise.com.ua/version.json`         | `version.json`                           | App update metadata             |
 
 Legacy `privacy.html`, `support.html`, and `404.html` stay available for store
 review links and point search engines to the canonical slash URLs.
@@ -51,6 +52,7 @@ support.html
 404.html
 robots.txt
 sitemap.xml
+version.json
 assets/
 404/
 privacy/
@@ -96,6 +98,7 @@ http://localhost:8080/support.html
 http://localhost:8080/support/
 http://localhost:8080/404.html
 http://localhost:8080/sitemap.xml
+http://localhost:8080/version.json
 ```
 
 Before deployment, scan the folder for remote scripts, third-party embeds,
