@@ -913,6 +913,18 @@
   "@homePastCalculations": {
     "description": "Section heading above the list of saved calculations on the home screen."
   },
+  "homeInviteTitle": "Know someone who needs their birth time?",
+  "@homeInviteTitle": {
+    "description": "Title of the soft invite card shown above saved calculations on the home screen."
+  },
+  "homeInviteBody": "Share TrueRise without sharing your own birth date, city, or life events.",
+  "@homeInviteBody": {
+    "description": "Body of the soft invite card on the home screen. Must not contain referral, reward, review, or tracking language."
+  },
+  "homeInviteButton": "Invite a friend",
+  "@homeInviteButton": {
+    "description": "Button on the home invite card that opens the native share sheet with privacy-safe invite copy."
+  },
   "homeDefaultLabel": "My calculation",
   "@homeDefaultLabel": {
     "description": "Fallback name for a saved calculation that has no user-provided label."

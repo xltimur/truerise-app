@@ -4,6 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rectify/app/app.dart';
 import 'package:rectify/app/route_names.dart';
 import 'package:rectify/app/router.dart';
+import 'package:rectify/core/analytics/app_analytics.dart';
+import 'package:rectify/core/app_links.dart';
+import 'package:rectify/core/sharing/share_service.dart';
 import 'package:rectify/data/demo/demo_response.dart';
 import 'package:rectify/data/models/birth_data.dart';
 import 'package:rectify/data/models/calculation_request.dart';
@@ -22,8 +25,10 @@ import 'package:rectify/widgets/result/match_strength_dots.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../helpers/demo_fixtures.dart';
+import '../../../helpers/fake_app_analytics.dart';
 import '../../../helpers/fake_history_repository.dart';
 import '../../../helpers/fake_rectification_repository.dart';
+import '../../../helpers/fake_share_service.dart';
 
 Future<SharedPreferences> _prefs() async {
   SharedPreferences.setMockInitialValues(<String, Object>{
@@ -38,6 +43,8 @@ ProviderScope _harness({
   required FakeHistoryRepository history,
   required FakeRectificationRepository rectifier,
   required InMemoryDraftRepository drafts,
+  FakeShareService? shareService,
+  FakeAppAnalytics? analytics,
 }) => ProviderScope(
   overrides: [
     sharedPreferencesProvider.overrideWithValue(prefs),
@@ -45,6 +52,9 @@ ProviderScope _harness({
     historyRepositoryProvider.overrideWithValue(history),
     rectificationRepositoryProvider.overrideWithValue(rectifier),
     draftRepositoryProvider.overrideWithValue(drafts),
+    if (shareService != null)
+      shareServiceProvider.overrideWithValue(shareService),
+    if (analytics != null) appAnalyticsProvider.overrideWithValue(analytics),
   ],
   child: const RectifyApp(),
 );
@@ -144,6 +154,72 @@ void main() {
       expect(find.byType(MatchStrengthDots), findsNWidgets(3));
       expect(find.text('STRONG'), findsNWidgets(2));
       expect(find.text('MODERATE'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'shares a privacy-safe result summary from the evidence screen',
+    (tester) async {
+      final seeded = _seedDemoCalculation();
+      final prefs = await _prefs();
+      final history = FakeHistoryRepository([seeded]);
+      final rectifier = FakeRectificationRepository(history: history);
+      final drafts = InMemoryDraftRepository();
+      final shareService = FakeShareService();
+      final analytics = FakeAppAnalytics();
+      addTearDown(drafts.dispose);
+
+      await tester.pumpWidget(
+        _harness(
+          prefs: prefs,
+          history: history,
+          rectifier: rectifier,
+          drafts: drafts,
+          shareService: shareService,
+          analytics: analytics,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(MaterialApp)),
+      );
+      container
+          .read(routerProvider)
+          .go(
+            RoutePaths.calcEvidenceFor(seeded.request.id),
+          );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(evidenceShareButtonKey), findsOneWidget);
+      await tester.tap(find.byKey(evidenceShareButtonKey));
+      await tester.pumpAndSettle();
+
+      expect(shareService.shared, hasLength(1));
+      final sharedText = shareService.shared.single;
+      expect(sharedText, contains('TrueRise'));
+      expect(sharedText, contains(AppLinks.shareUrl));
+      expect(sharedText, isNot(contains('Kyiv')));
+      expect(sharedText, isNot(contains('Ukraine')));
+      expect(sharedText, isNot(contains('1990')));
+      expect(sharedText, isNot(contains('marriage')));
+      expect(sharedText, isNot(contains('careerChange')));
+      expect(sharedText, isNot(contains('Demo result')));
+      expect(sharedText, isNot(contains(seeded.request.id)));
+
+      expect(analytics.shareEvents, hasLength(1));
+      expect(
+        analytics.shareEvents.single.surface,
+        ShareAnalyticsSurface.evidenceText,
+      );
+      expect(
+        analytics.shareEvents.single.content,
+        ShareAnalyticsContent.resultText,
+      );
+      expect(
+        analytics.shareEvents.single.outcome,
+        ShareAnalyticsOutcome.nativeSheet,
+      );
     },
   );
 

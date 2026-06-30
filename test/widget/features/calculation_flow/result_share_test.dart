@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rectify/app/app.dart';
 import 'package:rectify/app/route_names.dart';
 import 'package:rectify/app/router.dart';
+import 'package:rectify/core/analytics/app_analytics.dart';
 import 'package:rectify/core/app_links.dart';
 import 'package:rectify/core/formatting/app_date_format.dart';
 import 'package:rectify/core/sharing/share_service.dart';
@@ -24,6 +25,7 @@ import 'package:rectify/theme/icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../helpers/demo_fixtures.dart';
+import '../../../helpers/fake_app_analytics.dart';
 import '../../../helpers/fake_history_repository.dart';
 import '../../../helpers/fake_rectification_repository.dart';
 import '../../../helpers/fake_share_service.dart';
@@ -43,6 +45,7 @@ ProviderScope _harness({
   required FakeRectificationRepository rectifier,
   required InMemoryDraftRepository drafts,
   required FakeShareService shareService,
+  FakeAppAnalytics? analytics,
 }) => ProviderScope(
   overrides: [
     sharedPreferencesProvider.overrideWithValue(prefs),
@@ -51,6 +54,7 @@ ProviderScope _harness({
     rectificationRepositoryProvider.overrideWithValue(rectifier),
     draftRepositoryProvider.overrideWithValue(drafts),
     shareServiceProvider.overrideWithValue(shareService),
+    if (analytics != null) appAnalyticsProvider.overrideWithValue(analytics),
   ],
   child: const RectifyApp(),
 );
@@ -173,6 +177,57 @@ void main() {
       expect(shareService.shared.first, isNotEmpty);
     },
   );
+
+  testWidgets('Share result records privacy-safe share analytics', (
+    tester,
+  ) async {
+    final seeded = _seedDemoCalculation();
+    final prefs = await _prefs();
+    final history = FakeHistoryRepository([seeded]);
+    final rectifier = FakeRectificationRepository(history: history);
+    final drafts = InMemoryDraftRepository();
+    final shareService = FakeShareService();
+    final analytics = FakeAppAnalytics();
+    addTearDown(drafts.dispose);
+
+    await tester.pumpWidget(
+      _harness(
+        prefs: prefs,
+        history: history,
+        rectifier: rectifier,
+        drafts: drafts,
+        shareService: shareService,
+        analytics: analytics,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(MaterialApp)),
+    );
+    container
+        .read(routerProvider)
+        .go(RoutePaths.calcResultFor(seeded.request.id));
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.byKey(resultShareButtonKey));
+    await tester.tap(find.byKey(resultShareButtonKey));
+    await tester.pumpAndSettle();
+
+    expect(analytics.shareEvents, hasLength(1));
+    expect(
+      analytics.shareEvents.single.surface,
+      ShareAnalyticsSurface.resultText,
+    );
+    expect(
+      analytics.shareEvents.single.content,
+      ShareAnalyticsContent.resultText,
+    );
+    expect(
+      analytics.shareEvents.single.outcome,
+      ShareAnalyticsOutcome.nativeSheet,
+    );
+  });
 
   testWidgets(
     'with the 24-hour setting, Share result sends 24-hour copy',

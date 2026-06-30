@@ -47,6 +47,7 @@ final settingsRepositoryProvider = Provider<SettingsRepository>(
     secure: ref.watch(secureKeyStoreProvider),
     db: ref.watch(appDatabaseProvider),
     resultFeedback: ref.watch(resultFeedbackStoreProvider),
+    analytics: ref.watch(appAnalyticsProvider),
   ),
 );
 

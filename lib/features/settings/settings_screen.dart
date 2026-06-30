@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rectify/app/route_names.dart';
+import 'package:rectify/core/analytics/app_analytics.dart';
 import 'package:rectify/core/app_links.dart';
 import 'package:rectify/core/sharing/invite_copy_builder.dart';
 import 'package:rectify/core/sharing/share_service.dart';
@@ -146,6 +147,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   ) async {
     final svc = ref.read(shareServiceProvider);
     final usedNative = await svc.share(InviteCopyBuilder.build(l10n));
+    await ref
+        .read(appAnalyticsProvider)
+        .recordShare(
+          surface: ShareAnalyticsSurface.settingsInvite,
+          content: ShareAnalyticsContent.inviteText,
+          outcome: usedNative
+              ? ShareAnalyticsOutcome.nativeSheet
+              : ShareAnalyticsOutcome.fallback,
+        );
     if (!context.mounted) return;
     if (!usedNative) {
       ScaffoldMessenger.of(context).showSnackBar(

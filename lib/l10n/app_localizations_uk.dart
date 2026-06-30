@@ -732,6 +732,16 @@ class AppLocalizationsUk extends AppLocalizations {
   String get homePastCalculations => 'Попередні розрахунки';
 
   @override
+  String get homeInviteTitle => 'Знаєте когось, кому потрібен час народження?';
+
+  @override
+  String get homeInviteBody =>
+      'Поділіться TrueRise, не поширюючи власну дату народження, місто або життєві події.';
+
+  @override
+  String get homeInviteButton => 'Запросити друга';
+
+  @override
   String get homeDefaultLabel => 'Мій розрахунок';
 
   @override

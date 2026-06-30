@@ -3,7 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:rectify/app/route_names.dart';
+import 'package:rectify/core/analytics/app_analytics.dart';
 import 'package:rectify/core/formatting/app_date_format.dart';
+import 'package:rectify/core/sharing/share_copy_builder.dart';
+import 'package:rectify/core/sharing/share_service.dart';
 import 'package:rectify/data/models/event_category.dart';
 import 'package:rectify/data/models/evidence_item.dart';
 import 'package:rectify/data/models/life_event.dart';
@@ -12,6 +15,7 @@ import 'package:rectify/data/models/saved_calculation.dart';
 import 'package:rectify/features/calculation_flow/state/calculation_flow_state.dart';
 import 'package:rectify/features/calculation_flow/state/result_providers.dart';
 import 'package:rectify/l10n/l10n.dart';
+import 'package:rectify/providers/core_providers.dart';
 import 'package:rectify/providers/settings_controller.dart';
 import 'package:rectify/theme/colors.dart';
 import 'package:rectify/theme/icons.dart';
@@ -94,6 +98,9 @@ class _EvidenceNotFound extends StatelessWidget {
 @visibleForTesting
 const Key evidenceSummaryKey = ValueKey<String>('evidence-summary');
 
+@visibleForTesting
+const Key evidenceShareButtonKey = ValueKey<String>('evidence-share-button');
+
 class _EvidenceBody extends ConsumerWidget {
   const _EvidenceBody({required this.saved});
 
@@ -116,6 +123,37 @@ class _EvidenceBody extends ConsumerWidget {
 
   bool _defaultExpandedFor(MatchStrength strength) =>
       strength == MatchStrength.strong || strength == MatchStrength.moderate;
+
+  /// Shares the same privacy-safe result summary used by the result and
+  /// history screens. The evidence list itself can include sensitive event
+  /// categories, so it never rides along in the share payload.
+  Future<void> _share(BuildContext context, WidgetRef ref) async {
+    final l10n = context.l10n;
+    final usedNative = await ref
+        .read(shareServiceProvider)
+        .share(
+          ShareCopyBuilder.build(
+            saved,
+            l10n,
+            timeFormat: ref.read(settingsControllerProvider).timeFormat,
+          ),
+        );
+    await ref
+        .read(appAnalyticsProvider)
+        .recordShare(
+          surface: ShareAnalyticsSurface.evidenceText,
+          content: ShareAnalyticsContent.resultText,
+          outcome: usedNative
+              ? ShareAnalyticsOutcome.nativeSheet
+              : ShareAnalyticsOutcome.fallback,
+        );
+    if (!context.mounted) return;
+    if (!usedNative) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.resultCopiedToClipboard)),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -174,6 +212,13 @@ class _EvidenceBody extends ConsumerWidget {
               child: DemoPill(),
             ),
           ],
+          const SizedBox(height: AppSpacing.s4),
+          GhostButton(
+            key: evidenceShareButtonKey,
+            label: l10n.resultShare,
+            icon: AppIcons.share,
+            onPressed: () => _share(context, ref),
+          ),
           const SizedBox(height: AppSpacing.s5),
           for (final EvidenceItem item in evidence) ...<Widget>[
             Builder(

@@ -1,5 +1,6 @@
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:rectify/core/analytics/app_analytics.dart';
 import 'package:rectify/data/db/database.dart';
 import 'package:rectify/data/models/language_preference.dart';
 import 'package:rectify/data/models/time_format.dart';
@@ -14,6 +15,7 @@ void main() {
   late SettingsStore prefs;
   late InMemorySecureKeyStore secure;
   late ResultFeedbackStore resultFeedback;
+  late LocalAppAnalytics analytics;
   late DefaultSettingsRepository repo;
 
   setUp(() async {
@@ -23,11 +25,13 @@ void main() {
     prefs = SettingsStore(sharedPrefs);
     secure = InMemorySecureKeyStore();
     resultFeedback = ResultFeedbackStore(sharedPrefs);
+    analytics = LocalAppAnalytics(sharedPrefs);
     repo = DefaultSettingsRepository(
       prefs: prefs,
       secure: secure,
       db: db,
       resultFeedback: resultFeedback,
+      analytics: analytics,
     );
   });
 
@@ -81,6 +85,11 @@ void main() {
       await repo.setDemoModeDefault(value: true);
       await resultFeedback.write('result-1', ResultFeedbackAnswer.yes);
       await resultFeedback.write('result-2', ResultFeedbackAnswer.no);
+      await analytics.recordShare(
+        surface: ShareAnalyticsSurface.settingsInvite,
+        content: ShareAnalyticsContent.inviteText,
+        outcome: ShareAnalyticsOutcome.nativeSheet,
+      );
 
       final wipe = await repo.deleteAllData();
       expect(wipe.isOk, isTrue);
@@ -92,6 +101,7 @@ void main() {
       expect(settings.demoModeDefault, isFalse);
       expect(resultFeedback.read('result-1'), isNull);
       expect(resultFeedback.read('result-2'), isNull);
+      expect(analytics.shareCount(), 0);
     });
   });
 }

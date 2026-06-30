@@ -739,6 +739,17 @@ class AppLocalizationsFr extends AppLocalizations {
   String get homePastCalculations => 'Calculs précédents';
 
   @override
+  String get homeInviteTitle =>
+      'Vous connaissez quelqu\'un qui a besoin de son heure de naissance ?';
+
+  @override
+  String get homeInviteBody =>
+      'Partagez TrueRise sans partager votre propre date de naissance, ville ni événements de vie.';
+
+  @override
+  String get homeInviteButton => 'Inviter un ami';
+
+  @override
   String get homeDefaultLabel => 'Mon calcul';
 
   @override

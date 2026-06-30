@@ -6,6 +6,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rectify/app/app.dart';
 import 'package:rectify/app/route_names.dart';
 import 'package:rectify/app/router.dart';
+import 'package:rectify/core/analytics/app_analytics.dart';
 import 'package:rectify/core/app_links.dart';
 import 'package:rectify/core/reviews/review_service.dart';
 import 'package:rectify/core/sharing/share_service.dart';
@@ -26,6 +27,7 @@ import 'package:rectify/widgets/inputs/labeled_toggle.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../data/fixtures/sample_calculation.dart';
+import '../../../helpers/fake_app_analytics.dart';
 import '../../../helpers/fake_history_repository.dart';
 import '../../../helpers/fake_privacy_policy_launcher.dart';
 import '../../../helpers/fake_review_service.dart';
@@ -47,6 +49,7 @@ ProviderScope _wrap(
   InMemorySecureKeyStore? secure,
   FakeHistoryRepository? history,
   FakeShareService? shareService,
+  FakeAppAnalytics? analytics,
   FakeReviewService? reviewService,
   String? privacyPolicyUrl,
   FakePrivacyPolicyLauncher? privacyLauncher,
@@ -71,6 +74,7 @@ ProviderScope _wrap(
       shareServiceProvider.overrideWithValue(
         shareService ?? FakeShareService(),
       ),
+      if (analytics != null) appAnalyticsProvider.overrideWithValue(analytics),
       reviewServiceProvider.overrideWithValue(
         reviewService ?? FakeReviewService(),
       ),
@@ -418,7 +422,8 @@ void main() {
         tester,
         _wrap(
           prefs,
-          privacyPolicyUrl: 'https://truerise.com.ua/privacy.html?utm_source=app',  // query string makes it invalid
+          privacyPolicyUrl:
+              'https://truerise.com.ua/privacy.html?utm_source=app', // query string makes it invalid
           privacyLauncher: launcher,
         ),
       );
@@ -527,6 +532,34 @@ void main() {
       expect(invite.toLowerCase(), isNot(contains('code')));
     },
   );
+
+  testWidgets('Invite records privacy-safe share analytics', (tester) async {
+    final prefs = await _prefs();
+    final shareService = FakeShareService();
+    final analytics = FakeAppAnalytics();
+
+    await _pumpOnSettings(
+      tester,
+      _wrap(prefs, shareService: shareService, analytics: analytics),
+    );
+
+    await tester.tap(find.byKey(settingsInviteButtonKey));
+    await tester.pumpAndSettle();
+
+    expect(analytics.shareEvents, hasLength(1));
+    expect(
+      analytics.shareEvents.single.surface,
+      ShareAnalyticsSurface.settingsInvite,
+    );
+    expect(
+      analytics.shareEvents.single.content,
+      ShareAnalyticsContent.inviteText,
+    );
+    expect(
+      analytics.shareEvents.single.outcome,
+      ShareAnalyticsOutcome.nativeSheet,
+    );
+  });
 
   testWidgets(
     'Invite never triggers the review prompt — even when fully eligible',

@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:rectify/core/analytics/app_analytics.dart';
 import 'package:rectify/data/api/api_client.dart';
 import 'package:rectify/data/api/rectification_api.dart';
 import 'package:rectify/data/db/database.dart';
@@ -143,6 +144,12 @@ final liveQuotaStoreProvider = Provider<LiveQuotaStore>(
 /// "Does this time feel plausible?" feedback store (S1 / G18).
 final resultFeedbackStoreProvider = Provider<ResultFeedbackStore>(
   (ref) => ResultFeedbackStore(ref.watch(sharedPreferencesProvider)),
+);
+
+/// Local, privacy-safe aggregate analytics. Records only integer counters
+/// under namespaced keys; no SDK, network, share text, result ids, or PII.
+final appAnalyticsProvider = Provider<AppAnalytics>(
+  (ref) => LocalAppAnalytics(ref.watch(sharedPreferencesProvider)),
 );
 
 /// Secure-storage handle for the end-user-supplied Pro / Developer key.

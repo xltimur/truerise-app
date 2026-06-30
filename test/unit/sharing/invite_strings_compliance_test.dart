@@ -24,6 +24,9 @@ void main() {
   // lines (headline / body / link CTA).
   const inviteKeys = <String>[
     'settingsInviteFriend',
+    'homeInviteTitle',
+    'homeInviteBody',
+    'homeInviteButton',
     'inviteCopyHeadline',
     'inviteCopyBody',
     'inviteCopyGetApp',

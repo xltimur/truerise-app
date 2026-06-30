@@ -1241,6 +1241,24 @@ abstract class AppLocalizations {
   /// **'Past calculations'**
   String get homePastCalculations;
 
+  /// Title of the soft invite card shown above saved calculations on the home screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Know someone who needs their birth time?'**
+  String get homeInviteTitle;
+
+  /// Body of the soft invite card on the home screen. Must not contain referral, reward, review, or tracking language.
+  ///
+  /// In en, this message translates to:
+  /// **'Share TrueRise without sharing your own birth date, city, or life events.'**
+  String get homeInviteBody;
+
+  /// Button on the home invite card that opens the native share sheet with privacy-safe invite copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite a friend'**
+  String get homeInviteButton;
+
   /// Fallback name for a saved calculation that has no user-provided label.
   ///
   /// In en, this message translates to:

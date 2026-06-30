@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:rectify/app/route_names.dart';
+import 'package:rectify/core/analytics/app_analytics.dart';
 import 'package:rectify/core/formatting/app_date_format.dart';
 import 'package:rectify/core/sharing/share_copy_builder.dart';
 import 'package:rectify/core/sharing/share_service.dart';

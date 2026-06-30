@@ -340,6 +340,15 @@ class _ShareResultButton extends ConsumerWidget {
           timeFormat: ref.read(settingsControllerProvider).timeFormat,
         );
         final usedNative = await svc.share(text);
+        await ref
+            .read(appAnalyticsProvider)
+            .recordShare(
+              surface: ShareAnalyticsSurface.resultText,
+              content: ShareAnalyticsContent.resultText,
+              outcome: usedNative
+                  ? ShareAnalyticsOutcome.nativeSheet
+                  : ShareAnalyticsOutcome.fallback,
+            );
         if (!context.mounted) return;
         if (usedNative) {
           // Positive moment: the user just shared a result through the
@@ -410,6 +419,15 @@ class _ShareImageButton extends ConsumerWidget {
               text: caption,
               sharePositionOrigin: sharePositionOrigin,
             );
+            await ref
+                .read(appAnalyticsProvider)
+                .recordShare(
+                  surface: ShareAnalyticsSurface.resultImage,
+                  content: ShareAnalyticsContent.resultImage,
+                  outcome: usedNative
+                      ? ShareAnalyticsOutcome.nativeSheet
+                      : ShareAnalyticsOutcome.fallback,
+                );
             if (!context.mounted) return;
             if (usedNative) {
               // Positive moment after a successful native image share.
@@ -542,6 +560,15 @@ class _ResultSharePromptState extends ConsumerState<_ResultSharePrompt> {
         timeFormat: ref.read(settingsControllerProvider).timeFormat,
       ),
     );
+    await ref
+        .read(appAnalyticsProvider)
+        .recordShare(
+          surface: ShareAnalyticsSurface.resultPrompt,
+          content: ShareAnalyticsContent.resultText,
+          outcome: usedNative
+              ? ShareAnalyticsOutcome.nativeSheet
+              : ShareAnalyticsOutcome.fallback,
+        );
     if (!context.mounted) return;
     if (!usedNative) {
       // Clipboard fallback is a degraded path, not a win — no review prompt.

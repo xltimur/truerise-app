@@ -1,3 +1,4 @@
+import 'package:rectify/core/analytics/app_analytics.dart';
 import 'package:rectify/core/failures.dart';
 import 'package:rectify/core/result.dart';
 import 'package:rectify/data/db/database.dart';
@@ -34,12 +35,14 @@ class DefaultSettingsRepository implements SettingsRepository {
     required this.secure,
     required this.db,
     required this.resultFeedback,
+    required this.analytics,
   });
 
   final SettingsStore prefs;
   final SecureKeyStore secure;
   final AppDatabase db;
   final ResultFeedbackStore resultFeedback;
+  final AppAnalytics analytics;
 
   @override
   Future<SettingsModel> read() => prefs.read();
@@ -77,6 +80,7 @@ class DefaultSettingsRepository implements SettingsRepository {
       await db.calculationsDao.deleteAll();
       await prefs.deleteAll();
       await resultFeedback.deleteAll();
+      await analytics.deleteAll();
       await secure.deleteAll();
       return const Result<void, AppFailure>.ok(null);
     } on Object catch (cause) {
