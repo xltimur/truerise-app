@@ -36,6 +36,8 @@ Future<SharedPreferences> _prefs({bool onboardingDone = false}) async {
   SharedPreferences.setMockInitialValues(<String, Object>{
     if (onboardingDone) 'settings.onboarding_done': true,
     'settings.demo_mode_default': true,
+    // Keep the English text assertions deterministic on any simulator locale.
+    'settings.language_preference': 'en',
   });
   return SharedPreferences.getInstance();
 }
