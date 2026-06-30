@@ -18,6 +18,8 @@
     <meta property="og:description" content="Estimate your unknown or approximate birth time from dated life events. TrueRise uses astrological rectification to narrow down your natal chart ascendant.">
     <meta property="og:url" content="https://truerise.com.ua/">
     <meta property="og:image" content="https://truerise.com.ua/assets/img/og-card.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="TrueRise | Birth-time Rectification App">
     <meta name="twitter:description" content="Estimate your unknown or approximate birth time from dated life events. TrueRise uses astrological rectification to narrow down your natal chart ascendant.">
@@ -30,20 +32,37 @@
       "@graph": [
         {
           "@type": "SoftwareApplication",
+          "@id": "https://truerise.com.ua/#software",
           "name": "TrueRise",
           "applicationCategory": "LifestyleApplication",
-          "operatingSystem": "Android",
+          "operatingSystem": ["Android", "iOS"],
           "description": "TrueRise estimates an unknown or approximate birth time from dated life events using astrological rectification. Returns a likely birth time, confidence score, and event-by-event evidence.",
           "url": "https://truerise.com.ua/",
-          "downloadUrl": "https://play.google.com/store/apps/details?id=ua.com.truerise.app",
+          "downloadUrl": [
+            "https://play.google.com/store/apps/details?id=ua.com.truerise.app",
+            "https://apps.apple.com/app/truerise-birth-time-finder/id6783427864"
+          ],
+          "sameAs": [
+            "https://play.google.com/store/apps/details?id=ua.com.truerise.app",
+            "https://apps.apple.com/app/truerise-birth-time-finder/id6783427864"
+          ],
           "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
           "inLanguage": ["en", "uk"]
         },
         {
           "@type": "Organization",
+          "@id": "https://truerise.com.ua/#organization",
           "name": "TrueRise",
           "url": "https://truerise.com.ua/",
           "contactPoint": {"@type": "ContactPoint", "email": "support@truerise.com.ua", "contactType": "customer support"}
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://truerise.com.ua/#website",
+          "name": "TrueRise",
+          "url": "https://truerise.com.ua/",
+          "inLanguage": ["en", "uk"],
+          "publisher": {"@id": "https://truerise.com.ua/#organization"}
         }
       ]
     }

@@ -1,0 +1,9 @@
+Options -Indexes
+
+RewriteEngine On
+
+RewriteCond %{HTTP_HOST} !^truerise\.com\.ua$ [NC]
+RewriteRule ^(.*)$ https://truerise.com.ua/$1 [R=301,L]
+
+RewriteCond %{HTTP:X-Forwarded-Proto} =http
+RewriteRule ^(.*)$ https://truerise.com.ua/$1 [R=301,L]

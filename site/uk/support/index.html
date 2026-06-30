@@ -18,6 +18,8 @@
     <meta property="og:description" content="Запитання про точність, конфіденційність, демо-режим та видалення даних.">
     <meta property="og:url" content="https://truerise.com.ua/uk/support/">
     <meta property="og:image" content="https://truerise.com.ua/assets/img/og-card.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Підтримка | TrueRise">
     <meta name="twitter:description" content="Запитання про точність, конфіденційність, демо-режим та видалення даних.">
@@ -25,7 +27,23 @@
     <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="/assets/styles.css">
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Головна","item":"https://truerise.com.ua/"},{"@type":"ListItem","position":2,"name":"Підтримка","item":"https://truerise.com.ua/uk/support/"}]}
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Головна","item":"https://truerise.com.ua/"},{"@type":"ListItem","position":2,"name":"Підтримка","item":"https://truerise.com.ua/uk/support/"}]},
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {"@type":"Question","name":"Наскільки точна оцінка?","acceptedAnswer":{"@type":"Answer","text":"TrueRise надає астрологічну оцінку, а не точну відповідь. Результат залежить від діапазону часу та якості дат подій, які ви ввели."}},
+            {"@type":"Question","name":"Чи потрібен точний час народження?","acceptedAnswer":{"@type":"Answer","text":"Ні. Можна вказати приблизний діапазон або розширений діапазон, якщо точний час невідомий."}},
+            {"@type":"Question","name":"Чи захищені мої дані?","acceptedAnswer":{"@type":"Answer","text":"Дані про народження, події, налаштування та результати зберігаються локально на вашому пристрої. У TrueRise немає облікових записів, реклами, аналітики та SDK для відстеження."}},
+            {"@type":"Question","name":"Що таке демо-режим?","acceptedAnswer":{"@type":"Answer","text":"Демо-режим дозволяє побачити, як виглядає результат, без реального розрахунку. Він працює офлайн."}},
+            {"@type":"Question","name":"Чому живий розрахунок потребує з'єднання?","acceptedAnswer":{"@type":"Answer","text":"Пошук місця народження та живі розрахунки використовують HTTPS-запити. Розрахунок надсилає необхідні дані сторонньому сервісу для обчислення результату."}},
+            {"@type":"Question","name":"Як видалити свої дані?","acceptedAnswer":{"@type":"Answer","text":"Скористайтеся налаштуваннями застосунку для видалення локальних даних. Видалення застосунку також видаляє всі локальні дані."}}
+          ]
+        }
+      ]
+    }
     </script>
   </head>
   <body>

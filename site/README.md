@@ -45,6 +45,7 @@ Upload only public files:
 
 ```text
 index.html
+.htaccess
 privacy.html
 support.html
 404.html

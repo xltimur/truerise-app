@@ -18,6 +18,8 @@
     <meta property="og:description" content="Questions about accuracy, privacy, demo mode, live calculations, and deleting data.">
     <meta property="og:url" content="https://truerise.com.ua/support/">
     <meta property="og:image" content="https://truerise.com.ua/assets/img/og-card.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Support | TrueRise">
     <meta name="twitter:description" content="Questions about accuracy, privacy, demo mode, live calculations, and deleting data.">
@@ -25,7 +27,23 @@
     <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="/assets/styles.css">
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://truerise.com.ua/"},{"@type":"ListItem","position":2,"name":"Support","item":"https://truerise.com.ua/support/"}]}
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://truerise.com.ua/"},{"@type":"ListItem","position":2,"name":"Support","item":"https://truerise.com.ua/support/"}]},
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {"@type":"Question","name":"How accurate is the estimate?","acceptedAnswer":{"@type":"Answer","text":"TrueRise provides an astrological estimate, not a certainty. Results depend on the birth time range and the quality of the life-event dates you enter."}},
+            {"@type":"Question","name":"Do I need an exact birth time?","acceptedAnswer":{"@type":"Answer","text":"No. You can use an approximate time range, or a wider range if the exact time is unknown."}},
+            {"@type":"Question","name":"Is my data private?","acceptedAnswer":{"@type":"Answer","text":"Saved birth details, life events, settings, and results are stored locally on your device. TrueRise has no accounts, ads, analytics, or tracking SDKs."}},
+            {"@type":"Question","name":"What is Demo mode?","acceptedAnswer":{"@type":"Answer","text":"Demo mode lets you see how a result is presented without sending a live calculation request. It works offline."}},
+            {"@type":"Question","name":"Why does a live calculation need a connection?","acceptedAnswer":{"@type":"Answer","text":"Birthplace search and live calculations use HTTPS requests. A live calculation sends the required birth details and life events to a third-party calculation service so the result can be computed."}},
+            {"@type":"Question","name":"How do I delete my data?","acceptedAnswer":{"@type":"Answer","text":"Use the app settings to delete local app data. Uninstalling the app also removes local app data from the device."}}
+          ]
+        }
+      ]
+    }
     </script>
   </head>
   <body>
