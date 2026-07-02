@@ -41,9 +41,13 @@ Guardrails:
 - Treatment count: 1.
 - Traffic split selected: 50%.
 - Treatment A inherited screenshots were removed from the iPhone 6.9"/6.5" source slot before upload.
-- Upload blocker: Codex in-app browser automation returned `File uploads are not supported by Codex In-app Browser`; the five PNGs still need to be selected manually in App Store Connect or uploaded from a browser/session that supports file chooser automation.
 - Upload-ready temporary copies were generated at `1284 x 2778` under `/tmp/truerise-asc-upload/` from the committed EN composites.
-- Do not click `Start Test` until Treatment A shows the five new screenshots in this order: problem hook, life events, result hero, evidence breakdown, privacy demo.
+- Chrome upload path used the native macOS file picker because Codex in-app browser automation returned `File uploads are not supported by Codex In-app Browser`.
+- Treatment A iPhone 6.5" screenshots uploaded and verified in this order: `01-problem-hook.png`, `02-life-events.png`, `01-result-hero.png`, `02-evidence-breakdown.png`, `03-privacy-demo-settings.png`.
+- App Store Connect required App Review before the PPO can run. The PPO item was added to review and submitted on 2026-07-02.
+- Submission confirmation: `Submitted items: 1`; App Store Connect says review can take up to 48 hours.
+- Review submission URL: `https://appstoreconnect.apple.com/apps/6783427864/distribution/reviewsubmissions/details/c2c57739-372f-4e98-9200-9a6d2dc33b2d`.
+- Current iOS status: waiting for App Review approval; the PPO test is not live until Apple approves it.
 
 ## Google Play Setup - 2026-07-02
 
