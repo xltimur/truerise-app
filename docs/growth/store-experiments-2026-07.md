@@ -75,7 +75,11 @@ Guardrails:
 - Play Console variant status after upload: `Готово · Скриншоты`.
 - Publishing overview status after saving: one change pending under `Изменения, ещё не отправленные на проверку`.
 - Pending change shown by Play Console: `Запуск эксперимента (2026-07 First Screenshot Hook)`.
-- Current Play status: ready to send to Google review from `Обзор публикации`; not live until the change is submitted and approved.
+- Submitted to Google review on 2026-07-02 after the Play Console confirmation dialog `Отправить 1 изменение на проверку?`.
+- Current Play status in `Обзор публикации`: `Изменения на проверке`.
+- Submitted change shown by Play Console: `Запуск эксперимента (2026-07 First Screenshot Hook)`.
+- Play Console review note: Google says review usually takes up to seven days but can take longer.
+- The experiment is not live until Google approves the submitted change.
 - Do not change short description, full description, icon, feature graphic, price, countries, or category during Experiment A.
 
 ## Experiment A Readout - YYYY-MM-DD
