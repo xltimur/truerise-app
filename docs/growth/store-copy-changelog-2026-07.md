@@ -32,6 +32,6 @@ Improved the offline demo, evidence review, privacy-safe sharing, and update han
 
 ### Console Status
 
-- App Store Connect: not entered in this run.
-- Google Play Console: not entered in this run.
+- App Store Connect: not entered in this run. The current iOS `1.0.3` deliverable is `Ready for Distribution`, and the relevant metadata fields are read-only; enter this copy only in a new editable version draft or another Apple-approved editable metadata surface.
+- Google Play Console: not entered in this run. The current in-app browser session redirects the known TrueRise developer/app route to Google Play developer signup, so Play metadata entry requires switching to the existing Red Rocket developer account first.
 - Use the fallback if the console reviewer treats "store-ready release" as developer-facing language.

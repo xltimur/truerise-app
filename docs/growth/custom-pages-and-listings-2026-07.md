@@ -53,6 +53,7 @@ After verification:
 - Apple CPPs: not created yet.
 - Google Play custom store listings: not created yet.
 - Site links: unchanged in this run to avoid linking to non-existent custom destinations.
+- Reason for deferral: Experiment A is submitted to Apple/Google review but not live yet, no custom destination URLs are available, and the current in-app browser session redirects Play Console access for `4972620156606459622` to developer-account signup instead of the existing TrueRise app.
 
 ## Console Verification Required Before Site Changes
 
@@ -60,3 +61,4 @@ After verification:
 - Google Play custom listing URL opens with the intended `listing=` parameter behavior.
 - Screenshots match the segment lead screenshot.
 - Promo text and short descriptions stay within platform limits and avoid guaranteed-accuracy claims.
+- App Store / Play experiment review state is resolved enough that custom destinations will not interfere with the first screenshot test.

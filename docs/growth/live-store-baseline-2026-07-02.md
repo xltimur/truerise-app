@@ -80,6 +80,8 @@ rating=Everyone
 - App Store Connect is authenticated for Mykosa OU and opened the correct app: `TrueRise: Birth Time Finder`, Apple ID `6783427864`.
 - iPhone screenshot slots are not empty. The current `1.0.3` page shows the older result-first screenshot set: `01-result-hero.png`, `02-evidence-breakdown.png`, `03-privacy-demo-settings.png`, `04-share-result.png`, `05-privacy-policy.png`.
 - The live app version is `Ready for Distribution`, so default App Store screenshots are read-only on this version. The compliant path for immediate screenshot learning is App Store Product Page Optimization; replacing the default screenshots requires a future editable app version.
+- Follow-up App Store Connect check for localization: the same `1.0.3` deliverable keeps metadata, screenshots, and the language selector disabled. Tier-1 localizations and next-release copy cannot be entered on this live deliverable; create/use an editable version draft for default-page localization.
+- Follow-up Play Console access check: direct navigation to developer account `7111618563241559003`, app `4972620156606459622`, package `ua.com.truerise.app`, redirects the current in-app browser session to `play.google.com/console/u/0/signup`. Play follow-up actions require switching the browser to the existing Red Rocket developer account, not creating a new account.
 
 ## Next Task
 
