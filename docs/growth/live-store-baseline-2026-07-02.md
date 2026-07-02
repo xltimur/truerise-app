@@ -75,6 +75,12 @@ rating=Everyone
 - Visual QA checked readable captions, no UI overlap in caption band, demo/sample data only, and no guaranteed-accuracy claims.
 - Console upload and public propagation are still pending account-side actions; do not start Product Page Optimization, Store Listing Experiments, paid traffic, or creator outreach until phone screenshots are live.
 
+## 2026-07-02 App Store Connect Check
+
+- App Store Connect is authenticated for Mykosa OU and opened the correct app: `TrueRise: Birth Time Finder`, Apple ID `6783427864`.
+- iPhone screenshot slots are not empty. The current `1.0.3` page shows the older result-first screenshot set: `01-result-hero.png`, `02-evidence-breakdown.png`, `03-privacy-demo-settings.png`, `04-share-result.png`, `05-privacy-policy.png`.
+- The live app version is `Ready for Distribution`, so default App Store screenshots are read-only on this version. The compliant path for immediate screenshot learning is App Store Product Page Optimization; replacing the default screenshots requires a future editable app version.
+
 ## Next Task
 
-Task 2 repo assets are prepared. Next required action is console upload / verification of the EN phone screenshots. Do not proceed to Task 3 launch actions until phone screenshots are final and live.
+Task 2 repo assets are prepared and App Store screenshot slots are populated, but the current live default screenshots cannot be replaced on version `1.0.3`. Proceed to Task 3 through Product Page Optimization with the current result-first page as control and the problem-first screenshot set as treatment.
