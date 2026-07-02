@@ -51,10 +51,31 @@ Guardrails:
 
 ## Google Play Setup - 2026-07-02
 
-- Package: `ua.com.truerise.app`.
+- Developer account verified in Play Console: `Red Rocket Software`, account ID `7111618563241559003`, signed in as `borodchenko@gmail.com`.
+- App verified in Play Console: `TrueRise: Birth Time Finder`, Play app ID `4972620156606459622`, package `ua.com.truerise.app`.
+- Experiment name: `2026-07 First Screenshot Hook`.
+- Store listing: `Стандартная страница приложения`.
+- Experiment type: `Эксперимент с графическими объектами по умолчанию`.
+- Target metric: `Пользователи, впервые установившие приложение`.
+- Variant count: 1.
+- Audience split: 50%.
+- Minimum detectable effect: 6%.
+- Confidence level: 90%.
+- Tested attribute: screenshots only.
+- Variant name: `Problem-first screenshots`.
 - Control: current live English phone screenshot order in Play Console.
-- Variant asset source: `screenshots/store/en/composited/`.
-- Experiment type target: Store Listing Experiment for graphics/screenshots only.
+- Variant source composites: `screenshots/store/en/composited/`.
+- Google Play upload-ready assets: `screenshots/store/en/google-play-phone/`, generated at `1080 x 1920` with side padding because Google Play requires phone screenshots within a 9:16 or 16:9 aspect ratio.
+- Uploaded variant screenshot order:
+  1. `01-problem-hook.png`
+  2. `02-life-events.png`
+  3. `01-result-hero.png`
+  4. `02-evidence-breakdown.png`
+  5. `03-privacy-demo-settings.png`
+- Play Console variant status after upload: `Готово · Скриншоты`.
+- Publishing overview status after saving: one change pending under `Изменения, ещё не отправленные на проверку`.
+- Pending change shown by Play Console: `Запуск эксперимента (2026-07 First Screenshot Hook)`.
+- Current Play status: ready to send to Google review from `Обзор публикации`; not live until the change is submitted and approved.
 - Do not change short description, full description, icon, feature graphic, price, countries, or category during Experiment A.
 
 ## Experiment A Readout - YYYY-MM-DD

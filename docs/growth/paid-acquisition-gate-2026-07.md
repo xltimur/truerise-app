@@ -41,8 +41,8 @@
 Defer paid traffic.
 
 Reasons:
-- App Store PPO setup is pending console completion.
-- Google Play Store Listing Experiment setup is pending console completion.
+- App Store PPO setup is submitted to Apple Review and not live yet.
+- Google Play Store Listing Experiment setup is saved in Play Console and pending submission to Google Review.
 - No paid learning budget is recorded in this plan.
 - No in-app purchase monetization is live.
 - Measurement mode is Mode A store-console only; this is acceptable for organic monitoring but weak for paid install-to-result learning.
