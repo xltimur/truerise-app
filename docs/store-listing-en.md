@@ -140,11 +140,11 @@ day-one rank target - `rising sign` is held by incumbents with far more reviews
 ### 2.3 Promotional Text — limit 170 (updatable without review)
 
 ```
-Estimate your unknown birth time from life events you remember. Private, on your device. Share the result without sharing your birth data.
+Estimate an unknown birth time from real life events. Try the full demo offline before entering your own details.
 ```
 
-(~138 chars.) Promo text is editable any time, so it carries the
-privacy/shareable hook. Plain alternative (no share angle):
+(~113 chars.) Promo text is editable any time, so it carries the current
+problem-first screenshot story and offline-demo hook. Plain alternative:
 `An honest, private way to estimate your unknown birth time from the events you actually remember.` (~95).
 
 ### 2.4 Full Description
