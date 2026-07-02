@@ -15,9 +15,10 @@
 //   dart run tool/store_screenshot_compositor_dry_run.dart --help
 //       Print usage and exit 0.
 //
-// Validation fails (exit 1) if any raw source is missing, any composited
-// output already exists, or the defensive `composited/` output invariant is
-// violated. Only repository-relative paths are ever printed.
+// Validation fails (exit 1) if any raw source is missing or the defensive
+// `composited/` output invariant is violated. Existing composited outputs are
+// reported but do not fail the dry run, because final assets may already be
+// committed. Only repository-relative paths are ever printed.
 //
 // The only dependencies are `dart:io` and the local planning seam under
 // `test/tool/`; no Flutter, no `dart:ui`, and no compositor renderer.
@@ -81,6 +82,7 @@ class DryRunReport {
   const DryRunReport._({
     required this.jobs,
     required this.errors,
+    required this.existingOutputs,
     required this.blockedReadiness,
   });
 
@@ -90,6 +92,9 @@ class DryRunReport {
   /// Validation problems, each a redacted repo-relative-path message. Empty
   /// when the plan is safe to render.
   final List<String> errors;
+
+  /// Planned composited outputs that already exist on disk.
+  final List<String> existingOutputs;
 
   /// Source manifests whose caption plan currently blocks final composites
   /// (pre-Appeeky reference captures, or captions still awaiting new frames).
@@ -124,9 +129,13 @@ class DryRunReport {
 ///
 /// A job fails validation when any of these hold:
 /// - its [StoreScreenshotCompositeJob.rawPath] does not exist;
-/// - its [StoreScreenshotCompositeJob.outputPath] already exists;
 /// - its output path does not contain `/composited/`, or equals its raw path
 ///   (a defensive guard against future incompatible path derivation).
+///
+/// Existing [StoreScreenshotCompositeJob.outputPath] files are recorded on
+/// [DryRunReport.existingOutputs] but are not errors. The guarded writer still
+/// refuses to replace existing outputs unless `--allow-overwrite` is supplied;
+/// the dry run's job is to validate the current plan without changing it.
 ///
 /// [readiness] is the optional per-locale caption-plan readiness for the source
 /// manifests. Blocked entries are recorded on [DryRunReport.blockedReadiness]
@@ -138,12 +147,13 @@ DryRunReport buildDryRunReport(
   List<CaptionPlanReadiness> readiness = const <CaptionPlanReadiness>[],
 }) {
   final errors = <String>[];
+  final existingOutputs = <String>[];
   for (final job in jobs) {
     if (!pathExists(job.rawPath)) {
       errors.add('Missing raw source: ${job.rawPath}');
     }
     if (pathExists(job.outputPath)) {
-      errors.add('Output already exists: ${job.outputPath}');
+      existingOutputs.add(job.outputPath);
     }
     if (!job.outputPath.contains(_compositedSegment)) {
       errors.add(
@@ -157,6 +167,7 @@ DryRunReport buildDryRunReport(
   return DryRunReport._(
     jobs: jobs,
     errors: errors,
+    existingOutputs: existingOutputs,
     blockedReadiness: readiness
         .where((r) => r.blocksFinalComposite)
         .toList(growable: false),
@@ -178,16 +189,22 @@ List<String> formatReport(DryRunReport report, {bool verbose = false}) {
   }
 
   if (report.ok) {
-    lines
-      ..add(
-        'Planned ${report.totalJobs} composited screenshots across '
-        '${report.locales.length} locale(s): ${report.locales.join(', ')}.',
-      )
-      ..add('All raw sources present; no composited outputs exist yet.')
-      ..add(
-        'Dry run complete: wrote no files, created no directories, '
-        'rendered nothing.',
+    lines.add(
+      'Planned ${report.totalJobs} composited screenshots across '
+      '${report.locales.length} locale(s): ${report.locales.join(', ')}.',
+    );
+    if (report.existingOutputs.isEmpty) {
+      lines.add('All raw sources present; no composited outputs exist yet.');
+    } else {
+      lines.add(
+        'All raw sources present; ${report.existingOutputs.length} '
+        'composited outputs already exist.',
       );
+    }
+    lines.add(
+      'Dry run complete: wrote no files, created no directories, '
+      'rendered nothing.',
+    );
   } else {
     lines.add(
       'Validation failed; wrote nothing. ${report.errors.length} problem(s):',

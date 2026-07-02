@@ -8,10 +8,9 @@
 // real-write harness would use.
 //
 // The default test runs entirely inside a fresh temporary directory. A separate
-// opt-in test can write the final English composites under the repository when
-// RECTIFY_WRITE_EN_STORE_COMPOSITES=1 is supplied.
+// opt-in test can write the final composites for every supported store locale
+// under the repository when RECTIFY_WRITE_STORE_COMPOSITES=1 is supplied.
 
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -72,11 +71,7 @@ Future<Uint8List> _tinyPng() async {
   }
 }
 
-const String _writeEnCompositesFlag = 'RECTIFY_WRITE_EN_STORE_COMPOSITES';
-
-Map<String, dynamic> _readManifest(String locale) =>
-    jsonDecode(File(storeManifestPath(locale)).readAsStringSync())
-        as Map<String, dynamic>;
+const String _writeCompositesFlag = 'RECTIFY_WRITE_STORE_COMPOSITES';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -109,8 +104,7 @@ void main() {
       // This temp-root harness composites a synthetic, unmarked manifest, so it
       // passes empty readiness and is not blocked. A real harness that writes
       // the repo's `screenshots/store/` must instead pass
-      // `readAllCaptionPlanReadiness()`, which currently refuses (the shipped
-      // manifests are pre-Appeeky reference captures awaiting new frames).
+      // `readAllCaptionPlanReadiness()` from the on-disk manifests.
       final result = await runWriteCli(
         parseWriteCliArgs(const <String>['--write', '--yes']),
         jobs: <StoreScreenshotCompositeJob>[job],
@@ -129,34 +123,32 @@ void main() {
       expect(bytes.sublist(0, 4), _pngMagic);
       expect(bytes, isNot(equals(await rawFile.readAsBytes())));
 
-      expectCommittedCompositedState();
+      if (Platform.environment[_writeCompositesFlag] != '1') {
+        expectCommittedCompositedState();
+      }
     },
   );
 
   test(
-    'writes final English composites only when explicitly opted in',
+    'writes final store composites only when explicitly opted in',
     () async {
-      if (Platform.environment[_writeEnCompositesFlag] != '1') {
+      if (Platform.environment[_writeCompositesFlag] != '1') {
         expectCommittedCompositedState();
         return;
       }
-
-      final enManifest = _readManifest('en');
-      final enReadiness = readLocaleCaptionPlanReadiness('en', enManifest);
-      final jobs = buildLocaleCompositeJobs('en', enManifest);
 
       final result = await runWriteCli(
         parseWriteCliArgs(
           const <String>['--write', '--yes', '--allow-overwrite'],
         ),
-        jobs: jobs,
+        jobs: buildAllCompositeJobs(),
         root: Directory.current,
         render: _renderJob,
-        readiness: <CaptionPlanReadiness>[enReadiness],
+        readiness: readAllCaptionPlanReadiness(),
       );
 
       expect(result.exitCode, 0, reason: result.lines.join('\n'));
-      expect(result.writtenOutputPaths, expectedEnglishCompositedOutputPaths());
+      expect(result.writtenOutputPaths, expectedAllCompositedOutputPaths());
       expectCommittedCompositedState();
     },
   );

@@ -44,6 +44,21 @@ void main() {
         'x',
       );
     });
+
+    test('requested capture locale defaults to the English draft folder', () {
+      expect(
+        requestedCaptureLocale(const <String, String>{}),
+        kRawCaptureDraftDirName,
+      );
+      expect(
+        requestedCaptureLocale(<String, String>{kCaptureLocaleEnv: ' de '}),
+        'de',
+      );
+      expect(
+        requestedCaptureLocale(<String, String>{kCaptureLocaleEnv: '   '}),
+        kRawCaptureDraftDirName,
+      );
+    });
   });
 
   group('draft path is always inside the draft folder, never canonical', () {
@@ -88,6 +103,71 @@ void main() {
         );
       }
     });
+  });
+
+  group('capture path can target reviewed localized packs safely', () {
+    test(
+      'defaults to the English draft folder for backwards compatibility',
+      () {
+        expect(
+          captureRawScreenshotPath(
+            locale: kRawCaptureDraftDirName,
+            fileName: '01-problem-hook.png',
+          ),
+          '$kRawCaptureDraftRoot/01-problem-hook.png',
+        );
+      },
+    );
+
+    test(
+      'resolves missing current-plan frames into non-English locale packs',
+      () {
+        expect(
+          captureRawScreenshotPath(
+            locale: 'de',
+            fileName: '01-problem-hook.png',
+          ),
+          '$kStoreScreenshotsRoot/de/01-problem-hook.png',
+        );
+        expect(
+          captureRawScreenshotPath(
+            locale: 'pt-BR',
+            fileName: '02-life-events.png',
+          ),
+          '$kStoreScreenshotsRoot/pt-BR/02-life-events.png',
+        );
+      },
+    );
+
+    test('refuses English canonical writes and unsupported locales', () {
+      expect(
+        () => captureRawScreenshotPath(
+          locale: 'en',
+          fileName: '01-problem-hook.png',
+        ),
+        throwsArgumentError,
+      );
+      expect(
+        () => captureRawScreenshotPath(
+          locale: 'en-current',
+          fileName: '01-problem-hook.png',
+        ),
+        throwsArgumentError,
+      );
+    });
+
+    test(
+      'refuses localized writes for files outside the missing frame plan',
+      () {
+        expect(
+          () => captureRawScreenshotPath(
+            locale: 'de',
+            fileName: '03-privacy-demo-settings.png',
+          ),
+          throwsArgumentError,
+        );
+      },
+    );
   });
 
   group('draft folder is invisible to the canonical compositor', () {

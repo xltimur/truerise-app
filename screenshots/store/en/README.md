@@ -1,107 +1,56 @@
-# Store Screenshots — English Tier 0 (TrueRise)
+# Store Screenshots - English Tier 0 (TrueRise)
 
-**Impl Run A.5 · 2026-06-02 · model `claude-opus-4-8`.**
+**Impl Run A.5 + current-plan refresh · status updated 2026-07-02.**
 
-Owner-independent **P0** store screenshot set, captured from the **shipped
-Flutter UI** (real widgets, routes, and state — not marketing mockups). They
-were captured for the screenshot gate in `docs/store-submission-readiness.md`.
+Current five-frame store screenshot pack for `en`. Raw PNGs are captured from the shipped Flutter UI in offline Demo mode; final caption-overlay PNGs are generated under `composited/` from the same raw frames and the reviewed caption plan in `docs/store-listing-en.md §5`.
 
-> **Caption-plan status (updated 2026-06-15).** These are **pre-Appeeky raw /
-> reference captures**, not the current final caption order. The current caption
-> plan is the **post-Appeeky five-frame** story order (problem hook -> life
-> events -> result -> evidence -> privacy / offline demo) in
-> `docs/store-listing-en.md` §5 and `docs/aso-naming-strategy.md` §14.5. The
-> frames below cover **result / evidence / privacy / share**; they do **not**
-> yet include a problem-hook frame or a life-events input frame, so final
-> compositing will likely need those new frames recaptured/added. The old
-> **share** frame is now optional/bonus, not a required frame. Treat the captions
-> in the frames table below as the historical (pre-Appeeky) intended overlays.
+See `manifest.json` for machine-readable frame, payload, and generation details.
 
-See `manifest.json` for the machine-readable version of everything below.
+## Device / Format
 
-## Device / format
+- iPhone 6.7" / Pro Max portrait: 1290 x 2796 px, logical 430 x 932 @ DPR 3.0.
+- Raw PNGs: no captions, no device bezels, real shipped widgets/routes/state.
+- Final PNGs: `composited/<file>.png`, same pixel size, caption overlay baked in.
 
-- **iPhone 6.7" / Pro Max portrait** — **1290 × 2796 px** (logical 430 × 932 @
-  DPR 3.0), with realistic notch/home-indicator safe-area insets
-  (top 177 px, bottom 102 px).
-- PNG, RGBA. Accepted by App Store Connect (6.7" slot) and usable for Google
-  Play phone screenshots.
+## Final Five-Frame Story
 
-## Frames
-
-| # | File | Screen (route) | What it shows |
+| # | File | Route | Caption |
 |---|---|---|---|
-| 1 | `01-result-hero.png` | Result (`/calc/result/:id`) | Most probable time **7:14 AM**, **Gemini Rising**, **78%** confidence, alternate candidates, **DEMO** pill, "See how we got this" CTA. |
-| 2 | `02-evidence-breakdown.png` | Evidence (`/calc/result/:id/evidence`) | "Why 7:14 AM? 4 of 6 events strongly supported this time." Per-event **STRONG/MODERATE/WEAK** match cards. |
-| 3 | `03-privacy-demo-settings.png` | Settings (`/settings`) | **Demo mode** toggle ON ("free, no network"), time format, **Delete all data** ("Cannot be undone"). |
-| 4 | `04-share-result.png` | Result (`/calc/result/:id`) | The shipped **Share result** button in context (see share-sheet note below). |
-| 5 | `05-privacy-policy.png` | Privacy (`/settings/privacy`) | **Bonus.** In-app privacy disclosure: on-device storage, offline demo, live-mode HTTPS, no accounts. |
+| 1 | `01-problem-hook.png` | `/calc/window` | Don't know your exact birth time? |
+| 2 | `02-life-events.png` | `/calc/events` | Add the life events you remember. |
+| 3 | `01-result-hero.png` | `/calc/result/:id` | Estimate your birth time and rising sign. |
+| 4 | `02-evidence-breakdown.png` | `/calc/result/:id/evidence` | See the evidence behind every candidate. |
+| 5 | `03-privacy-demo-settings.png` | `/settings` | Private by default. Try it free, offline. |
 
-In the original pre-Appeeky plan, the first four frames were the required set and
-frame 5 an optional bonus that reinforced the privacy story. Under the current
-five-frame plan (see the caption-plan status note above), this raw set no longer
-maps one-to-one to the required frames: the problem-hook and life-events frames
-are not captured yet, and the share frame is now optional/bonus.
+Raw source path: `<file>.png`. Final store-ready path: `composited/<file>.png`.
 
-> **Frames 3 and 5 refreshed (2026-06-03).** Both PNGs were re-captured from the
-> current simplified **Settings** and in-app **Privacy** screens, using the same
-> throwaway `/tmp` widget-test harness, iPhone 6.7" geometry, and offline
-> Demo-mode capture method as the rest of the set.
+## Optional Raw Reference Frames
 
-The captions shown in the frames table above are the **historical (pre-Appeeky)
-intended overlays**; the current overlay copy is the post-Appeeky five-frame plan
-in `docs/store-listing-en.md` §5. Either way, overlays are composited by the
-owner - they are **not** baked into these raw frames.
+- `04-share-result.png` - shipped in-app share affordance, retained as a privacy-safe reference.
+- `05-privacy-policy.png` - in-app privacy disclosure, retained as a backup privacy frame.
 
-## Frame 4 — share: exact text payload (privacy-safe)
+These optional raw frames are not part of the current final five-frame story unless a store-specific asset plan explicitly swaps them in.
 
-The native **OS share sheet cannot be captured from the host `flutter test`
-harness** (the test binding has no platform share-sheet surface). Frame 4
-therefore shows the **shipped in-app "Share result" button**, which is the real
-share affordance.
+## Share Payload Note
 
-The text the share action emits is built by
-`lib/core/sharing/share_copy_builder.dart` and is **privacy-safe** — it contains
-only the estimated time, rising sign, confidence, and brand. **No birth date,
-birthplace, life events, or any PII.** For the canonical demo result it is
-**exactly**:
+The share button label is localized as `Share result`. The emitted text is built by `lib/core/sharing/share_copy_builder.dart`, uses `AppLocalizations`, and remains privacy-safe: estimated time, rising sign, confidence, brand, and public share URL only. No birth date, birthplace, life events, labels, API IDs, or other PII are included.
 
 ```
 My TrueRise rectification result:
 7:14 AM · Gemini Rising · 78% confidence
 
-Calculated with TrueRise — birth-time rectification
+Calculated with TrueRise: birth-time rectification
+Find your birth time: https://truerise.com.ua
 ```
 
-This matches the "share without oversharing" / privacy-safe-sharing guardrail in
-`docs/store-listing-en.md` §6 and `docs/feature-gap-analysis.md`.
+## Capture / Generation Method
 
-## How they were captured
+Raw frames are produced by `test/tool/raw_screenshot_capture_test.dart`: the real `RectifyApp` is rendered in a `RepaintBoundary` at store geometry, Demo mode drives the calculation flow offline, and one opt-in frame is written per `flutter test` process.
 
-A throwaway widget-test harness on the host VM rendered the real `RectifyApp`
-inside a `RepaintBoundary` and wrote `boundary.toImage(pixelRatio: 3)` to PNG via
-`dart:io`. **Demo mode** (offline — no network) drove a canonical
-6-event calculation through the real `calculation_flow` controller, then
-`go_router` navigated to each screen. Product fonts (Inter, SourceSerif4,
-JetBrainsMono) were loaded from the bundled `FontManifest.json` so text renders
-as real glyphs.
+Final caption-overlay PNGs are produced by `test/tool/store_screenshot_compositor_write_harness_test.dart` through the guarded `runWriteCli` path and the real `dart:ui` renderer. The plain Dart write CLI stays no-write because it has no Flutter engine.
 
-Each frame was captured in **its own process** (one screenshot per `flutter
-test` invocation): on this toolchain the `flutter_tester` shell crashes with
-SIGTERM the instant a *second* `RenderRepaintBoundary.toImage` runs in the same
-isolate, but the first capture always flushes to disk first — so one-frame-per-
-process yields all frames reliably. The harness lived under `/tmp` and was
-removed after the run; **no `lib/`, `test/`, `assets/`, or app source was
-modified**, and **no dependencies were added**.
+## Limitations
 
-## Limitations / owner follow-ups
-
-- **No OS share-sheet frame** — host-harness constraint (above). Frame 4 shows
-  the shipped Share button; the exact emitted text is documented above.
-- **No caption overlays / device bezels** — raw resolution only. Compositing the
-  §5 captions and any framing is owner work.
-- **DEMO data** — values come from the offline canonical demo dataset, not a
-  live calc; the **DEMO** badge is visible in-frame, consistent with the honest,
-  probabilistic store framing.
-- **6.7" portrait only** — the same harness can emit a Play/other-size variant by
-  changing the view geometry if a second set is later required.
+- Native OS share sheets cannot be captured by the host Flutter test binding; the optional share frame shows the in-app button instead.
+- Values come from the canonical offline DEMO dataset, not a live API request.
+- Only the iPhone 6.7" portrait geometry is present in this pack.

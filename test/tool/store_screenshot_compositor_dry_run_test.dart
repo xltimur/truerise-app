@@ -15,13 +15,13 @@ import 'screenshot_compositor.dart';
 import 'store_screenshot_compositor_plan.dart';
 import 'store_screenshot_compositor_repo_state.dart';
 
-/// A `pathExists` stub modelling the healthy state the dry run expects:
-/// every raw source is present, and no `composited/` output exists yet.
+/// A `pathExists` stub modelling the healthy pre-generation state: every raw
+/// source is present, and no `composited/` output exists yet.
 bool _rawsPresentOutputsAbsent(String path) => !path.contains('/composited/');
 
 void main() {
   group('buildDryRunReport (real on-disk plan)', () {
-    test('reports 25 jobs and the committed English outputs', () {
+    test('reports 25 jobs and the committed composited outputs', () {
       expectCommittedCompositedState();
 
       final jobs = buildAllCompositeJobs();
@@ -30,13 +30,11 @@ void main() {
         pathExists: (path) => File(path).existsSync(),
       );
 
-      expect(report.ok, isFalse);
+      expect(report.ok, isTrue);
+      expect(report.errors, isEmpty);
       expect(
-        report.errors,
-        unorderedEquals(<String>[
-          for (final path in expectedEnglishCompositedOutputPaths())
-            'Output already exists: $path',
-        ]),
+        report.existingOutputs,
+        unorderedEquals(expectedAllCompositedOutputPaths()),
       );
       expect(report.totalJobs, 25);
       expect(report.locales.length, 5);
@@ -99,7 +97,7 @@ void main() {
       expect(report.errors.join('\n'), contains(missing));
     });
 
-    test('fails when an output path already exists', () {
+    test('records when an output path already exists', () {
       final jobs = buildAllCompositeJobs();
       final existing = jobs.first.outputPath;
 
@@ -109,8 +107,9 @@ void main() {
             path == existing || _rawsPresentOutputsAbsent(path),
       );
 
-      expect(report.ok, isFalse);
-      expect(report.errors.join('\n'), contains(existing));
+      expect(report.ok, isTrue);
+      expect(report.errors, isEmpty);
+      expect(report.existingOutputs, <String>[existing]);
     });
   });
 
@@ -150,7 +149,7 @@ void main() {
     });
 
     test(
-      'the real on-disk plan currently reports final composites not ready',
+      'the real on-disk plan reports no final-composite readiness blockers',
       () {
         final report = buildDryRunReport(
           buildAllCompositeJobs(),
@@ -159,7 +158,7 @@ void main() {
         );
 
         final text = formatReport(report).join('\n').toLowerCase();
-        expect(text, contains('not ready'));
+        expect(text, isNot(contains('not ready')));
       },
     );
   });

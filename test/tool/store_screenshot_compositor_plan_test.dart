@@ -60,7 +60,7 @@ void main() {
 
       expect(
         jobs.map((job) => job.fileName).toList(),
-        orderedEquals(expectedEnglishFinalFrameFiles),
+        orderedEquals(expectedFinalFrameFiles),
       );
       expect(jobs.first.fileName, '01-problem-hook.png');
       expect(jobs.last.fileName, '03-privacy-demo-settings.png');
@@ -171,7 +171,7 @@ void main() {
       expect(readiness.blocksFinalComposite, isFalse);
     });
 
-    test('only English is ready for final composites on disk', () {
+    test('all locale manifests are ready for final composites on disk', () {
       final all = readAllCaptionPlanReadiness();
 
       expect(
@@ -185,10 +185,10 @@ void main() {
         },
         <String, bool>{
           'en': false,
-          'de': true,
-          'fr': true,
-          'es': true,
-          'pt-BR': true,
+          'de': false,
+          'fr': false,
+          'es': false,
+          'pt-BR': false,
         },
         reason: all.map((r) => '${r.locale}:${r.captionPlanStatus}').join(', '),
       );

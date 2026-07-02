@@ -16,17 +16,19 @@
 //    test` run must NEVER take it: the default (no-opt-in) run only renders the
 //    shipped UI, navigates to the target frame, and asserts the capture surface
 //    geometry. It calls no `toImage`, writes nothing, and finishes cleanly.
-//  * Real on-disk writes into `screenshots/store/en-current-draft/` happen ONLY
-//    under the explicit env opt-in, one frame per process:
+//  * Real on-disk writes happen ONLY under the explicit env opt-in, one frame
+//    per process. By default the target is `screenshots/store/en-current-draft/`;
+//    after localization review, `RECTIFY_CAPTURE_LOCALE=<de|fr|es|pt-BR>` may
+//    write only the two missing current-plan frames into that canonical pack:
 //      RECTIFY_CAPTURE_RAW_SCREENSHOTS=1 RECTIFY_CAPTURE_FRAME=problem-hook \
 //        flutter test test/tool/raw_screenshot_capture_test.dart
 //      RECTIFY_CAPTURE_RAW_SCREENSHOTS=1 RECTIFY_CAPTURE_FRAME=life-events \
 //        flutter test test/tool/raw_screenshot_capture_test.dart
 //    Each opt-in run flushes its PNG, then times out (expected); verify the
 //    file on disk afterward.
-//  * Every write is routed through `draftRawScreenshotPath`, which can only
-//    ever resolve inside the draft folder, never a canonical
-//    `screenshots/store/<locale>` pack.
+//  * Every write is routed through `captureRawScreenshotPath`, which defaults
+//    to the safe draft folder and refuses English canonical overwrites,
+//    unsupported locales, and localized files outside the missing-frame plan.
 
 // This harness interleaves calculation-flow controller writes with widget
 // navigation taps; cascading across that boundary obscures intent.
@@ -49,6 +51,12 @@ import 'package:rectify/data/secure/secure_key_store.dart';
 import 'package:rectify/features/calculation_flow/screens/life_events_screen.dart';
 import 'package:rectify/features/calculation_flow/screens/time_window_screen.dart';
 import 'package:rectify/features/calculation_flow/state/calculation_flow_controller.dart';
+import 'package:rectify/l10n/app_localizations.dart';
+import 'package:rectify/l10n/app_localizations_de.dart';
+import 'package:rectify/l10n/app_localizations_en.dart';
+import 'package:rectify/l10n/app_localizations_es.dart';
+import 'package:rectify/l10n/app_localizations_fr.dart';
+import 'package:rectify/l10n/app_localizations_pt.dart';
 import 'package:rectify/providers/core_providers.dart';
 import 'package:rectify/providers/repo_providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -81,6 +89,15 @@ int _pngUint32(Uint8List bytes, int offset) =>
 
 int _pngWidth(Uint8List bytes) => _pngUint32(bytes, 16);
 int _pngHeight(Uint8List bytes) => _pngUint32(bytes, 20);
+
+AppLocalizations _l10nForCaptureLocale(String captureLocale) =>
+    switch (captureLocale) {
+      'de' => AppLocalizationsDe(),
+      'es' => AppLocalizationsEs(),
+      'fr' => AppLocalizationsFr(),
+      'pt-BR' => AppLocalizationsPt(),
+      _ => AppLocalizationsEn(),
+    };
 
 /// Loads every family declared in the bundled `FontManifest.json` (product
 /// text fonts AND the MaterialIcons / Lucide icon fonts) so the captured frame
@@ -120,8 +137,16 @@ Future<SharedPreferences> _demoPrefs() async {
 Future<RenderRepaintBoundary> _pumpFrame(
   WidgetTester tester,
   RawCaptureFrame frame,
+  String captureLocale,
 ) async {
   await _loadAllBundledFonts();
+  if (captureLocale != kRawCaptureDraftDirName) {
+    final appLocale = captureLocale == 'pt-BR' ? 'pt' : captureLocale;
+    tester.platformDispatcher.localesTestValue = <ui.Locale>[
+      ui.Locale(appLocale),
+    ];
+    addTearDown(tester.platformDispatcher.clearLocalesTestValue);
+  }
   tester.view
     ..physicalSize = Size(
       kRawScreenshotWidth.toDouble(),
@@ -159,7 +184,7 @@ Future<RenderRepaintBoundary> _pumpFrame(
   );
   await tester.pumpAndSettle();
 
-  await _driveToFrame(tester, frame);
+  await _driveToFrame(tester, frame, captureLocale);
   await tester.pumpAndSettle();
 
   return boundaryKey.currentContext!.findRenderObject()!
@@ -168,13 +193,18 @@ Future<RenderRepaintBoundary> _pumpFrame(
 
 /// Navigates the shipped flow to the screen [frame] captures and seeds the
 /// realistic Demo-mode state each frame should show.
-Future<void> _driveToFrame(WidgetTester tester, RawCaptureFrame frame) async {
+Future<void> _driveToFrame(
+  WidgetTester tester,
+  RawCaptureFrame frame,
+  String captureLocale,
+) async {
   final container = ProviderScope.containerOf(
     tester.element(find.byType(MaterialApp)),
   );
+  final l10n = _l10nForCaptureLocale(captureLocale);
 
   // Home -> birth-data step.
-  await tester.tap(find.text('New Calculation'));
+  await tester.tap(find.text(l10n.homeNewCalculation));
   await tester.pumpAndSettle();
 
   final controller = container.read(
@@ -186,7 +216,7 @@ Future<void> _driveToFrame(WidgetTester tester, RawCaptureFrame frame) async {
   await tester.pumpAndSettle();
 
   // Birth -> time-window step (the problem-hook frame stops here).
-  await tester.tap(find.text('Continue'));
+  await tester.tap(find.text(l10n.commonContinue));
   await tester.pumpAndSettle();
 
   switch (frame.id) {
@@ -195,7 +225,7 @@ Future<void> _driveToFrame(WidgetTester tester, RawCaptureFrame frame) async {
     case 'life-events':
       // Window -> life-events step, then seed five remembered events so the
       // screen shows the populated, recommended state (not the empty hint).
-      await tester.tap(find.text('Continue'));
+      await tester.tap(find.text(l10n.commonContinue));
       await tester.pumpAndSettle();
       controller
         ..addEvent(category: EventCategory.education, year: 2008)
@@ -210,11 +240,10 @@ Future<void> _driveToFrame(WidgetTester tester, RawCaptureFrame frame) async {
   }
 }
 
-/// Fails if any non-English canonical pack holds the frames that were first
-/// captured in the draft folder. English now intentionally ships those two
-/// frames as part of the final five-frame story.
+/// Verifies every canonical pack holds the two current-plan frames that were
+/// originally captured in the English draft folder and later localized.
 void _expectCanonicalPacksInExpectedState() {
-  final finalizedEnglishNames = expectedEnglishFinalFrameFiles
+  final finalizedEnglishNames = expectedFinalFrameFiles
       .where(
         (name) => name == '01-problem-hook.png' || name == '02-life-events.png',
       )
@@ -222,17 +251,17 @@ void _expectCanonicalPacksInExpectedState() {
   for (final locale in supportedStoreLocales) {
     final pack = Directory('$kStoreScreenshotsRoot/$locale');
     if (!pack.existsSync()) continue;
-    final leaked = pack
+    final currentPlanFiles = pack
         .listSync()
         .whereType<File>()
         .map((f) => f.uri.pathSegments.last)
         .where(finalizedEnglishNames.contains)
         .toList();
-    if (locale == 'en') {
-      expect(leaked, unorderedEquals(finalizedEnglishNames));
-    } else {
-      expect(leaked, isEmpty, reason: '$locale holds a draft frame: $leaked');
-    }
+    expect(
+      currentPlanFiles,
+      unorderedEquals(finalizedEnglishNames),
+      reason: '$locale current-plan raw frames',
+    );
   }
 }
 
@@ -252,16 +281,19 @@ void main() {
                 )))
           // Default (CI) run renders the first plan frame as a wiring check.
           : kMissingCurrentPlanFrames.first;
+      final captureLocale = requestedCaptureLocale(env);
 
-      final boundary = await _pumpFrame(tester, frame);
+      final boundary = await _pumpFrame(tester, frame, captureLocale);
 
       // Wiring proof (both modes): the capture surface is the exact store
       // geometry, so a capture would encode at 1290x2796.
       expect(boundary.size.width * _devicePixelRatio, kRawScreenshotWidth);
       expect(boundary.size.height * _devicePixelRatio, kRawScreenshotHeight);
 
-      final relPath = draftRawScreenshotPath(frame.fileName);
-      expect(relPath, startsWith('$kRawCaptureDraftRoot/'));
+      final relPath = captureRawScreenshotPath(
+        locale: captureLocale,
+        fileName: frame.fileName,
+      );
 
       if (!enabled) {
         // Default: never run the finalization-hanging toImage, never write.

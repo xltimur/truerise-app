@@ -5,8 +5,8 @@
 // It proves the two halves connect end to end on the real on-disk plan: each
 // planned job's raw source exists, and feeding the job's caption plus raw
 // bytes through the renderer yields a fresh, same-size composited store PNG.
-// Rendering stays purely in memory: no new output directory or file is ever
-// created. To keep the render pass fast it composites only a small
+// Rendering stays purely in memory: no output file is created or changed. To
+// keep the render pass fast it composites only a small
 // representative subset of the plan rather than all 25 frames.
 
 import 'dart:io';
@@ -34,12 +34,16 @@ Future<ui.Image> _decodePng(Uint8List bytes) async {
 }
 
 /// Drives one planned [job] through the renderer seam and asserts the result
-/// is a fresh, same-size composited PNG, with no output file created on disk.
+/// is a fresh, same-size composited PNG, with no output file mutated on disk.
 Future<void> _expectJobComposites(StoreScreenshotCompositeJob job) async {
   // The plan promises a real raw source and an output inside `composited/`;
-  // neither the output file nor its directory exists before rendering.
+  // the in-memory renderer must not create or change that output path.
   expect(File(job.rawPath).existsSync(), isTrue, reason: job.rawPath);
-  expect(File(job.outputPath).existsSync(), isFalse, reason: job.outputPath);
+  final outputFile = File(job.outputPath);
+  final outputExistedBefore = outputFile.existsSync();
+  final bytesBefore = outputExistedBefore
+      ? await outputFile.readAsBytes()
+      : null;
 
   final rawBytes = await File(job.rawPath).readAsBytes();
   final output = await StoreScreenshotCompositorRenderer.render(
@@ -61,8 +65,12 @@ Future<void> _expectJobComposites(StoreScreenshotCompositeJob job) async {
     decoded.dispose();
   }
 
-  // Rendering is purely in memory: the output file must still not exist.
-  expect(File(job.outputPath).existsSync(), isFalse, reason: job.outputPath);
+  // Rendering is purely in memory: the output file must remain in its exact
+  // pre-render state, whether it was absent or already committed.
+  expect(outputFile.existsSync(), outputExistedBefore, reason: job.outputPath);
+  if (bytesBefore != null) {
+    expect(await outputFile.readAsBytes(), equals(bytesBefore));
+  }
 }
 
 void main() {
@@ -75,7 +83,7 @@ void main() {
       expect(jobs, isNotEmpty);
 
       // A small representative subset keeps the render pass fast while still
-      // spanning non-English locales whose outputs are still not generated.
+      // spanning non-English locales with committed outputs.
       final selected = <StoreScreenshotCompositeJob>[
         jobs.firstWhere((job) => job.locale == 'de'),
         jobs.last,

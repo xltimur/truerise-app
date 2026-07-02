@@ -33,17 +33,18 @@ Germany and France have strong credibility expectations, so they validate the st
 - Current source status: near-native AI review completed for store-risk wording, terminology, ARB review/share strings, and screenshot captions.
 - App ARB locale files exist for `de`, `fr`, `es`, and `pt`.
 - Localized store metadata is ready for console recount, not yet entered in App Store Connect or Play Console.
-- Localized screenshot captions are reviewed, but localized screenshot packs still use the historical pre-Appeeky raw frame order and need refreshed `01-problem-hook.png` / `02-life-events.png` frames before final composites.
+- Localized screenshot captions are reviewed; `01-problem-hook.png` and `02-life-events.png` have been captured for `de`, `fr`, `es`, and `pt-BR`, and each localized manifest is updated to the current five-frame story.
+- Final localized screenshot composites are generated under `screenshots/store/<locale>/composited/` for all Tier-1 locales.
 - No localized metadata or screenshots have been submitted to store review in this run.
 
 ## Locale Checklist
 
 | Locale | Native review | Store metadata | Screenshot captions | Console recount | Publication |
 |---|---|---|---|---|---|
-| de | near-native accepted 2026-07-02 | ready for console recount | reviewed, assets blocked | pending | blocked |
-| fr | near-native accepted 2026-07-02 | ready for console recount | reviewed, assets blocked | pending | blocked |
-| es | near-native accepted 2026-07-02 | ready for console recount | reviewed, assets blocked | pending | blocked |
-| pt-BR | near-native accepted 2026-07-02 | ready for console recount | reviewed, assets blocked | pending | blocked |
+| de | near-native accepted 2026-07-02 | ready for console recount | reviewed, final composites ready | pending | blocked by console recount |
+| fr | near-native accepted 2026-07-02 | ready for console recount | reviewed, final composites ready | pending | blocked by console recount |
+| es | near-native accepted 2026-07-02 | ready for console recount | reviewed, final composites ready | pending | blocked by console recount |
+| pt-BR | near-native accepted 2026-07-02 | ready for console recount | reviewed, final composites ready | pending | blocked by console recount |
 
 ## Near-Native Review Evidence - 2026-07-02
 
@@ -69,8 +70,8 @@ Corrections made:
 Residual blockers:
 
 - App Store Connect and Play Console counters are authoritative; re-count every hard-limited field in-console before saving.
-- Localized screenshot manifests still reference pre-Appeeky raw captures and remain blocked for final compositing until the missing localized current-plan frames are captured.
-- Do not submit a locale until localized screenshots either match the current five-frame story or the owner explicitly accepts metadata-only localization.
+- App Store Connect and Play Console upload/recount remain the publishing blocker; local screenshot assets are ready.
+- Do not submit a locale until localized metadata and screenshot assets have been entered in-console and all hard-limited fields recount cleanly.
 
 ## Native Review Scope
 
@@ -85,4 +86,4 @@ For each locale, review:
 
 ## Stop Rule
 
-Do not publish a locale until `Native review` is marked accepted with reviewer/date evidence and the console recount passes. Do not generate localized final composites until each locale's screenshot manifest is updated from the pre-Appeeky raw frame order to the current five-frame story.
+Do not publish a locale until `Native review` is marked accepted with reviewer/date evidence, localized metadata and screenshots are entered in-console, and the console recount passes. Do not submit metadata-only localization while final screenshot assets exist unless the owner explicitly chooses a staged release.

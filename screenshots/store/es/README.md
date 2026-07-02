@@ -1,90 +1,56 @@
-# Store Screenshots — Spanish Tier 1 (TrueRise)
+# Store Screenshots - Spanish Tier 1 (TrueRise)
 
-**Impl Run D.4 · 2026-06-03 · model `claude-opus-4-8`.**
+**Impl Run D.4 + current-plan refresh · status updated 2026-07-02.**
 
-Localized raw store screenshot set for **es**, captured from the shipped Flutter
-UI under the Spanish app bundle. These are real widgets, routes, and state in
-offline Demo mode — not marketing mockups.
+Current five-frame store screenshot pack for `es`. Raw PNGs are captured from the shipped Flutter UI in offline Demo mode; final caption-overlay PNGs are generated under `composited/` from the same raw frames and the reviewed caption plan in `docs/store-listing-tier1-localized.md §3`.
 
-See `manifest.json` for the machine-readable details.
+See `manifest.json` for machine-readable frame, payload, and generation details.
 
-> **Caption-plan status (updated 2026-06-15).** These are **pre-Appeeky raw /
-> reference captures**, not the current final caption order. The current caption
-> plan is the **post-Appeeky five-frame** story order (problem hook -> life
-> events -> result -> evidence -> privacy / offline demo) in
-> `docs/store-listing-tier1-localized.md` §3, `docs/store-listing-en.md` §5, and
-> `docs/aso-naming-strategy.md` §14.5. The frames below cover
-> **result / evidence / privacy / share**; they do **not** yet include a
-> problem-hook frame or a life-events input frame, so final compositing will
-> likely need those new frames recaptured/added. The old **share** frame is now
-> optional/bonus, not a required frame. The per-frame `intendedCaption` values in
-> `manifest.json` are the historical (pre-Appeeky) overlay drafts; the current
-> overlay copy is the five-frame plan in `docs/store-listing-tier1-localized.md`
-> §3.
+## Device / Format
 
-## Device / format
+- iPhone 6.7" / Pro Max portrait: 1290 x 2796 px, logical 430 x 932 @ DPR 3.0.
+- Raw PNGs: no captions, no device bezels, real shipped widgets/routes/state.
+- Final PNGs: `composited/<file>.png`, same pixel size, caption overlay baked in.
 
-- **iPhone 6.7" / Pro Max portrait** — **1290 x 2796 px** (logical 430 x 932 @
-  DPR 3.0), with safe-area insets matching the English set.
-- PNG raw frames. No caption overlays, no device bezels, no fabricated screens.
+## Final Five-Frame Story
 
-## Frames
-
-| # | File | Screen (route) | What it shows |
+| # | File | Route | Caption |
 |---|---|---|---|
-| 1 | `01-result-hero.png` | Result (`/calc/result/:id`) | Spanish result chrome, 7:14 AM, Gemini Rising, 78% confidence, alternate candidates, DEMO pill, evidence CTA, `Compartir el resultado`. |
-| 2 | `02-evidence-breakdown.png` | Evidence (`/calc/result/:id/evidence`) | Spanish evidence screen with localized match cards and evidence prose. |
-| 3 | `03-privacy-demo-settings.png` | Settings (`/settings`) | Spanish settings, demo mode ON, time format, delete-all-data row, bottom nav. |
-| 4 | `04-share-result.png` | Result (`/calc/result/:id`) | The shipped `Compartir el resultado` affordance in context. |
-| 5 | `05-privacy-policy.png` | Privacy (`/settings/privacy`) | Bonus privacy frame: on-device storage, offline demo, live-mode HTTPS. |
+| 1 | `01-problem-hook.png` | `/calc/window` | ¿No sabes tu hora de nacimiento exacta? |
+| 2 | `02-life-events.png` | `/calc/events` | Añade los eventos de vida que recuerdas. |
+| 3 | `01-result-hero.png` | `/calc/result/:id` | Estima tu hora de nacimiento y tu ascendente. |
+| 4 | `02-evidence-breakdown.png` | `/calc/result/:id/evidence` | Mira los indicios detrás de cada hora candidata. |
+| 5 | `03-privacy-demo-settings.png` | `/settings` | Privado por defecto. Pruébalo gratis, sin conexión. |
 
-In the original pre-Appeeky plan, the first four frames were the required set and
-frame 5 an optional bonus privacy frame. Under the current five-frame plan (see
-the caption-plan status note above), this raw set no longer maps one-to-one to
-the required frames: the problem-hook and life-events frames are not captured
-yet, and the share frame is now optional/bonus.
+Raw source path: `<file>.png`. Final store-ready path: `composited/<file>.png`.
 
-> **Frames 3 and 5 refreshed (2026-06-03).** Both PNGs were re-captured from the
-> current simplified **Settings** and in-app **Privacy** screens, using the same
-> throwaway `/tmp` widget-test harness, iPhone 6.7" geometry, and offline
-> Demo-mode capture method as the rest of the set.
+## Optional Raw Reference Frames
 
-## Share payload note
+- `04-share-result.png` - shipped in-app share affordance, retained as a privacy-safe reference.
+- `05-privacy-policy.png` - in-app privacy disclosure, retained as a backup privacy frame.
 
-The in-app share button label is localized as **`Compartir el resultado`**, but
-the text emitted by `ShareCopyBuilder.build` is currently locale-invariant
-English. This run documents the shipped behavior and does not change it. The
-emitted payload is privacy-safe: it includes only estimated time, rising sign,
-confidence, and brand. It does not include birth date, birthplace, life events,
-or PII.
+These optional raw frames are not part of the current final five-frame story unless a store-specific asset plan explicitly swaps them in.
+
+## Share Payload Note
+
+The share button label is localized as `Compartir el resultado`. The emitted text is built by `lib/core/sharing/share_copy_builder.dart`, uses `AppLocalizations`, and remains privacy-safe: estimated time, rising sign, confidence, brand, and public share URL only. No birth date, birthplace, life events, labels, API IDs, or other PII are included.
 
 ```
-My TrueRise rectification result:
-7:14 AM · Gemini Rising · 78% confidence
+Mi resultado de hora de nacimiento con TrueRise:
+7:14 AM · Ascendente Gemini · Nivel de confianza: 78%
 
-Calculated with TrueRise — birth-time rectification
+Calculado con TrueRise: rectificación de la hora de nacimiento
+Averigua tu hora de nacimiento: https://truerise.com.ua
 ```
 
-## Capture method
+## Capture / Generation Method
 
-A throwaway widget-test harness under `/tmp/rectify_shotcap` rendered the real
-`RectifyApp` inside a `RepaintBoundary` and wrote
-`boundary.toImage(pixelRatio: 3)` to PNG. Demo mode drove the canonical 6-event
-calculation through the real calculation controller and router. The locale was
-forced to `es` so `MaterialApp` resolved the Spanish ARB bundle. The harness
-preloaded bundled product fonts plus `MaterialIcons` and `Lucide` package fonts
-so navigation, action, and bottom-tab icons render as real glyphs.
+Raw frames are produced by `test/tool/raw_screenshot_capture_test.dart`: the real `RectifyApp` is rendered in a `RepaintBoundary` at store geometry, Demo mode drives the calculation flow offline, and one opt-in frame is written per `flutter test` process.
 
-Each frame was captured in its own `flutter test` process because this local
-toolchain hangs/crashes during teardown after a `toImage` capture. The wrapper
-waited for a valid 1290 x 2796 PNG, then terminated the stale tester process.
+Final caption-overlay PNGs are produced by `test/tool/store_screenshot_compositor_write_harness_test.dart` through the guarded `runWriteCli` path and the real `dart:ui` renderer. The plain Dart write CLI stays no-write because it has no Flutter engine.
 
 ## Limitations
 
-- The native OS share sheet cannot be captured from the host Flutter test
-  harness; frame 4 shows the shipped share affordance.
-- Caption overlays from `docs/store-listing-tier1-localized.md` §3 are proposed
-  owner-composited copy and are not baked into these raw frames.
-- The share text itself remains English-only until a future product change
-  localizes `ShareCopyBuilder`.
-- DEMO values come from the offline canonical dataset, not a live API request.
+- Native OS share sheets cannot be captured by the host Flutter test binding; the optional share frame shows the in-app button instead.
+- Values come from the canonical offline DEMO dataset, not a live API request.
+- Only the iPhone 6.7" portrait geometry is present in this pack.

@@ -12,76 +12,105 @@
     "logicalWidth": 430,
     "logicalHeight": 932,
     "devicePixelRatio": 3,
-    "safeAreaPaddingPhysicalPx": { "top": 177, "bottom": 102 }
+    "safeAreaPaddingPhysicalPx": {
+      "top": 177,
+      "bottom": 102
+    }
   },
   "source": "Shipped Flutter UI (package `rectify`) rendered from real widgets, routes, and state under the Spanish app bundle. No marketing mockups, no fabricated screens.",
   "captureMethod": "flutter test widget harness on the host VM: RepaintBoundary.toImage(pixelRatio: 3) -> ui.ImageByteFormat.png -> File. Demo mode (offline, no network) drives the canonical 6-event calculation through the real calculation_flow controller and go_router routes; the device locale is forced to es so MaterialApp resolves the Spanish ARB bundle exactly as a Spanish device would.",
   "demoMode": true,
   "network": "none (demo mode is fully offline; no network calls, no HTTP)",
   "captionsBakedIn": false,
-  "captionPlanSource": "HISTORICAL (pre-Appeeky) localized intended overlays. These raw frames pre-date the post-Appeeky 5-frame story order, so the per-frame intendedCaption values below are reference/historical, NOT the final captions; the current caption plan is in currentCaptionPlanSource. Captions are owner-composited overlays (after native review), NOT baked into these raw frames.",
-  "captionPlanStatus": "pre_appeeky_reference_raw_captures",
-  "currentCaptionPlanSource": "docs/store-listing-en.md §5 / docs/store-listing-tier1-localized.md §3 (post-Appeeky 5-frame plan)",
-  "currentCaptionPlanRequiresNewFrames": true,
+  "captionPlanSource": "CURRENT post-Appeeky five-frame store story. Captions are baked into final files under composited/, not into the raw frames.",
+  "captionPlanStatus": "current_post_appeeky_5_frame_ready",
+  "currentCaptionPlanSource": "docs/store-listing-tier1-localized.md §3 (post-Appeeky localized five-frame plan; near-native reviewed 2026-07-02)",
+  "currentCaptionPlanRequiresNewFrames": false,
   "refresh": {
     "date": "2026-06-03",
     "model": "claude-opus-4-8",
-    "frames": ["03-privacy-demo-settings.png", "05-privacy-policy.png"],
+    "frames": [
+      "03-privacy-demo-settings.png",
+      "05-privacy-policy.png"
+    ],
     "reason": "Re-captured from the current simplified shipped Settings and in-app Privacy screens. Same throwaway /tmp widget-test harness, iPhone 6.7\" geometry, offline Demo-mode method, and RepaintBoundary.toImage(pixelRatio: 3) as the original set; only frames 03 and 05 changed."
   },
   "frames": [
     {
+      "file": "01-problem-hook.png",
+      "title": "Problem hook",
+      "route": "/calc/window",
+      "shippedWidgets": "TimeWindowScreen with unknown-birth-time controls and search-window copy, Spanish chrome",
+      "shows": "Unknown-birth-time entry point",
+      "intendedCaption": "¿No sabes tu hora de nacimiento exacta?"
+    },
+    {
+      "file": "02-life-events.png",
+      "title": "Life events input",
+      "route": "/calc/events",
+      "shippedWidgets": "LifeEventsScreen populated with the canonical offline demo event set, Spanish chrome",
+      "shows": "Populated remembered-life-events input",
+      "intendedCaption": "Añade los eventos de vida que recuerdas."
+    },
+    {
       "file": "01-result-hero.png",
-      "title": "The answer (result hero)",
+      "title": "The result",
       "route": "/calc/result/:id",
       "shippedWidgets": "ResultScreen hero card + confidence bar + alternate candidates + DEMO pill, Spanish chrome",
-      "shows": "Spanish result screen: most probable time 7:14 AM, Gemini Rising, 78% confidence, alternate candidates (7:42 AM 61%, 8:03 AM 44%), DEMO badge, the evidence CTA, and the 'Compartir el resultado' share affordance.",
-      "intendedCaption": "Encuentra tu verdadera hora de nacimiento, con un nivel de confianza honesto."
+      "shows": "Estimated time, ascendant, confidence, alternates, and DEMO badge",
+      "intendedCaption": "Estima tu hora de nacimiento y tu ascendente."
     },
     {
       "file": "02-evidence-breakdown.png",
       "title": "The evidence",
       "route": "/calc/result/:id/evidence",
       "shippedWidgets": "EvidenceScreen per-event match cards with localized strength chips, Spanish chrome",
-      "shows": "Spanish evidence screen: why 7:14 AM with the 4-of-6 supporting summary, DEMO badge, per-event match cards (education, relocation, marriage/partnership, career change) and localized evidence prose.",
-      "intendedCaption": "Mira por qué, a partir de los eventos de vida que realmente recuerdas."
+      "shows": "Per-event evidence and candidate support",
+      "intendedCaption": "Mira los indicios detrás de cada hora candidata."
     },
     {
       "file": "03-privacy-demo-settings.png",
-      "title": "Private & offline (settings)",
-      "route": "/settings",      "shippedWidgets": "SettingsScreen: Demo mode toggle, time format, delete all data, bottom nav, Spanish chrome",
-      "shows": "Spanish settings: demo-mode toggle ON (free, offline), 12h/24h time format, the destructive delete-all-data row, and localized bottom navigation.",
-      "intendedCaption": "Privado por defecto. Pruébalo gratis, sin conexión, en modo demo."
-    },
-    {
-      "file": "04-share-result.png",
-      "title": "Share the result",
-      "route": "/calc/result/:id",
-      "shippedWidgets": "ResultScreen with the shipped Spanish 'Compartir el resultado' affordance scrolled into view (resultShareButtonKey)",
-      "shows": "The shipped Share affordance ('Compartir el resultado') in context on the Spanish result screen. The native OS share sheet itself cannot be rendered from the host test harness (see limitations); the exact text payload it emits is documented in shareTextPayload below.",
-      "intendedCaption": "Comparte tu resultado, nunca tus datos de nacimiento."
-    },
-    {
-      "file": "05-privacy-policy.png",
-      "title": "Privacy policy (bonus)",
-      "route": "/settings/privacy",
-      "shippedWidgets": "PrivacyPolicyScreen in-app content, Spanish chrome",      "shows": "Spanish in-app privacy disclosure: what TrueRise stores (on-device only), demo mode (entirely on-device, no network), live calculations (sent over HTTPS solely to compute, not tied to any account).",
-      "intendedCaption": "(bonus / optional — not part of the required 4-frame set)"
+      "title": "Private and offline demo",
+      "route": "/settings",
+      "shippedWidgets": "SettingsScreen: Demo mode toggle, time format, delete all data, bottom nav, Spanish chrome",
+      "shows": "Demo mode, time format, and private-device settings",
+      "intendedCaption": "Privado por defecto. Pruébalo gratis, sin conexión."
     }
   ],
   "shareTextPayload": {
     "builtBy": "lib/core/sharing/share_copy_builder.dart (ShareCopyBuilder.build)",
     "buttonLabelLocalized": "Compartir el resultado",
-    "textPayloadLocalized": false,
-    "textPayloadNote": "The in-app Share BUTTON label is localized (es: 'Compartir el resultado'), but the TEXT the share action emits is currently locale-invariant English: ShareCopyBuilder.build takes no AppLocalizations and hardcodes the English brand/affix strings. The dynamic values (time, ascendant, confidence) come from the result data and are not translated. This is the shipped behavior as of Run D.4; it is documented here, not changed.",
-    "privacySafe": "Contains only estimated time + rising sign + confidence + brand. No birth date, no birthplace, no life events, no PII.",
-    "exactText": "My TrueRise rectification result:\n7:14 AM · Gemini Rising · 78% confidence\n\nCalculated with TrueRise — birth-time rectification"
+    "textPayloadLocalized": true,
+    "textPayloadNote": "The fixed share prose and confidence label are localized through AppLocalizations; the brand and public share URL are held constant. Dynamic result values come from the calculation data, and the demo ascendant token is data-supplied.",
+    "privacySafe": "Contains only estimated time + rising sign + confidence + brand + public share URL. No birth date, no birthplace, no life events, no PII.",
+    "exactText": "Mi resultado de hora de nacimiento con TrueRise:\n7:14 AM · Ascendente Gemini · Nivel de confianza: 78%\n\nCalculado con TrueRise: rectificación de la hora de nacimiento\nAverigua tu hora de nacimiento: https://truerise.com.ua"
   },
   "limitations": [
-    "The native OS share sheet cannot be captured from the host `flutter test` harness (no platform share-sheet surface in the binding). Frame 04 therefore shows the shipped in-app 'Compartir el resultado' button; the exact text payload the share action emits is recorded verbatim in shareTextPayload.exactText.",
-    "The share text payload is locale-invariant English even under the Spanish bundle (see shareTextPayload.textPayloadNote). Localizing the shared text is a future product change outside this screenshot run.",
-    "These are raw device-resolution captures with NO marketing caption overlays or device bezels. The localized captions (captionPlanSource) are [PROPOSED] drafts pending native review and are owner-composited work.",
+    "Raw PNGs are device-resolution captures with NO marketing caption overlays or device bezels; final caption overlays live in the composited/ directory.",
+    "The native OS share sheet cannot be captured from the host `flutter test` harness. Optional raw frame `04-share-result.png` shows the shipped in-app 'Compartir el resultado' affordance; the exact text payload is recorded in shareTextPayload.exactText.",
     "Times/signs/percentages come from the canonical offline DEMO dataset, not a live calculation. The DEMO badge is visible in-frame on the result and evidence screens, matching the honest, probabilistic framing required for store review.",
-    "iPhone 6.7\" portrait only, matching screenshots/store/en. The same harness can emit a Play / other-size variant by changing the view geometry if a second set is later required."
-  ]
+    "iPhone 6.7\" portrait only, matching the App Store 6.7-inch slot. The same harness can emit a Play / other-size variant by changing the view geometry if a second set is later required."
+  ],
+  "currentPlanRefresh": {
+    "date": "2026-07-02",
+    "frames": [
+      "01-problem-hook.png",
+      "02-life-events.png"
+    ],
+    "reason": "Captured the two localized current-plan raw frames missing from the historical packs, using the committed offline Demo-mode Flutter-test harness and locale-specific app bundles."
+  },
+  "finalCompositedOutputs": {
+    "date": "2026-07-02",
+    "directory": "composited",
+    "frames": [
+      "01-problem-hook.png",
+      "02-life-events.png",
+      "01-result-hero.png",
+      "02-evidence-breakdown.png",
+      "03-privacy-demo-settings.png"
+    ],
+    "captionsBakedIn": true,
+    "source": "docs/store-listing-tier1-localized.md §3",
+    "method": "Generated from the manifest-driven Flutter-compatible compositor harness with the raw shipped-UI PNGs and reviewed caption overlays."
+  }
 }

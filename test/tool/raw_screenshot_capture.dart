@@ -5,9 +5,10 @@
 /// the Flutter-test capture harness (`raw_screenshot_capture_test.dart`) needs,
 /// kept pure so they are cheap to unit-test without a Flutter binding:
 ///
-///  1. The single safe draft destination directory and a validated path
-///     builder that can *only* ever resolve inside that draft folder, never
-///     inside a canonical `screenshots/store/<locale>` pack.
+///  1. The safe draft destination directory plus a reviewed localized-capture
+///     path builder. The default can only resolve inside that draft folder;
+///     non-English canonical locale writes are limited to the two missing
+///     current-plan frames after localization review.
 ///  2. The explicit environment opt-in that gates real on-disk writes, so a
 ///     normal `flutter test` run never touches the repository.
 ///  3. The declarative plan for the two current-five-frame story frames the
@@ -17,8 +18,8 @@
 /// discoverability next to the canonical `en` pack, but its directory name is
 /// NOT a [supportedStoreLocales] entry. The compositor planning seam only ever
 /// iterates that hardcoded locale list and validates locale segments through
-/// [isSupportedStoreLocale], so the draft frames can never be picked up by the
-/// guarded compositor write path or escape into a shipped locale pack.
+/// [isSupportedStoreLocale], so draft frames can never be picked up by the
+/// guarded compositor write path.
 library;
 
 import 'screenshot_compositor.dart';
@@ -44,6 +45,13 @@ const String kCaptureEnableEnv = 'RECTIFY_CAPTURE_RAW_SCREENSHOTS';
 /// (opt-in) run. One frame per process; see the harness for why.
 const String kCaptureFrameEnv = 'RECTIFY_CAPTURE_FRAME';
 
+/// Environment variable selecting the target locale pack for a real capture.
+///
+/// Defaults to [kRawCaptureDraftDirName] for backwards-compatible English
+/// draft captures. Non-English supported store locales are allowed only for
+/// the current-plan frames listed in [kMissingCurrentPlanFrames].
+const String kCaptureLocaleEnv = 'RECTIFY_CAPTURE_LOCALE';
+
 /// Whether real on-disk writes into the repository are explicitly enabled.
 ///
 /// True only when [kCaptureEnableEnv] is exactly `1`. Every other state
@@ -59,6 +67,14 @@ String? requestedCaptureFrameId(Map<String, String> environment) {
   if (raw == null) return null;
   final trimmed = raw.trim();
   return trimmed.isEmpty ? null : trimmed;
+}
+
+/// The requested capture target locale, defaulting to the safe English draft.
+String requestedCaptureLocale(Map<String, String> environment) {
+  final raw = environment[kCaptureLocaleEnv];
+  if (raw == null) return kRawCaptureDraftDirName;
+  final trimmed = raw.trim();
+  return trimmed.isEmpty ? kRawCaptureDraftDirName : trimmed;
 }
 
 /// Matches a safe draft-scratch directory name: a lowercase alphanumeric slug
@@ -122,6 +138,47 @@ String draftRawScreenshotPath(String fileName) {
     }
   }
   return path;
+}
+
+bool _isMissingCurrentPlanFile(String fileName) =>
+    kMissingCurrentPlanFrames.any((frame) => frame.fileName == fileName);
+
+/// Repository-relative path for an opt-in raw capture.
+///
+/// The default target is the English draft scratch folder. After localization
+/// review, non-English canonical packs may receive only the missing
+/// current-plan frames. English canonical writes are refused so the finalized
+/// EN pack cannot be overwritten by the opt-in harness.
+String captureRawScreenshotPath({
+  required String locale,
+  required String fileName,
+}) {
+  _checkDraftFileName(fileName);
+  if (locale == kRawCaptureDraftDirName) {
+    return draftRawScreenshotPath(fileName);
+  }
+  if (!isSupportedStoreLocale(locale)) {
+    throw ArgumentError.value(
+      locale,
+      'locale',
+      'Expected the draft folder or a supported store locale',
+    );
+  }
+  if (locale == 'en') {
+    throw ArgumentError.value(
+      locale,
+      'locale',
+      'English canonical current-plan frames are already finalized',
+    );
+  }
+  if (!_isMissingCurrentPlanFile(fileName)) {
+    throw ArgumentError.value(
+      fileName,
+      'fileName',
+      'Localized canonical captures are limited to missing current-plan frames',
+    );
+  }
+  return rawScreenshotPath(locale, fileName);
 }
 
 /// One frame the current post-Appeeky five-frame story plan needs but the
