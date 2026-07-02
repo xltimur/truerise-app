@@ -32,6 +32,19 @@ Guardrails:
 - Traffic split target: 50% treatment if App Store Connect allows this value for the current traffic level.
 - Current limitation: the default App Store screenshot set is read-only on the already-live `1.0.3` version; PPO is the immediate compliant route for screenshot testing. Replacing the default page requires a future editable app version.
 
+### iOS Console Progress - 2026-07-02
+
+- Product Page Optimization test created in App Store Connect.
+- Test name: `2026-07 First Screenshot Hook`.
+- Test URL: `https://appstoreconnect.apple.com/apps/6783427864/distribution/optimization/0b611a4a-d75f-4666-af71-d3b7275ea2d4`.
+- Treatment A ID in URL: `f3afd437-eccf-495a-a671-1b258efcc38a`.
+- Treatment count: 1.
+- Traffic split selected: 50%.
+- Treatment A inherited screenshots were removed from the iPhone 6.9"/6.5" source slot before upload.
+- Upload blocker: Codex in-app browser automation returned `File uploads are not supported by Codex In-app Browser`; the five PNGs still need to be selected manually in App Store Connect or uploaded from a browser/session that supports file chooser automation.
+- Upload-ready temporary copies were generated at `1284 x 2778` under `/tmp/truerise-asc-upload/` from the committed EN composites.
+- Do not click `Start Test` until Treatment A shows the five new screenshots in this order: problem hook, life events, result hero, evidence breakdown, privacy demo.
+
 ## Google Play Setup - 2026-07-02
 
 - Package: `ua.com.truerise.app`.
