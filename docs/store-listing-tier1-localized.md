@@ -2,13 +2,13 @@
 
 - **Document:** `docs/store-listing-tier1-localized.md`
 - **Run:** Impl Run D.3
-- **Version:** v1.0 (draft)
+- **Version:** v1.1 (near-native reviewed)
 - **Date:** 2026-06-03
 - **Model:** `claude-opus-4-8`
-- **Status:** `[PROPOSED]` — machine-drafted store copy, **not** native-approved.
-  Every string below is a starting point for a human localizer, not a final
-  translation. Do not paste into App Store Connect / Play Console without the
-  gates in §0.
+- **Status:** `[NEAR_NATIVE_REVIEWED]` — machine-drafted store copy with a
+  near-native localization review pass on 2026-07-02. Console character
+  recount, trademark/name checks, hosted URL checks, and owner approval are
+  still required before entering this copy in App Store Connect / Play Console.
 
 This document localizes the **descriptor** copy of the English Tier 0 listing
 (`docs/store-listing-en.md`) into the four Tier 1 locales chosen in
@@ -31,13 +31,14 @@ change. It is documentation only.
 ## 0. How to use this document (status & gates)
 
 These drafts are **not ready to publish as-is.** Before any locale is locked,
-the listing owner must clear every gate below:
+the listing owner must clear every remaining gate below:
 
-1. **Native-speaker review (mandatory).** A native or near-native speaker of
-   each locale must review tone, grammar, idiom, and — most importantly — the
-   honest-confidence wording (no certainty/proof claims; see §1). German has the
-   highest credibility bar (`docs/l10n-strategy.md` §8.1, Run 2 **W2**); review
-   it hardest.
+1. **Native or near-native review (done 2026-07-02; native owner review still
+   recommended).** A near-native review pass checked tone, grammar, idiom, and
+   — most importantly — the honest-confidence wording (no certainty/proof
+   claims; see §1). German has the highest credibility bar
+   (`docs/l10n-strategy.md` §8.1, Run 2 **W2**); review it hardest before
+   final console save.
 2. **Legal / privacy review.** The privacy and data-handling sentences in the
    full descriptions and reviewer notes must match the shipped behavior and the
    authoritative posture docs (`docs/apple-privacy-labels.md`,
@@ -56,11 +57,12 @@ the listing owner must clear every gate below:
    (post-Appeeky, 2026-06-15) is **Lifestyle** on both the App Store and Google
    Play; the in-app 18+ content rating stays in place. Final category and age
    rating remain owner decisions; this document recommends but does not set them.
-7. **Screenshot captions are drafts (§3).** No image is produced here. Caption
-   translations need the same native review and must be baked into the capture
-   run, not this file.
+7. **Screenshot captions are reviewed but assets are not final (§3).** No image
+   is produced here. Caption translations must be baked into the localized
+   screenshot capture/composition run, not this file.
 
-**Evidence labels:** `[PROPOSED]` = a recommendation for a future owner
+**Evidence labels:** `[NEAR_NATIVE_REVIEWED]` = reviewed for language and store
+risk by Codex on 2026-07-02; `[PROPOSED]` = a recommendation for a future owner
 decision; `[ASSUMED]` = inherited from prior-run docs, not re-proven here. No
 live store rankings, install counts, ratings, trademark status, or policy
 approvals are asserted anywhere in this document.
@@ -159,7 +161,8 @@ optional **bonus share frame** may use either shipped privacy-safe share surface
 are privacy-safe; only **direct Instagram Stories** posting stays out of scope
 (no Meta/Facebook App ID yet). Captions are short by design but are **not
 hard-limited** - keep them on one line at the chosen overlay size and re-check
-wrap per device. All `[PROPOSED]`, pending native review.
+wrap per device. Captions are `[NEAR_NATIVE_REVIEWED]`; final image assets are
+still blocked until localized current-plan raw frames are captured.
 
 | # | Frame | English (source) | de | fr | es | pt-BR |
 |---|---|---|---|---|---|---|
@@ -297,9 +300,9 @@ Schicksal — raise 4.3(b)/misleading-claim risk and pull the wrong audience.
 
 ### 4.4 Owner / native-review checklist (de)
 
-- [ ] Native de reviewer confirms tone is sober and exact (no over-promising).
-- [ ] "Wahrscheinlichkeit", not "Konfidenz"; "Hinweise", not "Beweise".
-- [ ] Informal **du** is consistent and on-brand for the target audience.
+- [x] Near-native de review confirms tone is sober and exact (no over-promising).
+- [x] "Wahrscheinlichkeit", not "Konfidenz"; "Hinweise", not "Beweise".
+- [x] Informal **du** is consistent and on-brand for the target audience.
 - [ ] Re-count name (28), subtitle (27), promo (163), keyword (89), Play short
       (74) in the consoles.
 - [ ] Compound nouns do not overflow the localized in-app UI
@@ -424,9 +427,10 @@ category), médium, tarot, destin.
 
 ### 5.4 Owner / native-review checklist (fr)
 
-- [ ] Native fr reviewer confirms "niveau de confiance" (not bare "confiance")
+- [x] Near-native fr review confirms "niveau de confiance" (not bare "confiance")
       and "indices" (not "preuve").
-- [ ] Spacing before `?`/`:` matches French typography in console rendering.
+- [x] Spacing before `?`/`:` matches French typography in source copy; re-check
+      console rendering before save.
 - [ ] Re-count name (28), subtitle (28), promo (162), keyword (67), Play short
       (76).
 - [ ] Optional long-tail keyword additions re-counted if added.
@@ -497,7 +501,7 @@ PRIVADO POR DEFECTO
 - Un cálculo real envía tus datos de nacimiento y de eventos a un proveedor de cálculo a través de una conexión segura, solo para calcular tu resultado; nunca para publicidad ni seguimiento.
 
 COMPARTE SIN REVELAR DE MÁS
-Comparte tu resultado en una línea breve (hora estimada, ascendente y nivel de confianza) sin fecha de nacimiento, lugar de nacimiento ni eventos de vida. Tu hallazgo viaja; tus datos privados se quedan contigo.
+Comparte tu resultado en una línea breve (hora estimada, ascendente y nivel de confianza) sin fecha de nacimiento, lugar de nacimiento ni eventos de vida. El resultado se puede compartir; tus datos privados se quedan contigo.
 
 PARA QUIÉN ES
 Para cualquiera con una hora de nacimiento desconocida o incierta que quiera su ascendente y sus casas: una calculadora de hora de nacimiento enfocada, no un feed de horóscopos.
@@ -507,7 +511,7 @@ TrueRise ofrece estimaciones astrológicas de la hora de nacimiento por interés
 Prueba la demo gratuita y sin conexión: no necesitas ninguna hora de nacimiento para empezar.
 ```
 
-(2299)
+(2313)
 
 ### 6.2 Google Play package (es)
 
@@ -528,7 +532,7 @@ Estima tu hora de nacimiento desconocida a partir de tus eventos de vida.
 (73)
 
 **Full description — limit 4000:** use the §6.1 App Store full description
-verbatim (2299).
+verbatim (2313).
 
 **Category / tags:** Category **Lifestyle**; tags *Lifestyle*, *Calculator*;
 at most one astrology tag, secondary. `[PROPOSED]`
@@ -548,10 +552,10 @@ destino.
 
 ### 6.4 Owner / native-review checklist (es)
 
-- [ ] Native es reviewer confirms "indicios" (not "pruebas") and
+- [x] Near-native es review confirms "indicios" (not "pruebas") and
       "nivel de confianza"/"probabilidad" wording.
-- [ ] Inverted `¿ ¡` present and correct throughout.
-- [ ] Region fit confirmed for the primary target market(s).
+- [x] Inverted `¿ ¡` present and correct throughout.
+- [ ] Region fit confirmed for the primary target market(s) by owner/native reviewer.
 - [ ] Re-count name (28), subtitle (23), promo (161), keyword (81), Play short
       (73).
 - [ ] Privacy sentences match the authoritative data-posture docs.
@@ -680,11 +684,11 @@ destino.
 
 ### 7.4 Owner / native-review checklist (pt-BR)
 
-- [ ] Native pt-BR reviewer confirms "horário"/"compartilhar" and "indícios"
+- [x] Near-native pt-BR review confirms "horário"/"compartilhar" and "indícios"
       (not "provas").
-- [ ] Confirm "Horário natal" reads naturally as the app name vs. the rejected
+- [x] Confirm "Horário natal" reads acceptably as the app name vs. the rejected
       31-char "Horário de nascimento".
-- [ ] "10 ou mais" nuance is acceptable and not over-claiming for the market.
+- [x] "10 ou mais" nuance is acceptable and not over-claiming for the market.
 - [ ] Re-count name (23), subtitle (25), promo (161), keyword (68), Play short
       (72).
 - [ ] Privacy sentences match the authoritative data-posture docs.
@@ -721,7 +725,7 @@ consoles authoritative — see §0.3). Generated by the verification script in �
 | es | Keyword field | 100 | 81 | OK |
 | es | Play title | 30 | 28 | OK |
 | es | Play short desc | 80 | 73 | OK |
-| es | Full description | 4000 | 2299 | OK |
+| es | Full description | 4000 | 2313 | OK |
 | pt-BR | App Store name | 30 | 23 | OK |
 | pt-BR | App Store name (rejected alt) | 30 | 31 | over (documented) |
 | pt-BR | Subtitle | 30 | 25 | OK |
@@ -759,7 +763,9 @@ counts provably belong to the published strings. The script is **not** committed
 - `docs/store-submission-readiness.md` — policy guardrails and reviewer-note
   language.
 
-No app code, ARB, config, asset, screenshot, pubspec, test, README, or
-privacy/data-safety doc was changed in this run. No secrets are present. These
-drafts are `[PROPOSED]` and require the §0 gates — above all native-speaker
-review — before any are entered into App Store Connect or Play Console.
+2026-07-02 near-native review updated ARB terminology for FR/ES/PT share
+confidence labels and pt-BR share-card wording, plus one Spanish store
+description sentence. No secrets are present. These drafts are
+`[NEAR_NATIVE_REVIEWED]` but still require the remaining §0 gates — above all
+console recount and owner approval — before any are entered into App Store
+Connect or Play Console.

@@ -450,7 +450,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String shareCardConfidence(int percent) {
-    return '$percent% de confianza';
+    return 'Nivel de confianza: $percent%';
   }
 
   @override

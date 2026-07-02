@@ -136,7 +136,7 @@
   "resultFeedbackNo": "Non",
   "resultFeedbackSaved": "Merci, enregistré.",
   "shareCardTagline": "Rectification de l'heure de naissance",
-  "shareCardConfidence": "{percent}% de confiance",
+  "shareCardConfidence": "Niveau de confiance : {percent} %",
   "shareCopyHeadline": "Mon résultat d'heure de naissance avec {brand} :",
   "shareCopyTagline": "Calculé avec {brand} : rectification de l'heure de naissance",
   "shareCopyGetApp": "Trouvez votre heure de naissance : {url}",

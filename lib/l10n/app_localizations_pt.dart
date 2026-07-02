@@ -450,11 +450,11 @@ class AppLocalizationsPt extends AppLocalizations {
   String get resultFeedbackSaved => 'Obrigado, salvo.';
 
   @override
-  String get shareCardTagline => 'Retificação da hora de nascimento';
+  String get shareCardTagline => 'Retificação do horário de nascimento';
 
   @override
   String shareCardConfidence(int percent) {
-    return '$percent% de confiança';
+    return 'Nível de confiança: $percent%';
   }
 
   @override
