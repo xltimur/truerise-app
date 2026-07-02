@@ -65,9 +65,16 @@ rating=Everyone
 
 ## Console Follow-Up
 
-- App Store Connect: verify iPhone 6.7" screenshots are populated for Apple ID `6783427864`; if empty, upload the final EN phone screenshot set before Product Page Optimization or external promotion.
-- Google Play Console: verify the EN phone screenshot order matches the final five-frame story before starting Store Listing Experiments.
+- App Store Connect: verify iPhone 6.7" screenshots are populated for Apple ID `6783427864`; if empty, upload `screenshots/store/en/composited/` in manifest order before Product Page Optimization or external promotion.
+- Google Play Console: upload or verify the same EN phone screenshot order from `screenshots/store/en/composited/` before starting Store Listing Experiments.
+
+## 2026-07-02 Local Screenshot Update
+
+- EN raw story is ready in `screenshots/store/en/manifest.json`: problem hook, life events, result hero, evidence, privacy/offline demo.
+- EN final composites are generated under `screenshots/store/en/composited/` at `1290 x 2796`.
+- Visual QA checked readable captions, no UI overlap in caption band, demo/sample data only, and no guaranteed-accuracy claims.
+- Console upload and public propagation are still pending account-side actions; do not start Product Page Optimization, Store Listing Experiments, paid traffic, or creator outreach until phone screenshots are live.
 
 ## Next Task
 
-Proceed to Task 2 because the public App Store lookup exposes an iPhone screenshot risk and the current raw screenshot story needs conversion uplift. Do not proceed to Task 3 launch actions until phone screenshots are final and live.
+Task 2 repo assets are prepared. Next required action is console upload / verification of the EN phone screenshots. Do not proceed to Task 3 launch actions until phone screenshots are final and live.

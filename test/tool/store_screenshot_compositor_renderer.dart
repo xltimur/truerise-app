@@ -46,6 +46,9 @@ class StoreScreenshotCompositeInput {
 /// Renders a [StoreScreenshotCompositeInput] to composited PNG bytes purely in
 /// memory. No file system access happens here.
 abstract final class StoreScreenshotCompositorRenderer {
+  /// Bundled product font used for marketing captions.
+  static const String captionFontFamily = 'Inter';
+
   /// Light store-listing background gradient (top to bottom).
   static const Color _backgroundTop = Color(0xFFF7F8FA);
   static const Color _backgroundBottom = Color(0xFFE9ECF1);
@@ -126,6 +129,7 @@ abstract final class StoreScreenshotCompositorRenderer {
         text: caption,
         style: const TextStyle(
           color: _captionColor,
+          fontFamily: captionFontFamily,
           fontSize: 76,
           fontWeight: FontWeight.w700,
           height: 1.18,

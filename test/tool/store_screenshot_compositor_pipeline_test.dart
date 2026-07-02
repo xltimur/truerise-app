@@ -5,10 +5,9 @@
 // It proves the two halves connect end to end on the real on-disk plan: each
 // planned job's raw source exists, and feeding the job's caption plus raw
 // bytes through the renderer yields a fresh, same-size composited store PNG.
-// Rendering stays purely in memory: no `composited/` output directory or file
-// is ever created. To keep the render pass fast it composites only a small
-// representative subset of the plan (the first and last jobs) rather than all
-// 25 frames.
+// Rendering stays purely in memory: no new output directory or file is ever
+// created. To keep the render pass fast it composites only a small
+// representative subset of the plan rather than all 25 frames.
 
 import 'dart:io';
 import 'dart:typed_data';
@@ -19,17 +18,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'screenshot_compositor.dart';
 import 'store_screenshot_compositor_plan.dart';
 import 'store_screenshot_compositor_renderer.dart';
+import 'store_screenshot_compositor_repo_state.dart';
 
 /// PNG file signature (first four bytes).
 const List<int> _pngMagic = <int>[0x89, 0x50, 0x4E, 0x47];
-
-/// Fails if any `composited/` directory exists under a supported locale.
-void _expectNoCompositedDirs() {
-  for (final locale in supportedStoreLocales) {
-    final dir = Directory('$kStoreScreenshotsRoot/$locale/$kCompositedDirName');
-    expect(dir.existsSync(), isFalse, reason: dir.path);
-  }
-}
 
 Future<ui.Image> _decodePng(Uint8List bytes) async {
   final codec = await ui.instantiateImageCodec(bytes);
@@ -83,14 +75,17 @@ void main() {
       expect(jobs, isNotEmpty);
 
       // A small representative subset keeps the render pass fast while still
-      // spanning the plan from its first to its last locale/frame.
-      final selected = <StoreScreenshotCompositeJob>[jobs.first, jobs.last];
+      // spanning non-English locales whose outputs are still not generated.
+      final selected = <StoreScreenshotCompositeJob>[
+        jobs.firstWhere((job) => job.locale == 'de'),
+        jobs.last,
+      ];
 
-      _expectNoCompositedDirs();
+      expectCommittedCompositedState();
       for (final job in selected) {
         await _expectJobComposites(job);
       }
-      _expectNoCompositedDirs();
+      expectCommittedCompositedState();
     },
   );
 }

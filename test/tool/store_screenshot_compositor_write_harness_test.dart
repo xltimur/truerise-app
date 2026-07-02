@@ -7,9 +7,11 @@
 // test binding. The `_renderJob` adapter below is exactly the wiring a future
 // real-write harness would use.
 //
-// It runs entirely inside a fresh temporary directory and never writes under
-// the repository's `screenshots/store/`.
+// The default test runs entirely inside a fresh temporary directory. A separate
+// opt-in test can write the final English composites under the repository when
+// RECTIFY_WRITE_EN_STORE_COMPOSITES=1 is supplied.
 
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -17,9 +19,9 @@ import 'dart:ui' as ui;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../tool/store_screenshot_compositor_write.dart';
-import 'screenshot_compositor.dart';
 import 'store_screenshot_compositor_plan.dart';
 import 'store_screenshot_compositor_renderer.dart';
+import 'store_screenshot_compositor_repo_state.dart';
 
 /// PNG file signature (first four bytes).
 const List<int> _pngMagic = <int>[0x89, 0x50, 0x4E, 0x47];
@@ -70,13 +72,11 @@ Future<Uint8List> _tinyPng() async {
   }
 }
 
-/// Fails if any `composited/` directory exists under the real repository.
-void _expectNoRepoCompositedDirs() {
-  for (final locale in supportedStoreLocales) {
-    final dir = Directory('$kStoreScreenshotsRoot/$locale/$kCompositedDirName');
-    expect(dir.existsSync(), isFalse, reason: dir.path);
-  }
-}
+const String _writeEnCompositesFlag = 'RECTIFY_WRITE_EN_STORE_COMPOSITES';
+
+Map<String, dynamic> _readManifest(String locale) =>
+    jsonDecode(File(storeManifestPath(locale)).readAsStringSync())
+        as Map<String, dynamic>;
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -129,7 +129,35 @@ void main() {
       expect(bytes.sublist(0, 4), _pngMagic);
       expect(bytes, isNot(equals(await rawFile.readAsBytes())));
 
-      _expectNoRepoCompositedDirs();
+      expectCommittedCompositedState();
+    },
+  );
+
+  test(
+    'writes final English composites only when explicitly opted in',
+    () async {
+      if (Platform.environment[_writeEnCompositesFlag] != '1') {
+        expectCommittedCompositedState();
+        return;
+      }
+
+      final enManifest = _readManifest('en');
+      final enReadiness = readLocaleCaptionPlanReadiness('en', enManifest);
+      final jobs = buildLocaleCompositeJobs('en', enManifest);
+
+      final result = await runWriteCli(
+        parseWriteCliArgs(
+          const <String>['--write', '--yes', '--allow-overwrite'],
+        ),
+        jobs: jobs,
+        root: Directory.current,
+        render: _renderJob,
+        readiness: <CaptionPlanReadiness>[enReadiness],
+      );
+
+      expect(result.exitCode, 0, reason: result.lines.join('\n'));
+      expect(result.writtenOutputPaths, expectedEnglishCompositedOutputPaths());
+      expectCommittedCompositedState();
     },
   );
 }

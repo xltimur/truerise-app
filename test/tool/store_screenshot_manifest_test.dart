@@ -5,16 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'raw_screenshot_capture.dart';
 import 'screenshot_compositor.dart';
-
-/// Raw screenshot file names every locale folder under
-/// `screenshots/store/<locale>` is expected to ship, in manifest order.
-const List<String> _expectedFrameFiles = <String>[
-  '01-result-hero.png',
-  '02-evidence-breakdown.png',
-  '03-privacy-demo-settings.png',
-  '04-share-result.png',
-  '05-privacy-policy.png',
-];
+import 'store_screenshot_compositor_repo_state.dart';
 
 /// Repository-relative manifest path for [locale].
 File _manifestFile(String locale) =>
@@ -85,7 +76,10 @@ void main() {
       });
 
       test('manifest frame files equal the expected ordered set', () {
-        expect(_frameFiles(locale), orderedEquals(_expectedFrameFiles));
+        expect(
+          _frameFiles(locale),
+          orderedEquals(expectedManifestFrameFilesForLocale(locale)),
+        );
       });
 
       test('every manifest frame file is a valid raw screenshot name', () {
@@ -109,22 +103,20 @@ void main() {
         }
       });
 
-      test('folder holds exactly the five expected png files', () {
+      test('folder holds the expected raw png files', () {
         final pngNames = Directory('$kStoreScreenshotsRoot/$locale')
             .listSync()
             .whereType<File>()
             .map((file) => _baseName(file.path))
             .where((name) => name.endsWith('.png'))
             .toList();
-        expect(pngNames, unorderedEquals(_expectedFrameFiles));
+        expect(pngNames, unorderedEquals(expectedRawPngFilesForLocale(locale)));
       });
 
-      test('folder has no composited directory', () {
-        final composited = Directory(
-          '$kStoreScreenshotsRoot/$locale/$kCompositedDirName',
-        );
-        expect(composited.existsSync(), isFalse);
-      });
+      test(
+        'committed composited directory state is intentional',
+        expectCommittedCompositedState,
+      );
     });
   }
 }

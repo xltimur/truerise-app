@@ -15,8 +15,8 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../tool/store_screenshot_compositor_write.dart';
-import 'screenshot_compositor.dart';
 import 'store_screenshot_compositor_plan.dart';
+import 'store_screenshot_compositor_repo_state.dart';
 
 /// A single-frame manifest map shaped like a decoded `manifest.json`.
 Map<String, dynamic> _manifestWithFrame({
@@ -61,14 +61,6 @@ class _RecordingRenderer {
   ) async {
     renderedFiles.add(job.fileName);
     return Uint8List.fromList(utf8.encode('composited:${job.fileName}'));
-  }
-}
-
-/// Fails if any `composited/` directory exists under the real repository.
-void _expectNoRepoCompositedDirs() {
-  for (final locale in supportedStoreLocales) {
-    final dir = Directory('$kStoreScreenshotsRoot/$locale/$kCompositedDirName');
-    expect(dir.existsSync(), isFalse, reason: dir.path);
   }
 }
 
@@ -148,7 +140,7 @@ void main() {
         File('${root.path}/${jobs.single.outputPath}').existsSync(),
         isFalse,
       );
-      _expectNoRepoCompositedDirs();
+      expectCommittedCompositedState();
     });
 
     test('--write without --yes refuses and renders nothing', () async {
@@ -169,7 +161,7 @@ void main() {
       expect(renderer.renderedFiles, isEmpty);
       expect(result.lines.join('\n').toLowerCase(), contains('--yes'));
       expect(File('${root.path}/${job.outputPath}').existsSync(), isFalse);
-      _expectNoRepoCompositedDirs();
+      expectCommittedCompositedState();
     });
   });
 
@@ -210,7 +202,7 @@ void main() {
       final out = File('${root.path}/${job.outputPath}');
       expect(out.existsSync(), isTrue);
       expect(out.readAsStringSync(), 'composited:01-result-hero.png');
-      _expectNoRepoCompositedDirs();
+      expectCommittedCompositedState();
     });
 
     test('refuses an existing output unless --allow-overwrite', () async {
@@ -233,7 +225,7 @@ void main() {
       expect(result.exitCode, isNot(0));
       expect(renderer.renderedFiles, isEmpty);
       expect(out.readAsStringSync(), 'original');
-      _expectNoRepoCompositedDirs();
+      expectCommittedCompositedState();
     });
 
     test('--allow-overwrite replaces the existing output', () async {
@@ -257,7 +249,7 @@ void main() {
       expect(result.wroteFiles, isTrue);
       expect(result.writtenOutputPaths, <String>[job.outputPath]);
       expect(out.readAsStringSync(), 'composited:01-result-hero.png');
-      _expectNoRepoCompositedDirs();
+      expectCommittedCompositedState();
     });
 
     test(
@@ -279,7 +271,7 @@ void main() {
         expect(result.exitCode, isNot(0));
         expect(renderer.renderedFiles, isEmpty);
         expect(result.lines.join('\n'), contains(job.rawPath));
-        _expectNoRepoCompositedDirs();
+        expectCommittedCompositedState();
       },
     );
 
@@ -309,7 +301,7 @@ void main() {
         expect(text, contains('en'));
 
         expect(File('${root.path}/${job.outputPath}').existsSync(), isFalse);
-        _expectNoRepoCompositedDirs();
+        expectCommittedCompositedState();
       },
     );
 
@@ -336,7 +328,7 @@ void main() {
         expect(result.wroteFiles, isTrue);
         expect(result.exitCode, 0);
         expect(result.writtenOutputPaths, <String>[job.outputPath]);
-        _expectNoRepoCompositedDirs();
+        expectCommittedCompositedState();
       },
     );
   });
@@ -361,13 +353,13 @@ void main() {
       final text = result.lines.join('\n').toLowerCase();
       expect(text, contains('blocked'));
       expect(text, contains('--write --yes'));
-      _expectNoRepoCompositedDirs();
+      expectCommittedCompositedState();
     });
   });
 
   group('runWriteCli preview over the real on-disk plan', () {
     test('previews 25 planned jobs and writes nothing to the repo', () async {
-      _expectNoRepoCompositedDirs();
+      expectCommittedCompositedState();
       final renderer = _RecordingRenderer();
 
       // Pointed at the repo root on purpose: the no-write default must still
@@ -383,7 +375,7 @@ void main() {
       expect(result.wroteFiles, isFalse);
       expect(renderer.renderedFiles, isEmpty);
       expect(result.lines.join('\n'), contains('25'));
-      _expectNoRepoCompositedDirs();
+      expectCommittedCompositedState();
     });
   });
 }

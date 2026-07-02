@@ -14,6 +14,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'screenshot_compositor.dart';
 import 'store_screenshot_compositor_plan.dart';
+import 'store_screenshot_compositor_repo_state.dart';
 import 'store_screenshot_compositor_writer.dart';
 
 /// A single-frame manifest map shaped like a decoded `manifest.json`.
@@ -51,14 +52,6 @@ class _RecordingRenderer {
   ) async {
     renderedFiles.add(job.fileName);
     return Uint8List.fromList(utf8.encode('composited:${job.fileName}'));
-  }
-}
-
-/// Fails if any `composited/` directory exists under the real repository.
-void _expectNoRepoCompositedDirs() {
-  for (final locale in supportedStoreLocales) {
-    final dir = Directory('$kStoreScreenshotsRoot/$locale/$kCompositedDirName');
-    expect(dir.existsSync(), isFalse, reason: dir.path);
   }
 }
 
@@ -100,7 +93,7 @@ void main() {
     expect(outputFile.existsSync(), isTrue);
     expect(outputFile.readAsStringSync(), 'composited:01-result-hero.png');
 
-    _expectNoRepoCompositedDirs();
+    expectCommittedCompositedState();
   });
 
   test('missing raw source fails before rendering', () async {
@@ -121,7 +114,7 @@ void main() {
     expect(renderer.renderedFiles, isEmpty);
     expect(File('${root.path}/${job.outputPath}').existsSync(), isFalse);
 
-    _expectNoRepoCompositedDirs();
+    expectCommittedCompositedState();
   });
 
   test('existing output fails without overwrite', () async {
@@ -145,7 +138,7 @@ void main() {
     expect(renderer.renderedFiles, isEmpty);
     expect(outputFile.readAsStringSync(), 'original-output');
 
-    _expectNoRepoCompositedDirs();
+    expectCommittedCompositedState();
   });
 
   test('allowOverwrite replaces the existing output bytes', () async {
@@ -167,23 +160,26 @@ void main() {
     expect(report.writtenOutputPaths, <String>[job.outputPath]);
     expect(outputFile.readAsStringSync(), 'composited:01-result-hero.png');
 
-    _expectNoRepoCompositedDirs();
+    expectCommittedCompositedState();
   });
 
-  test('writing never creates a composited dir in the repo', () async {
-    _expectNoRepoCompositedDirs();
+  test(
+    'writing into a temp root never changes repo composited state',
+    () async {
+      expectCommittedCompositedState();
 
-    final job = _job('02-evidence-breakdown.png');
-    _seedRaw(root, job, 'raw-bytes');
+      final job = _job('02-evidence-breakdown.png');
+      _seedRaw(root, job, 'raw-bytes');
 
-    await writeCompositedScreenshots(
-      <StoreScreenshotCompositeJob>[job],
-      root: root,
-      render: _RecordingRenderer().render,
-    );
+      await writeCompositedScreenshots(
+        <StoreScreenshotCompositeJob>[job],
+        root: root,
+        render: _RecordingRenderer().render,
+      );
 
-    // Output landed under the temp root, not the repository tree.
-    expect(File('${root.path}/${job.outputPath}').existsSync(), isTrue);
-    _expectNoRepoCompositedDirs();
-  });
+      // Output landed under the temp root, not the repository tree.
+      expect(File('${root.path}/${job.outputPath}').existsSync(), isTrue);
+      expectCommittedCompositedState();
+    },
+  );
 }

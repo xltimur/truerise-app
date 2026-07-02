@@ -18,10 +18,10 @@
   "demoMode": true,
   "network": "none (demo mode is fully offline; no network calls, no HTTP)",
   "captionsBakedIn": false,
-  "captionPlanSource": "HISTORICAL (pre-Appeeky) intended overlays. These raw frames pre-date the post-Appeeky 5-frame story order, so the per-frame intendedCaption values below are reference/historical, NOT the final captions; the current caption plan is in currentCaptionPlanSource. Captions are owner-composited overlays, NOT baked into these raw frames.",
-  "captionPlanStatus": "pre_appeeky_reference_raw_captures",
+  "captionPlanSource": "CURRENT post-Appeeky five-frame store story. Captions are owner-composited overlays, NOT baked into these raw frames.",
+  "captionPlanStatus": "current_post_appeeky_5_frame_ready",
   "currentCaptionPlanSource": "docs/store-listing-en.md §5 / docs/store-listing-tier1-localized.md §3 (post-Appeeky 5-frame plan)",
-  "currentCaptionPlanRequiresNewFrames": true,
+  "currentCaptionPlanRequiresNewFrames": false,
   "refresh": {
     "date": "2026-06-03",
     "model": "claude-opus-4-8",
@@ -30,12 +30,28 @@
   },
   "frames": [
     {
+      "file": "01-problem-hook.png",
+      "title": "Problem hook",
+      "route": "/calc/window",
+      "shippedWidgets": "TimeWindowScreen with unknown-birth-time controls and search-window copy",
+      "shows": "The unknown-birth-time entry point: 'Do you know an approximate birth time?' with 'I have an approximate time' / 'I have no idea', an approximate time, a search window, and the derived range copy.",
+      "intendedCaption": "Don't know your exact birth time?"
+    },
+    {
+      "file": "02-life-events.png",
+      "title": "Life events input",
+      "route": "/calc/events",
+      "shippedWidgets": "LifeEventsScreen populated with the canonical offline demo event set",
+      "shows": "Populated life-events list with education, relocation, career, relationship, and child milestones plus Add event and Continue affordances.",
+      "intendedCaption": "Add the life events you remember."
+    },
+    {
       "file": "01-result-hero.png",
-      "title": "The answer (result hero)",
+      "title": "The result",
       "route": "/calc/result/:id",
       "shippedWidgets": "ResultScreen hero card + confidence bar + alternate candidates + DEMO pill",
       "shows": "Most probable birth time 7:14 AM, Gemini Rising, 78% confidence, alternate candidates (7:42 AM 61%, 8:03 AM 44%), DEMO badge, 'See how we got this' CTA.",
-      "intendedCaption": "Find your real birth time — with an honest confidence score."
+      "intendedCaption": "Estimate your birth time and rising sign."
     },
     {
       "file": "02-evidence-breakdown.png",
@@ -43,29 +59,15 @@
       "route": "/calc/result/:id/evidence",
       "shippedWidgets": "EvidenceScreen per-event match cards with STRONG/MODERATE/WEAK strength chips",
       "shows": "'Why 7:14 AM? 4 of 6 events strongly supported this time.' Per-event rows: Education (STRONG), Relocation (STRONG), Marriage/Partnership (MODERATE), Career change (MODERATE), Birth of child (WEAK).",
-      "intendedCaption": "See why — from the life events you actually remember."
+      "intendedCaption": "See the evidence behind every candidate."
     },
     {
       "file": "03-privacy-demo-settings.png",
-      "title": "Private & offline (settings)",
-      "route": "/settings",      "shippedWidgets": "SettingsScreen: Demo mode toggle, Time format, Delete all data, bottom nav",
+      "title": "Private & offline demo",
+      "route": "/settings",
+      "shippedWidgets": "SettingsScreen: Demo mode toggle, Time format, Delete all data, bottom nav",
       "shows": "Demo mode toggle ON ('Run calculations with sample data (free, no network)'), 12h/24h time format, 'Delete all data' ('Removes all calculations and events from this device. Cannot be undone').",
-      "intendedCaption": "Private by default. Try it free, offline, in Demo mode."
-    },
-    {
-      "file": "04-share-result.png",
-      "title": "Share the result",
-      "route": "/calc/result/:id",
-      "shippedWidgets": "ResultScreen with the shipped 'Share result' affordance visible in context (resultShareButtonKey)",
-      "shows": "The shipped Share affordance in context on the result screen, using the clean result viewport where the share action is visible without a clipped hero card. The native OS share sheet itself cannot be rendered from the host test harness (see limitations); the exact privacy-safe text payload it sends is documented in shareTextPayload below.",
-      "intendedCaption": "Share your result — never your birth data."
-    },
-    {
-      "file": "05-privacy-policy.png",
-      "title": "Privacy policy (bonus)",
-      "route": "/settings/privacy",      "shippedWidgets": "PrivacyPolicyScreen in-app content",
-      "shows": "In-app privacy disclosure: 'What TrueRise stores' (on-device only), 'Demo mode' (entirely on-device, no network), 'Live calculations' (sent over HTTPS solely to compute, not tied to any account).",
-      "intendedCaption": "(bonus / optional — not part of the required 4-frame set)"
+      "intendedCaption": "Private by default. Try it free, offline."
     }
   ],
   "shareTextPayload": {

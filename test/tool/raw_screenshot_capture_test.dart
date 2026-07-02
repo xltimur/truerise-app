@@ -57,6 +57,7 @@ import '../helpers/fake_history_repository.dart';
 import '../helpers/fake_rectification_repository.dart';
 import 'raw_screenshot_capture.dart';
 import 'screenshot_compositor.dart';
+import 'store_screenshot_compositor_repo_state.dart';
 
 /// PNG file signature (first four bytes).
 const List<int> _pngMagic = <int>[0x89, 0x50, 0x4E, 0x47];
@@ -209,10 +210,15 @@ Future<void> _driveToFrame(WidgetTester tester, RawCaptureFrame frame) async {
   }
 }
 
-/// Fails if any canonical `screenshots/store/<locale>` directory holds a draft
-/// frame, proving a capture run never writes into a shipped pack.
-void _expectCanonicalPacksUntouched() {
-  const draftNames = <String>{'01-problem-hook.png', '02-life-events.png'};
+/// Fails if any non-English canonical pack holds the frames that were first
+/// captured in the draft folder. English now intentionally ships those two
+/// frames as part of the final five-frame story.
+void _expectCanonicalPacksInExpectedState() {
+  final finalizedEnglishNames = expectedEnglishFinalFrameFiles
+      .where(
+        (name) => name == '01-problem-hook.png' || name == '02-life-events.png',
+      )
+      .toSet();
   for (final locale in supportedStoreLocales) {
     final pack = Directory('$kStoreScreenshotsRoot/$locale');
     if (!pack.existsSync()) continue;
@@ -220,9 +226,13 @@ void _expectCanonicalPacksUntouched() {
         .listSync()
         .whereType<File>()
         .map((f) => f.uri.pathSegments.last)
-        .where(draftNames.contains)
+        .where(finalizedEnglishNames.contains)
         .toList();
-    expect(leaked, isEmpty, reason: '$locale holds a draft frame: $leaked');
+    if (locale == 'en') {
+      expect(leaked, unorderedEquals(finalizedEnglishNames));
+    } else {
+      expect(leaked, isEmpty, reason: '$locale holds a draft frame: $leaked');
+    }
   }
 }
 
@@ -255,7 +265,7 @@ void main() {
 
       if (!enabled) {
         // Default: never run the finalization-hanging toImage, never write.
-        _expectCanonicalPacksUntouched();
+        _expectCanonicalPacksInExpectedState();
         return;
       }
 
@@ -281,7 +291,7 @@ void main() {
         ..parent.createSync(recursive: true)
         ..writeAsBytesSync(bytes, flush: true);
       expect(File(relPath).existsSync(), isTrue);
-      _expectCanonicalPacksUntouched();
+      _expectCanonicalPacksInExpectedState();
       // Surface the written path to the operator running the opt-in capture.
       // ignore: avoid_print
       print('Captured ${frame.id} -> $relPath (${bytes.length} bytes)');

@@ -13,23 +13,16 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../tool/store_screenshot_compositor_dry_run.dart';
 import 'screenshot_compositor.dart';
 import 'store_screenshot_compositor_plan.dart';
+import 'store_screenshot_compositor_repo_state.dart';
 
 /// A `pathExists` stub modelling the healthy state the dry run expects:
 /// every raw source is present, and no `composited/` output exists yet.
 bool _rawsPresentOutputsAbsent(String path) => !path.contains('/composited/');
 
-/// Fails if any `composited/` directory exists under a supported locale.
-void _expectNoCompositedDirs() {
-  for (final locale in supportedStoreLocales) {
-    final dir = Directory('$kStoreScreenshotsRoot/$locale/$kCompositedDirName');
-    expect(dir.existsSync(), isFalse, reason: dir.path);
-  }
-}
-
 void main() {
   group('buildDryRunReport (real on-disk plan)', () {
-    test('reports 25 jobs across 5 locales with nothing missing', () {
-      _expectNoCompositedDirs();
+    test('reports 25 jobs and the committed English outputs', () {
+      expectCommittedCompositedState();
 
       final jobs = buildAllCompositeJobs();
       final report = buildDryRunReport(
@@ -37,14 +30,20 @@ void main() {
         pathExists: (path) => File(path).existsSync(),
       );
 
-      expect(report.ok, isTrue, reason: report.errors.join('\n'));
-      expect(report.errors, isEmpty);
+      expect(report.ok, isFalse);
+      expect(
+        report.errors,
+        unorderedEquals(<String>[
+          for (final path in expectedEnglishCompositedOutputPaths())
+            'Output already exists: $path',
+        ]),
+      );
       expect(report.totalJobs, 25);
       expect(report.locales.length, 5);
       expect(report.locales, orderedEquals(supportedStoreLocales));
 
-      // Building the report must not have created any output directories.
-      _expectNoCompositedDirs();
+      // Building the report must not have changed committed output state.
+      expectCommittedCompositedState();
     });
   });
 

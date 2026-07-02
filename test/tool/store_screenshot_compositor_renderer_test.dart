@@ -7,12 +7,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'screenshot_compositor.dart';
 import 'store_screenshot_compositor_renderer.dart';
+import 'store_screenshot_compositor_repo_state.dart';
 
 /// PNG file signature (first four bytes).
 const List<int> _pngMagic = <int>[0x89, 0x50, 0x4E, 0x47];
-
-/// The `composited/` output directory the harness must never create.
-const String _enCompositedDir = '$kStoreScreenshotsRoot/en/$kCompositedDirName';
 
 const String _resultHeroFile = '01-result-hero.png';
 
@@ -67,12 +65,15 @@ Future<Uint8List> _syntheticPng(int width, int height) async {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  test('caption renderer uses the bundled product font family', () {
+    expect(StoreScreenshotCompositorRenderer.captionFontFamily, 'Inter');
+  });
+
   test('composites the result-hero frame into a same-size store PNG', () async {
     final rawBytes = await _rawHeroFile().readAsBytes();
     final caption = _intendedCaption(_resultHeroFile);
 
-    // The composited output directory must not exist before rendering.
-    expect(Directory(_enCompositedDir).existsSync(), isFalse);
+    expectCommittedCompositedState();
 
     final output = await StoreScreenshotCompositorRenderer.render(
       StoreScreenshotCompositeInput(
@@ -93,8 +94,8 @@ void main() {
       decoded.dispose();
     }
 
-    // Rendering is purely in memory: still no composited directory after.
-    expect(Directory(_enCompositedDir).existsSync(), isFalse);
+    // Rendering is purely in memory: committed output state is unchanged.
+    expectCommittedCompositedState();
   });
 
   test('renders a valid same-size PNG for a very long caption', () async {
@@ -123,7 +124,7 @@ void main() {
     }
 
     // A long caption must not have triggered any file/directory creation.
-    expect(Directory(_enCompositedDir).existsSync(), isFalse);
+    expectCommittedCompositedState();
   });
 
   test('renders a non-default Google Play profile at its exact size', () async {
@@ -157,31 +158,11 @@ void main() {
     }
 
     // Rendering a non-default profile is still purely in memory.
-    expect(Directory(_enCompositedDir).existsSync(), isFalse);
+    expectCommittedCompositedState();
   });
 
-  test('no composited output directory exists under any store locale', () {
-    for (final locale in supportedStoreLocales) {
-      final dir = Directory(
-        '$kStoreScreenshotsRoot/$locale/$kCompositedDirName',
-      );
-      expect(dir.existsSync(), isFalse, reason: locale);
-    }
-
-    // Defensive sweep: no directory literally named `composited` exists
-    // anywhere beneath the store screenshots root.
-    final root = Directory(kStoreScreenshotsRoot);
-    if (root.existsSync()) {
-      final composited = root
-          .listSync(recursive: true)
-          .whereType<Directory>()
-          .where(
-            (d) =>
-                d.path.split(Platform.pathSeparator).last == kCompositedDirName,
-          )
-          .map((d) => d.path)
-          .toList();
-      expect(composited, isEmpty, reason: composited.join(', '));
-    }
-  });
+  test(
+    'committed composited output directory state is intentional',
+    expectCommittedCompositedState,
+  );
 }

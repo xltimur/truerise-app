@@ -5,30 +5,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'screenshot_compositor.dart';
 import 'store_screenshot_compositor_plan.dart';
-
-/// Raw screenshot file names every locale manifest ships, in manifest order.
-const List<String> _expectedFrameFiles = <String>[
-  '01-result-hero.png',
-  '02-evidence-breakdown.png',
-  '03-privacy-demo-settings.png',
-  '04-share-result.png',
-  '05-privacy-policy.png',
-];
+import 'store_screenshot_compositor_repo_state.dart';
 
 /// Reads and decodes the on-disk manifest for [locale] as a JSON object.
 Map<String, dynamic> _readManifest(String locale) =>
     jsonDecode(File(storeManifestPath(locale)).readAsStringSync())
         as Map<String, dynamic>;
-
-/// Fails if any `composited/` directory exists under a supported locale.
-void _expectNoCompositedDirs() {
-  for (final locale in supportedStoreLocales) {
-    final dir = Directory(
-      '$kStoreScreenshotsRoot/$locale/$kCompositedDirName',
-    );
-    expect(dir.existsSync(), isFalse, reason: dir.path);
-  }
-}
 
 /// A single-frame manifest map shaped like a decoded `manifest.json`.
 Map<String, dynamic> _manifestWithFrame({
@@ -43,7 +25,7 @@ Map<String, dynamic> _manifestWithFrame({
 void main() {
   group('buildAllCompositeJobs (on-disk plan)', () {
     test('produces one job per manifest frame, grouped by locale', () {
-      _expectNoCompositedDirs();
+      expectCommittedCompositedState();
 
       final jobs = buildAllCompositeJobs();
 
@@ -68,7 +50,7 @@ void main() {
       }
 
       // Reading the plan must never have created any output directories.
-      _expectNoCompositedDirs();
+      expectCommittedCompositedState();
     });
   });
 
@@ -78,10 +60,10 @@ void main() {
 
       expect(
         jobs.map((job) => job.fileName).toList(),
-        orderedEquals(_expectedFrameFiles),
+        orderedEquals(expectedEnglishFinalFrameFiles),
       );
-      expect(jobs.first.fileName, '01-result-hero.png');
-      expect(jobs.last.fileName, '05-privacy-policy.png');
+      expect(jobs.first.fileName, '01-problem-hook.png');
+      expect(jobs.last.fileName, '03-privacy-demo-settings.png');
       expect(jobs.every((job) => job.locale == 'en'), isTrue);
       expect(jobs.every((job) => job.caption.trim().isNotEmpty), isTrue);
     });
@@ -189,7 +171,7 @@ void main() {
       expect(readiness.blocksFinalComposite, isFalse);
     });
 
-    test('every on-disk manifest currently blocks final composites', () {
+    test('only English is ready for final composites on disk', () {
       final all = readAllCaptionPlanReadiness();
 
       expect(
@@ -197,8 +179,17 @@ void main() {
         orderedEquals(supportedStoreLocales),
       );
       expect(
-        all.every((r) => r.blocksFinalComposite),
-        isTrue,
+        {
+          for (final readiness in all)
+            readiness.locale: readiness.blocksFinalComposite,
+        },
+        <String, bool>{
+          'en': false,
+          'de': true,
+          'fr': true,
+          'es': true,
+          'pt-BR': true,
+        },
         reason: all.map((r) => '${r.locale}:${r.captionPlanStatus}').join(', '),
       );
     });
