@@ -174,7 +174,7 @@ void main() {
       final info = UpdateInfo.tryParse(jsonMap);
 
       expect(info, isNotNull);
-      expect(jsonMap['latestVersion'], '1.0.2+3');
+      expect(jsonMap['latestVersion'], '1.0.3+4');
       expect(jsonMap, isNot(contains('minimumVersion')));
       expect(
         info!.storeUrlFor(TargetPlatform.iOS),

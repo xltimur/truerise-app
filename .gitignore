@@ -40,6 +40,7 @@ app.*.symbols
 app.*.map.json
 
 # Android Studio will place build artifacts here
+/android/build/
 /android/app/debug
 /android/app/profile
 /android/app/release
@@ -57,4 +58,3 @@ app.*.map.json
 # iOS release export options (contains team ID and provisioning profile names).
 # The example template ios/ExportOptions.app-store.example.plist is tracked.
 ios/ExportOptions.plist
-
