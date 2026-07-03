@@ -53,7 +53,7 @@ After verification:
 - Apple CPPs: not created yet.
 - Google Play custom store listings: not created yet.
 - Site links: unchanged in this run to avoid linking to non-existent custom destinations.
-- Reason for deferral: Experiment A is submitted to Apple/Google review but not live yet, no custom destination URLs are available, and the current in-app browser session redirects Play Console access for `4972620156606459622` to developer-account signup instead of the existing TrueRise app.
+- Reason for deferral: no custom destination URLs are available yet, and Experiment A should keep a clean first measurement window before segment-specific destinations are introduced.
 
 ## Console Verification Required Before Site Changes
 
@@ -62,3 +62,7 @@ After verification:
 - Screenshots match the segment lead screenshot.
 - Promo text and short descriptions stay within platform limits and avoid guaranteed-accuracy claims.
 - App Store / Play experiment review state is resolved enough that custom destinations will not interfere with the first screenshot test.
+
+## Experiment Guardrail - 2026-07-03
+
+Do not create CPPs, custom store listings, or site links during the first screenshot experiment's initial measurement window. Segment-specific destinations should wait until Experiment A has either produced a first readout or been marked inconclusive, otherwise traffic split, screenshots, and message intent will be mixed in one measurement period.

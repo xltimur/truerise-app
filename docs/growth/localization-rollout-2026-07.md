@@ -37,7 +37,7 @@ Germany and France have strong credibility expectations, so they validate the st
 - Final localized screenshot composites are generated under `screenshots/store/<locale>/composited/` for all Tier-1 locales.
 - No localized metadata or screenshots have been submitted to store review in this run.
 - App Store Connect check: the current iOS `1.0.3` deliverable is `Ready for Distribution`; metadata fields, screenshots, and the language selector are read-only. App Store localization entry needs a new editable version draft or another Apple-approved editable surface, not the live `1.0.3` deliverable.
-- Play Console access check: direct navigation to developer account `7111618563241559003`, app `4972620156606459622`, package `ua.com.truerise.app`, redirected the current in-app browser session to `play.google.com/console/u/0/signup`. Do not enter Play localizations from this session until the browser is switched to the existing Red Rocket developer account for TrueRise.
+- Play Console access: the correct TrueRise route is developer account `7111618563241559003`, app `4972620156606459622`, package `ua.com.truerise.app`; Play localization entry is deferred during Experiment A's first measurement window.
 
 ## Locale Checklist
 
@@ -73,7 +73,7 @@ Residual blockers:
 
 - App Store Connect and Play Console counters are authoritative; re-count every hard-limited field in-console before saving.
 - App Store Connect upload/recount is blocked until an editable iOS version draft exists; the live `1.0.3` deliverable is read-only.
-- Play Console upload/recount remains a console-side action; local screenshot assets are ready, but the current in-app browser session is not authenticated into the existing TrueRise developer account.
+- Play Console upload/recount remains a console-side action; local screenshot assets are ready, but Play localization publication is paused until Experiment A has a first readout or is marked inconclusive.
 - Do not submit a locale until localized metadata and screenshot assets have been entered in-console and all hard-limited fields recount cleanly.
 
 ## Native Review Scope
@@ -90,3 +90,12 @@ For each locale, review:
 ## Stop Rule
 
 Do not publish a locale until `Native review` is marked accepted with reviewer/date evidence, localized metadata and screenshots are entered in-console, and the console recount passes. Do not submit metadata-only localization while final screenshot assets exist unless the owner explicitly chooses a staged release.
+
+## Experiment Guardrail - 2026-07-03
+
+Do not enter or publish Tier-1 store localizations while Experiment A is collecting its first 7-day screenshot-conversion signal. Localized metadata, screenshots, and language availability can change product-page conversion and would contaminate the first screenshot test.
+
+Next safe decision point:
+
+- 2026-07-09: review Google Play experiment data if the experiment remains active.
+- After Apple approval: start the App Store PPO readout clock separately.

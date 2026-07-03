@@ -42,9 +42,9 @@ Defer paid traffic.
 
 Reasons:
 - App Store PPO setup is submitted to Apple Review and not live yet.
-- Google Play Store Listing Experiment setup is submitted to Google Review and not live yet.
+- Google Play Store Listing Experiment is in its first measurement window; wait for the first readout before changing traffic quality.
 - Default App Store localization and screenshot replacement are blocked on a future editable version draft; current `1.0.3` is read-only.
-- Play metadata/localization follow-up is blocked until Play Console is opened under the existing Red Rocket developer account; the current in-app browser session redirects to developer signup.
+- Experiment A needs a clean first readout window; paid traffic would change traffic quality and conversion interpretation.
 - No paid learning budget is recorded in this plan.
 - No in-app purchase monetization is live.
 - Measurement mode is Mode A store-console only; this is acceptable for organic monitoring but weak for paid install-to-result learning.

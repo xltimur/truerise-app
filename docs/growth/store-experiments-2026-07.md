@@ -76,10 +76,8 @@ Guardrails:
 - Publishing overview status after saving: one change pending under `Изменения, ещё не отправленные на проверку`.
 - Pending change shown by Play Console: `Запуск эксперимента (2026-07 First Screenshot Hook)`.
 - Submitted to Google review on 2026-07-02 after the Play Console confirmation dialog `Отправить 1 изменение на проверку?`.
-- Current Play status in `Обзор публикации`: `Изменения на проверке`.
-- Submitted change shown by Play Console: `Запуск эксперимента (2026-07 First Screenshot Hook)`.
-- Play Console review note: Google says review usually takes up to seven days but can take longer.
-- The experiment is not live until Google approves the submitted change.
+- Follow-up Play Console check: `Обзор публикации` showed no unpublished changes, `Последняя публикация: 2 июля 2026 г.`, and Store Listing Experiments listed `2026-07 First Screenshot Hook` under `Не завершено`.
+- Current Play experiment status: launched/running from 2026-07-02, 1 variant, 50% users.
 - Do not change short description, full description, icon, feature graphic, price, countries, or category during Experiment A.
 
 ## Experiment A Readout - YYYY-MM-DD
@@ -90,3 +88,10 @@ Guardrails:
 - Play conversion delta:
 - Decision: continue / apply winner / stop inconclusive.
 - Notes:
+
+## Continuation Status - 2026-07-03
+
+- Google Play experiment action: keep running without listing, metadata, icon, category, price, or localization changes until the first 7-day readout.
+- First Play readout target: 2026-07-09, counting from the observed 2026-07-02 experiment start.
+- App Store PPO action: recheck Apple review status before any iOS experiment readout or follow-up submission. Do not create competing App Store experiments while this PPO submission is unresolved.
+- Localizations, custom listings, outreach URLs, and paid acquisition remain downstream of this experiment so the screenshot test has a clean signal.
