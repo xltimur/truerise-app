@@ -86,3 +86,9 @@ rating=Everyone
 ## Next Task
 
 Task 2 repo assets are prepared and App Store screenshot slots are populated, but the current live default screenshots cannot be replaced on version `1.0.3`. Proceed to Task 3 through Product Page Optimization with the current result-first page as control and the problem-first screenshot set as treatment.
+
+## 2026-07-03 Public Store Recheck
+
+- App Store Lookup still reports `TrueRise: Birth Time Finder`, version `1.0.3`, release date `2026-07-01T04:35:40Z`, rating count `0`, language `EN`, empty iPhone `screenshotUrls`, and five `ipadScreenshotUrls`.
+- Google Play public page still reports title `TrueRise: Birth Time Finder`, category `Lifestyle`, version `1.0.3`, update date `Jun 30, 2026`, and content rating `Everyone`.
+- No public default-store metadata change was made during the first screenshot experiment window.

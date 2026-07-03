@@ -31,6 +31,8 @@ Website: https://truerise.com.ua/
 |---|---|---|---|---|---|---|---|
 |  |  |  |  |  |  |  |  |
 
+Working tracker: `docs/growth/creator-outreach-tracking-2026-07.csv`.
+
 ## Sending Rules
 
 - Send 20 targeted pitches only after store screenshots / PPO or Play experiment setup is ready enough for traffic.
@@ -46,3 +48,9 @@ Website: https://truerise.com.ua/
 - Outreach not sent in this run.
 - Default store URLs are safe to use for organic mentions.
 - Segment-specific URLs are pending Apple CPP / Google custom listing creation.
+
+## 2026-07-03 Lead Prep
+
+- Created a 20-target outreach tracker with public contact/source URLs.
+- Messages have not been sent.
+- Send only personalized pitches; do not use the tracker for bulk outreach.

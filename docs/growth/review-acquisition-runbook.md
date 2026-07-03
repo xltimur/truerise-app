@@ -10,6 +10,7 @@ Collect honest first reviews without incentives, gating, star requests, or manip
 - The app does not request a star count, offer rewards, branch on rating sentiment, or unlock features for reviews.
 - The default cooldown is 120 days.
 - Verification on 2026-07-02: `flutter test test/unit/reviews/review_prompt_controller_test.dart test/unit/reviews/review_strings_compliance_test.dart` passed.
+- Re-verification on 2026-07-03: the same focused review tests passed, 9 tests total.
 
 ## Allowed Review Moments
 
