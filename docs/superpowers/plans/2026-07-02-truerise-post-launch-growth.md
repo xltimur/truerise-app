@@ -8,6 +8,24 @@
 
 **Tech Stack:** Flutter/Dart app, App Store Connect, Google Play Console, App Store Product Page Optimization, Google Play Store Listing Experiments, Google Play Custom Store Listings, static landing site under `site/`, local docs under `docs/`, store screenshots under `screenshots/store/`.
 
+## Execution Status - 2026-07-03
+
+- Task 1 - Live baseline: completed. Public App Store and Google Play baseline captured, and public state rechecked on 2026-07-03.
+- Task 2 - Screenshot story: completed for repo assets and experiment variants. Default App Store screenshot replacement remains blocked on a future editable app version because live `1.0.3` is read-only.
+- Task 3 - First store experiments: completed. Google Play experiment is running from 2026-07-02; App Store PPO is approved and running from 2026-07-03.
+- Task 4 - First-review loop: completed. Review runbook exists and focused review tests passed again on 2026-07-03.
+- Task 5 - Tier-1 localizations: prepared, not published. Localized metadata/screenshots are ready, but console publication is deferred until the first experiment readout so conversion data is not contaminated.
+- Task 6 - Measurement plan: completed. Mode A store-console-only measurement is selected for the first 14 days.
+- Task 7 - Custom pages/listings: planned, not created. Custom destinations are deferred until first experiment readout or an explicit owner decision to sacrifice clean experiment data.
+- Task 8 - Metadata/release-note refresh: completed as next-submission copy preparation.
+- Task 9 - Creator outreach: prepared. Brief and 20-target tracker exist; no messages have been sent.
+- Task 10 - Paid acquisition gate: completed. Paid traffic remains blocked until experiment readout, budget/stop-loss, and monetization or learning-test approval.
+
+Next required readouts:
+
+- 2026-07-09: Google Play Experiment A first readout.
+- 2026-07-10: App Store PPO first readout.
+
 ## Global Constraints
 
 - Current live baseline on 2026-07-02: App Store and Google Play are both live as `TrueRise: Birth Time Finder`, category `Lifestyle`, version `1.0.3`.
@@ -976,4 +994,3 @@ Run before claiming a store state changed:
 curl -s --max-time 20 'https://itunes.apple.com/lookup?id=6783427864&country=us' | jq '.results[0] | {version,currentVersionReleaseDate,userRatingCount,languageCodesISO2A,screenshotUrls,ipadScreenshotUrls}'
 curl -L -A 'Mozilla/5.0' --max-time 20 -s 'https://play.google.com/store/apps/details?id=ua.com.truerise.app&hl=en_US&gl=US' | rg -n 'TrueRise: Birth Time Finder|Estimate your birth time|Lifestyle|1.0.3'
 ```
-
