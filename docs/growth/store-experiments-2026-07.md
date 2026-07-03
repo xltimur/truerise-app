@@ -47,7 +47,10 @@ Guardrails:
 - App Store Connect required App Review before the PPO can run. The PPO item was added to review and submitted on 2026-07-02.
 - Submission confirmation: `Submitted items: 1`; App Store Connect says review can take up to 48 hours.
 - Review submission URL: `https://appstoreconnect.apple.com/apps/6783427864/distribution/reviewsubmissions/details/c2c57739-372f-4e98-9200-9a6d2dc33b2d`.
-- Current iOS status: waiting for App Review approval; the PPO test is not live until Apple approves it.
+- Current iOS status after 2026-07-03 recheck: App Review is complete and the PPO is approved.
+- Review submission detail confirmed in App Store Connect on 2026-07-03: `Проверка завершена`, object status `Одобрено`, submission ID `c2c57739-372f-4e98-9200-9a6d2dc33b2d`.
+- App Store optimization page confirmed on 2026-07-03: `2026-07 First Screenshot Hook` is `В процессе (1 день)`, date range `3 июля 2026 г. - настоящее время`.
+- First iOS PPO readout target: 2026-07-10, counting from the observed 2026-07-03 test start, provided App Store Connect has enough traffic for a useful signal.
 
 ## Google Play Setup - 2026-07-02
 
@@ -93,5 +96,6 @@ Guardrails:
 
 - Google Play experiment action: keep running without listing, metadata, icon, category, price, or localization changes until the first 7-day readout.
 - First Play readout target: 2026-07-09, counting from the observed 2026-07-02 experiment start.
-- App Store PPO action: recheck Apple review status before any iOS experiment readout or follow-up submission. Do not create competing App Store experiments while this PPO submission is unresolved.
+- App Store PPO action: keep the approved PPO running without default listing, screenshot, metadata, localization, or competing PPO/CPP changes until the first 7-day readout.
+- First App Store PPO readout target: 2026-07-10, counting from the observed 2026-07-03 PPO start.
 - Localizations, custom listings, outreach URLs, and paid acquisition remain downstream of this experiment so the screenshot test has a clean signal.

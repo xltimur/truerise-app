@@ -41,7 +41,7 @@
 Defer paid traffic.
 
 Reasons:
-- App Store PPO setup is submitted to Apple Review and not live yet.
+- App Store PPO was approved and observed in process on 2026-07-03; wait for the first readout before changing traffic quality.
 - Google Play Store Listing Experiment is in its first measurement window; wait for the first readout before changing traffic quality.
 - Default App Store localization and screenshot replacement are blocked on a future editable version draft; current `1.0.3` is read-only.
 - Experiment A needs a clean first readout window; paid traffic would change traffic quality and conversion interpretation.

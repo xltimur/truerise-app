@@ -95,7 +95,12 @@ Do not publish a locale until `Native review` is marked accepted with reviewer/d
 
 Do not enter or publish Tier-1 store localizations while Experiment A is collecting its first 7-day screenshot-conversion signal. Localized metadata, screenshots, and language availability can change product-page conversion and would contaminate the first screenshot test.
 
+App Store update:
+
+- The App Store PPO was approved and observed in process on 2026-07-03.
+- Approval removes the Apple review blocker for the PPO itself, but it does not unblock default store localization publication during the first measurement window.
+
 Next safe decision point:
 
 - 2026-07-09: review Google Play experiment data if the experiment remains active.
-- After Apple approval: start the App Store PPO readout clock separately.
+- 2026-07-10: review App Store PPO data if the test remains active from 2026-07-03 and has enough traffic.

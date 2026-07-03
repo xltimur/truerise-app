@@ -66,3 +66,9 @@ After verification:
 ## Experiment Guardrail - 2026-07-03
 
 Do not create CPPs, custom store listings, or site links during the first screenshot experiment's initial measurement window. Segment-specific destinations should wait until Experiment A has either produced a first readout or been marked inconclusive, otherwise traffic split, screenshots, and message intent will be mixed in one measurement period.
+
+Console update:
+
+- Google Play Store Listing Experiment is running from 2026-07-02.
+- App Store Product Page Optimization is approved and running from 2026-07-03.
+- Custom destinations remain intentionally uncreated until the first Play and App Store readouts are recorded.

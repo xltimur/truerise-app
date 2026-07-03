@@ -82,7 +82,7 @@ Each Monday add:
 ## Experiment Measurement Checkpoints
 
 - 2026-07-09: first Google Play Experiment A readout target, provided the experiment remains active from 2026-07-02 and has enough traffic for a useful signal.
-- App Store PPO readout: start a separate 7-day window only after Apple approves the submitted Product Page Optimization test.
+- 2026-07-10: first App Store PPO readout target, provided the PPO remains active from the observed 2026-07-03 start and has enough traffic for a useful signal.
 - Do not mix screenshot testing with localization, custom listings, paid traffic, or metadata refreshes during the first readout window.
 
 ## Mode B Gate
