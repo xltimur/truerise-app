@@ -99,3 +99,10 @@ Guardrails:
 - App Store PPO action: keep the approved PPO running without default listing, screenshot, metadata, localization, or competing PPO/CPP changes until the first 7-day readout.
 - First App Store PPO readout target: 2026-07-10, counting from the observed 2026-07-03 PPO start.
 - Localizations, custom listings, outreach URLs, and paid acquisition remain downstream of this experiment so the screenshot test has a clean signal.
+
+## Continuation Status - 2026-07-06
+
+- Public App Store and Google Play versions were rechecked and both still report marketing version `1.0.3`.
+- Local `site/version.json` and live `https://truerise.com.ua/version.json` both advertise `latestVersion` `1.0.3+4`, so the update endpoint is aligned with the public store builds.
+- No experiment readout should be recorded yet: Google Play has not reached the planned 2026-07-09 first checkpoint, and App Store PPO has not reached the planned 2026-07-10 first checkpoint.
+- Current action: keep both tests running and preserve a clean measurement window. Do not publish localization, custom listings, metadata refreshes, default screenshot changes, creator traffic, or paid traffic before the first readouts unless the owner explicitly accepts contaminated experiment data.

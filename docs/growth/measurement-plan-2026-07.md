@@ -85,6 +85,12 @@ Each Monday add:
 - 2026-07-10: first App Store PPO readout target, provided the PPO remains active from the observed 2026-07-03 start and has enough traffic for a useful signal.
 - Do not mix screenshot testing with localization, custom listings, paid traffic, or metadata refreshes during the first readout window.
 
+## 2026-07-06 Status
+
+- Store version baseline was rechecked before the readout window: App Store and Google Play still expose version `1.0.3`.
+- Hosted update JSON was rechecked: local and live `version.json` both expose `latestVersion` `1.0.3+4` and valid App Store / Google Play URLs.
+- Measurement action today: no console changes that affect traffic or conversion. The next measurable action is the Google Play readout on 2026-07-09, followed by the App Store PPO readout on 2026-07-10.
+
 ## Mode B Gate
 
 Before adding privacy-safe remote analytics:

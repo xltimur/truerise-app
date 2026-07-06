@@ -92,3 +92,13 @@ Task 2 repo assets are prepared and App Store screenshot slots are populated, bu
 - App Store Lookup still reports `TrueRise: Birth Time Finder`, version `1.0.3`, release date `2026-07-01T04:35:40Z`, rating count `0`, language `EN`, empty iPhone `screenshotUrls`, and five `ipadScreenshotUrls`.
 - Google Play public page still reports title `TrueRise: Birth Time Finder`, category `Lifestyle`, version `1.0.3`, update date `Jun 30, 2026`, and content rating `Everyone`.
 - No public default-store metadata change was made during the first screenshot experiment window.
+
+## 2026-07-06 Public Version / JSON Recheck
+
+- Local app version in `pubspec.yaml`: `1.0.3+4`.
+- Local owner-hosted update payload in `site/version.json`: `latestVersion` is `1.0.3+4`.
+- Live `https://truerise.com.ua/version.json`: `latestVersion` is `1.0.3+4`; App Store and Google Play URLs match the public store URLs.
+- App Store Lookup for Apple ID `6783427864`: `TrueRise: Birth Time Finder`, version `1.0.3`, release date `2026-07-01T04:35:40Z`, category `Lifestyle`, language `EN`.
+- Google Play public listing for package `ua.com.truerise.app`: `TrueRise: Birth Time Finder`, version `1.0.3`, updated `Jun 30, 2026`, category `Lifestyle`, content rating `Everyone`.
+- Version conclusion: store marketing versions are aligned with the hosted update JSON. No `version.json` change is needed.
+- Growth conclusion: do not publish localization, custom listings, metadata refreshes, default screenshot replacements, paid traffic, or creator traffic before the first experiment readouts.

@@ -8,9 +8,9 @@
 
 **Tech Stack:** Flutter/Dart app, App Store Connect, Google Play Console, App Store Product Page Optimization, Google Play Store Listing Experiments, Google Play Custom Store Listings, static landing site under `site/`, local docs under `docs/`, store screenshots under `screenshots/store/`.
 
-## Execution Status - 2026-07-03
+## Execution Status - 2026-07-06
 
-- Task 1 - Live baseline: completed. Public App Store and Google Play baseline captured, and public state rechecked on 2026-07-03.
+- Task 1 - Live baseline: completed. Public App Store and Google Play baseline captured, rechecked on 2026-07-03, and version/JSON alignment rechecked on 2026-07-06.
 - Task 2 - Screenshot story: completed for repo assets and experiment variants. Default App Store screenshot replacement remains blocked on a future editable app version because live `1.0.3` is read-only.
 - Task 3 - First store experiments: completed. Google Play experiment is running from 2026-07-02; App Store PPO is approved and running from 2026-07-03.
 - Task 4 - First-review loop: completed. Review runbook exists and focused review tests passed again on 2026-07-03.
@@ -26,9 +26,14 @@ Next required readouts:
 - 2026-07-09: Google Play Experiment A first readout.
 - 2026-07-10: App Store PPO first readout.
 
+Current 2026-07-06 action:
+
+- Public store versions and the hosted update JSON are aligned: App Store `1.0.3`, Google Play `1.0.3`, local/live `version.json` `latestVersion` `1.0.3+4`.
+- Keep the experiment window clean until the scheduled readouts. Localization publication, custom pages/listings, creator traffic, metadata refreshes, default screenshot replacement, and paid traffic remain deferred unless the owner explicitly accepts contaminated experiment data.
+
 ## Global Constraints
 
-- Current live baseline on 2026-07-02: App Store and Google Play are both live as `TrueRise: Birth Time Finder`, category `Lifestyle`, version `1.0.3`.
+- Current live baseline rechecked on 2026-07-06: App Store and Google Play are both live as `TrueRise: Birth Time Finder`, category `Lifestyle`, version `1.0.3`.
 - App Store current public state: iOS version `1.0.3`, released `2026-07-01T04:35:40Z`, rating count `0`, languages `EN`.
 - Google Play current public state: version `1.0.3`, updated `Jun 30, 2026`, category `Lifestyle`, package `ua.com.truerise.app`.
 - Copy must keep probabilistic framing: use `estimate`, `most likely`, `candidate`, `confidence`; do not claim exact, guaranteed, definitive, deterministic, medical, psychological, legal, or financial value.
