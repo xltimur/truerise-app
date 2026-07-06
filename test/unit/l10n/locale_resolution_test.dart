@@ -28,6 +28,11 @@ void main() {
       expect(result.languageCode, 'en');
     });
 
+    test('unsupported Russian-only locale falls back to English', () {
+      final result = resolveAppLocale([const Locale('ru')], supported);
+      expect(result.languageCode, 'en');
+    });
+
     test(
       'unsupported primary with supported secondary resolves secondary',
       () {
@@ -39,6 +44,14 @@ void main() {
         expect(result.languageCode, 'fr');
       },
     );
+
+    test('Russian primary with Ukrainian secondary resolves Ukrainian', () {
+      final result = resolveAppLocale(
+        [const Locale('ru'), const Locale('uk')],
+        supported,
+      );
+      expect(result.languageCode, 'uk');
+    });
 
     test('null device locales fall back to English', () {
       final result = resolveAppLocale(null, supported);
