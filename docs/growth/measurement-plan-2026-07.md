@@ -84,6 +84,7 @@ Each Monday add:
 - 2026-07-09: first Google Play Experiment A readout target, provided the experiment remains active from 2026-07-02 and has enough traffic for a useful signal.
 - 2026-07-10: first App Store PPO readout target, provided the PPO remains active from the observed 2026-07-03 start and has enough traffic for a useful signal.
 - Do not mix screenshot testing with localization, custom listings, paid traffic, or metadata refreshes during the first readout window.
+- Use `docs/growth/experiment-readout-runbook-2026-07.md` for metric capture and decision rules.
 
 ## 2026-07-06 Status
 

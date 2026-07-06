@@ -15,7 +15,7 @@
 - Task 3 - First store experiments: completed. Google Play experiment is running from 2026-07-02; App Store PPO is approved and running from 2026-07-03.
 - Task 4 - First-review loop: completed. Review runbook exists and focused review tests passed again on 2026-07-03.
 - Task 5 - Tier-1 localizations: prepared, not published. Localized metadata/screenshots are ready, but console publication is deferred until the first experiment readout so conversion data is not contaminated.
-- Task 6 - Measurement plan: completed. Mode A store-console-only measurement is selected for the first 14 days.
+- Task 6 - Measurement plan: completed. Mode A store-console-only measurement is selected for the first 14 days, and the 2026-07-09 / 2026-07-10 readout runbook is ready in `docs/growth/experiment-readout-runbook-2026-07.md`.
 - Task 7 - Custom pages/listings: planned, not created. Custom destinations are deferred until first experiment readout or an explicit owner decision to sacrifice clean experiment data.
 - Task 8 - Metadata/release-note refresh: completed as next-submission copy preparation.
 - Task 9 - Creator outreach: prepared. Brief and 20-target tracker exist; no messages have been sent.
@@ -30,6 +30,7 @@ Current 2026-07-06 action:
 
 - Public store versions and the hosted update JSON are aligned: App Store `1.0.3`, Google Play `1.0.3`, local/live `version.json` `latestVersion` `1.0.3+4`.
 - Keep the experiment window clean until the scheduled readouts. Localization publication, custom pages/listings, creator traffic, metadata refreshes, default screenshot replacement, and paid traffic remain deferred unless the owner explicitly accepts contaminated experiment data.
+- Readout execution is prepared in `docs/growth/experiment-readout-runbook-2026-07.md`; the next console action is metric capture, not a store-page change.
 
 ## Global Constraints
 

@@ -17,6 +17,9 @@ Variant:
 Success metric:
 - Store product-page conversion rate: product page views to first-time downloads.
 
+Readout procedure:
+- Use `docs/growth/experiment-readout-runbook-2026-07.md` for the 2026-07-09 Google Play readout and 2026-07-10 App Store PPO readout.
+
 Guardrails:
 - Do not change title, subtitle, short description, icon, or price during this experiment.
 - Do not run paid traffic changes during this experiment.
@@ -91,6 +94,8 @@ Guardrails:
 - Play conversion delta:
 - Decision: continue / apply winner / stop inconclusive.
 - Notes:
+
+For the full metric capture template, use `docs/growth/experiment-readout-runbook-2026-07.md`.
 
 ## Continuation Status - 2026-07-03
 
